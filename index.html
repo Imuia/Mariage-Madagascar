@@ -82,38 +82,11 @@
         .text-glow { text-shadow: 0 0 20px rgba(125, 211, 252, 0.3); }
         .border-glow { box-shadow: 0 0 15px rgba(125, 211, 252, 0.1); }
         .hover-border-glow:hover { border-color: rgba(125, 211, 252, 0.3); box-shadow: 0 0 25px rgba(125, 211, 252, 0.2); }
-     .brand-logo-fallback { display:block; }
     </style>
 </head>
 <body class="bg-background text-on-background min-h-screen flex flex-col antialiased selection:bg-primary/30 selection:text-primary">
-<!-- Navigation -->
-<nav class="fixed top-0 w-full z-50 bg-surface/60 backdrop-blur-xl dark:bg-surface/60 border-b border-primary/10 shadow-[0_0_30px_rgba(125,211,252,0.05)]">
-<div class="flex justify-between items-center px-8 h-20 w-full mx-auto max-w-7xl">
-<div class="flex items-center gap-3 scale-95 active:scale-90 transition-transform cursor-pointer">
-<img alt="Mariage Madagascar Logo" class="h-10 w-10 object-contain drop-shadow-[0_0_10px_rgba(125,211,252,0.3)]" src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop stop-color=%227dd3fc%22/%3E%3Cstop offset=%221%22 stop-color=%22c8a0f0%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x=%225%22 y=%225%22 width=%2290%22 height=%2290%22 rx=%2222%22 fill=%22%230f1524%22 stroke=%22url(%23g)%22 stroke-width=%224%22/%3E%3Cpath d=%22M25 67V33h9l16 20 16-20h9v34h-9V47L50 65 34 47v20z%22 fill=%22url(%23g)%22/%3E%3C/svg%3E">
-<span class="text-xl font-headline font-semibold text-primary dark:text-primary tracking-wide">Mariage Madagascar</span>
-</div>
-<div class="hidden md:flex items-center gap-8"><a class="font-headline text-on-surface uppercase tracking-wider text-sm text-primary border-b-2 border-primary pb-1" href="#">Destinations</a><a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface transition-colors hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg" href="#">Services</a><a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface transition-colors hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg" href="#">Inspirations</a><a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface transition-colors hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg" href="#">Lunes de Miel</a></div>
-<div class="hidden md:flex items-center gap-4">
-<div class="flex gap-2">
-<select class="bg-surface-container/30 backdrop-blur-md border border-outline-variant/50 text-on-surface rounded-lg text-sm py-1.5 pl-3 pr-8 focus:ring-primary/50 focus:border-primary/50 cursor-pointer form-select">
-<option value="fr">FR</option>
-<option value="en">EN</option>
-</select>
-<select class="bg-surface-container/30 backdrop-blur-md border border-outline-variant/50 text-on-surface rounded-lg text-sm py-1.5 pl-3 pr-8 focus:ring-primary/50 focus:border-primary/50 cursor-pointer form-select">
-<option value="eur">EUR</option>
-<option value="mga">MGA</option>
-<option value="usd">USD</option>
-</select>
-</div>
-<button class="flex items-center justify-center px-6 py-2.5 rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 hover:border-primary/40 transition-all duration-300 font-headline text-sm font-medium hover-border-glow">Demander un devis</button>
-</div>
-<!-- Mobile Menu Toggle -->
-<button class="md:hidden text-primary p-2">
-<span class="material-symbols-outlined">menu</span>
-</button>
-</div>
-</nav>
+<!-- HEADER GLOBAL -->
+<div data-global-header></div>
 <main class="flex-grow pt-20">
 <!-- Hero Section -->
 <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
@@ -161,7 +134,6 @@
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 <!-- Card 1 -->
-<a href="/nosy-be.html" aria-label="Découvrir Nosy Be — L’Île aux Parfums" class="block h-96">
 <div class="glass-elevated rounded-2xl overflow-hidden group hover-border-glow transition-all duration-500 cursor-pointer h-96 flex flex-col relative">
 <div class="absolute inset-0 z-0">
 <div class="bg-cover bg-center w-full h-full opacity-40 group-hover:opacity-60 transition-opacity duration-700 group-hover:scale-105" data-alt="A luxurious, minimalist wedding setup on a white sand beach in Nosy Be, Madagascar. Transparent chairs, delicate white floral arrangements, and a sleek, modern arch frame the deep blue ocean. The lighting is soft and high-key, conveying a serene, exclusive, and romantic atmosphere fitting a high-end luxury brand. Subtle ice-blue color grading." style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuD-ctjMzqOxQmSS4GN_J-awQMoNMsMd78Q8PGhJD3r03ADY17mLNXwP4xZGHhxZkQxLi9vGrNZjfpIzJ-qeApOGJN20fMBJbA5d2FALWsNarLzofotTYYl9ot3HkNw0ZMNICvf7caL4mQ7266d1ldstHWYJhLoJCZAYqf2QZVy9kh7YCVvy2c5XSmiojuhzLHkAn9dFO-i-NpkTbi-04HfZXMPZWd-6CYNVEB7P6LL0w8ljC18w9GGYCg&quot;);"></div>
@@ -173,7 +145,6 @@
 <p class="text-sm text-on-surface-variant font-light opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">Sable blanc, eaux cristallines et couchers de soleil inoubliables pour une romance insulaire.</p>
 </div>
 </div>
-</div></a>
 <!-- Card 2 -->
 <div class="glass-elevated rounded-2xl overflow-hidden group hover-border-glow transition-all duration-500 cursor-pointer h-96 flex flex-col relative"><div class="absolute inset-0 z-0">
 <div class="bg-cover bg-center w-full h-full opacity-40 group-hover:opacity-60 transition-opacity duration-700 group-hover:scale-105" style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuAaAPbzcEbANP_rIuR6t-6eqncFZKICYPogiYIg7oqRt6Y0yn79s2HEhfxHGPXuC-BqW_jNEXFvFI3eqi1VDSAH9b2fAszhccKTVmrkjiFRzQ8VthPOYGwxLbQfgtvynO3KsVoXP18Y8IOGtXTM-WqkJYtA7w6xPC6i5N0NziseKp2jPHMjgAMIJzwmT-75OurXHmNSFpkhiaxv6X0YT-M9uMflASaQ5FzJnR_zoRHyp1ebzdICGSZlqg&quot;);"></div>
@@ -225,101 +196,18 @@
 </div>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 <!-- Card 1 -->
-<a href="/nosy-be.html" aria-label="Voir l’offre Nosy Be, Archipel des Parfums" class="block h-[500px]">
-<div class="glass-elevated rounded-2xl overflow-hidden group hover-border-glow transition-all duration-500 cursor-pointer h-[500px] flex flex-col relative"><div class="absolute inset-0 z-0"><div class="bg-cover bg-center w-full h-full opacity-60 group-hover:opacity-80 transition-opacity duration-700 group-hover:scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD-ctjMzqOxQmSS4GN_J-awQMoNMsMd78Q8PGhJD3r03ADY17mLNXwP4xZGHhxZkQxLi9vGrNZjfpIzJ-qeApOGJN20fMBJbA5d2FALWsNarLzofotTYYl9ot3HkNw0ZMNICvf7caL4mQ7266d1ldstHWYJhLoJCZAYqf2QZVy9kh7YCVvy2c5XSmiojuhzLHkAn9dFO-i-NpkTbi-04HfZXMPZWd-6CYNVEB7P6LL0w8ljC18w9GGYCg');"></div><div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div></div><div class="relative z-10 flex flex-col h-full justify-end p-8"><div class="mb-4 flex justify-between items-start"><span class="bg-primary/20 text-primary text-xs font-bold px-3 py-1 rounded-full border border-primary/30">À partir de 2 450 €</span></div><div class="flex items-center gap-1 text-tertiary text-xs uppercase tracking-widest font-semibold mb-2"><span class="material-symbols-outlined text-[14px]">location_on</span> Nosy Be, Madagascar</div><h3 class="text-2xl font-headline font-semibold text-on-surface mb-2">Nosy Be, Archipel des Parfums</h3><p class="text-sm text-on-surface-variant font-light mb-6 leading-relaxed">L'exclusivité d'une villa de luxe avec piscine privée, nichée entre jungle et mer de cristal.</p><button class="w-full py-3 rounded-xl bg-primary/10 text-primary border border-primary/30 font-headline text-sm font-medium tracking-wider uppercase hover:bg-primary/20 hover:border-primary/50 transition-all duration-300 backdrop-blur-sm">Voir l'offre</button></div></div>
-</div></a>
+<div class="glass-elevated rounded-2xl overflow-hidden group hover-border-glow transition-all duration-500 cursor-pointer h-[500px] flex flex-col relative"><div class="absolute inset-0 z-0"><div class="bg-cover bg-center w-full h-full opacity-60 group-hover:opacity-80 transition-opacity duration-700 group-hover:scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLsuhuDRanqXKUubM69Pta35HRwQMm7hINDQGsqobROnyKJtwiE-_Hk2ZD17bdMYlGQmNWLkGwwpBnBMPAbK_M4b0r1T6PURgN6hZozudo1aYhbnm3B_CzeIjBYLbWsLcJweDHhDtvfPgu1VlhRLwCycUYZiZhADumylIFfVRPMgF52EnJSHU5Q3_WTYCdNCz0O9-hE8ddbj6dlPXdBFr3C7QmQdb8HHGXWBU2-gJzWLadNk01F5RiZ7nknH');"></div><div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div></div><div class="relative z-10 flex flex-col h-full justify-end p-8"><div class="mb-4 flex justify-between items-start"><span class="bg-primary/20 text-primary text-xs font-bold px-3 py-1 rounded-full border border-primary/30">À partir de 2 450 €</span></div><div class="flex items-center gap-1 text-tertiary text-xs uppercase tracking-widest font-semibold mb-2"><span class="material-symbols-outlined text-[14px]">location_on</span> Nosy Be, Madagascar</div><h3 class="text-2xl font-headline font-semibold text-on-surface mb-2">Nosy Be, Archipel des Parfums</h3><p class="text-sm text-on-surface-variant font-light mb-6 leading-relaxed">L'exclusivité d'une villa de luxe avec piscine privée, nichée entre jungle et mer de cristal.</p><button class="w-full py-3 rounded-xl bg-primary/10 text-primary border border-primary/30 font-headline text-sm font-medium tracking-wider uppercase hover:bg-primary/20 hover:border-primary/50 transition-all duration-300 backdrop-blur-sm">Voir l'offre</button></div></div>
 <!-- Card 2 -->
-<div class="glass-elevated rounded-2xl overflow-hidden group hover-border-glow transition-all duration-500 cursor-pointer h-[500px] flex flex-col relative"><div class="absolute inset-0 z-0"><div class="bg-cover bg-center w-full h-full opacity-60 group-hover:opacity-80 transition-opacity duration-700 group-hover:scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAaAPbzcEbANP_rIuR6t-6eqncFZKICYPogiYIg7oqRt6Y0yn79s2HEhfxHGPXuC-BqW_jNEXFvFI3eqi1VDSAH9b2fAszhccKTVmrkjiFRzQ8VthPOYGwxLbQfgtvynO3KsVoXP18Y8IOGtXTM-WqkJYtA7w6xPC6i5N0NziseKp2jPHMjgAMIJzwmT-75OurXHmNSFpkhiaxv6X0YT-M9uMflASaQ5FzJnR_zoRHyp1ebzdICGSZlqg');"></div><div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div></div><div class="relative z-10 flex flex-col h-full justify-end p-8"><div class="mb-4 flex justify-between items-start"><span class="bg-primary/20 text-primary text-xs font-bold px-3 py-1 rounded-full border border-primary/30">À partir de 3 100 €</span></div><div class="flex items-center gap-1 text-tertiary text-xs uppercase tracking-widest font-semibold mb-2"><span class="material-symbols-outlined text-[14px]">location_on</span> Archipel des Mitsio, Madagascar</div><h3 class="text-2xl font-headline font-semibold text-on-surface mb-2">Safari Marin &amp; Luxe</h3><p class="text-sm text-on-surface-variant font-light mb-6 leading-relaxed">Une épopée marine d'exception à bord d'un catamaran privé, ponctuée d'escales sauvages et raffinées.</p><button class="w-full py-3 rounded-xl bg-primary/10 text-primary border border-primary/30 font-headline text-sm font-medium tracking-wider uppercase hover:bg-primary/20 hover:border-primary/50 transition-all duration-300 backdrop-blur-sm">Voir l'offre</button></div></div>
+<div class="glass-elevated rounded-2xl overflow-hidden group hover-border-glow transition-all duration-500 cursor-pointer h-[500px] flex flex-col relative"><div class="absolute inset-0 z-0"><div class="bg-cover bg-center w-full h-full opacity-60 group-hover:opacity-80 transition-opacity duration-700 group-hover:scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLt-5lXUuSG4-kvRygQbimdrZMbpy7FIwNVGWfQg0CQIMFYAKDzD4MlDPOk7z6OkFZV9yl7MeEs6LmzIVNgRvv4CKlOk026kXa-UkJF9qTjSN4yrGgDLQcE-QUQBeQTEDmPCYlngz1yVPehj70KYwxbRkeqlvw7REEwt2S8eFXrrOgsBtsZnbYlaejmVrl6vImDw8PQCq9uMoVGvHEPe62g1M5m7rAiiT6DL5d9M6Y-BusGVFiZNk3HEsr_y');"></div><div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div></div><div class="relative z-10 flex flex-col h-full justify-end p-8"><div class="mb-4 flex justify-between items-start"><span class="bg-primary/20 text-primary text-xs font-bold px-3 py-1 rounded-full border border-primary/30">À partir de 3 100 €</span></div><div class="flex items-center gap-1 text-tertiary text-xs uppercase tracking-widest font-semibold mb-2"><span class="material-symbols-outlined text-[14px]">location_on</span> Archipel des Mitsio, Madagascar</div><h3 class="text-2xl font-headline font-semibold text-on-surface mb-2">Safari Marin &amp; Luxe</h3><p class="text-sm text-on-surface-variant font-light mb-6 leading-relaxed">Une épopée marine d'exception à bord d'un catamaran privé, ponctuée d'escales sauvages et raffinées.</p><button class="w-full py-3 rounded-xl bg-primary/10 text-primary border border-primary/30 font-headline text-sm font-medium tracking-wider uppercase hover:bg-primary/20 hover:border-primary/50 transition-all duration-300 backdrop-blur-sm">Voir l'offre</button></div></div>
 <!-- Card 3 -->
 <div class="glass-elevated rounded-2xl overflow-hidden group hover-border-glow transition-all duration-500 cursor-pointer h-[500px] flex flex-col relative"><div class="absolute inset-0 z-0"><div class="bg-cover bg-center w-full h-full opacity-60 group-hover:opacity-80 transition-opacity duration-700 group-hover:scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAc-xwAVOwDiM1EE5VNipQp6kq3-nGdEmdQYFNIaToXOYJZSQmg7-GESpC4Vfq9uylwlp2AD46BjbsvnkSQRLsJjLXJ96iHQTcKL9iSpAfQHIgL-QgyqrAwLIDSg2ra4JlrMyix1yGc1RVDkedsl3oo2MtKqQxOjeXMieddOdAIFIWNtINxkTHZmA1Y8EOvo4kBZA5iZ4Hwf0ASL40fGLitvR9QdQyDbzfKFBVee5nhWl18XFtpg07HkA');"></div><div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div></div><div class="relative z-10 flex flex-col h-full justify-end p-8"><div class="mb-4 flex justify-between items-start"><span class="bg-primary/20 text-primary text-xs font-bold px-3 py-1 rounded-full border border-primary/30">À partir de 1 890 €</span></div><div class="flex items-center gap-1 text-tertiary text-xs uppercase tracking-widest font-semibold mb-2"><span class="material-symbols-outlined text-[14px]">location_on</span> Sainte-Marie, Madagascar</div><h3 class="text-2xl font-headline font-semibold text-on-surface mb-2">Sainte-Marie, L'île Jardin</h3><p class="text-sm text-on-surface-variant font-light mb-6 leading-relaxed">Une immersion hors du temps dans un éco-lodge de prestige, entre observation des baleines et plages secrètes.</p><button class="w-full py-3 rounded-xl bg-primary/10 text-primary border border-primary/30 font-headline text-sm font-medium tracking-wider uppercase hover:bg-primary/20 hover:border-primary/50 transition-all duration-300 backdrop-blur-sm">Voir l'offre</button></div></div>
 </div>
 </div>
 </section><section class="py-24 relative"><div class="absolute inset-0 bg-surface-dim opacity-50 z-0"></div><div class="container mx-auto px-6 max-w-7xl relative z-10"><div class="text-center mb-16 max-w-3xl mx-auto"><span class="text-primary text-sm tracking-widest uppercase font-semibold mb-2 block">Nos Expertises</span><h2 class="text-3xl md:text-5xl font-headline font-semibold text-on-background mb-6 text-glow">Orfèvres de vos Souvenirs</h2><p class="text-on-surface-variant text-lg font-light">De la conception à la réalisation, nous orchestrons chaque détail pour une célébration sans fausse note.</p></div><div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[250px]"><div class="md:col-span-2 md:row-span-2 glass-panel rounded-3xl p-8 flex flex-col justify-between group hover:bg-surface-container/60 transition-colors duration-500 border-glow hover-border-glow relative overflow-hidden"><div class="absolute inset-0 z-0"><div class="bg-cover bg-center w-full h-full opacity-60 group-hover:opacity-80 transition-opacity duration-700 group-hover:scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBwSvDDCYg1qZi_bEq7KHEPDiZY-fs_BHCgD3KZwuj814zCctKxJCPk7JU-siILVOiHVUVrHr8pGj8HyZ7SQNYrrGtFvkJQ-H3Xo3KYHqMw8UPcAwQnIXvPGaO7YftonXP8iY00dlUr9MJ1onNnEaPdrM_kkv1nc7QkTcteH4Wmr-4Gwe50b7hy14c1tOjBwrNfu5Jp3w6raDZnAPt-KHiTfiA6VtVr461qwfKUE9vCQUDWl8CcYBfTow');"></div><div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div></div><div class="relative z-10 flex flex-col h-full justify-between"><div><div class="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 backdrop-blur-md"><span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">favorite</span></div><h3 class="text-3xl font-headline font-semibold text-on-surface mb-4 text-glow">Wedding Planner</h3><p class="text-on-surface-variant text-lg font-light max-w-md leading-relaxed">Une organisation sur-mesure de votre mariage à Madagascar. Nous sélectionnons les meilleurs prestataires et lieux d'exception pour donner vie à vos rêves les plus fous.</p></div><div class="mt-8 flex justify-end"><button class="w-12 h-12 rounded-full border border-primary/30 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-all duration-300 backdrop-blur-sm"><span class="material-symbols-outlined">arrow_outward</span></button></div></div></div><div class="glass-panel rounded-3xl p-8 flex flex-col justify-between group hover:bg-surface-container/60 transition-colors duration-500 hover-border-glow relative overflow-hidden"><div class="absolute inset-0 z-0"><div class="bg-cover bg-center w-full h-full opacity-40 group-hover:opacity-60 transition-opacity duration-700 group-hover:scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAaAPbzcEbANP_rIuR6t-6eqncFZKICYPogiYIg7oqRt6Y0yn79s2HEhfxHGPXuC-BqW_jNEXFvFI3eqi1VDSAH9b2fAszhccKTVmrkjiFRzQ8VthPOYGwxLbQfgtvynO3KsVoXP18Y8IOGtXTM-WqkJYtA7w6xPC6i5N0NziseKp2jPHMjgAMIJzwmT-75OurXHmNSFpkhiaxv6X0YT-M9uMflASaQ5FzJnR_zoRHyp1ebzdICGSZlqg');"></div><div class="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent"></div></div><div class="relative z-10 flex flex-col h-full justify-between"><div><div class="w-12 h-12 rounded-xl bg-tertiary/10 border border-tertiary/20 flex items-center justify-center mb-4 backdrop-blur-sm"><span class="material-symbols-outlined text-tertiary text-2xl" style="font-variation-settings: 'FILL' 1;">flight_takeoff</span></div><h3 class="text-xl font-headline font-semibold text-on-surface mb-3 text-glow">Travel Planner</h3><p class="text-on-surface-variant text-sm font-light leading-relaxed">Conception de voyages de noces et séjours immersifs pour vous et vos invités.</p></div></div></div><div class="glass-panel rounded-3xl p-8 flex flex-col justify-between group hover:bg-surface-container/60 transition-colors duration-500 hover-border-glow"><div><div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4 backdrop-blur-sm"><span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">concierge</span></div><h3 class="text-xl font-headline font-semibold text-on-surface mb-3">Conciergerie Privée</h3><p class="text-on-surface-variant text-sm font-light">Une assistance exclusive 24/7 pour répondre à vos moindres désirs durant votre séjour.</p></div></div><div class="md:col-span-3 glass-panel rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between group hover:bg-surface-container/60 transition-colors duration-500 hover-border-glow"><div class="flex items-center gap-6 mb-6 md:mb-0"><div class="w-16 h-16 rounded-2xl bg-surface-container-high border border-outline-variant flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-surface text-3xl" style="font-variation-settings: 'FILL' 1;">palette</span></div><div><h3 class="text-2xl font-headline font-semibold text-on-surface mb-2">Design &amp; Décor</h3><p class="text-on-surface-variant text-base font-light">Scénographie florale et direction artistique pour des événements visuellement époustouflants.</p></div></div><button class="px-6 py-3 rounded-full border border-primary/50 text-primary hover:bg-primary hover:text-on-primary transition-all duration-300 font-medium whitespace-nowrap">Découvrir nos services</button></div></div></div></section>
 </main>
-<!-- Footer -->
-<footer class="bg-surface-container-lowest w-full pt-24 pb-12 px-8 border-t border-primary/10 relative overflow-hidden">
-<div class="max-w-7xl mx-auto relative z-10">
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
-<!-- Brand Section -->
-<div class="lg:col-span-2 flex flex-col gap-6">
-<div class="flex items-center gap-4">
-<img alt="Mariage Madagascar Logo" class="h-16 w-16 object-contain drop-shadow-[0_0_10px_rgba(125,211,252,0.3)]" src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop stop-color=%227dd3fc%22/%3E%3Cstop offset=%221%22 stop-color=%22c8a0f0%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x=%225%22 y=%225%22 width=%2290%22 height=%2290%22 rx=%2222%22 fill=%22%230f1524%22 stroke=%22url(%23g)%22 stroke-width=%224%22/%3E%3Cpath d=%22M25 67V33h9l16 20 16-20h9v34h-9V47L50 65 34 47v20z%22 fill=%22url(%23g)%22/%3E%3C/svg%3E">
-<div class="flex flex-col">
-<span class="text-2xl font-headline font-bold text-primary tracking-tight">Mariage Madagascar</span>
-<span class="text-xs text-tertiary uppercase tracking-[0.2em] font-medium">Luxury Wedding &amp; Travel</span>
-</div>
-</div>
-<p class="text-on-surface-variant text-base font-light leading-relaxed max-w-md">
-          L'excellence au service de vos émotions. Nous créons des expériences nuptiales et des voyages d'exception au cœur des paysages les plus exclusifs de la Grande Île.
-        </p>
-<div class="flex gap-4 mt-2">
-<a class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant/50 flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary/50 transition-all duration-300" href="#">
-<span class="material-symbols-outlined text-xl">photo_camera</span>
-</a>
-<a class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant/50 flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary/50 transition-all duration-300" href="#">
-<span class="material-symbols-outlined text-xl">thumb_up</span>
-</a>
-</div>
-</div>
-<!-- Destinations -->
-<div class="flex flex-col gap-6">
-<h4 class="text-sm font-semibold text-on-surface uppercase tracking-widest">Destinations</h4>
-<ul class="flex flex-col gap-3">
-<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-light text-sm" href="#">Nosy Be</a></li>
-<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-light text-sm" href="#">Sainte-Marie</a></li>
-<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-light text-sm" href="#">Tuléar</a></li>
-<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-light text-sm" href="#">Antananarivo</a></li>
-<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-light text-sm" href="#">Diego-Suarez</a></li>
-<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-light text-sm" href="#">Morondava</a></li>
-</ul>
-</div>
-<!-- Services -->
-<div class="flex flex-col gap-6">
-<h4 class="text-sm font-semibold text-on-surface uppercase tracking-widest">Expertises</h4>
-<ul class="flex flex-col gap-3">
-<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-light text-sm" href="#">Wedding Planner</a></li>
-<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-light text-sm" href="#">Travel Planner</a></li>
-<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-light text-sm" href="#">Lune de Miel</a></li>
-<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-light text-sm" href="#">Événements Privés</a></li>
-<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors font-light text-sm" href="#">Conciergerie</a></li>
-</ul>
-</div>
-<!-- Contact & Agencies -->
-<div class="flex flex-col gap-6">
-<h4 class="text-sm font-semibold text-on-surface uppercase tracking-widest">Contact &amp; Siège</h4>
-<div class="flex flex-col gap-4">
-<div class="flex flex-col gap-1">
-<span class="text-sm font-medium text-on-surface">Mariage Madagascar</span>
-<span class="text-xs text-on-surface-variant font-light leading-relaxed">Immeuble Horizon, Ivandry<br>Antananarivo 101, Madagascar</span>
-<span class="text-xs text-primary font-light mt-1">Tél: +261 20 22 000 00</span>
-</div>
-<div class="mt-4">
-<h4 class="text-xs font-semibold text-on-surface uppercase tracking-widest mb-3">Newsletter</h4>
-<div class="flex">
-<input class="bg-surface-container/50 border border-outline-variant rounded-l-lg px-4 py-2 text-sm text-on-surface focus:outline-none focus:border-primary/50 w-full glass-panel" placeholder="Votre email" type="email">
-<button class="bg-primary/20 border border-primary/30 border-l-0 rounded-r-lg px-4 py-2 text-primary hover:bg-primary/30 transition-colors flex items-center justify-center">
-<span class="material-symbols-outlined text-sm">send</span>
-</button>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Bottom Bar -->
-<div class="pt-8 border-t border-surface-container-high flex flex-col md:flex-row justify-between items-center gap-6">
-<div class="flex flex-wrap justify-center md:justify-start gap-6">
-<p class="text-xs text-on-surface-variant opacity-60">© 2024 Mariage Madagascar. Tous droits réservés.</p>
-<a class="text-xs text-on-surface-variant hover:text-primary transition-colors opacity-60" href="#">Mentions Légales</a>
-<a class="text-xs text-on-surface-variant hover:text-primary transition-colors opacity-60" href="#">Politique de Confidentialité</a>
-<a class="text-xs text-on-surface-variant hover:text-primary transition-colors opacity-60" href="#">CGV</a>
-</div>
-<div class="flex items-center gap-2">
-<span class="text-xs text-on-surface-variant opacity-60">Fait avec passion à Madagascar</span>
-<span class="material-symbols-outlined text-primary text-sm">favorite</span>
-</div>
-</div>
-</div>
-</footer>
+<!-- FOOTER GLOBAL -->
+<div data-global-footer></div>
 
 
+<script src="/components/components.js"></script>
 </body></html>
