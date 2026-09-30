@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html class="dark" lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nosy Be Prestige - Mariages &amp; Séjours d'Exception à Madagascar</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed-dim": "#7dd3fc",
+            "primary-container": "#0e4d6e",
+            "on-tertiary-container": "#e8d0ff",
+            "on-surface-variant": "#a0b4c4",
+            "surface-container-highest": "#202c42",
+            "secondary": "#88b4cc",
+            "on-tertiary": "#1a002e",
+            "on-primary-fixed": "#001f2e",
+            "on-tertiary-fixed": "#1a002e",
+            "on-background": "#e0e8f0",
+            "background": "#0a0e1a",
+            "outline": "#4a6070",
+            "on-error-container": "#ffb3b3",
+            "on-secondary-fixed": "#0d1f2b",
+            "on-secondary": "#001f2e",
+            "on-surface": "#e0e8f0",
+            "tertiary-fixed": "#e8d0ff",
+            "surface": "#0f1524",
+            "outline-variant": "#2a3a48",
+            "surface-container-high": "#1a2438",
+            "inverse-on-surface": "#0a0e1a",
+            "on-tertiary-fixed-variant": "#4d2a73",
+            "primary-fixed": "#c8eaff",
+            "surface-bright": "#1a2438",
+            "error": "#ff6b6b",
+            "surface-container-lowest": "#0a0e1a",
+            "surface-container": "#141c2e",
+            "on-primary-container": "#c8eaff",
+            "inverse-primary": "#0a4c6e",
+            "surface-container-low": "#111828",
+            "inverse-surface": "#e0e8f0",
+            "on-secondary-fixed-variant": "#2a4a5e",
+            "tertiary-container": "#3d2060",
+            "secondary-fixed-dim": "#88b4cc",
+            "tertiary": "#c8a0f0",
+            "on-secondary-container": "#c0d8e8",
+            "surface-dim": "#0f1524",
+            "primary": "#7dd3fc",
+            "on-primary": "#001f2e",
+            "surface-tint": "#7dd3fc",
+            "secondary-fixed": "#c0d8e8",
+            "secondary-container": "#1a3a4e",
+            "on-primary-fixed-variant": "#004d73",
+            "surface-variant": "#1a2438",
+            "error-container": "#3d1414",
+            "on-error": "#1a0000",
+            "tertiary-fixed-dim": "#c8a0f0"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Inter", "sans-serif"],
+            "display": ["Inter", "sans-serif"],
+            "body": ["Inter", "sans-serif"],
+            "label": ["Inter", "sans-serif"]
+          }
+        },
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .glass-panel {
+      background: rgba(20, 28, 46, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(125, 211, 252, 0.12);
+    }
+    .glass-card {
+      background: rgba(26, 36, 56, 0.45);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(125, 211, 252, 0.08);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(125, 211, 252, 0.35);
+      transform: translateY(-4px);
+    }
+    .ocean-gradient {
+      background: radial-gradient(circle at 50% 0%, rgba(14, 77, 110, 0.4) 0%, rgba(10, 14, 26, 0) 70%);
+    }
+  </style>
+
+</head>
+<body class="bg-background text-on-background font-body antialiased selection:bg-primary selection:text-on-primary">
+
+<!-- HEADER GLOBAL — identique au site Mariage Madagascar -->
+<div data-global-header></div>
+
+<!-- CONTENU DE LA PAGE : NOSY BE -->
+<div class="@container" id="ile">
+<div class="@[480px]:p-4">
+<div class="flex min-h-[540px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-center justify-center p-8 text-center relative overflow-hidden shadow-2xl" data-alt="An ethereal high-end panoramic shot of Andilana Beach in Nosy Be Madagascar during twilight with crystal clear turquoise calm ocean waters, powdered white sand, swaying palm trees and an opulent ceremonial gazebo adorned with white orchids and sheer linen flowing gently in the tropical breeze, illuminated by subtle cool blue and warm lantern lighting." style='background-image: linear-gradient(180deg, rgba(10, 14, 26, 0.3) 0%, rgba(10, 14, 26, 0.85) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJL0xHphgzTFE7FbHC0E0YgPpRRBzcRD00FFmiUq7M_ZzsoaIEhYpSH600FCypsY5hrrCDONcTQavAnr2pgs6kslsPoH1D7iNhpOFROa_j7DfEtnk4vBQDFkbWOGVFYXTxkOmAoTFGnlPU07W2Cvjio3O5U131lziRehDUJTtYTR6b3LDYsViA4O3e9zj1SnPOin-HIFCHchygTnsRxshL-75J9pUNmv2VglafDCVMik_atAjrJmg-bQ");'>
+<!-- Subtle floating badge -->
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container/60 border border-primary/20 backdrop-blur-md text-primary text-xs uppercase tracking-widest font-semibold">
+<span class="material-symbols-outlined text-sm">diamond</span>
+                  Sanctuaire de Mariages Exclusifs &amp; Retraites Privées
+                </div>
+<div class="flex flex-col gap-3 text-center max-w-3xl">
+<h1 class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight">
+                    Nosy Be : L'Écrin Céleste de vos Plus Beaux Instants
+                  </h1>
+<h2 class="text-secondary-fixed text-sm font-normal leading-relaxed @[480px]:text-base">
+                    Villas d'exception, lagons turquoise translucides et célébrations nuptiales inoubliables sur la perle précieuse de l'Océan Indien.
+                  </h2>
+</div>
+<div class="flex-wrap gap-4 flex justify-center items-center">
+<a class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-6 bg-primary text-on-primary text-base font-bold leading-normal tracking-[0.015em] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all" href="#sejours">
+<span class="truncate">Concevoir Mon Mariage</span>
+</a>
+<a class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-6 bg-surface-container-high/80 backdrop-blur-md text-white border border-outline-variant hover:border-primary/40 text-base font-bold leading-normal tracking-[0.015em] transition-all" href="#lieux">
+<span class="truncate">Explorer les Domaines</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap justify-between gap-4 p-4 mt-6">
+<div class="flex min-w-72 flex-col gap-3 max-w-2xl">
+<span class="text-xs uppercase tracking-widest text-primary font-semibold">Une Destination Inégalée</span>
+<p class="text-white text-3xl font-black leading-tight tracking-[-0.033em]">L'Île aux Parfums &amp; aux Mirages Bleutés</p>
+<p class="text-[#8eb9cc] text-base font-normal leading-relaxed">
+                Une oasis de sérénité sculptée entre senteurs d'ylang-ylang, récifs coralliens préservés et raffinement tropical absolu.
+              </p>
+</div>
+<div class="flex items-center">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-5 bg-surface-container-high text-primary border border-primary/30 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-surface-container-highest transition-colors">
+<span class="truncate">Notre Héritage</span>
+</button>
+</div>
+</div>
+<p class="text-on-surface-variant text-base font-normal leading-relaxed pb-6 pt-1 px-4 border-b border-outline-variant/40">
+            Surnommée l'Île aux Parfums pour ses effluves envoûtants de vanille, de café et d'ylang-ylang, Nosy Be dévoile une élégance naturelle incomparable. Véritable
+            sanctuaire préservé au nord-ouest de Madagascar, cet archipel offre le décor idyllique pour les retraites exclusives et les mariages de haute voltige les pieds dans
+            l'eau cristalline.
+          </p>
+<h2 class="text-white text-[24px] font-bold leading-tight tracking-[-0.015em] px-4 pb-4 pt-10" id="lieux">
+            Domaines &amp; Écrins de Célébration Nuptiale
+          </h2>
+</div>
+</div>
+</div>
+</div>
+<!-- MAIN EXTENDED LUXURY CONTENT -->
+<main class="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pb-24 ocean-gradient">
+<!-- VENUES GALLERY GRID -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
+<!-- Venue 1 -->
+<div class="glass-card rounded-2xl overflow-hidden group flex flex-col">
+<div class="relative h-72 overflow-hidden">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Luxurious beachfront private villa in Nosy Be Madagascar on the shores of Nosy Komba with infinity edge private pool reflecting twilight sky, thatched high-beam open architecture, refined deep blue and dark wooden finishings with candlelit deck overlooking serene turquoise ocean." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAl0ryrwi95wGwNLK6LgxRU6g7bmeR6jYwvLFYRWWQyCLbpi1u1chYE42rFAVLxt892R9hX-MgevuLqCLMsVOcefHqtZ68cCc9D0Lp81y3agz6Kl31oIrFC0fY_p2Z9g6omg1HtDb93iBcabITjZVDBox39J_ubNhlpYtEOsuf-Bv3emkGll5LzfJZgPB18rBuZT4XdLRLhVVVMamYL6K8w1aBKKk4Ks1liDvhbO6sAfqVFB4-To6dDTw");'>
+</div>
+<div class="absolute top-4 left-4 bg-background/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-primary border border-primary/20">
+            Domaine Privatif • Nosy Komba
+          </div>
+</div>
+<div class="p-6 flex flex-col flex-1 justify-between gap-4">
+<div>
+<h3 class="text-xl font-bold text-white group-hover:text-primary transition-colors">La Réserve des Ylangs</h3>
+<p class="text-sm text-on-surface-variant mt-2 line-clamp-2">
+              Perchée sur une crique secrète avec héliport privé, plage de sable d'albâtre privatisée et conciergerie dédiée 24/7.
+            </p>
+</div>
+<div class="pt-4 border-t border-outline-variant/30 flex items-center justify-between text-xs text-secondary-fixed">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-base text-primary">groups</span> Jusqu'à 120 convives</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-base text-primary">bed</span> 14 Suites d'Exception</span>
+</div>
+</div>
+</div>
+<!-- Venue 2 -->
+<div class="glass-card rounded-2xl overflow-hidden group flex flex-col">
+<div class="relative h-72 overflow-hidden">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Opulent cliffside retreat overlooking the Mozambique Channel in Nosy Be Madagascar with minimalist glass balustrades, ice-blue illuminated water features, and expansive teak terraces dressed for an elite wedding ceremony during a calm golden hour sunset." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCFnc7YC9egkhwk-xiY1erid-9uP1ygAupHiSmdecADHmPb4wJAvc8C4lqpPXkbvw9nCyXXOBELqsY28RXR3w6L3hP-sNmxSBcvPyBZc_5E90U4ROui3VH208lK5x56TzcOoljPa9IvYfHJh5SsI4CwbY19F1FwWfgKy6uXmhUjlZ_Pg3wOYZkj6T4c-ROJF3C3SdYDKdtDPVHVHcytrLKHd4wCIid2RFuxX8Nes1iPTMHX-bSTQA76LA");'>
+</div>
+<div class="absolute top-4 left-4 bg-background/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-primary border border-primary/20">
+            Péninsule • Andilana Cliffs
+          </div>
+</div>
+<div class="p-6 flex flex-col flex-1 justify-between gap-4">
+<div>
+<h3 class="text-xl font-bold text-white group-hover:text-primary transition-colors">Palais Azur Océan</h3>
+<p class="text-sm text-on-surface-variant mt-2 line-clamp-2">
+              Vue panoramique à 270 degrés sur l'horizon, autel suspendu au-dessus des flots et espaces réceptifs créés par des architectes renommés.
+            </p>
+</div>
+<div class="pt-4 border-t border-outline-variant/30 flex items-center justify-between text-xs text-secondary-fixed">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-base text-primary">groups</span> Jusqu'à 200 convives</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-base text-primary">bed</span> 18 Suites Royales</span>
+</div>
+</div>
+</div>
+<!-- Venue 3 -->
+<div class="glass-card rounded-2xl overflow-hidden group flex flex-col">
+<div class="relative h-72 overflow-hidden">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Exclusive ultra-private islet near Nosy Iranja Madagascar with white sandbar connecting emerald forested atolls, surrounded by ultra clear turquoise water under starry dusk sky with high-end luxury safari-style canvas lodges and soft ambient lanterns." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAnfM5iMtTTx8CQ1hRufXtLYzn3bRjwvz1KEutlsXv4YP9sSaxKfJCR5tmCD4Dd_QBOIBmgQmvemengZP-ZVrlDvLKOEWJbsKaojs83IYoy1fbn3skLqljC51gfpAsaUPXRsXCE6IgjkiJlYWkiRF0rENmxOt4ktBv0fDz9fwuKvLWzrJ-J0l_xRyIbEmhXp90bGGaYz-kQif-fYkuaWJmny7G7Wt1XFPiFoJJXf6Ufjx2hIFep8hWCrA");'>
+</div>
+<div class="absolute top-4 left-4 bg-background/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-primary border border-primary/20">
+            Île Privatisée • Nosy Iranja
+          </div>
+</div>
+<div class="p-6 flex flex-col flex-1 justify-between gap-4">
+<div>
+<h3 class="text-xl font-bold text-white group-hover:text-primary transition-colors">Atoll Mirage &amp; Spa</h3>
+<p class="text-sm text-on-surface-variant mt-2 line-clamp-2">
+              L'expérience de privatisation totale d'une île entière entourée de bancs de sable blanc immaculé et de lagons luminescents.
+            </p>
+</div>
+<div class="pt-4 border-t border-outline-variant/30 flex items-center justify-between text-xs text-secondary-fixed">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-base text-primary">groups</span> Jusqu'à 60 privilégiés</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-base text-primary">sailing</span> Yacht privé inclus</span>
+</div>
+</div>
+</div>
+</div>
+<!-- BEST TIME TO VISIT SECTION -->
+<section class="mb-24" id="periodes">
+<div class="glass-panel rounded-3xl p-8 lg:p-12 relative overflow-hidden">
+<div class="max-w-3xl mb-10">
+<div class="inline-flex items-center gap-2 text-primary font-semibold text-xs uppercase tracking-widest mb-3">
+<span class="material-symbols-outlined text-base">sunny</span> Climatologie &amp; Éphéméride
+          </div>
+<h2 class="text-3xl lg:text-4xl font-black text-white tracking-tight">Quand célébrer vos noces à Nosy Be ?</h2>
+<p class="text-on-surface-variant mt-3 text-base">
+            Bénéficiant de plus de 330 jours d'ensoleillement par an, Nosy Be offre des saisons propices à chaque style de célébration. Consultez notre baromètre d'excellence nuptiale.
+          </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Season 1 -->
+<div class="bg-surface-container/60 border border-primary/20 rounded-2xl p-6 relative">
+<div class="absolute -top-3 right-6 bg-primary text-on-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+              Optimal • Saison d'Or
+            </div>
+<div class="text-primary font-bold text-xl mb-1">Mai à Octobre</div>
+<div class="text-xs text-secondary mb-4">Saison Sèche • Ciel Cristal</div>
+<p class="text-sm text-on-surface-variant mb-6">
+              Brises douces, quasi-absence totale de pluie et températures parfaites de 27°C. C'est la période idéale pour les cérémonies laïque en plein air et les banquets nocturnes sous les étoiles.
+            </p>
+<div class="space-y-2 text-xs text-white/90">
+<div class="flex justify-between py-1 border-b border-outline-variant/30">
+<span class="text-on-surface-variant">Température air</span>
+<span class="font-semibold">26°C - 29°C</span>
+</div>
+<div class="flex justify-between py-1 border-b border-outline-variant/30">
+<span class="text-on-surface-variant">Température lagon</span>
+<span class="font-semibold">27°C</span>
+</div>
+<div class="flex justify-between py-1">
+<span class="text-on-surface-variant">Indice Nuptial</span>
+<span class="font-bold text-primary">9.9 / 10</span>
+</div>
+</div>
+</div>
+<!-- Season 2 -->
+<div class="bg-surface-container/40 border border-outline-variant rounded-2xl p-6">
+<div class="text-white font-bold text-xl mb-1">Novembre à Décembre</div>
+<div class="text-xs text-secondary mb-4">Intersaison • Floraison Tropicale</div>
+<p class="text-sm text-on-surface-variant mb-6">
+              Végétation luxuriante sublimée, parfums intenses d'ylang-ylang et de vanille flottant dans l'air. Averses chaleureuses et brèves, principalement en fin de nuit.
+            </p>
+<div class="space-y-2 text-xs text-white/90">
+<div class="flex justify-between py-1 border-b border-outline-variant/30">
+<span class="text-on-surface-variant">Température air</span>
+<span class="font-semibold">29°C - 32°C</span>
+</div>
+<div class="flex justify-between py-1 border-b border-outline-variant/30">
+<span class="text-on-surface-variant">Température lagon</span>
+<span class="font-semibold">29°C</span>
+</div>
+<div class="flex justify-between py-1">
+<span class="text-on-surface-variant">Indice Nuptial</span>
+<span class="font-bold text-secondary">8.8 / 10</span>
+</div>
+</div>
+</div>
+<!-- Season 3 -->
+<div class="bg-surface-container/40 border border-outline-variant rounded-2xl p-6">
+<div class="text-white font-bold text-xl mb-1">Janvier à Avril</div>
+<div class="text-xs text-secondary mb-4">Saison Chaude • Calme Absolu</div>
+<p class="text-sm text-on-surface-variant mb-6">
+              Période des pluies tropicales régénérantes avec des lumières dramatiques magnifiques pour la photographie artistique. Climat tropical intense et intimité préservée.
+            </p>
+<div class="space-y-2 text-xs text-white/90">
+<div class="flex justify-between py-1 border-b border-outline-variant/30">
+<span class="text-on-surface-variant">Température air</span>
+<span class="font-semibold">30°C - 33°C</span>
+</div>
+<div class="flex justify-between py-1 border-b border-outline-variant/30">
+<span class="text-on-surface-variant">Température lagon</span>
+<span class="font-semibold">30°C</span>
+</div>
+<div class="flex justify-between py-1">
+<span class="text-on-surface-variant">Indice Nuptial</span>
+<span class="font-bold text-secondary">7.5 / 10</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- PACKAGES & STAYS GRID -->
+<section class="mb-24" id="sejours">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+<div>
+<span class="text-xs uppercase tracking-widest text-primary font-semibold">Formules Haute Couture</span>
+<h2 class="text-3xl lg:text-4xl font-black text-white mt-1 tracking-tight">Séjours Romantiques &amp; Célébrations Nuptiales</h2>
+<p class="text-on-surface-variant mt-2 max-w-xl text-sm">
+            Chaque forfait est entièrement modulable selon vos aspirations, encadré par notre wedding planner dédié et notre cheffe étoilée privée.
+          </p>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-xs text-secondary-fixed">Devise affichée :</span>
+<span class="px-3 py-1 rounded-lg bg-surface-container-high border border-outline-variant text-xs text-primary font-bold active-currency-badge">
+            EUR (€) • MGA convertible
+          </span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Package 1 -->
+<div class="glass-card rounded-2xl p-7 flex flex-col justify-between border-t-2 border-t-secondary/40">
+<div>
+<div class="text-xs font-semibold text-secondary uppercase tracking-widest mb-2">Retraite à Deux</div>
+<h3 class="text-2xl font-bold text-white mb-2">Lune de Miel "Parfum Ylang"</h3>
+<p class="text-sm text-on-surface-variant mb-6">
+              Une parenthèse intimiste de 7 nuits en villa sur pilotis, incluant croisières au coucher du soleil et rituels de spa malgaches.
+            </p>
+<ul class="space-y-3 mb-8 text-xs text-on-surface">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-base">check_circle</span>
+<span>Transferts privés en hélicoptère depuis Fascene</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-base">check_circle</span>
+<span>Dîner aux chandelles quotidien sur plage privée</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-base">check_circle</span>
+<span>Excursion privative en catamaran vers Nosy Tanikely</span>
+</li>
+</ul>
+</div>
+<div>
+<div class="text-xs text-on-surface-variant">À partir de</div>
+<div class="text-2xl font-black text-white tracking-tight price-eur">4 850 € <span class="text-xs font-normal text-secondary">/ couple</span></div>
+<div class="text-xs text-secondary price-mga hidden">~ 23 765 000 MGA</div>
+<button class="w-full mt-4 py-3 px-4 rounded-xl bg-surface-container-high border border-outline-variant hover:border-primary text-white hover:text-primary font-bold text-xs uppercase tracking-wider transition-all">
+              Personnaliser ce Séjour
+            </button>
+</div>
+</div>
+<!-- Package 2 - Featured -->
+<div class="glass-card rounded-2xl p-7 flex flex-col justify-between border-2 border-primary relative shadow-2xl bg-surface-container/70">
+<div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-on-primary text-[10px] font-black tracking-widest uppercase px-4 py-1 rounded-full shadow-md">
+            Signature Mariage
+          </div>
+<div>
+<div class="text-xs font-semibold text-primary uppercase tracking-widest mb-2 mt-2">Célébration Prestige</div>
+<h3 class="text-2xl font-bold text-white mb-2">Mariage Féerique Lagon &amp; Corail</h3>
+<p class="text-sm text-on-surface-variant mb-6">
+              Privatisation d'un domaine pour 3 jours de festivités, cérémonie les pieds dans l'eau, cocktail dînatoire haut de gamme et orchestration totale.
+            </p>
+<ul class="space-y-3 mb-8 text-xs text-on-surface">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-base">check_circle</span>
+<span>Wedding Planner &amp; Designer d'ambiance dédié</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-base">check_circle</span>
+<span>Coordination légale et cérémonie laïque personnalisée</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-base">check_circle</span>
+<span>Banquet gastronomique produits de mer et vanille Bourbon</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-base">check_circle</span>
+<span>Hébergement pour 24 invités d'honneur (3 nuits)</span>
+</li>
+</ul>
+</div>
+<div>
+<div class="text-xs text-on-surface-variant">À partir de</div>
+<div class="text-3xl font-black text-primary tracking-tight price-eur">18 500 € <span class="text-xs font-normal text-secondary">/ événement</span></div>
+<div class="text-xs text-secondary price-mga hidden">~ 90 650 000 MGA</div>
+<button class="w-full mt-4 py-3 px-4 rounded-xl bg-primary text-on-primary font-bold text-xs uppercase tracking-wider hover:brightness-110 shadow-lg shadow-primary/25 transition-all">
+              Demander un Devis Nuptial
+            </button>
+</div>
+</div>
+<!-- Package 3 -->
+<div class="glass-card rounded-2xl p-7 flex flex-col justify-between border-t-2 border-t-tertiary/40">
+<div>
+<div class="text-xs font-semibold text-tertiary uppercase tracking-widest mb-2">Privatisation Complète</div>
+<h3 class="text-2xl font-bold text-white mb-2">Archipel Secret "Royal Eden"</h3>
+<p class="text-sm text-on-surface-variant mb-6">
+              L'expérience royale par excellence : privatisation intégrale d'un îlot exclusif pendant 5 nuits pour une célébration hors du temps.
+            </p>
+<ul class="space-y-3 mb-8 text-xs text-on-surface">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-base">check_circle</span>
+<span>Île entièrement privatisée pour vos invités</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-base">check_circle</span>
+<span>Yacht de 24m à disposition pour excursions d'îles en îles</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-base">check_circle</span>
+<span>Feu d'artifice aquatique sur mesure le soir du mariage</span>
+</li>
+</ul>
+</div>
+<div>
+<div class="text-xs text-on-surface-variant">À partir de</div>
+<div class="text-2xl font-black text-white tracking-tight price-eur">42 000 € <span class="text-xs font-normal text-secondary">/ séjour</span></div>
+<div class="text-xs text-secondary price-mga hidden">~ 205 800 000 MGA</div>
+<button class="w-full mt-4 py-3 px-4 rounded-xl bg-surface-container-high border border-outline-variant hover:border-primary text-white hover:text-primary font-bold text-xs uppercase tracking-wider transition-all">
+              Consulter nos Concierges
+            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- FAQ SECTION -->
+<section class="mb-24 max-w-4xl mx-auto" id="faq">
+<div class="text-center mb-12">
+<span class="text-xs uppercase tracking-widest text-primary font-semibold">Conseils &amp; Préparatifs</span>
+<h2 class="text-3xl font-black text-white mt-1">Questions Fréquentes des Futurs Mariés &amp; Voyageurs</h2>
+<p class="text-sm text-on-surface-variant mt-2">
+          Tout ce que vous devez savoir pour organiser un mariage d'exception ou un séjour de luxe à Nosy Be.
+        </p>
+</div>
+<div class="space-y-4">
+<!-- FAQ 1 -->
+<details class="group glass-card rounded-xl p-5 [&amp;_summary::-webkit-details-marker]:hidden" open="">
+<summary class="flex cursor-pointer items-center justify-between gap-1.5 text-white font-semibold">
+<span class="text-base group-open:text-primary transition-colors">Comment rejoindre Nosy Be depuis l'Europe ou l'international ?</span>
+<span class="material-symbols-outlined shrink-0 text-primary transition duration-300 group-open:-rotate-180">expand_more</span>
+</summary>
+<p class="mt-4 leading-relaxed text-sm text-on-surface-variant">
+            L'aéroport international de Fascene (NOS) à Nosy Be est desservi par des vols directs depuis l'Europe (notamment Air Austral via La Réunion, Neos Air depuis Milan et Rome) ainsi que des liaisons quotidiennes depuis Antananarivo avec Madagascar Airlines. Nous proposons également un accueil VIP dès la passerelle et des transferts héliportés directs jusqu'à votre villa.
+          </p>
+</details>
+<!-- FAQ 2 -->
+<details class="group glass-card rounded-xl p-5 [&amp;_summary::-webkit-details-marker]:hidden">
+<summary class="flex cursor-pointer items-center justify-between gap-1.5 text-white font-semibold">
+<span class="text-base group-open:text-primary transition-colors">Les mariages célébrés à Madagascar ont-ils une valeur juridique internationale ?</span>
+<span class="material-symbols-outlined shrink-0 text-primary transition duration-300 group-open:-rotate-180">expand_more</span>
+</summary>
+<p class="mt-4 leading-relaxed text-sm text-on-surface-variant">
+            Oui, un mariage civil célébré à Nosy Be devant un officier d'état civil malgache peut être retranscrit dans votre pays d'origine (notamment en France auprès de l'Ambassade de France à Antananarivo). Notre conciergerie juridique se charge de la totalité de la constitution du dossier, des publications de bans et des traductions assermentées. De nombreux couples optent également pour une cérémonie laïque somptueuse sur la plage après s'être unis civilement dans leur pays.
+          </p>
+</details>
+<!-- FAQ 3 -->
+<details class="group glass-card rounded-xl p-5 [&amp;_summary::-webkit-details-marker]:hidden">
+<summary class="flex cursor-pointer items-center justify-between gap-1.5 text-white font-semibold">
+<span class="text-base group-open:text-primary transition-colors">Quel délai recommandez-vous pour organiser un mariage de prestige à Nosy Be ?</span>
+<span class="material-symbols-outlined shrink-0 text-primary transition duration-300 group-open:-rotate-180">expand_more</span>
+</summary>
+<p class="mt-4 leading-relaxed text-sm text-on-surface-variant">
+            Pour la privatisation complète des plus beaux domaines ou des atolls (comme Nosy Iranja ou Tsarabanjina), nous préconisons d'entamer les préparatifs 8 à 14 mois à l'avance, particulièrement pour la haute saison de juin à octobre. Cependant, notre équipe locale est capable d'orchestrer des cérémonies intimes ou des elopements d'exception en moins de 3 mois.
+          </p>
+</details>
+<!-- FAQ 4 -->
+<details class="group glass-card rounded-xl p-5 [&amp;_summary::-webkit-details-marker]:hidden">
+<summary class="flex cursor-pointer items-center justify-between gap-1.5 text-white font-semibold">
+<span class="text-base group-open:text-primary transition-colors">Quelles sont les devises acceptées pour les prestations et sur place ?</span>
+<span class="material-symbols-outlined shrink-0 text-primary transition duration-300 group-open:-rotate-180">expand_more</span>
+</summary>
+<p class="mt-4 leading-relaxed text-sm text-on-surface-variant">
+            Toutes nos facturations officielles peuvent être émises en Euros (€) ou en Ariary malgache (MGA). Sur l'île, les cartes bancaires internationales (Visa, Mastercard) sont largement acceptées au sein des établissements de luxe, et nos concierges facilitent tout change ou virement sécurisé sans tracas logistique.
+          </p>
+</details>
+</div>
+</section>
+</main>
+
+<!-- FOOTER GLOBAL — identique au site Mariage Madagascar -->
+<div data-global-footer></div>
+
+<script src="/components/components.js"></script>
+</body>
+</html>
