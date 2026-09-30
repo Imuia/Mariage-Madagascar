@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Morondava — Mariage Madagascar Luxe</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration (Glacier Design System) -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed-dim": "#88b4cc",
+                      "inverse-primary": "#0a4c6e",
+                      "primary-fixed-dim": "#7dd3fc",
+                      "surface-variant": "#1a2438",
+                      "on-primary": "#001f2e",
+                      "on-secondary-fixed": "#0d1f2b",
+                      "surface-container-high": "#1a2438",
+                      "surface-container-low": "#111828",
+                      "tertiary-container": "#3d2060",
+                      "on-tertiary": "#1a002e",
+                      "inverse-surface": "#e0e8f0",
+                      "on-tertiary-fixed": "#1a002e",
+                      "secondary-container": "#1a3a4e",
+                      "background": "#0a0e1a",
+                      "on-secondary-fixed-variant": "#2a4a5e",
+                      "primary-container": "#0e4d6e",
+                      "surface": "#0f1524",
+                      "surface-container-highest": "#202c42",
+                      "on-tertiary-container": "#e8d0ff",
+                      "surface-bright": "#1a2438",
+                      "tertiary-fixed-dim": "#c8a0f0",
+                      "primary-fixed": "#c8eaff",
+                      "on-surface": "#e0e8f0",
+                      "tertiary": "#c8a0f0",
+                      "on-tertiary-fixed-variant": "#4d2a73",
+                      "outline-variant": "#2a3a48",
+                      "error-container": "#3d1414",
+                      "surface-tint": "#7dd3fc",
+                      "primary": "#7dd3fc",
+                      "on-primary-fixed-variant": "#004d73",
+                      "outline": "#4a6070",
+                      "secondary-fixed": "#c0d8e8",
+                      "on-error": "#1a0000",
+                      "on-surface-variant": "#a0b4c4",
+                      "surface-container-lowest": "#0a0e1a",
+                      "on-background": "#e0e8f0",
+                      "inverse-on-surface": "#0a0e1a",
+                      "on-secondary-container": "#c0d8e8",
+                      "on-primary-fixed": "#001f2e",
+                      "surface-dim": "#0f1524",
+                      "tertiary-fixed": "#e8d0ff",
+                      "on-secondary": "#001f2e",
+                      "on-primary-container": "#c8eaff",
+                      "error": "#ff6b6b",
+                      "on-error-container": "#ffb3b3",
+                      "surface-container": "#141c2e",
+                      "secondary": "#88b4cc"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.5rem",
+                      "lg": "1rem",
+                      "xl": "1.5rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Inter", "sans-serif"],
+                      "display": ["Inter", "sans-serif"],
+                      "body": ["Inter", "sans-serif"],
+                      "label": ["Inter", "sans-serif"]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom Glass Utilities */
+        .glass-panel {
+            background-color: rgba(15, 21, 36, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(125, 211, 252, 0.1);
+        }
+        
+        .glass-elevated {
+            background-color: rgba(15, 21, 36, 0.75);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(125, 211, 252, 0.15);
+            box-shadow: 0 0 30px rgba(125, 211, 252, 0.05);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 20px rgba(125, 211, 252, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased selection:bg-primary selection:text-on-primary"><div data-global-header=""></div>
+<!-- TopNavBar Shared Component -->
+
+<!-- Hero Section -->
+<header class="relative w-full h-[921px] flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center z-0" data-alt="A breathtaking, cinematic wide shot of the Avenue of the Baobabs in Morondava, Madagascar at dusk. The majestic, ancient baobab trees form a dramatic silhouette against a dark, atmospheric twilight sky painted in deep indigo, soft lavender, and subtle ice-blue gradients, reflecting the Glacier design system's ethereal dark mode aesthetic. A gentle, luminous mist rolls across the ground, adding ethereal depth. The lighting is low-key with a focus on translucent layers of light, creating a premium, mysterious, and highly romantic mood perfectly suited for a luxury wedding destination page." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAAO1Or_FBKuhM7HAMFiRHwnDBG8hKEkpEtIiu2y4p_4_Bds0AVe37NsJCWoBUjrAMMMLyWVyoZo-Et0b5Ukxt3FIdy1b0DaSCQsipeqJW70D3BPd4uwtuj2r_3otyksle-9kIlGSnT9WNVPezio0sXJVLEJV6i0MZtneYQOKLHVqX0cqqOTNpwQjpyWxq_WmfNH2lI0tCdpVX6axaraLStjUA9y6s010yzocW2yLrZE3M37R9vmt31hw')"></div>
+<div class="absolute inset-0 bg-background/60 backdrop-blur-[2px] z-10"></div>
+<div class="relative z-20 text-center px-4 max-w-4xl mx-auto flex flex-col items-center">
+<span class="text-tertiary font-headline tracking-[0.3em] uppercase text-sm mb-4 text-glow">Madagascar Ouest</span>
+<h1 class="text-6xl md:text-8xl font-display font-semibold text-on-surface mb-6 tracking-tight">Morondava</h1>
+<p class="text-2xl md:text-3xl font-headline text-primary-fixed-dim mb-12 font-light">L'Allée des Géants</p>
+<div class="glass-elevated rounded-2xl p-8 max-w-2xl text-on-surface-variant leading-relaxed">
+                Une terre de légendes où le temps suspend son vol. Découvrez la majesté de l'Allée des Baobabs et la vie sauvage de la forêt de Kirindy. Un écrin spectaculaire pour célébrer votre union sous le ciel étoilé d'Afrique.
+            </div>
+</div>
+<div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
+<span class="material-symbols-outlined text-primary/50 text-4xl">keyboard_arrow_down</span>
+</div>
+</header>
+<main class="relative z-20 bg-background pb-32">
+<!-- Experiences Bento Grid -->
+<section class="max-w-7xl mx-auto px-8 py-24">
+<div class="mb-16">
+<h2 class="text-4xl font-display font-semibold text-on-surface mb-4">Expériences Exclusives</h2>
+<div class="w-24 h-px bg-gradient-to-r from-primary/50 to-transparent"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Main Feature (Spans 2 columns) -->
+<div class="md:col-span-2 glass-panel rounded-3xl p-1 group relative overflow-hidden h-[400px]">
+<div class="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay transition-transform duration-700 group-hover:scale-105" data-alt="A luxurious, intimately styled private dinner setup directly on the Avenue of the Baobabs at night. A small table is set with premium crystal glassware, glowing candles, and subtle ice-blue floral arrangements, contrasting beautifully with the deep, navy-black darkness of the surrounding landscape. The immense trunks of the baobab trees are faintly illuminated by soft, ethereal uplighting, creating a translucent, glass-like depth against the starry sky. The scene perfectly captures the 'Frozen Light' aesthetic, exuding extreme luxury, romance, and an exclusive, atmospheric mood." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDTRbtJwg6tvSqWP-gPetuzOsUlFvvuOlZSccekhpmLAqijg3-U6xDqbNMzPwhNBnM3hnwkN68qVO6rDaMUZ-lzctc7Ojs3g8vbf_OB-qRHla3D_BzkGDBORh8Xrq4D55S-ra5c9xoitSaEvzgISouC6gqdG9p6O_lqYPM8dL5ciAVY0EIfpF6u6WnSG6T7S0N_qRLDwxGLBEZ0uTQn65YTfdoawaCJoPIcCbl3vnfVjc9Q6X5N5XEB_w')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
+<div class="relative h-full flex flex-col justify-end p-8 z-10">
+<span class="material-symbols-outlined text-primary mb-4 text-3xl" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<h3 class="text-3xl font-headline text-on-surface mb-3">Dîner Privé sous les Géants</h3>
+<p class="text-on-surface-variant max-w-md">Un instant suspendu. Privatisation partielle de l'Allée pour un coucher de soleil suivi d'un dîner gastronomique aux chandelles.</p>
+</div>
+</div>
+<!-- Secondary Feature -->
+<div class="glass-panel rounded-3xl p-8 flex flex-col justify-between h-[400px]">
+<div>
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 mb-6">
+<span class="material-symbols-outlined text-primary">photo_camera</span>
+</div>
+<h3 class="text-2xl font-headline text-on-surface mb-3">Séance Photo Nuptiale</h3>
+<p class="text-on-surface-variant text-sm">Capturez la magie de votre lune de miel avec nos photographes professionnels spécialisés dans la lumière dorée de Morondava.</p>
+</div>
+<button class="flex items-center text-primary text-sm font-semibold uppercase tracking-wider hover:text-primary-fixed-dim transition-colors w-fit">
+                        Voir la galerie <span class="material-symbols-outlined ml-2 text-lg">arrow_forward</span>
+</button>
+</div>
+<!-- Tertiary Feature -->
+<div class="glass-panel rounded-3xl p-8 flex flex-col justify-between h-[400px]">
+<div>
+<div class="w-12 h-12 rounded-full bg-tertiary/10 flex items-center justify-center border border-tertiary/20 mb-6">
+<span class="material-symbols-outlined text-tertiary">forest</span>
+</div>
+<h3 class="text-2xl font-headline text-on-surface mb-3">Réserve de Kirindy</h3>
+<p class="text-on-surface-variant text-sm">Exploration nocturne privée de la forêt sacrée. Rencontre avec la faune endémique dans une atmosphère intimiste et respectueuse.</p>
+</div>
+<button class="flex items-center text-tertiary text-sm font-semibold uppercase tracking-wider hover:text-tertiary-fixed-dim transition-colors w-fit">
+                        En savoir plus <span class="material-symbols-outlined ml-2 text-lg">arrow_forward</span>
+</button>
+</div>
+<!-- Horizontal Feature -->
+<div class="md:col-span-2 glass-panel rounded-3xl p-1 relative overflow-hidden h-[400px] flex items-center">
+<div class="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-10 w-2/3"></div>
+<div class="absolute inset-0 bg-cover bg-right opacity-30 mix-blend-screen" data-alt="A serene, abstract macro photograph of luxury wedding rings resting on the rough, ancient bark of a Baobab tree. The lighting is extremely soft, creating an ethereal, glassmorphic glow around the rings. The color palette is strictly deep navy blues, soft lavender, and piercing ice-blue highlights that reflect off the precious metal. The depth of field is incredibly shallow, blurring out the background into smooth, translucent layers of dark tones, perfectly embodying the premium 'Frozen Light' aesthetic of the Glacier design system." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDJkyLFoVwxGJeK89nYReQDd_agQ_eu1HLx5ckb9mFSCssjyDbI23ABqhSJLJy6_8lcQAZNL--4ZmhVpjf6Rc9kZWzvAwMIwMQzBGmazJtJ09u7GuRhpfW7nmNmisybEWMHj0aTZM4yGWzbsH9hAZ040bCJ6q-DkQaCxjEnN_i_90N5j_sxVxc-o-PaI5u4hCXsDuR2MciewQAfSDNt1_1HohVkhDP_ghrIbvlCzK_QufSa9HzB9TWtCA')"></div>
+<div class="relative z-20 p-12 max-w-lg">
+<span class="text-primary font-headline tracking-[0.2em] uppercase text-xs mb-2 block">Premium</span>
+<h3 class="text-3xl font-headline text-on-surface mb-4">Lune de Miel "L'Aube Saphir"</h3>
+<p class="text-on-surface-variant mb-8">Un séjour de 3 nuits dans notre écolodge partenaire de luxe, incluant vols intérieurs, transferts privés, et un programme d'expériences sur-mesure.</p>
+<a class="inline-flex items-center px-6 py-3 rounded-full border border-primary/30 bg-primary/10 text-primary font-headline text-sm uppercase tracking-wide hover:bg-primary/20 transition-all duration-300" href="#tarifs">
+                            Découvrir le forfait
+                        </a>
+</div>
+</div>
+</div>
+</section>
+<!-- Pricing / Packages Section -->
+<section class="max-w-7xl mx-auto px-8 py-24 relative" id="tarifs">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="text-center mb-16 relative z-10">
+<h2 class="text-4xl font-display font-semibold text-on-surface mb-4">Investissement Émotionnel</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto">Des prestations haut de gamme conçues pour transformer votre célébration en un chef-d'œuvre mémorable.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto relative z-10">
+<!-- Package 1 -->
+<div class="glass-panel rounded-3xl p-10 flex flex-col hover:border-primary/30 transition-colors duration-500">
+<h3 class="text-2xl font-headline text-on-surface mb-2">Expérience Crépuscule</h3>
+<div class="flex items-end gap-2 mb-6">
+<span class="text-4xl font-display font-bold text-primary">À partir de 1 200€</span>
+<span class="text-on-surface-variant text-sm mb-1">/ couple</span>
+</div>
+<p class="text-on-surface-variant mb-8 h-16">L'essentiel pour un moment romantique inoubliable sur l'Avenue des Baobabs.</p>
+<ul class="space-y-4 mb-10 flex-grow text-sm text-on-surface">
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+                            Transfert privé depuis votre hôtel
+                        </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+                            Mise en place romantique (tapis, coussins)
+                        </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+                            Champagne et mignardises locales
+                        </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+                            Séance photo de 1h (Lumière dorée)
+                        </li>
+</ul>
+<button class="w-full py-4 rounded-xl border border-primary/20 bg-surface/40 text-on-surface font-headline text-sm uppercase tracking-wider hover:bg-primary/10 hover:border-primary/40 transition-all duration-300">
+                        Réserver
+                    </button>
+</div>
+<!-- Package 2 (Premium) -->
+<div class="glass-elevated rounded-3xl p-10 flex flex-col relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-tertiary/20 blur-[40px] pointer-events-none"></div>
+<span class="absolute top-6 right-8 text-xs font-headline uppercase tracking-wider text-tertiary border border-tertiary/30 px-3 py-1 rounded-full bg-tertiary/10">Signature</span>
+<h3 class="text-2xl font-headline text-on-surface mb-2">Évasion Nuptiale</h3>
+<div class="flex items-end gap-2 mb-6">
+<span class="text-4xl font-display font-bold text-tertiary">À partir de 3 500€</span>
+<span class="text-on-surface-variant text-sm mb-1">/ couple</span>
+</div>
+<p class="text-on-surface-variant mb-8 h-16">L'immersion totale alliant luxe, nature sauvage et souvenirs cinématographiques.</p>
+<ul class="space-y-4 mb-10 flex-grow text-sm text-on-surface">
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary text-sm">check_circle</span>
+                            Tout de l'Expérience Crépuscule
+                        </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary text-sm">check_circle</span>
+                            Dîner privé gastronomique sur site
+                        </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary text-sm">check_circle</span>
+                            Visite VIP privée de Kirindy Forest
+                        </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary text-sm">check_circle</span>
+                            Reportage photo &amp; vidéo complet (demi-journée)
+                        </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary text-sm">check_circle</span>
+                            Accompagnement par un coordinateur dédié
+                        </li>
+</ul>
+<button class="w-full py-4 rounded-xl border border-tertiary/30 bg-tertiary/10 text-tertiary font-headline text-sm uppercase tracking-wider hover:bg-tertiary/20 hover:border-tertiary/50 shadow-[0_0_20px_rgba(200,160,240,0.15)] transition-all duration-300">
+                        Demander un devis
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Shared Component -->
+
+<div data-global-footer=""></div><script src="/components/components.js"></script></body></html>
