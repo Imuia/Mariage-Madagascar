@@ -1,0 +1,330 @@
+<!DOCTYPE html><html class="dark" lang="fr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Contactez nos Architectes d'Émotions - Mariage Madagascar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-low": "#111828",
+                    "surface-dim": "#0f1524",
+                    "primary-container": "#0e4d6e",
+                    "on-tertiary-container": "#e8d0ff",
+                    "surface": "#0f1524",
+                    "on-primary": "#001f2e",
+                    "on-error": "#1a0000",
+                    "on-background": "#e0e8f0",
+                    "surface-variant": "#1a2438",
+                    "on-tertiary-fixed-variant": "#4d2a73",
+                    "primary-fixed": "#c8eaff",
+                    "surface-bright": "#1a2438",
+                    "tertiary": "#c8a0f0",
+                    "surface-container-lowest": "#0a0e1a",
+                    "on-tertiary": "#1a002e",
+                    "on-primary-fixed": "#001f2e",
+                    "secondary-fixed-dim": "#88b4cc",
+                    "secondary-fixed": "#c0d8e8",
+                    "error": "#ff6b6b",
+                    "inverse-on-surface": "#0a0e1a",
+                    "on-error-container": "#ffb3b3",
+                    "inverse-surface": "#e0e8f0",
+                    "error-container": "#3d1414",
+                    "inverse-primary": "#0a4c6e",
+                    "primary-fixed-dim": "#7dd3fc",
+                    "tertiary-fixed-dim": "#c8a0f0",
+                    "surface-container-high": "#1a2438",
+                    "on-tertiary-fixed": "#1a002e",
+                    "surface-container": "#141c2e",
+                    "background": "#0a0e1a",
+                    "surface-tint": "#7dd3fc",
+                    "on-secondary": "#001f2e",
+                    "on-surface-variant": "#a0b4c4",
+                    "on-secondary-fixed": "#0d1f2b",
+                    "tertiary-fixed": "#e8d0ff",
+                    "on-primary-container": "#c8eaff",
+                    "on-surface": "#e0e8f0",
+                    "primary": "#7dd3fc",
+                    "surface-container-highest": "#202c42",
+                    "outline": "#4a6070",
+                    "secondary": "#88b4cc",
+                    "secondary-container": "#1a3a4e",
+                    "tertiary-container": "#3d2060",
+                    "on-secondary-container": "#c0d8e8",
+                    "outline-variant": "#2a3a48",
+                    "on-secondary-fixed-variant": "#2a4a5e",
+                    "on-primary-fixed-variant": "#004d73"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.5rem",
+                    "lg": "1rem",
+                    "xl": "1.5rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter", "sans-serif"],
+                    "display": ["Inter", "sans-serif"],
+                    "body": ["Inter", "sans-serif"],
+                    "label": ["Inter", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #0a0e1a; color: #e0e8f0; }
+        .glass-panel {
+            background: rgba(15, 21, 36, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(125, 211, 252, 0.1);
+        }
+        .glass-panel-elevated {
+            background: rgba(15, 21, 36, 0.75);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(125, 211, 252, 0.15);
+            box-shadow: 0 0 40px rgba(125, 211, 252, 0.05);
+        }
+        .glow-effect:hover, .glow-effect:focus {
+            box-shadow: 0 0 20px rgba(125, 211, 252, 0.15);
+            border-color: rgba(125, 211, 252, 0.3);
+        }
+        .form-input {
+            background: rgba(15, 21, 36, 0.5);
+            border: 1px solid rgba(125, 211, 252, 0.15);
+            color: #e0e8f0;
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #7dd3fc;
+            box-shadow: 0 0 15px rgba(125, 211, 252, 0.1);
+            background: rgba(15, 21, 36, 0.7);
+        }
+        .form-input::placeholder { color: #a0b4c4; }
+        
+        .nav-link { position: relative; }
+        .nav-link::after {
+            content: ''; position: absolute; width: 0; height: 1px;
+            bottom: -2px; left: 0; background-color: #7dd3fc; transition: width 0.3s ease;
+        }
+        .nav-link:hover::after { width: 100%; }
+        .nav-link-active::after { width: 100%; }
+    </style>
+
+<style>
+  #contact-form :is(input, select, textarea):invalid:not(:placeholder-shown) {
+    border-color: rgba(255,107,107,.45);
+  }
+  #contact-submit:disabled {
+    cursor: wait;
+  }
+</style>
+
+</head>
+<body class="font-body antialiased min-h-screen flex flex-col selection:bg-primary/30 selection:text-primary">
+<div data-global-header></div>
+<main class="flex-grow pt-20 relative overflow-hidden">
+<!-- Atmospheric Background Graphic -->
+<div class="fixed inset-0 pointer-events-none z-[-1] opacity-40">
+<div class="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] mix-blend-screen transform translate-x-1/3 -translate-y-1/3"></div>
+<div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-tertiary/10 rounded-full blur-[120px] mix-blend-screen transform -translate-x-1/3 translate-y-1/3"></div>
+</div>
+<section class="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start relative z-10">
+<!-- Left Column: Hero Text & Image -->
+<div class="lg:col-span-5 flex flex-col gap-10">
+<div class="space-y-6">
+<p class="text-primary font-headline tracking-[0.2em] uppercase text-sm flex items-center gap-4">
+<span class="w-8 h-[1px] bg-primary/50 block"></span>
+                        Design Sur-Mesure
+                    </p>
+<h1 class="text-4xl md:text-5xl lg:text-6xl font-headline font-semibold text-on-surface leading-[1.1] tracking-tight">
+                        Contactez nos <br>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-tertiary">Architectes</span><br>
+                        d'Émotions
+                    </h1>
+<p class="text-on-surface-variant text-lg max-w-md font-light leading-relaxed">
+                        Chaque grand voyage commence par une simple conversation. Confiez-nous vos rêves, nous les sculpterons en souvenirs impérissables sous le ciel de Madagascar.
+                    </p>
+</div>
+<!-- Feature Image -->
+<div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden glass-panel group">
+<img alt="Luxurious beach wedding setup in Madagascar at sunset, elegant floral arch, white drapes, premium tropical atmosphere, high-end photography, soft warm lighting, cinematic feel. Colors: ice-blue and white accents." class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700 transform group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/AP1WRLsuhuDRanqXKUubM69Pta35HRwQMm7hINDQGsqobROnyKJtwiE-_Hk2ZD17bdMYlGQmNWLkGwwpBnBMPAbK_M4b0r1T6PURgN6hZozudo1aYhbnm3B_CzeIjBYLbWsLcJweDHhDtvfPgu1VlhRLwCycUYZiZhADumylIFfVRPMgF52EnJSHU5Q3_WTYCdNCz0O9-hE8ddbj6dlPXdBFr3C7QmQdb8HHGXWBU2-gJzWLadNk01F5RiZ7nknH">
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80"></div>
+</div>
+</div>
+<!-- Right Column: Glass Form -->
+<div class="lg:col-span-7 relative">
+<!-- Decorative element behind form -->
+<div class="absolute -inset-4 bg-gradient-to-br from-primary/10 to-tertiary/5 rounded-[2rem] blur-2xl z-0"></div>
+<div class="glass-panel-elevated rounded-2xl p-8 md:p-12 relative z-10 flex flex-col gap-8 border border-primary/20">
+<div class="flex items-center justify-between mb-2">
+<h2 class="text-2xl font-headline font-semibold text-on-surface">Initier la Création</h2>
+<span class="material-symbols-outlined text-primary/50 text-3xl font-light" style="font-variation-settings: 'FILL' 0, 'wght' 200;">draw</span>
+</div>
+<form id="contact-form" class="space-y-6" novalidate>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Nom Complet</label>
+<input id="contact-name" name="name" class="w-full px-4 py-3 rounded-lg form-input text-sm" placeholder="Votre nom" type="text" autocomplete="name" required>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Téléphone</label>
+<input id="contact-phone" name="phone" class="w-full px-4 py-3 rounded-lg form-input text-sm" placeholder="+33 6 00 00 00 00" type="tel" autocomplete="tel" required>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Email Privé</label>
+<input id="contact-email" name="email" class="w-full px-4 py-3 rounded-lg form-input text-sm" placeholder="contact@domaine.com" type="email" autocomplete="email" required>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Nature du Projet</label>
+<div class="relative">
+<select id="contact-project" name="project" class="w-full px-4 py-3 rounded-lg form-input text-sm appearance-none cursor-pointer" required>
+<option disabled="" selected="" value="">Sélectionner...</option>
+<option value="wedding">Mariage &amp; Cérémonie</option>
+<option value="honeymoon">Lune de Miel</option>
+<option value="proposal">Demande en Fiançailles</option>
+<option value="other">Autre Événement Privé</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Sanctuaire Désiré</label>
+<div class="relative">
+<select id="contact-destination" name="destination" class="w-full px-4 py-3 rounded-lg form-input text-sm appearance-none cursor-pointer" required>
+<option disabled="" selected="" value="">Explorer les destinations...</option>
+<option value="nosy_be">Nosy Be &amp; Archipels</option>
+<option value="sainte_marie">Sainte-Marie</option>
+<option value="morondava">Morondava &amp; Ouest</option>
+<option value="tulear">Tuléar &amp; Sud</option>
+<option value="diego">Diego-Suarez</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Votre Vision</label>
+<textarea id="contact-vision" name="vision" class="w-full px-4 py-3 rounded-lg form-input text-sm resize-none" placeholder="Décrivez l'atmosphère souhaitée, le nombre estimé d'invités, ou toute exigence particulière..." rows="4" required></textarea>
+</div>
+<div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-primary/10">
+<p class="text-xs text-on-surface-variant/70 font-light max-w-xs">Vos informations sont traitées avec la plus stricte confidentialité selon notre <a class="text-primary hover:underline" href="#">politique de vie privée</a>.</p>
+<button id="contact-submit" class="w-full sm:w-auto px-8 py-3.5 rounded-full bg-primary/20 text-primary font-semibold tracking-wide border border-primary/40 hover:bg-primary/30 hover:border-primary/60 transition-all duration-300 glow-effect flex items-center justify-center gap-3" type="submit">
+                                Envoyer la Demande
+                                <span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</div>
+<div id="contact-status" class="hidden text-sm rounded-xl px-4 py-3 mt-2" role="status" aria-live="polite"></div>
+</form>
+</div>
+</div>
+</section>
+<!-- Direct Contact Details Strip -->
+<section class="border-y border-primary/10 bg-surface-container-low/50 relative overflow-hidden">
+<div class="absolute inset-0 bg-[url('https://lh3.googleusercontent.com/aida/AP1WRLt-5lXUuSG4-kvRygQbimdrZMbpy7FIwNVGWfQg0CQIMFYAKDzD4MlDPOk7z6OkFZV9yl7MeEs6LmzIVNgRvv4CKlOk026kXa-UkJF9qTjSN4yrGgDLQcE-QUQBeQTEDmPCYlngz1yVPehj70KYwxbRkeqlvw7REEwt2S8eFXrrOgsBtsZnbYlaejmVrl6vImDw8PQCq9uMoVGvHEPe62g1M5m7rAiiT6DL5d9M6Y-BusGVFiZNk3HEsr_y')] bg-cover bg-center opacity-[0.03] mix-blend-luminosity"></div>
+<div class="max-w-[1600px] mx-auto px-6 md:px-12 py-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-center relative z-10">
+<div class="flex flex-col items-center gap-4 group">
+<div class="w-12 h-12 rounded-full glass-panel flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary/10 transition-all duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 300;">call</span>
+</div>
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-wider text-on-surface mb-1">Conciergerie</h3>
+<p class="text-primary text-lg font-light">+261 34 00 000 00</p>
+</div>
+</div>
+<div class="flex flex-col items-center gap-4 group">
+<div class="w-12 h-12 rounded-full glass-panel flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary/10 transition-all duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 300;">location_on</span>
+</div>
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-wider text-on-surface mb-1">Bureau d'Étude</h3>
+<p class="text-on-surface-variant text-sm max-w-[200px] mx-auto leading-relaxed">Immeuble Horizon, Ivandry,<br>Antananarivo 101, Madagascar</p>
+</div>
+</div>
+<div class="flex flex-col items-center gap-4 group">
+<div class="w-12 h-12 rounded-full glass-panel flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary/10 transition-all duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 300;">mail</span>
+</div>
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-wider text-on-surface mb-1">Correspondance</h3>
+<a class="text-tertiary hover:text-primary transition-colors text-base font-light" href="mailto:contact@glacier-elite.mg">contact@glacier-elite.mg</a>
+</div>
+</div>
+</div>
+</section>
+</main>
+
+<div data-global-footer></div>
+
+<script src="/components/components.js"></script>
+
+<script>
+(function () {
+  const form = document.getElementById('contact-form');
+  const status = document.getElementById('contact-status');
+  const submit = document.getElementById('contact-submit');
+  if (!form || !status || !submit) return;
+
+  const showStatus = (message, ok) => {
+    status.textContent = message;
+    status.classList.remove('hidden');
+    status.classList.toggle('text-primary', ok);
+    status.classList.toggle('text-red-300', !ok);
+    status.classList.toggle('bg-primary/10', ok);
+    status.classList.toggle('border', true);
+    status.classList.toggle('border-primary/20', ok);
+    status.classList.toggle('border-red-300/20', !ok);
+  };
+
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      showStatus('Merci de compléter les champs obligatoires.', false);
+      return;
+    }
+
+    const data = new FormData(form);
+    const name = String(data.get('name') || '').trim();
+    const phone = String(data.get('phone') || '').trim();
+    const email = String(data.get('email') || '').trim();
+    const project = String(data.get('project') || '').trim();
+    const destination = String(data.get('destination') || '').trim();
+    const vision = String(data.get('vision') || '').trim();
+
+    const subject = encodeURIComponent('Demande de projet — Mariage Madagascar');
+    const body = encodeURIComponent(
+      'NOM COMPLET : ' + name + '\n' +
+      'TÉLÉPHONE : ' + phone + '\n' +
+      'EMAIL : ' + email + '\n' +
+      'NATURE DU PROJET : ' + project + '\n' +
+      'SANCTUAIRE DÉSIRÉ : ' + destination + '\n\n' +
+      'VOTRE VISION :\n' + vision
+    );
+
+    submit.disabled = true;
+    submit.style.opacity = '0.7';
+    submit.textContent = 'Ouverture de votre messagerie…';
+
+    window.location.href = 'mailto:contact@glacier-elite.mg?subject=' + subject + '&body=' + body;
+
+    setTimeout(function () {
+      submit.disabled = false;
+      submit.style.opacity = '1';
+      submit.innerHTML = 'Envoyer la Demande <span class="material-symbols-outlined text-[18px]">send</span>';
+      showStatus('Votre demande est prête à être envoyée depuis votre messagerie.', true);
+    }, 700);
+  });
+})();
+</script>
+</body></html>
