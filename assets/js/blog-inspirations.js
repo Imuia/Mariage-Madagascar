@@ -8,18 +8,6 @@
   const SUPABASE_URL = 'https://qrkinjuhtyfptldlvdyg.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_MT2uo1JdbfVSZAjwXqW7gg_NITLziCF';
 
-
-  // Images locales HD déjà présentes dans le projet.
-  // Elles sont prioritaires pour ces 3 articles précis.
-  const LOCAL_HQ_IMAGES = {
-    'nosy-komba-le-paradis-des-lemuriens-et-des-maries-copy':
-      '/assets/img/blog/nosy-komba-le-paradis-des-lemuriens-et-des-maries-copy/01.jpg',
-    'focus-festival-une-experience-unique-a-madagascar':
-      '/assets/img/blog/focus-festival-une-experience-unique-a-madagascar/01.gif',
-    'paddle-et-diner-romantique-exceptionnel':
-      '/assets/img/blog/paddle-et-diner-romantique-exceptionnel/01.jpg'
-  };
-
   const grid = document.getElementById('blog-article-grid');
   const featuredLink = document.getElementById('blog-featured-link');
   const featuredImage = document.getElementById('blog-featured-image');
@@ -121,18 +109,13 @@
       images[0] ||
       null;
 
-    const summaryText = post.summary
-      ? stripHtml(post.summary)
-      : stripHtml(post.content || '').slice(0, 220);
+    const summaryText = stripHtml(post.summary || post.content || '');
     return {
       id: post.id || post.legacy_wp_id || slug,
       title: stripHtml(post.title || ''),
       slug: slug,
-      summary: summaryText,
-      image: LOCAL_HQ_IMAGES[slug] ||
-        post.featured_image_url ||
-        (featuredFromGallery && featuredFromGallery.image_url) ||
-        '',
+      summary: summaryText.slice(0, 260),
+      image: post.featured_image_url || (featuredFromGallery && featuredFromGallery.image_url) || '',
       published_at: post.published_at || post.created_at || '',
       category: categoryForPost(post),
       gallery: images
@@ -203,7 +186,7 @@
           <div class="p-6 flex flex-col flex-grow">
             <span class="text-primary text-xs font-semibold tracking-wider uppercase mb-2">${category}</span>
             <h3 class="font-headline text-xl font-medium text-on-surface mb-3 group-hover:text-primary transition-colors">${title}</h3>
-            <p class="text-on-surface-variant text-sm flex-grow leading-relaxed">${summary}</p>
+            <p class="text-on-surface-variant text-sm flex-grow line-clamp-3">${summary}</p>
             <div class="mt-4 text-xs text-on-surface-variant/70 flex items-center justify-between">
               <span>${date || 'Article'}</span>
               <span class="material-symbols-outlined text-[16px] text-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
