@@ -1,9 +1,9 @@
 <nav class="fixed top-0 w-full z-50 bg-surface/60 backdrop-blur-xl dark:bg-surface/60 border-b border-primary/10 shadow-[0_0_30px_rgba(125,211,252,0.05)]">
 <div class="flex justify-between items-center px-8 h-20 w-full mx-auto max-w-7xl">
-<div class="flex items-center gap-3 scale-95 active:scale-90 transition-transform cursor-pointer">
+<a href="/" aria-label="Accueil — Mariage Madagascar" class="flex items-center gap-3 scale-95 active:scale-90 transition-transform cursor-pointer">
 <img alt="Mariage Madagascar Logo" class="h-10 w-10 object-contain drop-shadow-[0_0_10px_rgba(125,211,252,0.3)]" src="https://lh3.googleusercontent.com/aida/AP1WRLut--KEeHnJGsFNNEAZm0dsP6ZKxwiMbONu_A8AfjPWbWCS9ii1CwEda3cCbm-RY86ocEZH90wkBxWzYKHAhtOr309kVPOep_eZZyQPDA2glb-LOJWCRGywsxVsuzfWd_kyEw4sKOijHgWPLyeTx-r75-8ukS2_Cvxhr0RO42ZY4ZN8xZzMr0Vm5LzskqrGWhR7189bogz9jCEz8joZsMgEGHhWoxjcsyzbTl4da1hPfd0x1o_BitV_Mg9m">
 <span class="text-xl font-headline font-semibold text-primary dark:text-primary tracking-wide">Mariage Madagascar</span>
-</div>
+</a>
 <div class="hidden md:flex items-center gap-8"><a class="font-headline text-on-surface uppercase tracking-wider text-sm text-primary border-b-2 border-primary pb-1" href="/destinations.html">Destinations</a><a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface transition-colors hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg" href="/services.html">Services</a><a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface transition-colors hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg" href="/inspirations.html">Inspirations</a><a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface transition-colors hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg" href="/lunes-de-miel.html">Lunes de Miel</a></div>
 <div class="hidden md:flex items-center gap-4">
 <div class="flex gap-2">
@@ -39,4 +39,33 @@
 .mobile-global-link{display:block;padding:.75rem 1rem;border-radius:.75rem;color:#a0b4c4;font-size:.875rem;text-transform:uppercase;letter-spacing:.08em}
 .mobile-global-link:hover{color:#7dd3fc;background:rgba(125,211,252,.08)}
 </style>
-
+<script>
+(function () {
+  const toggle = document.getElementById('mobile-menu-toggle');
+  const menu = document.getElementById('mobile-global-menu');
+  if (!toggle || !menu) return;
+  const icon = toggle.querySelector('.material-symbols-outlined');
+  function closeMenu() {
+    menu.classList.add('hidden');
+    toggle.setAttribute('aria-expanded','false');
+    toggle.setAttribute('aria-label','Ouvrir le menu');
+    if (icon) icon.textContent='menu';
+  }
+  function openMenu() {
+    menu.classList.remove('hidden');
+    toggle.setAttribute('aria-expanded','true');
+    toggle.setAttribute('aria-label','Fermer le menu');
+    if (icon) icon.textContent='close';
+  }
+  toggle.addEventListener('click', function(e){
+    e.stopPropagation();
+    toggle.getAttribute('aria-expanded') === 'true' ? closeMenu() : openMenu();
+  });
+  menu.querySelectorAll('a').forEach(function(link){ link.addEventListener('click', closeMenu); });
+  document.addEventListener('click', function(e){
+    if (!menu.classList.contains('hidden') && !menu.contains(e.target) && !toggle.contains(e.target)) closeMenu();
+  });
+  window.addEventListener('resize', function(){ if (window.innerWidth >= 768) closeMenu(); });
+  closeMenu();
+})();
+</script>
