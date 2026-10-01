@@ -3,7 +3,7 @@
 <html class="dark" lang="fr"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Inspirations &amp; Récits de Rêve | Mariage Madagascar Luxe</title>
+<title>Blog &amp; Inspirations | Mariage Madagascar Luxe</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
@@ -101,10 +101,16 @@
             box-shadow: 0 0 40px rgba(125, 211, 252, 0.15);
         }
     </style>
-</head>
+<style>
+#blog-article-grid > a { color: inherit; text-decoration: none; }
+#blog-article-grid img { display: block; }
+#blog-featured-link { display: block; color: inherit; text-decoration: none; }
+#blog-featured-link:hover { text-decoration: none; }
+[data-blog-filter] { cursor: pointer; }
+</style></head>
 <body class="bg-background text-on-background font-body min-h-screen flex flex-col antialiased">
 <!-- HEADER GLOBAL — identique au site Mariage Madagascar -->
-<div data-global-header></div>
+<div data-global-header=""></div>
 <!-- Main Content -->
 <main class="flex-grow pt-24 pb-20">
 <!-- Hero Section -->
@@ -118,11 +124,11 @@
 <!-- Category Filters -->
 <section class="px-6 py-8">
 <div class="max-w-7xl mx-auto flex flex-wrap justify-center gap-4">
-<button class="glass-panel px-6 py-3 rounded-full text-primary border-primary/40 hover:bg-primary/10 transition-all font-medium text-sm">Récits de Mariage</button>
-<button class="glass-panel px-6 py-3 rounded-full text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-all font-medium text-sm">Destinations</button>
-<button class="glass-panel px-6 py-3 rounded-full text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-all font-medium text-sm">Conseils d'Experts</button>
-<button class="glass-panel px-6 py-3 rounded-full text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-all font-medium text-sm">Art de Vivre</button>
-</div>
+
+
+
+
+<button aria-pressed="true" class="glass-panel px-6 py-3 rounded-full text-primary border-primary/40 hover:bg-primary/10 transition-all font-medium text-sm" data-blog-filter="all">Tous les articles</button><button aria-pressed="false" class="glass-panel px-6 py-3 rounded-full text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-all font-medium text-sm" data-blog-filter="Récits de Mariage">Récits de Mariage</button><button aria-pressed="false" class="glass-panel px-6 py-3 rounded-full text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-all font-medium text-sm" data-blog-filter="Destinations">Destinations</button><button aria-pressed="false" class="glass-panel px-6 py-3 rounded-full text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-all font-medium text-sm" data-blog-filter="Conseils d'Experts">Conseils d'Experts</button><button aria-pressed="false" class="glass-panel px-6 py-3 rounded-full text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-all font-medium text-sm" data-blog-filter="Art de Vivre">Art de Vivre</button></div>
 </section>
 <!-- Featured Article -->
 <section class="px-6 py-12">
@@ -133,9 +139,9 @@
 <div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
 </div>
 <div class="absolute bottom-0 left-0 w-full p-8 md:p-12">
-<span class="inline-block px-3 py-1 bg-primary/20 text-primary border border-primary/30 rounded-full text-xs font-semibold tracking-wider uppercase mb-4 backdrop-blur-md">Récit de Mariage</span>
-<h2 class="font-headline text-3xl md:text-5xl font-semibold text-on-surface mb-4 text-glow group-hover:text-primary transition-colors">Un mariage de cristal à Sainte-Marie</h2>
-<p class="text-on-surface-variant text-base md:text-lg max-w-3xl line-clamp-2 md:line-clamp-3">L'histoire intime d'Eléonore et Thomas, qui ont échangé leurs vœux sur une plage isolée de l'Île Sainte-Marie. Une célébration marquée par l'élégance naturelle, où chaque détail reflétait la beauté brute de l'océan Indien.</p>
+<span class="inline-block px-3 py-1 bg-primary/20 text-primary border border-primary/30 rounded-full text-xs font-semibold tracking-wider uppercase mb-4 backdrop-blur-md" id="blog-featured-category">Récit de Mariage</span>
+<h2 class="font-headline text-3xl md:text-5xl font-semibold text-on-surface mb-4 text-glow group-hover:text-primary transition-colors" id="blog-featured-title">Un mariage de cristal à Sainte-Marie</h2>
+<p class="text-on-surface-variant text-base md:text-lg max-w-3xl line-clamp-2 md:line-clamp-3" id="blog-featured-summary">L'histoire intime d'Eléonore et Thomas, qui ont échangé leurs vœux sur une plage isolée de l'Île Sainte-Marie. Une célébration marquée par l'élégance naturelle, où chaque détail reflétait la beauté brute de l'océan Indien.</p>
 <div class="mt-6 flex items-center space-x-2 text-primary font-medium text-sm">
 <span>Lire l'article</span>
 <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
@@ -146,54 +152,8 @@
 </section>
 <!-- Article Grid -->
 <section class="px-6 py-12">
-<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-<!-- Card 1 -->
-<article class="glass-panel rounded-xl overflow-hidden group cursor-pointer hover-glow transition-all duration-300 flex flex-col h-full">
-<div class="h-48 relative overflow-hidden">
-<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90" data-alt="A serene, secluded white sandbar surrounded by crystal clear turquoise waters in Madagascar, with a traditional wooden pirogue resting on the shore under a bright blue sky, perfect for an intimate wedding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxvu6Nu1oA4m1vPiTTsnWl2cxQR7a0aw_bbnVAM0ohHmzusdla0IG5A6nitQ5sffFl3HchIB6x4jTK-3aKn5L0IlnSKjCTwQMyyLltmKmqj072_2tWigVnKFb--8JvWRlEXtzG0lEG0p5kOnbsbO4-QNOantvJC8fj2Tzd8ZWaNI8UpbupCEMOJ1KPvnSfMMYFcOfrzRc4DBbFnjrxR1bqUCIPHPFjA05oT9KQ3nPhPkvFPtaxkkzApQfC0ng8bQFt-cU"/>
-</div>
-<div class="p-6 flex flex-col flex-grow">
-<span class="text-primary text-xs font-semibold tracking-wider uppercase mb-2">Destinations</span>
-<h3 class="font-headline text-xl font-medium text-on-surface mb-3 group-hover:text-primary transition-colors">Top 5 des bancs de sable pour un OUI</h3>
-<p class="text-on-surface-variant text-sm flex-grow line-clamp-3">Découvrez notre sélection des bancs de sable les plus exclusifs et préservés de Madagascar pour une cérémonie intime, les pieds dans l'eau turquoise.</p>
-<div class="mt-4 text-xs text-on-surface-variant/70 flex items-center justify-between">
-<span>5 min de lecture</span>
-<span class="material-symbols-outlined text-[16px] text-primary">arrow_outward</span>
-</div>
-</div>
-</article>
-<!-- Card 2 -->
-<article class="glass-panel rounded-xl overflow-hidden group cursor-pointer hover-glow transition-all duration-300 flex flex-col h-full">
-<div class="h-48 relative overflow-hidden bg-surface-container-high">
-<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80 mix-blend-luminosity" data-alt="A map or aerial view of various luxurious private islands in Madagascar, highlighting Nosy Be and Tsarabanjina with elegant markers and a dark, premium aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_jFJ7KX0Y-YTHSA6xx-jjiyzgX_ld6ZxvVKWg5rlcqF8sGdgZksRg1FzPOcwpfptL_ESAMQWN_59v4aX_lbiscOliKaPk3Sfjjq14eLu0UnzaK3-Rh6KhQ8T39Ph47drU_dwnes4gHKVkAUUoisyEke-fYIAJ-zDbzJP0KiGceR4fyXOmSF56QDEjJvpBdHJtwI8aN068tw6PwXKg0eLNaKjEmcjy46UBchlcLVpxnei3Hv5JhI2YIA"/>
-</div>
-<div class="p-6 flex flex-col flex-grow">
-<span class="text-primary text-xs font-semibold tracking-wider uppercase mb-2">Conseils d'Experts</span>
-<h3 class="font-headline text-xl font-medium text-on-surface mb-3 group-hover:text-primary transition-colors">Comment choisir son île à Madagascar</h3>
-<p class="text-on-surface-variant text-sm flex-grow line-clamp-3">De l'effervescence luxueuse de Nosy Be à l'isolement total de Tsarabanjina, notre guide pour trouver le sanctuaire insulaire qui correspond à votre vision.</p>
-<div class="mt-4 text-xs text-on-surface-variant/70 flex items-center justify-between">
-<span>8 min de lecture</span>
-<span class="material-symbols-outlined text-[16px] text-primary">arrow_outward</span>
-</div>
-</div>
-</article>
-<!-- Card 3 -->
-<article class="glass-panel rounded-xl overflow-hidden group cursor-pointer hover-glow transition-all duration-300 flex flex-col h-full">
-<div class="h-48 relative overflow-hidden">
-<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90" data-alt="A close-up, highly stylized photograph of fine crystal glasses and delicate blue orchids resting on a reflective glass table against a backdrop of a dark, moody sunset over the ocean." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgOHihRbqi-h3ClM51fSGyIblF9nXVu8m7VPOjnB_JzQGKIAE22FUWkdx7C-NkGmV98-B1QJIiVd6Tsldk3EbKt_q6I833Hg-yTEOqr6z4dz0qV7eLi7_acFd5HbTezjylhhOQYXY8csLQyn9wwQmCVa3NSTtqKBiRxXooxGZPpPR5gBSLSVUV4ijxhV5zQSDcYzGvhsI1Tf_V9tBNuzZKTA44YHt08hUxRu-CXD9Fmf7Jjm2izVnSoQ"/>
-</div>
-<div class="p-6 flex flex-col flex-grow">
-<span class="text-tertiary text-xs font-semibold tracking-wider uppercase mb-2">Art de Vivre</span>
-<h3 class="font-headline text-xl font-medium text-on-surface mb-3 group-hover:text-tertiary transition-colors">L'élégance du lagon : reportage photo</h3>
-<p class="text-on-surface-variant text-sm flex-grow line-clamp-3">Une exploration visuelle de l'esthétique 'Glacier'. Comment jouer avec la lumière, la transparence et les teintes bleutées pour une scénographie inoubliable.</p>
-<div class="mt-4 text-xs text-on-surface-variant/70 flex items-center justify-between">
-<span>Galerie</span>
-<span class="material-symbols-outlined text-[16px] text-tertiary">arrow_outward</span>
-</div>
-</div>
-</article>
-</div>
-</section>
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="blog-article-grid"><div class="col-span-full glass-panel rounded-xl p-8 text-center text-on-surface-variant">Chargement des articles...</div></div>
+</section><p class="max-w-7xl mx-auto px-6 mt-4 text-xs text-on-surface-variant/70 text-center" id="blog-load-status"></p>
 <!-- CTA / Configurator Link -->
 <section class="px-6 py-24 relative overflow-hidden">
 <div class="absolute inset-0 bg-primary/5"></div>
@@ -208,7 +168,6 @@
 </section>
 </main>
 <!-- FOOTER GLOBAL — identique au site Mariage Madagascar -->
-<div data-global-footer></div>
-
+<div data-global-footer=""></div>
 <script src="/components/components.js"></script>
-</body></html>
+<script src="/assets/js/blog-inspirations.js"></script></body></html>
