@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html class="dark" lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Article | Mariage Madagascar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{background:#0a0e1a;color:#e0e8f0;font-family:Inter,sans-serif}
+.glass-panel{background:rgba(15,21,36,.75);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(125,211,252,.12)}
+.prose-blog h2,.prose-blog h3,.prose-blog h4{color:#7dd3fc;margin:2rem 0 .8rem;font-weight:600}
+.prose-blog p,.prose-blog li{color:#a0b4c4;line-height:1.8}
+.prose-blog img{max-width:100%;height:auto;border-radius:1rem;margin:1.5rem auto;display:block}
+.prose-blog a{color:#7dd3fc}
+</style></head>
+<body class="min-h-screen">
+<div data-global-header></div>
+<main class="pt-24 pb-20"><section class="max-w-5xl mx-auto px-6">
+<a href="/blog-inspirations.html" class="inline-flex items-center gap-2 text-[#7dd3fc] text-sm mb-8"><span class="material-symbols-outlined">arrow_back</span>Retour aux inspirations</a>
+<article id="blog-detail" class="glass-panel rounded-2xl overflow-hidden"><div class="p-12 text-center text-[#a0b4c4]">Chargement...</div></article>
+</section></main>
+<div data-global-footer></div>
+<script src="/components/components.js"></script>
+<script>
+(function(){
+const U='https://qrkinjuhtyfptldlvdyg.supabase.co',K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I',root=document.getElementById('blog-detail');
+const slug=decodeURIComponent(location.pathname.replace(/^\//,'').replace(/\/$/,''));
+async function get(url){const r=await fetch(url,{headers:{apikey:K,Authorization:'Bearer '+K}});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
+function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
+(async function(){
+  let rows=await get(U+'/rest/v1/blog_posts?select=*&slug=eq.'+encodeURIComponent(slug)+'&is_published=eq.true&limit=1');
+  let p=rows[0];
+  if(!p && /-2$/.test(slug)){rows=await get(U+'/rest/v1/blog_posts?select=*&slug=eq.'+encodeURIComponent(slug.replace(/-2$/,''))+'&is_published=eq.true&limit=1');p=rows[0];}
+  if(!p){root.innerHTML='<div class="p-12 text-center">Article introuvable.</div>';return;}
+  const imgs=await get(U+'/rest/v1/blog_post_images?select=image_url,sort_order,is_featured&blog_post_id=eq.'+encodeURIComponent(p.id)+'&order=sort_order.asc');
+  const list=Array.isArray(imgs)?imgs.filter(x=>x&&x.image_url):[];
+  let n=0,content=p.content||'';
+  content=content.replace(/<img\b[^>]*\bsrc=["'][^"']+["'][^>]*>/gi,function(tag){
+    if(n>=list.length)return tag;
+    const src=list[n++].image_url;
+    return tag.replace(/\bsrc=["'][^"']+["']/i,'src="'+esc(src)+'"');
+  });
+  const featured=p.featured_image_url||(list[0]&&list[0].image_url)||'';
+  document.title=(p.seo_title||p.title||'Article')+' | Mariage Madagascar';
+  root.innerHTML='<div class="relative h-72 md:h-[460px] bg-[#111828]">'+
+    (featured?'<img src="'+esc(featured)+'" alt="'+esc(p.title)+'" class="w-full h-full object-cover">':'')+
+    '<div class="absolute inset-0 bg-gradient-to-t from-[#0a0e1a] via-transparent to-transparent"></div></div>'+
+    '<div class="p-8 md:p-12"><div class="text-[#7dd3fc] text-xs uppercase tracking-widest mb-4">'+
+    (p.published_at?new Intl.DateTimeFormat('fr-FR',{day:'2-digit',month:'long',year:'numeric'}).format(new Date(p.published_at)):'')+
+    '</div><h1 class="text-3xl md:text-5xl font-semibold mb-8">'+esc(p.title)+'</h1>'+
+    '<div class="prose-blog">'+content+'</div></div>';
+})().catch(function(e){console.error(e);root.innerHTML='<div class="p-12 text-center text-[#a0b4c4]">Impossible de charger cet article.</div>';}) ;
+})();
+</script></body></html>
