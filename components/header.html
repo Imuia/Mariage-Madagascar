@@ -1,18 +1,31 @@
-<nav class="fixed top-0 w-full z-50 bg-surface/60 backdrop-blur-xl dark:bg-surface/60 border-b border-primary/10 shadow-[0_0_30px_rgba(125,211,252,0.05)]">
-  <div class="flex justify-between items-center px-8 h-20 w-full mx-auto max-w-7xl">
+<!-- Global Header — Mariage Madagascar -->
+<input id="mobile-global-toggle" type="checkbox" class="mobile-global-toggle" aria-label="Afficher le menu mobile">
+
+<nav class="fixed top-0 left-0 w-full z-50 bg-surface/60 backdrop-blur-xl dark:bg-surface/60 border-b border-primary/10 shadow-[0_0_30px_rgba(125,211,252,0.05)]">
+  <div class="flex justify-between items-center px-4 sm:px-6 md:px-8 h-20 w-full mx-auto max-w-7xl">
 
     <!-- Logo : retour accueil -->
-    <a href="/" aria-label="Accueil — Mariage Madagascar" class="flex items-center gap-3 scale-95 active:scale-90 transition-transform cursor-pointer">
-      <img alt="Mariage Madagascar Logo" class="h-10 w-10 object-contain drop-shadow-[0_0_10px_rgba(125,211,252,0.3)]" src="https://lh3.googleusercontent.com/aida/AP1WRLut--KEeHnJGsFNNEAZm0dsP6ZKxwiMbONu_A8AfjPWbWCS9ii1CwEda3cCbm-RY86ocEZH90wkBxWzYKHAhtOr309kVPOep_eZZyQPDA2glb-LOJWCRGywsxVsuzfWd_kyEw4sKOijHgWPLyeTx-r75-8ukS2_Cvxhr0RO42ZY4ZN8xZzMr0Vm5LzskqrGWhR7189bogz9jCEz8joZsMgEGHhWoxjcsyzbTl4da1hPfd0x1o_BitV_Mg9m">
-      <span class="text-xl font-headline font-semibold text-primary dark:text-primary tracking-wide">Mariage Madagascar</span>
+    <a href="/" aria-label="Accueil — Mariage Madagascar"
+       class="flex items-center gap-3 scale-95 active:scale-90 transition-transform cursor-pointer min-w-0">
+      <!-- L'URL Stitch distante pouvant casser, le logo est remplacé par une marque simple et fiable -->
+      <span class="flex items-center justify-center h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 text-primary shrink-0">
+        <span class="material-symbols-outlined text-xl">favorite</span>
+      </span>
+      <span class="text-lg sm:text-xl font-headline font-semibold text-primary tracking-wide truncate">
+        Mariage Madagascar
+      </span>
     </a>
 
     <!-- Navigation desktop -->
     <div class="hidden md:flex items-center gap-8">
-      <a class="font-headline text-on-surface uppercase tracking-wider text-sm text-primary border-b-2 border-primary pb-1" href="/destinations.html">Destinations</a>
-      <a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg" href="/services.html">Services</a>
-      <a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg" href="/inspirations.html">Inspirations</a>
-      <a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg" href="/lunes-de-miel.html">Lunes de Miel</a>
+      <a class="font-headline text-on-surface uppercase tracking-wider text-sm text-primary border-b-2 border-primary pb-1"
+         href="/destinations.html">Destinations</a>
+      <a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg"
+         href="/services.html">Services</a>
+      <a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg"
+         href="/inspirations.html">Inspirations</a>
+      <a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg"
+         href="/lunes-de-miel.html">Lunes de Miel</a>
     </div>
 
     <!-- Actions desktop -->
@@ -22,48 +35,55 @@
           <option value="fr">FR</option>
           <option value="en">EN</option>
         </select>
+
         <select class="bg-surface-container/30 backdrop-blur-md border border-outline-variant/50 text-on-surface rounded-lg text-sm py-1.5 pl-3 pr-8 focus:ring-primary/50 focus:border-primary/50 cursor-pointer form-select">
           <option value="eur">EUR</option>
           <option value="mga">MGA</option>
           <option value="usd">USD</option>
         </select>
       </div>
-      <a href="/contact.html" class="flex items-center justify-center px-6 py-2.5 rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 hover:border-primary/40 transition-all duration-300 font-headline text-sm font-medium hover-border-glow">Demander un devis</a>
+
+      <a href="/contact.html"
+         class="flex items-center justify-center px-6 py-2.5 rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 hover:border-primary/40 transition-all duration-300 font-headline text-sm font-medium">
+        Demander un devis
+      </a>
     </div>
 
-    <!-- Mobile toggle : CSS only, donc fonctionne même si le header est injecté avec innerHTML -->
-    <div class="md:hidden">
-      <input id="mobile-global-toggle" type="checkbox" class="mobile-global-toggle" aria-label="Afficher le menu">
-      <label for="mobile-global-toggle" class="mobile-global-button" aria-label="Ouvrir / fermer le menu">
-        <span class="material-symbols-outlined mobile-menu-icon mobile-menu-open">menu</span>
-        <span class="material-symbols-outlined mobile-menu-icon mobile-menu-close">close</span>
-      </label>
-    </div>
-
-    <!-- Menu mobile -->
-    <div class="mobile-global-panel">
-      <div class="px-6 py-5 flex flex-col gap-2">
-        <a class="mobile-global-link" href="/destinations.html">Destinations</a>
-        <a class="mobile-global-link" href="/services.html">Services</a>
-        <a class="mobile-global-link" href="/inspirations.html">Inspirations</a>
-        <a class="mobile-global-link" href="/lunes-de-miel.html">Lunes de Miel</a>
-        <div class="h-px bg-primary/10 my-2"></div>
-        <a class="mobile-global-link text-primary" href="/contact.html">Demander un devis</a>
-      </div>
-    </div>
+    <!-- Mobile toggle -->
+    <label for="mobile-global-toggle"
+           class="mobile-global-button md:hidden"
+           aria-label="Ouvrir / fermer le menu mobile">
+      <span class="material-symbols-outlined mobile-menu-open">menu</span>
+      <span class="material-symbols-outlined mobile-menu-close">close</span>
+    </label>
   </div>
 </nav>
 
+<!-- Menu mobile : volontairement HORS du nav avec backdrop-filter -->
+<div class="mobile-global-panel" aria-label="Menu mobile">
+  <div class="px-5 py-5 flex flex-col gap-2">
+    <a class="mobile-global-link" href="/destinations.html">Destinations</a>
+    <a class="mobile-global-link" href="/services.html">Services</a>
+    <a class="mobile-global-link" href="/inspirations.html">Inspirations</a>
+    <a class="mobile-global-link" href="/lunes-de-miel.html">Lunes de Miel</a>
+    <div class="h-px bg-primary/10 my-2"></div>
+    <a class="mobile-global-link text-primary" href="/contact.html">Demander un devis</a>
+  </div>
+</div>
+
 <style>
-  /* Ne dépend d'aucun JavaScript : le menu fonctionne même lorsque header.html est injecté dynamiquement. */
+  /* Checkbox invisible mais fonctionnelle */
   .mobile-global-toggle {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
+    position: fixed;
+    top: -100px;
+    left: -100px;
     width: 1px;
     height: 1px;
+    opacity: 0;
+    pointer-events: none;
   }
 
+  /* Bouton burger */
   .mobile-global-button {
     display: inline-flex;
     align-items: center;
@@ -74,13 +94,16 @@
     color: #7dd3fc;
     cursor: pointer;
     border-radius: 10px;
+    user-select: none;
   }
 
   .mobile-global-button:hover {
     background: rgba(125, 211, 252, .08);
   }
 
-  .mobile-menu-icon {
+  .mobile-global-button .mobile-menu-icon,
+  .mobile-menu-open,
+  .mobile-menu-close {
     font-size: 28px;
     line-height: 1;
   }
@@ -89,18 +112,19 @@
     display: none;
   }
 
+  /* Menu mobile : hors du nav pour éviter le problème de stacking/containing block */
   .mobile-global-panel {
     display: none;
     position: fixed;
-    top: 80px;
+    top: 5rem;
     left: 0;
     right: 0;
-    z-index: 1000;
+    z-index: 60;
     background: rgba(15, 21, 36, .97);
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(125, 211, 252, .10);
-    box-shadow: 0 0 30px rgba(125, 211, 252, .08);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, .25);
   }
 
   .mobile-global-link {
@@ -112,36 +136,36 @@
     text-transform: uppercase;
     letter-spacing: .08em;
     text-decoration: none;
+    transition: all .2s ease;
   }
 
-  .mobile-global-link:hover {
+  .mobile-global-link:hover,
+  .mobile-global-link:focus-visible {
     color: #7dd3fc;
     background: rgba(125, 211, 252, .08);
+    outline: none;
   }
 
+  /* État ouvert — le checkbox et le panel sont frères, donc fiable avec innerHTML */
   .mobile-global-toggle:checked ~ .mobile-global-panel {
     display: block;
   }
 
-  .mobile-global-toggle:checked + .mobile-global-button .mobile-menu-open {
+  .mobile-global-toggle:checked ~ nav .mobile-menu-open {
     display: none;
   }
 
-  .mobile-global-toggle:checked + .mobile-global-button .mobile-menu-close {
+  .mobile-global-toggle:checked ~ nav .mobile-menu-close {
     display: inline-block;
   }
 
   @media (min-width: 768px) {
     .mobile-global-toggle,
     .mobile-global-button,
-    .mobile-global-panel {
+    .mobile-global-panel,
+    .mobile-menu-open,
+    .mobile-menu-close {
       display: none !important;
-    }
-  }
-
-  @media (max-width: 767px) {
-    .mobile-global-panel a {
-      -webkit-tap-highlight-color: transparent;
     }
   }
 </style>
