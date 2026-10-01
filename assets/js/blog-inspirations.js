@@ -104,10 +104,25 @@
   function normalize(post, imageMap) {
     const slug = canonicalSlug(post.slug || '');
     const images = imageMap.get(String(post.id)) || [];
+    const localFallback = localImageCandidates(slug)[0];
     const featuredFromGallery =
       images.find(function (x) { return x.is_featured; }) ||
       images[0] ||
       null;
+
+    let selectedImg = '';
+    // Priority 1: Local image if available in featured_image_url or gallery or local folder
+    if (post.featured_image_url && post.featured_image_url.startsWith('/assets/img/')) {
+      selectedImg = post.featured_image_url;
+    } else if (featuredFromGallery && featuredFromGallery.image_url && featuredFromGallery.image_url.startsWith('/assets/img/')) {
+      selectedImg = featuredFromGallery.image_url;
+    } else if (post.featured_image_url && !post.featured_image_url.includes('hostingersite.com')) {
+      selectedImg = post.featured_image_url;
+    } else if (featuredFromGallery && featuredFromGallery.image_url && !featuredFromGallery.image_url.includes('hostingersite.com')) {
+      selectedImg = featuredFromGallery.image_url;
+    } else {
+      selectedImg = localFallback;
+    }
 
     const summaryText = post.summary
       ? stripHtml(post.summary)
@@ -117,7 +132,7 @@
       title: stripHtml(post.title || ''),
       slug: slug,
       summary: summaryText,
-      image: post.featured_image_url || (featuredFromGallery && featuredFromGallery.image_url) || '',
+      image: selectedImg,
       published_at: post.published_at || post.created_at || '',
       category: categoryForPost(post),
       gallery: images

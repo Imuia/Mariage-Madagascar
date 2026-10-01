@@ -244,10 +244,18 @@ body{background:#0a0e1a;color:#e0e8f0;font-family:Inter,sans-serif}
       gallery.find(function (x) { return x && x.is_featured && x.image_url; }) ||
       gallery.find(function (x) { return x && x.image_url; });
 
-    const featured =
-      post.featured_image_url ||
-      (featuredRow && featuredRow.image_url) ||
-      '';
+    let featured = '';
+    if (post.featured_image_url && post.featured_image_url.startsWith('/assets/img/')) {
+      featured = post.featured_image_url;
+    } else if (featuredRow && featuredRow.image_url && featuredRow.image_url.startsWith('/assets/img/')) {
+      featured = featuredRow.image_url;
+    } else if (post.featured_image_url && !post.featured_image_url.includes('hostingersite.com')) {
+      featured = post.featured_image_url;
+    } else if (featuredRow && featuredRow.image_url && !featuredRow.image_url.includes('hostingersite.com')) {
+      featured = featuredRow.image_url;
+    } else {
+      featured = localImageCandidates(slug, 1)[0];
+    }
 
     const rawContent = replaceContentImages(post.content || '', gallery);
     const content = rewriteSameSiteArticleLinks(rawContent);
