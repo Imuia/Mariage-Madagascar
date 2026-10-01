@@ -109,12 +109,14 @@
       images[0] ||
       null;
 
-    const summaryText = stripHtml(post.summary || post.content || '');
+    const summaryText = post.summary
+      ? stripHtml(post.summary)
+      : stripHtml(post.content || '').slice(0, 220);
     return {
       id: post.id || post.legacy_wp_id || slug,
       title: stripHtml(post.title || ''),
       slug: slug,
-      summary: summaryText.slice(0, 260),
+      summary: summaryText,
       image: post.featured_image_url || (featuredFromGallery && featuredFromGallery.image_url) || '',
       published_at: post.published_at || post.created_at || '',
       category: categoryForPost(post),
@@ -186,7 +188,7 @@
           <div class="p-6 flex flex-col flex-grow">
             <span class="text-primary text-xs font-semibold tracking-wider uppercase mb-2">${category}</span>
             <h3 class="font-headline text-xl font-medium text-on-surface mb-3 group-hover:text-primary transition-colors">${title}</h3>
-            <p class="text-on-surface-variant text-sm flex-grow line-clamp-3">${summary}</p>
+            <p class="text-on-surface-variant text-sm flex-grow leading-relaxed">${summary}</p>
             <div class="mt-4 text-xs text-on-surface-variant/70 flex items-center justify-between">
               <span>${date || 'Article'}</span>
               <span class="material-symbols-outlined text-[16px] text-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
