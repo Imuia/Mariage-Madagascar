@@ -6,7 +6,7 @@
   'use strict';
 
   const SUPABASE_URL = 'https://qrkinjuhtyfptldlvdyg.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwiaWF0IjoxNzkwODM2Nzc1LCJleHAiOjIxMDY0MTI3NzV9.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
+  const SUPABASE_ANON_KEY = 'sb_publishable_MT2uo1JdbfVSZAjwXqW7gg_NITLziCF';
 
   const grid = document.getElementById('blog-article-grid');
   const featuredLink = document.getElementById('blog-featured-link');
