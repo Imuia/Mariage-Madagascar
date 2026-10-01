@@ -1,68 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/les-joyaux-de-nosy-komba-pour-votre-lune-de-miel",
-      "destination": "/blog-article.html?slug=les-joyaux-de-nosy-komba-pour-votre-lune-de-miel"
-    },
-    {
-      "source": "/focus-festival-une-experience-unique-a-madagascar",
-      "destination": "/blog-article.html?slug=focus-festival-une-experience-unique-a-madagascar"
-    },
-    {
-      "source": "/snorkeling-a-nosy-sakatia",
-      "destination": "/blog-article.html?slug=snorkeling-a-nosy-sakatia"
-    },
-    {
-      "source": "/visite-de-la-reserve-naturelle-de-lokobe",
-      "destination": "/blog-article.html?slug=visite-de-la-reserve-naturelle-de-lokobe"
-    },
-    {
-      "source": "/paddle-et-diner-romantique-exceptionnel",
-      "destination": "/blog-article.html?slug=paddle-et-diner-romantique-exceptionnel"
-    },
-    {
-      "source": "/10-villas-hotels-et-lieux-insolites-au-bord-de-leau-pour-un-mariage-de-reve-a-madagascar",
-      "destination": "/blog-article.html?slug=10-villas-hotels-et-lieux-insolites-au-bord-de-leau-pour-un-mariage-de-reve-a-madagascar"
-    },
-    {
-      "source": "/10-bonnes-raisons-de-choisir-madagascar-pour-votre-lune-de-miel",
-      "destination": "/blog-article.html?slug=10-bonnes-raisons-de-choisir-madagascar-pour-votre-lune-de-miel"
-    },
-    {
-      "source": "/un-mariage-unique-sur-une-plage-de-reve",
-      "destination": "/blog-article.html?slug=un-mariage-unique-sur-une-plage-de-reve"
-    },
-    {
-      "source": "/pourquoi-faire-appel-a-un-travel-planner-specialise-pour-votre-voyage-de-noces-ou-anniversaire-de-mariage-a-madagascar",
-      "destination": "/blog-article.html?slug=pourquoi-faire-appel-a-un-travel-planner-specialise-pour-votre-voyage-de-noces-ou-anniversaire-de-mariage-a-madagascar"
-    },
-    {
-      "source": "/pourquoi-un-mariage-symbolique-est-une-experience-extraordinaire-pour-vos-enfants",
-      "destination": "/blog-article.html?slug=pourquoi-un-mariage-symbolique-est-une-experience-extraordinaire-pour-vos-enfants"
-    },
-    {
-      "source": "/excursion-a-nosy-komba-et-nosy-tanikely",
-      "destination": "/blog-article.html?slug=excursion-a-nosy-komba-et-nosy-tanikely"
-    },
-    {
-      "source": "/mariage-de-reve-a-nosy-iranja",
-      "destination": "/blog-article.html?slug=mariage-de-reve-a-nosy-iranja"
-    },
-    {
-      "source": "/payer-votre-mariage-de-reve-a-nosy-be-en-bitcoin-ou-cryptomonnaies",
-      "destination": "/blog-article.html?slug=payer-votre-mariage-de-reve-a-nosy-be-en-bitcoin-ou-cryptomonnaies"
-    },
-    {
-      "source": "/mariage-madagascar-votre-jour-j-pense-dans-les-moindres-details",
-      "destination": "/blog-article.html?slug=mariage-madagascar-votre-jour-j-pense-dans-les-moindres-details"
-    },
-    {
-      "source": "/hello-world",
-      "destination": "/blog-article.html?slug=hello-world"
-    },
-    {
-      "source": "/nosy-komba-le-paradis-des-lemuriens-et-des-maries-copy",
-      "destination": "/blog-article.html?slug=nosy-komba-le-paradis-des-lemuriens-et-des-maries-copy"
+      "source": "/:slug([a-z0-9-]+)",
+      "destination": "/blog-article.html?slug=:slug"
     }
   ]
 }

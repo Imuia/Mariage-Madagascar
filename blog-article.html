@@ -2,6 +2,7 @@
 <html class="dark" lang="fr"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Article | Mariage Madagascar</title>
+<meta name="description" content="">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -22,33 +23,226 @@ body{background:#0a0e1a;color:#e0e8f0;font-family:Inter,sans-serif}
 <div data-global-footer></div>
 <script src="/components/components.js"></script>
 <script>
-(function(){
-const U='https://qrkinjuhtyfptldlvdyg.supabase.co',K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I',root=document.getElementById('blog-detail');
-const slug=decodeURIComponent(location.pathname.replace(/^\//,'').replace(/\/$/,''));
-async function get(url){const r=await fetch(url,{headers:{apikey:K,Authorization:'Bearer '+K}});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
-function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
-(async function(){
-  let rows=await get(U+'/rest/v1/blog_posts?select=*&slug=eq.'+encodeURIComponent(slug)+'&is_published=eq.true&limit=1');
-  let p=rows[0];
-  if(!p && /-2$/.test(slug)){rows=await get(U+'/rest/v1/blog_posts?select=*&slug=eq.'+encodeURIComponent(slug.replace(/-2$/,''))+'&is_published=eq.true&limit=1');p=rows[0];}
-  if(!p){root.innerHTML='<div class="p-12 text-center">Article introuvable.</div>';return;}
-  const imgs=await get(U+'/rest/v1/blog_post_images?select=image_url,sort_order,is_featured&blog_post_id=eq.'+encodeURIComponent(p.id)+'&order=sort_order.asc');
-  const list=Array.isArray(imgs)?imgs.filter(x=>x&&x.image_url):[];
-  let n=0,content=p.content||'';
-  content=content.replace(/<img\b[^>]*\bsrc=["'][^"']+["'][^>]*>/gi,function(tag){
-    if(n>=list.length)return tag;
-    const src=list[n++].image_url;
-    return tag.replace(/\bsrc=["'][^"']+["']/i,'src="'+esc(src)+'"');
+(function () {
+  'use strict';
+
+  const SUPABASE_URL = 'https://qrkinjuhtyfptldlvdyg.supabase.co';
+  const root = document.getElementById('blog-detail');
+
+  if (!root) return;
+
+  const REAL_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwiaWF0IjoxNzkwODM2Nzc1LCJleHAiOjIxMDY0MTI3NzV9.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
+
+  function canonicalSlug(slug) {
+    return String(slug || '').trim().replace(/-2$/, '');
+  }
+
+  function getSlug() {
+    const querySlug = new URLSearchParams(location.search).get('slug');
+    if (querySlug) return canonicalSlug(querySlug);
+
+    const path = decodeURIComponent(location.pathname)
+      .replace(/\/+$/, '')
+      .replace(/^\/+/, '');
+
+    if (!path || /\.html$/i.test(path)) return '';
+    return canonicalSlug(path);
+  }
+
+  function esc(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  async function getJson(url) {
+    const response = await fetch(url, {
+      headers: {
+        apikey: REAL_KEY,
+        Authorization: 'Bearer ' + REAL_KEY
+      }
+    });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    return response.json();
+  }
+
+  function localImageCandidates(slug, index) {
+    const safe = encodeURIComponent(canonicalSlug(slug));
+    const n = String(index).padStart(2, '0');
+    return [
+      '/assets/img/blog/' + safe + '/' + n + '.jpg',
+      '/assets/img/blog/' + safe + '/' + n + '.jpeg',
+      '/assets/img/blog/' + safe + '/' + n + '.png',
+      '/assets/img/blog/' + safe + '/' + n + '.webp',
+      '/assets/img/blog/' + safe + '/' + n + '.gif',
+      '/assets/img/blog/' + safe + '/' + n + '.avif'
+    ];
+  }
+
+  function rewriteSameSiteArticleLinks(html) {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html || '';
+
+    wrapper.querySelectorAll('a[href]').forEach(function (a) {
+      try {
+        const url = new URL(a.getAttribute('href'), location.origin);
+        const host = url.hostname.toLowerCase();
+
+        // Convert internal links from the old Mariage Madagascar website
+        // to the new Vercel article route when they point to an article path.
+        if (host === 'www.mariage-madagascar.com' || host === 'mariage-madagascar.com') {
+          const path = url.pathname.replace(/^\/+|\/+$/g, '');
+          if (path && !/^(en|fr)$/i.test(path) && !/\.(html?|php)$/i.test(path)) {
+            const slug = canonicalSlug(path.split('/').filter(Boolean).pop());
+            if (slug) {
+              a.setAttribute('href', '/' + encodeURIComponent(slug));
+              a.removeAttribute('target');
+              a.removeAttribute('rel');
+            }
+          }
+        }
+      } catch (e) {}
+    });
+
+    return wrapper.innerHTML;
+  }
+
+  function replaceContentImages(html, gallery) {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html || '';
+
+    const validGallery = Array.isArray(gallery)
+      ? gallery.filter(function (x) { return x && x.image_url; })
+      : [];
+
+    wrapper.querySelectorAll('img').forEach(function (img, index) {
+      const row = validGallery[index];
+      const fallback = localImageCandidates(getSlug(), index + 1)[0];
+
+      if (row && row.image_url) {
+        img.setAttribute('src', row.image_url);
+      } else if (/mediumaquamarine-wombat-472759\.hostingersite\.com|mariage-madagascar\.com\/wp-content\/uploads/i.test(img.getAttribute('src') || '')) {
+        img.setAttribute('src', fallback);
+      }
+
+      if (!img.getAttribute('alt')) {
+        img.setAttribute('alt', '');
+      }
+    });
+
+    return wrapper.innerHTML;
+  }
+
+  async function main() {
+    const slug = getSlug();
+
+    if (!slug) {
+      root.innerHTML = '<div class="p-12 text-center">Article introuvable.</div>';
+      return;
+    }
+
+    const posts = await getJson(
+      SUPABASE_URL +
+      '/rest/v1/blog_posts' +
+      '?select=id,title,slug,summary,content,featured_image_url,seo_title,seo_description,published_at,is_published' +
+      '&slug=eq.' + encodeURIComponent(slug) +
+      '&is_published=eq.true' +
+      '&limit=1'
+    );
+
+    const post = Array.isArray(posts) ? posts[0] : null;
+
+    if (!post) {
+      root.innerHTML = '<div class="p-12 text-center">Article introuvable.</div>';
+      return;
+    }
+
+    const images = await getJson(
+      SUPABASE_URL +
+      '/rest/v1/blog_post_images' +
+      '?select=image_url,alt_text,sort_order,is_featured' +
+      '&blog_post_id=eq.' + encodeURIComponent(post.id) +
+      '&order=sort_order.asc'
+    );
+
+    const gallery = Array.isArray(images) ? images : [];
+    const featuredRow =
+      gallery.find(function (x) { return x && x.is_featured && x.image_url; }) ||
+      gallery.find(function (x) { return x && x.image_url; });
+
+    const featured =
+      post.featured_image_url ||
+      (featuredRow && featuredRow.image_url) ||
+      '';
+
+    const rawContent = replaceContentImages(post.content || '', gallery);
+    const content = rewriteSameSiteArticleLinks(rawContent);
+
+    document.title = (post.seo_title || post.title || 'Article') + ' | Mariage Madagascar';
+
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute(
+        'content',
+        post.seo_description || post.summary || ''
+      );
+    } else if (post.seo_description || post.summary) {
+      const meta = document.createElement('meta');
+      meta.name = 'description';
+      meta.content = post.seo_description || post.summary || '';
+      document.head.appendChild(meta);
+    }
+
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = location.origin + '/' + encodeURIComponent(slug);
+
+    root.innerHTML =
+      '<div class="relative h-72 md:h-[460px] bg-[#111828]">' +
+        (featured
+          ? '<img src="' + esc(featured) + '" alt="' + esc(post.title) + '" class="w-full h-full object-cover">'
+          : '') +
+        '<div class="absolute inset-0 bg-gradient-to-t from-[#0a0e1a] via-transparent to-transparent"></div>' +
+      '</div>' +
+      '<div class="p-8 md:p-12">' +
+        '<div class="text-[#7dd3fc] text-xs uppercase tracking-widest mb-4">' +
+          (post.published_at
+            ? new Intl.DateTimeFormat('fr-FR', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+              }).format(new Date(post.published_at))
+            : '') +
+        '</div>' +
+        '<h1 class="text-3xl md:text-5xl font-semibold mb-8">' +
+          esc(post.title) +
+        '</h1>' +
+        '<div class="prose-blog">' + content + '</div>' +
+      '</div>';
+
+    const hero = root.querySelector('img');
+    if (hero && !featured) {
+      const first = localImageCandidates(slug, 1);
+      let i = 0;
+      hero.onerror = function () {
+        i++;
+        if (i < first.length) hero.src = first[i];
+        else hero.style.display = 'none';
+      };
+    }
+  }
+
+  main().catch(function (error) {
+    console.error(error);
+    root.innerHTML =
+      '<div class="p-12 text-center text-[#a0b4c4]">Impossible de charger cet article.</div>';
   });
-  const featured=p.featured_image_url||(list[0]&&list[0].image_url)||'';
-  document.title=(p.seo_title||p.title||'Article')+' | Mariage Madagascar';
-  root.innerHTML='<div class="relative h-72 md:h-[460px] bg-[#111828]">'+
-    (featured?'<img src="'+esc(featured)+'" alt="'+esc(p.title)+'" class="w-full h-full object-cover">':'')+
-    '<div class="absolute inset-0 bg-gradient-to-t from-[#0a0e1a] via-transparent to-transparent"></div></div>'+
-    '<div class="p-8 md:p-12"><div class="text-[#7dd3fc] text-xs uppercase tracking-widest mb-4">'+
-    (p.published_at?new Intl.DateTimeFormat('fr-FR',{day:'2-digit',month:'long',year:'numeric'}).format(new Date(p.published_at)):'')+
-    '</div><h1 class="text-3xl md:text-5xl font-semibold mb-8">'+esc(p.title)+'</h1>'+
-    '<div class="prose-blog">'+content+'</div></div>';
-})().catch(function(e){console.error(e);root.innerHTML='<div class="p-12 text-center text-[#a0b4c4]">Impossible de charger cet article.</div>';}) ;
 })();
 </script></body></html>
