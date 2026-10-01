@@ -8,6 +8,18 @@
   const SUPABASE_URL = 'https://qrkinjuhtyfptldlvdyg.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_MT2uo1JdbfVSZAjwXqW7gg_NITLziCF';
 
+
+  // Images locales HD déjà présentes dans le projet.
+  // Elles sont prioritaires pour ces 3 articles précis.
+  const LOCAL_HQ_IMAGES = {
+    'nosy-komba-le-paradis-des-lemuriens-et-des-maries-copy':
+      '/assets/img/blog/nosy-komba-le-paradis-des-lemuriens-et-des-maries-copy/01.jpg',
+    'focus-festival-une-experience-unique-a-madagascar':
+      '/assets/img/blog/focus-festival-une-experience-unique-a-madagascar/01.gif',
+    'paddle-et-diner-romantique-exceptionnel':
+      '/assets/img/blog/paddle-et-diner-romantique-exceptionnel/01.jpg'
+  };
+
   const grid = document.getElementById('blog-article-grid');
   const featuredLink = document.getElementById('blog-featured-link');
   const featuredImage = document.getElementById('blog-featured-image');
@@ -104,25 +116,10 @@
   function normalize(post, imageMap) {
     const slug = canonicalSlug(post.slug || '');
     const images = imageMap.get(String(post.id)) || [];
-    const localFallback = localImageCandidates(slug)[0];
     const featuredFromGallery =
       images.find(function (x) { return x.is_featured; }) ||
       images[0] ||
       null;
-
-    let selectedImg = '';
-    // Priority 1: Local image if available in featured_image_url or gallery or local folder
-    if (post.featured_image_url && post.featured_image_url.startsWith('/assets/img/')) {
-      selectedImg = post.featured_image_url;
-    } else if (featuredFromGallery && featuredFromGallery.image_url && featuredFromGallery.image_url.startsWith('/assets/img/')) {
-      selectedImg = featuredFromGallery.image_url;
-    } else if (post.featured_image_url && !post.featured_image_url.includes('hostingersite.com')) {
-      selectedImg = post.featured_image_url;
-    } else if (featuredFromGallery && featuredFromGallery.image_url && !featuredFromGallery.image_url.includes('hostingersite.com')) {
-      selectedImg = featuredFromGallery.image_url;
-    } else {
-      selectedImg = localFallback;
-    }
 
     const summaryText = post.summary
       ? stripHtml(post.summary)
@@ -132,7 +129,10 @@
       title: stripHtml(post.title || ''),
       slug: slug,
       summary: summaryText,
-      image: selectedImg,
+      image: LOCAL_HQ_IMAGES[slug] ||
+        post.featured_image_url ||
+        (featuredFromGallery && featuredFromGallery.image_url) ||
+        '',
       published_at: post.published_at || post.created_at || '',
       category: categoryForPost(post),
       gallery: images
@@ -323,7 +323,7 @@
       renderGrid(allPosts);
 
       if (status) {
-        status.textContent = allPosts.length + ' articles';
+        status.textContent = allPosts.length + ' articles chargés depuis Supabase';
       }
     } catch (error) {
       console.error('Impossible de charger le blog depuis Supabase.', error);

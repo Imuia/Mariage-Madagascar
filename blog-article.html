@@ -6,77 +6,6 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script id="tailwind-config">
-tailwind.config = {
-  darkMode: "class",
-  theme: {
-    extend: {
-      colors: {
-        "secondary-container": "#1a3a4e",
-        "on-tertiary-fixed": "#1a002e",
-        "surface-container-lowest": "#0a0e1a",
-        "surface-container-high": "#1a2438",
-        "on-error": "#1a0000",
-        "primary-fixed": "#c8eaff",
-        "surface-variant": "#1a2438",
-        "on-surface": "#e0e8f0",
-        "outline-variant": "#2a3a48",
-        "on-error-container": "#ffb3b3",
-        "primary-container": "#0e4d6e",
-        "on-tertiary": "#1a002e",
-        "on-primary-fixed": "#001f2e",
-        "surface-bright": "#1a2438",
-        "secondary-fixed-dim": "#88b4cc",
-        "on-secondary-fixed-variant": "#2a4a5e",
-        "on-secondary-fixed": "#0d1f2b",
-        "surface-container-low": "#111828",
-        "surface-container-highest": "#202c42",
-        "on-tertiary-fixed-variant": "#4d2a73",
-        "on-tertiary-container": "#e8d0ff",
-        "on-primary-container": "#c8eaff",
-        "primary": "#7dd3fc",
-        "inverse-surface": "#e0e8f0",
-        "surface-dim": "#0f1524",
-        "inverse-on-surface": "#0a0e1a",
-        "on-secondary-container": "#c0d8e8",
-        "tertiary": "#c8a0f0",
-        "surface-tint": "#7dd3fc",
-        "error": "#ff6b6b",
-        "secondary": "#88b4cc",
-        "inverse-primary": "#0a4c6e",
-        "background": "#0a0e1a",
-        "on-primary": "#001f2e",
-        "on-primary-fixed-variant": "#004d73",
-        "surface": "#0f1524",
-        "on-background": "#e0e8f0",
-        "outline": "#4a6070",
-        "secondary-fixed": "#c0d8e8",
-        "primary-fixed-dim": "#7dd3fc",
-        "error-container": "#3d1414",
-        "tertiary-container": "#3d2060",
-        "tertiary-fixed": "#e8d0ff",
-        "surface-container": "#141c2e",
-        "on-surface-variant": "#a0b4c4",
-        "on-secondary": "#001f2e",
-        "tertiary-fixed-dim": "#c8a0f0"
-      },
-      borderRadius: {
-        "DEFAULT": "0.5rem",
-        "lg": "1rem",
-        "xl": "1.5rem",
-        "full": "9999px"
-      },
-      fontFamily: {
-        "headline": ["Inter", "sans-serif"],
-        "display": ["Inter", "sans-serif"],
-        "body": ["Inter", "sans-serif"],
-        "label": ["Inter", "sans-serif"]
-      }
-    }
-  }
-}
-</script>
-
 <style>
 body{background:#0a0e1a;color:#e0e8f0;font-family:Inter,sans-serif}
 .glass-panel{background:rgba(15,21,36,.75);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(125,211,252,.12)}
@@ -103,6 +32,18 @@ body{background:#0a0e1a;color:#e0e8f0;font-family:Inter,sans-serif}
   if (!root) return;
 
   const REAL_KEY = 'sb_publishable_MT2uo1JdbfVSZAjwXqW7gg_NITLziCF';
+
+
+  // Images locales HD déjà présentes dans le projet.
+  // Elles sont prioritaires pour ces 3 articles précis.
+  const LOCAL_HQ_IMAGES = {
+    'nosy-komba-le-paradis-des-lemuriens-et-des-maries-copy':
+      '/assets/img/blog/nosy-komba-le-paradis-des-lemuriens-et-des-maries-copy/01.jpg',
+    'focus-festival-une-experience-unique-a-madagascar':
+      '/assets/img/blog/focus-festival-une-experience-unique-a-madagascar/01.gif',
+    'paddle-et-diner-romantique-exceptionnel':
+      '/assets/img/blog/paddle-et-diner-romantique-exceptionnel/01.jpg'
+  };
 
   function canonicalSlug(slug) {
     return String(slug || '').trim().replace(/-2$/, '');
@@ -193,7 +134,10 @@ body{background:#0a0e1a;color:#e0e8f0;font-family:Inter,sans-serif}
       const row = validGallery[index];
       const fallback = localImageCandidates(getSlug(), index + 1)[0];
 
-      if (row && row.image_url) {
+      const localOverride = index === 0 ? LOCAL_HQ_IMAGES[getSlug()] : '';
+      if (localOverride) {
+        img.setAttribute('src', localOverride);
+      } else if (row && row.image_url) {
         img.setAttribute('src', row.image_url);
       } else if (/mediumaquamarine-wombat-472759\.hostingersite\.com|mariage-madagascar\.com\/wp-content\/uploads/i.test(img.getAttribute('src') || '')) {
         img.setAttribute('src', fallback);
@@ -244,18 +188,11 @@ body{background:#0a0e1a;color:#e0e8f0;font-family:Inter,sans-serif}
       gallery.find(function (x) { return x && x.is_featured && x.image_url; }) ||
       gallery.find(function (x) { return x && x.image_url; });
 
-    let featured = '';
-    if (post.featured_image_url && post.featured_image_url.startsWith('/assets/img/')) {
-      featured = post.featured_image_url;
-    } else if (featuredRow && featuredRow.image_url && featuredRow.image_url.startsWith('/assets/img/')) {
-      featured = featuredRow.image_url;
-    } else if (post.featured_image_url && !post.featured_image_url.includes('hostingersite.com')) {
-      featured = post.featured_image_url;
-    } else if (featuredRow && featuredRow.image_url && !featuredRow.image_url.includes('hostingersite.com')) {
-      featured = featuredRow.image_url;
-    } else {
-      featured = localImageCandidates(slug, 1)[0];
-    }
+    const featured =
+      LOCAL_HQ_IMAGES[slug] ||
+      post.featured_image_url ||
+      (featuredRow && featuredRow.image_url) ||
+      '';
 
     const rawContent = replaceContentImages(post.content || '', gallery);
     const content = rewriteSameSiteArticleLinks(rawContent);
