@@ -266,65 +266,6 @@
 <div data-global-footer></div>
 
 <script src="/components/components.js"></script>
-
-<script>
-(function () {
-  const form = document.getElementById('contact-form');
-  const status = document.getElementById('contact-status');
-  const submit = document.getElementById('contact-submit');
-  if (!form || !status || !submit) return;
-
-  const showStatus = (message, ok) => {
-    status.textContent = message;
-    status.classList.remove('hidden');
-    status.classList.toggle('text-primary', ok);
-    status.classList.toggle('text-red-300', !ok);
-    status.classList.toggle('bg-primary/10', ok);
-    status.classList.toggle('border', true);
-    status.classList.toggle('border-primary/20', ok);
-    status.classList.toggle('border-red-300/20', !ok);
-  };
-
-  form.addEventListener('submit', function (event) {
-    event.preventDefault();
-
-    if (!form.checkValidity()) {
-      form.reportValidity();
-      showStatus('Merci de compléter les champs obligatoires.', false);
-      return;
-    }
-
-    const data = new FormData(form);
-    const name = String(data.get('name') || '').trim();
-    const phone = String(data.get('phone') || '').trim();
-    const email = String(data.get('email') || '').trim();
-    const project = String(data.get('project') || '').trim();
-    const destination = String(data.get('destination') || '').trim();
-    const vision = String(data.get('vision') || '').trim();
-
-    const subject = encodeURIComponent('Demande de projet — Mariage Madagascar');
-    const body = encodeURIComponent(
-      'NOM COMPLET : ' + name + '\n' +
-      'TÉLÉPHONE : ' + phone + '\n' +
-      'EMAIL : ' + email + '\n' +
-      'NATURE DU PROJET : ' + project + '\n' +
-      'SANCTUAIRE DÉSIRÉ : ' + destination + '\n\n' +
-      'VOTRE VISION :\n' + vision
-    );
-
-    submit.disabled = true;
-    submit.style.opacity = '0.7';
-    submit.textContent = 'Ouverture de votre messagerie…';
-
-    window.location.href = 'mailto:contact@glacier-elite.mg?subject=' + subject + '&body=' + body;
-
-    setTimeout(function () {
-      submit.disabled = false;
-      submit.style.opacity = '1';
-      submit.innerHTML = 'Envoyer la Demande <span class="material-symbols-outlined text-[18px]">send</span>';
-      showStatus('Votre demande est prête à être envoyée depuis votre messagerie.', true);
-    }, 700);
-  });
-})();
-</script>
+<script src="/assets/js/supabase-config.js"></script>
+<script src="/assets/js/supabase-contact.js"></script>
 </body></html>
