@@ -308,7 +308,7 @@
       renderGrid(allPosts);
 
       if (status) {
-        status.textContent = allPosts.length + ' articles chargés depuis Supabase';
+        status.textContent = allPosts.length + ' articles';
       }
     } catch (error) {
       console.error('Impossible de charger le blog depuis Supabase.', error);
