@@ -1,0 +1,490 @@
+<!DOCTYPE html><html class="dark" lang="fr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Services Mariage à Madagascar | Mariage Madagascar Luxe</title>
+<meta name="description" content="Wedding Planner, Travel Planner, conciergerie et services sur-mesure pour organiser un mariage d’exception à Madagascar.">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-fixed-dim": "#88b4cc",
+                        "primary-fixed-dim": "#7dd3fc",
+                        "outline": "#4a6070",
+                        "tertiary": "#c8a0f0",
+                        "on-error": "#1a0000",
+                        "on-error-container": "#ffb3b3",
+                        "surface-container-high": "#1a2438",
+                        "on-primary": "#001f2e",
+                        "background": "#0a0e1a",
+                        "secondary": "#88b4cc",
+                        "surface-dim": "#0f1524",
+                        "tertiary-fixed-dim": "#c8a0f0",
+                        "on-tertiary": "#1a002e",
+                        "tertiary-fixed": "#e8d0ff",
+                        "surface-variant": "#1a2438",
+                        "surface-container-highest": "#202c42",
+                        "surface-container-lowest": "#0a0e1a",
+                        "inverse-surface": "#e0e8f0",
+                        "on-secondary-fixed": "#0d1f2b",
+                        "on-primary-container": "#c8eaff",
+                        "primary-fixed": "#c8eaff",
+                        "on-tertiary-fixed-variant": "#4d2a73",
+                        "inverse-on-surface": "#0a0e1a",
+                        "on-secondary-container": "#c0d8e8",
+                        "tertiary-container": "#3d2060",
+                        "surface-container-low": "#111828",
+                        "primary": "#7dd3fc",
+                        "on-background": "#e0e8f0",
+                        "surface-container": "#141c2e",
+                        "error": "#ff6b6b",
+                        "outline-variant": "#2a3a48",
+                        "on-tertiary-fixed": "#1a002e",
+                        "on-tertiary-container": "#e8d0ff",
+                        "on-secondary": "#001f2e",
+                        "on-surface": "#e0e8f0",
+                        "surface-bright": "#1a2438",
+                        "error-container": "#3d1414",
+                        "on-surface-variant": "#a0b4c4",
+                        "surface": "#0f1524",
+                        "surface-tint": "#7dd3fc",
+                        "on-primary-fixed": "#001f2e",
+                        "secondary-container": "#1a3a4e",
+                        "secondary-fixed": "#c0d8e8",
+                        "on-primary-fixed-variant": "#004d73",
+                        "on-secondary-fixed-variant": "#2a4a5e",
+                        "primary-container": "#0e4d6e",
+                        "inverse-primary": "#0a4c6e"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter", "sans-serif"],
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0e1a;
+            color: #e0e8f0;
+        }
+        .glass-panel {
+            background: rgba(15, 21, 36, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(125, 211, 252, 0.1);
+        }
+        .glass-panel-elevated {
+            background: rgba(15, 21, 36, 0.75);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(125, 211, 252, 0.15);
+            box-shadow: 0 0 30px rgba(125, 211, 252, 0.05);
+        }
+        .text-glow {
+            text-shadow: 0 0 15px rgba(125, 211, 252, 0.3);
+        }
+        
+        /* Entrance Animations */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased overflow-x-hidden flex flex-col min-h-screen">
+<!-- HEADER GLOBAL — identique au site Mariage Madagascar -->
+<div data-global-header></div>
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-24">
+<!-- STITCH_SHADER_START:ANIMATION_59 class="absolute inset-0 w-full h-full object-cover z-0" -->
+<div class="absolute inset-0 w-full h-full object-cover z-0" style="display:block;">
+<canvas id="shader-canvas-ANIMATION_59" style="display:block;width:100%;height:100%" width="1280" height="921"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('shader-canvas-ANIMATION_59');
+
+  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+  // This fires on initial layout and whenever the element is resized.
+  function syncSize() {
+    const w = canvas.clientWidth  || 1280;
+    const h = canvas.clientHeight || 720;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(syncSize).observe(canvas);
+  }
+  syncSize();
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+  const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+  const fs = `precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+varying vec2 v_texCoord;
+
+void main() {
+    vec2 uv = v_texCoord;
+    vec2 m = u_mouse / u_resolution;
+    
+    // Create a slow-moving, ethereal noise background
+    float color = 0.0;
+    color += sin(uv.x * 10.0 + u_time) * 0.1;
+    color += sin(uv.y * 15.0 + u_time * 0.8) * 0.1;
+    
+    // Soft gradient base (dark deep blue to deep surface)
+    vec3 baseColor = vec3(0.01, 0.02, 0.05); // Very dark
+    vec3 iceBlue = vec3(0.49, 0.83, 0.99);   // #7dd3fc
+    
+    // Add some dynamic glows following the mouse
+    float dist = distance(uv, m);
+    float glow = 1.0 - smoothstep(0.0, 0.5, dist);
+    
+    vec3 finalColor = mix(baseColor, iceBlue * 0.2, color + glow * 0.3);
+    
+    gl_FragColor = vec4(finalColor, 1.0);
+}`;
+  function cs(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+  // Shaders that need normalized coords should use: u_mouse / u_resolution.
+  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  window.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      const nx = (event.clientX - rect.left) / rect.width;
+      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      mouse.x = nx * canvas.width;
+      mouse.y = ny * canvas.height;
+    }
+  });
+
+  function render(t) {
+    if (typeof ResizeObserver === 'undefined') syncSize();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (uTime) gl.uniform1f(uTime, t * 0.001);
+    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  render(0);
+})();
+</script>
+</div>
+<!-- STITCH_SHADER_END:ANIMATION_59 -->
+<div class="absolute inset-0 bg-gradient-to-b from-background/40 via-background/60 to-background z-0"></div>
+<div class="relative z-10 container mx-auto px-6 flex flex-col items-center text-center fade-in-up visible">
+<span class="px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-medium tracking-wider uppercase mb-6 backdrop-blur-md inline-flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+                    Wedding Services
+                </span>
+<h1 class="text-5xl md:text-7xl font-headline font-semibold text-on-surface tracking-tight leading-tight max-w-4xl mb-6 text-glow">
+                    L'Art de Célébrer <span class="text-primary italic font-light">l'Amour</span> à Madagascar
+                </h1>
+<p class="text-xl md:text-2xl text-on-surface-variant max-w-2xl font-light mb-12">
+                    Des cérémonies d'exception, entre lagons turquoise et nature sauvage.
+                </p>
+<button class="group px-8 py-4 bg-primary/15 border border-primary/30 text-primary rounded-full hover:bg-primary/25 hover:border-primary/50 transition-all duration-300 font-medium text-lg flex items-center gap-3 backdrop-blur-md">
+                    Créer mon Mariage Unique
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-50 z-10">
+<span class="material-symbols-outlined text-primary text-3xl">expand_more</span>
+</div>
+</section>
+<!-- Services Section (Bento Grid) -->
+<section class="py-24 relative container mx-auto px-6">
+<div class="text-center mb-16 fade-in-up">
+<h2 class="text-3xl md:text-4xl font-headline font-semibold text-on-surface mb-4">Nos Services d'Exception</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto">Une orchestration millimétrée pour que chaque instant soit à la hauteur de vos rêves.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+<!-- Wedding Planner -->
+<div class="glass-panel rounded-xl overflow-hidden flex flex-col md:col-span-2 group hover:border-primary/30 transition-colors fade-in-up">
+<div class="h-40 relative overflow-hidden">
+  <img src="https://assets.zyrosite.com/cdn-cgi/image/format%3Dauto%2Cw%3D398%2Ch%3D398%2Cfit%3Dcrop/mePOQPkJ0EfGanRM/316825208_559212416212637_112258012085122473_n-1-A0xo90XJWqULzjB4.jpg" alt="Organisation d'un mariage à Madagascar" class="w-full h-full object-cover" loading="lazy">
+  <div class="absolute inset-0 bg-gradient-to-t from-background/85 via-background/20 to-transparent"></div>
+</div>
+<div class="p-8 flex flex-col gap-6">
+<div class="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl">event_available</span>
+</div>
+<div>
+<h3 class="text-2xl font-semibold text-on-surface mb-3">Wedding Planner</h3>
+<p class="text-on-surface-variant leading-relaxed">
+                            Organisation complète de A à Z. Notre équipe dévouée prend en charge chaque détail de votre célébration, de la sélection des prestataires les plus prestigieux à la coordination le jour J, vous laissant profiter pleinement de chaque instant.
+                        </p>
+</div>
+</div>
+</div>
+<!-- Conciergerie -->
+<div class="glass-panel rounded-xl overflow-hidden flex flex-col group hover:border-primary/30 transition-colors fade-in-up delay-100">
+<div class="h-40 relative overflow-hidden">
+  <img src="https://cdn.zyrosite.com/cdn-ecommerce/store_01GP5043QBABN9G8NA9DTQ574E%2Fassets%2F1736664239766-464320739_957916396379206_5816853246123024876_n.jpg" alt="Conciergerie privée pour mariage à Madagascar" class="w-full h-full object-cover" loading="lazy">
+  <div class="absolute inset-0 bg-gradient-to-t from-background/85 via-background/20 to-transparent"></div>
+</div>
+<div class="p-8 flex flex-col gap-6">
+<div class="h-14 w-14 rounded-full bg-tertiary/10 flex items-center justify-center border border-tertiary/20 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-tertiary text-3xl">support_agent</span>
+</div>
+<div>
+<h3 class="text-2xl font-semibold text-on-surface mb-3">Conciergerie</h3>
+<p class="text-on-surface-variant leading-relaxed">Une assistance haute couture disponible 24h/24. De la gestion des imprévus aux demandes les plus extravagantes, notre conciergerie privée assure une sérénité totale pour vous et vos invités d'exception.</p>
+</div>
+</div>
+</div>
+<!-- Design & Decor -->
+<div class="glass-panel rounded-xl overflow-hidden flex flex-col group hover:border-primary/30 transition-colors fade-in-up delay-200">
+<div class="h-40 relative overflow-hidden">
+  <img src="https://assets.zyrosite.com/cdn-cgi/image/format%3Dauto%2Cw%3D398%2Ch%3D398%2Cfit%3Dcrop/mePOQPkJ0EfGanRM/467867118_977736004397245_1204853036071249645_n-mk3zQ9ov50HPN4KM.jpg" alt="Décoration florale pour mariage à Madagascar" class="w-full h-full object-cover" loading="lazy">
+  <div class="absolute inset-0 bg-gradient-to-t from-background/85 via-background/20 to-transparent"></div>
+</div>
+<div class="p-8 flex flex-col gap-6">
+<div class="h-14 w-14 rounded-full bg-secondary-fixed-dim/10 flex items-center justify-center border border-secondary-fixed-dim/20 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-secondary-fixed-dim text-3xl">palette</span>
+</div>
+<div>
+<h3 class="text-2xl font-semibold text-on-surface mb-3">Design &amp; Décor</h3>
+<p class="text-on-surface-variant leading-relaxed">
+                            Esthétique sur-mesure reflétant votre histoire d'amour, sublimant les espaces naturels.
+                        </p>
+</div>
+</div>
+</div>
+<!-- Travel Planner -->
+<div class="glass-panel rounded-xl p-8 flex flex-col gap-6 md:col-span-2 relative overflow-hidden group hover:border-primary/30 transition-colors fade-in-up delay-300"><div class="absolute inset-0 z-0 opacity-20 group-hover:opacity-30 transition-opacity duration-700"><img src="https://lh3.googleusercontent.com/aida/AP1WRLt-5lXUuSG4-kvRygQbimdrZMbpy7FIwNVGWfQg0CQIMFYAKDzD4MlDPOk7z6OkFZV9yl7MeEs6LmzIVNgRvv4CKlOk026kXa-UkJF9qTjSN4yrGgDLQcE-QUQBeQTEDmPCYlngz1yVPehj70KYwxbRkeqlvw7REEwt2S8eFXrrOgsBtsZnbYlaejmVrl6vImDw8PQCq9uMoVGvHEPe62g1M5m7rAiiT6DL5d9M6Y-BusGVFiZNk3HEsr_y" class="w-full h-full object-cover" alt="Private Jet Experience"></div>
+<div class="absolute right-0 top-0 w-64 h-full bg-gradient-to-l from-primary/5 to-transparent pointer-events-none"></div>
+<div class="relative z-10 flex flex-col h-full justify-between">
+<div class="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl">flight_takeoff</span>
+</div>
+<div>
+<h3 class="text-2xl font-semibold text-on-surface mb-3">Travel Planner</h3>
+<p class="text-on-surface-variant leading-relaxed">Vols privés, transferts en hélicoptère et retraites exclusives. Nous orchestrons les déplacements de vos convives avec une exigence absolue, transformant chaque trajet en une expérience de voyage transcendante à travers les joyaux de Madagascar.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Packages Section (Asymmetric) -->
+<section class="py-24 bg-surface-container-low/30 border-y border-primary/5">
+<div class="container mx-auto px-6">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 fade-in-up">
+<div class="max-w-2xl">
+<h2 class="text-3xl md:text-4xl font-headline font-semibold text-on-surface mb-4">Nos Packages Signature</h2>
+<p class="text-on-surface-variant">Des expériences conçues pour sublimer les paysages malgaches.</p>
+</div>
+</div>
+<div class="space-y-8">
+<!-- Package 1: Eclat du Lagon (with Image) -->
+<div class="glass-panel-elevated rounded-xl overflow-hidden flex flex-col md:flex-row fade-in-up group">
+<div class="md:w-1/2 relative h-64 md:h-auto overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A luxurious wedding setup on a pristine white sand beach at sunset. An elegant floral arch draped in sheer white fabric frames the turquoise ocean. Rose petals are scattered on the sand. The lighting is warm and ethereal, casting soft shadows, fitting a high-end luxury aesthetic in dark mode UI." src="https://lh3.googleusercontent.com/aida/AP1WRLsuhuDRanqXKUubM69Pta35HRwQMm7hINDQGsqobROnyKJtwiE-_Hk2ZD17bdMYlGQmNWLkGwwpBnBMPAbK_M4b0r1T6PURgN6hZozudo1aYhbnm3B_CzeIjBYLbWsLcJweDHhDtvfPgu1VlhRLwCycUYZiZhADumylIFfVRPMgF52EnJSHU5Q3_WTYCdNCz0O9-hE8ddbj6dlPXdBFr3C7QmQdb8HHGXWBU2-gJzWLadNk01F5RiZ7nknH">
+<div class="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-background/90 to-transparent"></div>
+</div>
+<div class="md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative">
+<div class="absolute top-8 right-8 text-primary font-medium px-4 py-1.5 bg-primary/10 rounded-full border border-primary/20 text-sm">
+                                À partir de 4,500€
+                            </div>
+<h3 class="text-3xl font-semibold text-on-surface mb-4 mt-8 md:mt-0">L'Éclat du Lagon</h3>
+<p class="text-on-surface-variant mb-8 text-lg">
+                                Une cérémonie pieds dans l'eau sur un banc de sable privé, entouré des eaux cristallines de l'océan Indien. L'élégance à l'état pur.
+                            </p>
+<ul class="space-y-3 mb-8">
+<li class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+                                    Privatisation d'un banc de sable
+                                </li>
+<li class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+                                    Arche florale sur-mesure
+                                </li>
+<li class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+                                    Dîner romantique aux chandelles
+                                </li>
+</ul>
+<button class="w-fit text-primary font-medium hover:text-primary-fixed transition-colors flex items-center gap-2">
+                                Découvrir ce package <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Package 2 & 3 Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Package 2: Aventure Royale -->
+<div class="glass-panel rounded-xl overflow-hidden flex flex-col fade-in-up delay-100 relative group">
+<div class="h-44 relative overflow-hidden">
+  <img src="https://assets.zyrosite.com/cdn-cgi/image/format%3Dauto%2Cw%3D398%2Ch%3D398%2Cfit%3Dcrop/mePOQPkJ0EfGanRM/3525e4fc-43fc-4825-a6e6-4dd8e8aaad98-dWxy0VKM1QTq435E.jfif" alt="Mariage sur un îlot privé à Madagascar" class="w-full h-full object-cover" loading="lazy">
+  <div class="absolute inset-0 bg-gradient-to-t from-background/85 via-background/20 to-transparent"></div>
+</div>
+<div class="p-8 flex flex-col flex-grow relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary-fixed-dim/10 rounded-bl-full pointer-events-none blur-2xl"></div>
+<div class="flex justify-between items-start mb-6">
+<h3 class="text-2xl font-semibold text-on-surface">Aventure Royale</h3>
+<div class="text-primary text-sm font-medium px-3 py-1 bg-primary/10 rounded-full border border-primary/20 whitespace-nowrap">
+                                    Dès 6,200€
+                                </div>
+</div>
+<p class="text-on-surface-variant mb-8 flex-grow">
+                                Unissent vos destins au cœur de l'Allée des Baobabs ou des majestueux Tsingy. Une célébration grandiose mêlant luxe et nature sauvage.
+                            </p>
+<button class="w-full py-3 bg-surface-container border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container-high transition-colors font-medium">
+                                Voir les détails
+                            </button>
+</div>
+<!-- Package 3: Intimité Insulaire -->
+<div class="glass-panel rounded-xl overflow-hidden flex flex-col fade-in-up delay-200 relative group">
+<div class="h-44 relative overflow-hidden">
+  <img src="https://cdn.zyrosite.com/cdn-ecommerce/store_01GP5043QBABN9G8NA9DTQ574E%2Fassets%2F1736664239766-464320739_957916396379206_5816853246123024876_n.jpg" alt="Expérience romantique et voyage de noces à Madagascar" class="w-full h-full object-cover" loading="lazy">
+  <div class="absolute inset-0 bg-gradient-to-t from-background/85 via-background/20 to-transparent"></div>
+</div>
+<div class="p-8 flex flex-col flex-grow relative overflow-hidden">
+<div class="absolute bottom-0 right-0 w-32 h-32 bg-tertiary/10 rounded-tl-full pointer-events-none blur-2xl"></div>
+<div class="flex justify-between items-start mb-6">
+<h3 class="text-2xl font-semibold text-on-surface">Intimité Insulaire</h3>
+<div class="text-tertiary text-sm font-medium px-3 py-1 bg-tertiary/10 rounded-full border border-tertiary/20 whitespace-nowrap">
+                                    Sur demande
+                                </div>
+</div>
+<p class="text-on-surface-variant mb-8 flex-grow">
+                                Privatisation totale d'une île paradisiaque pour vous et vos convives. Le summum de l'exclusivité et du luxe discret pour un mariage hors du temps.
+                            </p>
+<button class="w-full py-3 bg-surface-container border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container-high transition-colors font-medium">
+                                Voir les détails
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Process Section -->
+<section class="py-24 container mx-auto px-6">
+<div class="text-center mb-16 fade-in-up">
+<h2 class="text-3xl md:text-4xl font-headline font-semibold text-on-surface mb-4">Votre Mariage Sur-Mesure</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto">De la première inspiration au jour J, nous vous accompagnons à chaque étape.</p>
+</div>
+<div class="relative max-w-4xl mx-auto">
+<!-- Vertical Line -->
+<div class="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary/30 to-transparent transform md:-translate-x-1/2"></div>
+<div class="space-y-12">
+<!-- Step 1 -->
+<div class="relative flex flex-col md:flex-row items-center fade-in-up">
+<div class="md:w-1/2 flex justify-start md:justify-end md:pr-12 pl-16 md:pl-0 w-full">
+<div class="glass-panel p-6 rounded-xl w-full text-left md:text-right">
+<h4 class="text-lg font-semibold text-primary mb-2">01. Consultation Initiale</h4>
+<p class="text-sm text-on-surface-variant">Une rencontre pour comprendre vos rêves, votre style et vos exigences. Nous définissons ensemble l'essence de votre mariage.</p>
+</div>
+</div>
+<div class="absolute left-8 md:left-1/2 w-4 h-4 rounded-full bg-primary shadow-[0_0_15px_rgba(125,211,252,0.8)] transform -translate-x-1/2 z-10 border-2 border-background"></div>
+<div class="md:w-1/2 hidden md:block"></div>
+</div>
+<!-- Step 2 -->
+<div class="relative flex flex-col md:flex-row items-center fade-in-up delay-100">
+<div class="md:w-1/2 hidden md:block"></div>
+<div class="absolute left-8 md:left-1/2 w-4 h-4 rounded-full bg-surface-container-high border-2 border-primary transform -translate-x-1/2 z-10"></div>
+<div class="md:w-1/2 flex justify-start md:pl-12 pl-16 w-full">
+<div class="glass-panel p-6 rounded-xl w-full text-left">
+<h4 class="text-lg font-semibold text-primary mb-2">02. Conception &amp; Proposition</h4>
+<p class="text-sm text-on-surface-variant">Création d'un moodboard détaillé, sélection des lieux et proposition d'un concept sur-mesure accompagné d'un budget prévisionnel.</p>
+</div>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="relative flex flex-col md:flex-row items-center fade-in-up delay-200">
+<div class="md:w-1/2 flex justify-start md:justify-end md:pr-12 pl-16 md:pl-0 w-full">
+<div class="glass-panel p-6 rounded-xl w-full text-left md:text-right">
+<h4 class="text-lg font-semibold text-primary mb-2">03. Orchestration &amp; Planification</h4>
+<p class="text-sm text-on-surface-variant">Sélection rigoureuse des meilleurs prestataires, dégustations, et élaboration minutieuse du planning logistique.</p>
+</div>
+</div>
+<div class="absolute left-8 md:left-1/2 w-4 h-4 rounded-full bg-surface-container-high border-2 border-primary transform -translate-x-1/2 z-10"></div>
+<div class="md:w-1/2 hidden md:block"></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- FOOTER GLOBAL — identique au site Mariage Madagascar -->
+<div data-global-footer></div>
+<script>
+        // Intersection Observer for scroll animations
+        document.addEventListener("DOMContentLoaded", () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in-up').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+
+
+<script src="/components/components.js"></script>
+</body></html>
