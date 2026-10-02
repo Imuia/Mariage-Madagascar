@@ -225,10 +225,22 @@
     }));
   }
 
+  /* Les boutons de filtres sont de vrais boutons : aucun clic ne doit
+     déclencher une navigation ou suivre un lien du Header. */
   filters.forEach(function (button) {
-    button.addEventListener('click', function () {
+    button.setAttribute('type', 'button');
+    button.addEventListener('click', function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const filter = button.getAttribute('data-blog-filter') || 'all';
       setActiveFilter(button);
-      applyFilter(button.dataset.blogFilter);
+      applyFilter(filter);
+
+      // Reste sur la page du blog : aucun changement d'URL.
+      try {
+        window.history.replaceState(null, '', window.location.pathname);
+      } catch (e) {}
     });
   });
 
