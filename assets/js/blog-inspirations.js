@@ -40,7 +40,7 @@
 
   function internalUrl(post) {
     const slug = canonicalSlug(post.slug);
-    return slug ? '/' + encodeURIComponent(slug) : '/blog-inspirations.html';
+    return slug ? '/' + encodeURIComponent(slug) : '/blog-wedding-planner-nosy-be.html';
   }
 
   function categoryForPost(post) {
