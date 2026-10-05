@@ -4,6 +4,10 @@
     {
       "source": "/produit/:slug",
       "destination": "/produit.html?slug=:slug"
+    },
+    {
+      "source": "/:slug",
+      "destination": "/blog-article.html?slug=:slug"
     }
   ]
 }
