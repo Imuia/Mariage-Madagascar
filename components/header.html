@@ -75,6 +75,48 @@
   </div>
 </div>
 
+
+<style>
+/* Mariage Madagascar — styles autonomes du Header global.
+   Ces règles reprennent les couleurs et le rendu Glacier de l'index.
+   Le header reste donc unique : toutes les pages chargent ce même fichier. */
+:root{
+  --mm-primary:#7dd3fc;
+  --mm-tertiary:#c8a0f0;
+  --mm-surface:#0f1524;
+  --mm-surface-container:#141c2e;
+  --mm-surface-container-high:#1a2438;
+  --mm-surface-container-highest:#202c42;
+  --mm-surface-container-lowest:#0a0e1a;
+  --mm-on-surface:#e0e8f0;
+  --mm-on-surface-variant:#a0b4c4;
+  --mm-outline-variant:#2a3a48;
+}
+.font-headline{font-family:Inter,ui-sans-serif,system-ui,sans-serif!important}
+[class~="bg-surface/60"]{background-color:rgba(15,21,36,.60)!important}
+[class~="dark:bg-surface/60"]{background-color:rgba(15,21,36,.60)!important}
+[class~="bg-surface-container/30"]{background-color:rgba(20,28,46,.30)!important}
+[class~="bg-primary/10"]{background-color:rgba(125,211,252,.10)!important}
+[class~="bg-primary/20"]{background-color:rgba(125,211,252,.20)!important}
+[class~="text-primary"]{color:var(--mm-primary)!important}
+[class~="text-on-surface"]{color:var(--mm-on-surface)!important}
+[class~="text-on-surface-variant"]{color:var(--mm-on-surface-variant)!important}
+[class~="text-tertiary"]{color:var(--mm-tertiary)!important}
+[class~="border-primary/10"]{border-color:rgba(125,211,252,.10)!important}
+[class~="border-primary/20"]{border-color:rgba(125,211,252,.20)!important}
+[class~="border-primary/30"]{border-color:rgba(125,211,252,.30)!important}
+[class~="border-primary/40"]{border-color:rgba(125,211,252,.40)!important}
+[class~="border-outline-variant/50"]{border-color:rgba(42,58,72,.50)!important}
+[class~="shadow-[0_0_30px_rgba(125,211,252,0.05)]"]{box-shadow:0 0 30px rgba(125,211,252,.05)!important}
+[class~="shadow-[0_0_15px_rgba(125,211,252,0.10)]"]{box-shadow:0 0 15px rgba(125,211,252,.10)!important}
+[class~="hover:bg-primary/10"]:hover{background-color:rgba(125,211,252,.10)!important}
+[class~="hover:bg-primary/20"]:hover{background-color:rgba(125,211,252,.20)!important}
+[class~="hover:border-primary/40"]:hover{border-color:rgba(125,211,252,.40)!important}
+[class~="hover:text-primary"]:hover{color:var(--mm-primary)!important}
+[class~="focus:ring-primary/50"]:focus{--tw-ring-color:rgba(125,211,252,.50)!important}
+[class~="focus:border-primary/50"]:focus{border-color:rgba(125,211,252,.50)!important}
+</style>
+
 <style>
   /* Checkbox invisible mais fonctionnelle */
   .mobile-global-toggle {
