@@ -110,6 +110,8 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 </main>
 <div data-global-footer=""></div>
 <script src="/components/components.js"></script>
+<script src="/assets/js/supabase-config.js"></script>
+
 <script>
 (() => {
   // UNE SEULE PAGE POUR TOUS LES PRODUITS
@@ -119,8 +121,8 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
   // /produit.html?slug=-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe
   // /produit.html?slug=-mariage-symbolique-couple-enfants-une-celebration-familiale-unique-
 
-  const SUPABASE_URL = 'https://qrkinjuhtyfptldlvdyg.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwiaWF0IjoxNzkwODM2Nzc1LCJleHAiOjIxMDY0MTI3NzV9.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
+  const SUPABASE_URL = window.MARIAGE_SUPABASE?.url || 'https://qrkinjuhtyfptldlvdyg.supabase.co';
+  const SUPABASE_ANON_KEY = window.MARIAGE_SUPABASE?.anonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
 
   // Garde la fiche Nosy Komba accessible si /produit.html est appelé sans slug.
   const params = new URLSearchParams(location.search);
