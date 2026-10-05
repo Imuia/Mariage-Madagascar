@@ -117,17 +117,23 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
   // UNE SEULE PAGE POUR TOUS LES PRODUITS
   // URL publique : /produit/<slug>
   // Compatibilité conservée : /produit.html?slug=<slug>
-  // Exemple :
-  // /produit.html?slug=-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe
-  // /produit.html?slug=-mariage-symbolique-couple-enfants-une-celebration-familiale-unique-
 
-  const SUPABASE_URL = window.MARIAGE_SUPABASE?.url || 'https://qrkinjuhtyfptldlvdyg.supabase.co';
-  const SUPABASE_ANON_KEY = window.MARIAGE_SUPABASE?.anonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
+  const SUPABASE_URL =
+    window.MARIAGE_SUPABASE?.url ||
+    'https://qrkinjuhtyfptldlvdyg.supabase.co';
 
-  // Garde la fiche Nosy Komba accessible si /produit.html est appelé sans slug.
+  const SUPABASE_ANON_KEY =
+    window.MARIAGE_SUPABASE?.anonKey ||
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
+
   const params = new URLSearchParams(location.search);
-  const pathnameParts = location.pathname.split('/').filter(Boolean);
-  const pathnameSlug = pathnameParts[0] === 'produit' ? decodeURIComponent(pathnameParts[1] || '') : '';
+  const parts = location.pathname.split('/').filter(Boolean);
+
+  const pathnameSlug =
+    parts[0] === 'produit'
+      ? decodeURIComponent(parts.slice(1).join('/'))
+      : '';
+
   const PRODUCT_SLUG = (
     params.get('slug') ||
     pathnameSlug ||
@@ -143,8 +149,10 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
   const bottomContactBtn = document.getElementById('bottomContactBtn');
   const relatedProducts = document.getElementById('relatedProducts');
   const productTitle = document.getElementById('productTitle');
-  const productShortDescription = document.getElementById('productShortDescription');
-  const productDescription = document.getElementById('productDescription');
+  const productShortDescription =
+    document.getElementById('productShortDescription');
+  const productDescription =
+    document.getElementById('productDescription');
 
   const lightbox = document.getElementById('imageLightbox');
   const lightboxImage = document.getElementById('lightboxImage');
@@ -157,13 +165,19 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
   let currentImageIndex = 0;
   let selectedPax = null;
 
-  const euro = n =>
-    new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(Number(n || 0)) + ' €';
+  const euro = value =>
+    new Intl.NumberFormat('fr-FR', {
+      maximumFractionDigits: 0
+    }).format(Number(value || 0)) + ' €';
 
   function esc(value) {
-    return String(value ?? '').replace(/[&<>"']/g, c => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
-    }[c]));
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    }[char]));
   }
 
   function productUrl(slug) {
@@ -171,146 +185,318 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
   }
 
   function contactUrl(pax) {
-    let url = '/contact.html?produit=' + encodeURIComponent(PRODUCT_SLUG);
-    if (pax) url += '&pax=' + encodeURIComponent(pax);
+    let url =
+      '/contact.html?produit=' +
+      encodeURIComponent(PRODUCT_SLUG);
+
+    if (pax) {
+      url += '&pax=' + encodeURIComponent(pax);
+    }
+
     return url;
   }
 
-  async function api(path, params = {}) {
-    const qs = new URLSearchParams(params).toString();
-    const url = SUPABASE_URL + '/rest/v1/' + path + (qs ? '?' + qs : '');
+  async function api(path, query = {}) {
+    const search = new URLSearchParams(query).toString();
 
-    const res = await fetch(url, {
+    const url =
+      SUPABASE_URL +
+      '/rest/v1/' +
+      path +
+      (search ? '?' + search : '');
+
+    const response = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,
         Authorization: 'Bearer ' + SUPABASE_ANON_KEY
       }
     });
 
-    if (!res.ok) throw new Error('Supabase HTTP ' + res.status);
-    return res.json();
+    if (!response.ok) {
+      const body = await response.text().catch(() => '');
+      throw new Error(
+        `Supabase ${response.status} ${path}: ${body}`
+      );
+    }
+
+    return response.json();
   }
 
   async function loadProduct() {
-    const products = await api('mm_products', {
+    /*
+      IMPORTANT :
+      On utilise uniquement les colonnes réellement présentes
+      dans les tables actuelles.
+
+      mm_product_variations :
+        attribute_name
+        attribute_value
+        pax
+        regular_price
+        currency
+        published
+        in_stock
+
+      mm_product_images :
+        image_url
+        alt_text
+        sort_order
+        is_featured
+        source_url
+    */
+
+    const productRows = await api('mm_products', {
       select: '*',
       slug: 'eq.' + PRODUCT_SLUG,
       limit: '1'
     });
 
-    if (!products.length) {
-      throw new Error('Produit introuvable pour le slug : ' + PRODUCT_SLUG);
+    if (!productRows?.length) {
+      throw new Error(
+        'Produit introuvable pour le slug : ' + PRODUCT_SLUG
+      );
     }
 
-    product = products[0];
+    product = productRows[0];
 
-    const [vars, productImages] = await Promise.all([
-      api('mm_product_variations', {
-        select: '*',
-        product_id: 'eq.' + product.id,
-        order: 'pax.asc'
-      }),
-      api('mm_product_images', {
-        select: '*',
-        product_id: 'eq.' + product.id,
-        order: 'sort_order.asc'
-      })
-    ]);
+    // Variations : structure exacte de Supabase
+    variations = await api('mm_product_variations', {
+      select:
+        'id,product_id,sku,name,attribute_name,attribute_value,pax,regular_price,currency,published,in_stock',
+      product_id: 'eq.' + product.id,
+      published: 'eq.true',
+      order: 'pax.asc'
+    });
 
-    variations = (vars || []).filter(v => v.published !== false);
+    // Images : structure exacte de Supabase
+    const imageRows = await api('mm_product_images', {
+      select:
+        'id,product_id,variation_id,image_url,alt_text,sort_order,is_featured,source_url',
+      product_id: 'eq.' + product.id,
+      order: 'sort_order.asc'
+    });
 
-    // Assemble une seule galerie à partir de l'image vedette,
-    // des images produit et des images de variations, sans doublons.
+    /*
+      Galerie :
+      - featured_image_url du produit
+      - image_url de mm_product_images
+      - fallback source_url pour les anciennes images
+      Aucun doublon.
+    */
     const seen = new Set();
-    const addImage = value => {
-      if (!value || seen.has(value)) return;
-      seen.add(value);
-      images.push(value);
-    };
 
-    addImage(product.featured_image_url);
-    (productImages || []).forEach(img => addImage(img.local_path || img.source_url));
-    variations.forEach(v => addImage(v.local_image_path || v.source_image_url));
+    function addImage(url, fallback, alt) {
+      if (!url || seen.has(url)) return;
 
-    // Sécurité : une variation sans image dédiée reprend l'image principale.
-    if (!images.length) throw new Error('Aucune image disponible pour ce produit.');
+      seen.add(url);
+
+      images.push({
+        url,
+        fallback: fallback && fallback !== url ? fallback : null,
+        alt: alt || product.name || 'Image produit'
+      });
+    }
+
+    addImage(
+      product.featured_image_url,
+      product.source_url,
+      product.name
+    );
+
+    (imageRows || []).forEach(img => {
+      addImage(
+        img.image_url || img.source_url,
+        img.source_url,
+        img.alt_text || product.name
+      );
+    });
+
+    /*
+      On ne suppose plus que les variations possèdent des colonnes
+      d'image qui n'existent pas dans le schéma actuel.
+    */
+
+    if (!images.length) {
+      throw new Error(
+        'Aucune image disponible pour ce produit.'
+      );
+    }
+
+    const requestedPax = Number(params.get('pax'));
 
     selectedPax =
-      Number(params.get('pax')) ||
-      Number(variations[0]?.pax) ||
+      variations.find(v => Number(v.pax) === requestedPax)?.pax ||
+      variations[0]?.pax ||
       null;
   }
 
   function updateMeta() {
-    const title = product.name || 'Produit Mariage Madagascar';
-    document.title = title + ' | Mariage Madagascar';
+    const title =
+      product.name || 'Produit Mariage Madagascar';
 
-    document.getElementById('metaDescription').content =
-      product.short_description || '';
+    document.title =
+      title + ' | Mariage Madagascar';
 
-    document.getElementById('canonicalLink').href =
-      location.origin + productUrl(PRODUCT_SLUG);
+    const meta =
+      document.getElementById('metaDescription');
+
+    if (meta) {
+      meta.content =
+        product.short_description || '';
+    }
+
+    const canonical =
+      document.getElementById('canonicalLink');
+
+    if (canonical) {
+      canonical.href =
+        location.origin +
+        productUrl(PRODUCT_SLUG);
+    }
 
     productTitle.textContent = title;
-    productShortDescription.textContent = product.short_description || '';
-    productDescription.innerHTML = product.description_html || '<p>Aucune description disponible.</p>';
+
+    productShortDescription.textContent =
+      product.short_description || '';
+
+    productDescription.innerHTML =
+      product.description_html ||
+      '<p>Aucune description disponible.</p>';
+
+    const breadcrumb =
+      document.querySelector('.mb-6 span:last-child');
+
+    if (breadcrumb) {
+      breadcrumb.textContent = title;
+    }
+
+    const descriptionTitle =
+      document.querySelector('#productDescription')
+        ?.closest('article')
+        ?.querySelector('h2');
+
+    if (descriptionTitle) {
+      descriptionTitle.textContent = title;
+    }
 
     const bottomHeading =
-      bottomContactBtn?.closest('.glass-strong')?.querySelector('h2');
+      bottomContactBtn
+        ?.closest('.glass-strong')
+        ?.querySelector('h2');
 
     if (bottomHeading) {
-      bottomHeading.textContent = 'Une expérience sur mesure';
+      bottomHeading.textContent =
+        'Une expérience sur mesure';
     }
 
     mainImage.alt = title;
   }
 
   function renderThumbs() {
-    thumbs.innerHTML = images.map((src, i) => `
-      <button type="button"
-        data-i="${i}"
+    thumbs.innerHTML = images.map((img, index) => `
+      <button
+        type="button"
+        data-i="${index}"
         class="thumb rounded-xl overflow-hidden border border-white/10 aspect-[4/3] shrink-0
-               ring-1 ${i === currentImageIndex ? 'ring-[#7dd3fc]' : 'ring-transparent'}"
-        aria-label="Afficher la photo ${i + 1}">
-        <img src="${esc(src)}"
-             alt="${esc(product.name)} — photo ${i + 1}"
-             class="w-full h-full object-cover"
-             loading="${i === 0 ? 'eager' : 'lazy'}">
+               ring-1 ${index === currentImageIndex
+                 ? 'ring-[#7dd3fc]'
+                 : 'ring-transparent'}"
+        aria-label="Afficher la photo ${index + 1}">
+        <img
+          src="${esc(img.url)}"
+          alt="${esc(img.alt)}"
+          class="w-full h-full object-cover"
+          loading="${index === 0 ? 'eager' : 'lazy'}">
       </button>
     `).join('');
 
-    thumbs.querySelectorAll('.thumb').forEach(btn => {
-      btn.addEventListener('click', () => setMain(Number(btn.dataset.i)));
-    });
+    thumbs
+      .querySelectorAll('.thumb')
+      .forEach(button => {
+        button.addEventListener('click', () => {
+          setMain(Number(button.dataset.i));
+        });
+      });
+
+    thumbs
+      .querySelectorAll('img')
+      .forEach((img, index) => {
+        img.addEventListener('error', () => {
+          const data = images[index];
+
+          if (
+            data?.fallback &&
+            img.dataset.fallbackUsed !== '1'
+          ) {
+            img.dataset.fallbackUsed = '1';
+            img.src = data.fallback;
+          }
+        });
+      });
   }
 
   function syncThumbs() {
-    thumbs.querySelectorAll('.thumb').forEach((btn, i) => {
-      btn.classList.toggle('ring-[#7dd3fc]', i === currentImageIndex);
-      btn.classList.toggle('ring-transparent', i !== currentImageIndex);
-    });
+    thumbs
+      .querySelectorAll('.thumb')
+      .forEach((button, index) => {
+        button.classList.toggle(
+          'ring-[#7dd3fc]',
+          index === currentImageIndex
+        );
+
+        button.classList.toggle(
+          'ring-transparent',
+          index !== currentImageIndex
+        );
+      });
   }
 
   function setMain(index) {
     if (!images.length) return;
 
-    currentImageIndex = (index + images.length) % images.length;
-    const src = images[currentImageIndex];
+    currentImageIndex =
+      (index + images.length) % images.length;
 
-    const preload = new Image();
+    const data = images[currentImageIndex];
+
     mainImage.style.opacity = '.35';
 
+    const preload = new Image();
+
     preload.onload = () => {
-      mainImage.src = src;
+      mainImage.src = data.url;
+      mainImage.alt =
+        data.alt || product.name || '';
+
       mainImage.style.opacity = '1';
+
       syncThumbs();
     };
 
     preload.onerror = () => {
-      mainImage.style.opacity = '1';
+      if (data.fallback) {
+        const fallback = new Image();
+
+        fallback.onload = () => {
+          mainImage.src = data.fallback;
+          mainImage.alt =
+            data.alt || product.name || '';
+          mainImage.style.opacity = '1';
+          syncThumbs();
+        };
+
+        fallback.onerror = () => {
+          mainImage.style.opacity = '1';
+        };
+
+        fallback.src = data.fallback;
+
+      } else {
+        mainImage.style.opacity = '1';
+      }
     };
 
-    preload.src = src;
+    preload.src = data.url;
   }
 
   function showPrev() {
@@ -325,52 +511,80 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
     if (!paxButtons) return;
 
     if (!variations.length) {
-      paxButtons.innerHTML = '<span class="text-sm text-[#8fa3b3]">Formule sur demande</span>';
+      paxButtons.innerHTML =
+        '<span class="text-sm text-[#8fa3b3]">Formule sur demande</span>';
+
       price.textContent = 'Sur demande';
       return;
     }
 
     paxButtons.innerHTML = variations.map(v => `
-      <button type="button"
+      <button
+        type="button"
         data-pax="${Number(v.pax)}"
         class="pax border border-white/10 rounded-xl py-3 text-sm font-semibold text-[#a0b4c4]">
         ${Number(v.pax)}
       </button>
     `).join('');
 
-    paxButtons.querySelectorAll('.pax').forEach(btn => {
-      btn.addEventListener('click', () => selectPax(Number(btn.dataset.pax)));
-    });
+    paxButtons
+      .querySelectorAll('.pax')
+      .forEach(button => {
+        button.addEventListener('click', () => {
+          selectPax(Number(button.dataset.pax));
+        });
+      });
 
-    selectPax(selectedPax || Number(variations[0].pax));
+    selectPax(
+      Number(selectedPax || variations[0].pax)
+    );
   }
 
   function selectPax(paxValue) {
+    /*
+      IMPORTANT :
+      Le prix réel est regular_price.
+      attribute_value est la valeur de la variation.
+    */
     const variation =
-      variations.find(v => Number(v.pax) === Number(paxValue)) ||
+      variations.find(
+        v => Number(v.pax) === Number(paxValue)
+      ) ||
+      variations.find(
+        v => Number(v.attribute_value) === Number(paxValue)
+      ) ||
       variations[0];
 
     if (!variation) return;
 
-    selectedPax = Number(variation.pax);
-    price.textContent = euro(variation.price);
+    selectedPax =
+      Number(variation.pax || variation.attribute_value);
 
-    if (contactBtn) contactBtn.href = contactUrl(selectedPax);
-    if (bottomContactBtn) bottomContactBtn.href = contactUrl(selectedPax);
+    price.textContent =
+      euro(variation.regular_price);
 
-    paxButtons.querySelectorAll('.pax').forEach(btn => {
-      btn.classList.toggle('active', Number(btn.dataset.pax) === selectedPax);
-    });
-
-    // Si la variation possède sa propre image, on l'affiche.
-    const variationImage = variation.local_image_path || variation.source_image_url;
-    const index = images.indexOf(variationImage);
-
-    if (index >= 0) {
-      setMain(index);
-    } else {
-      setMain(0);
+    if (contactBtn) {
+      contactBtn.href =
+        contactUrl(selectedPax);
     }
+
+    if (bottomContactBtn) {
+      bottomContactBtn.href =
+        contactUrl(selectedPax);
+    }
+
+    paxButtons
+      .querySelectorAll('.pax')
+      .forEach(button => {
+        const active =
+          Number(button.dataset.pax) ===
+          selectedPax;
+
+        button.classList.toggle(
+          'active',
+          active
+        );
+      });
   }
 
   function openLightbox(index = currentImageIndex) {
@@ -391,78 +605,111 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
   }
 
   function updateLightbox() {
-    lightboxImage.src = images[currentImageIndex];
-    lightboxImage.alt =
-      `${product.name} — photo ${currentImageIndex + 1}`;
+    const data =
+      images[currentImageIndex];
 
-    lightboxCaption.textContent = product.name;
+    lightboxImage.src = data.url;
+    lightboxImage.alt =
+      data.alt || product.name || '';
+
+    lightboxCaption.textContent =
+      product.name || '';
+
     lightboxCount.textContent =
       `Image ${currentImageIndex + 1} / ${images.length}`;
   }
 
   function wireGallery() {
-    mainImage.addEventListener('click', e => {
-      e.preventDefault();
-      e.stopPropagation();
+    mainImage.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
       openLightbox(currentImageIndex);
     });
 
-    mainImageButton.addEventListener('click', e => {
-      if (e.target.closest('#prevImage') ||
-          e.target.closest('#nextImage')) return;
+    mainImageButton.addEventListener('click', event => {
+      if (
+        event.target.closest('#prevImage') ||
+        event.target.closest('#nextImage')
+      ) {
+        return;
+      }
 
       openLightbox(currentImageIndex);
     });
 
-    document.getElementById('prevImage')
-      ?.addEventListener('click', e => {
-        e.preventDefault();
-        e.stopPropagation();
+    document
+      .getElementById('prevImage')
+      ?.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
         showPrev();
       });
 
-    document.getElementById('nextImage')
-      ?.addEventListener('click', e => {
-        e.preventDefault();
-        e.stopPropagation();
+    document
+      .getElementById('nextImage')
+      ?.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
         showNext();
       });
 
-    document.getElementById('closeLightbox')
-      ?.addEventListener('click', closeLightbox);
+    document
+      .getElementById('closeLightbox')
+      ?.addEventListener(
+        'click',
+        closeLightbox
+      );
 
-    document.getElementById('lightboxPrev')
+    document
+      .getElementById('lightboxPrev')
       ?.addEventListener('click', () => {
         currentImageIndex =
-          (currentImageIndex - 1 + images.length) % images.length;
+          (currentImageIndex - 1 + images.length) %
+          images.length;
+
         updateLightbox();
       });
 
-    document.getElementById('lightboxNext')
+    document
+      .getElementById('lightboxNext')
       ?.addEventListener('click', () => {
         currentImageIndex =
-          (currentImageIndex + 1) % images.length;
+          (currentImageIndex + 1) %
+          images.length;
+
         updateLightbox();
       });
 
-    lightbox.addEventListener('click', e => {
-      if (e.target === lightbox) closeLightbox();
+    lightbox.addEventListener('click', event => {
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
     });
 
-    document.addEventListener('keydown', e => {
-      if (lightbox.classList.contains('hidden')) return;
+    document.addEventListener('keydown', event => {
+      if (
+        lightbox.classList.contains('hidden')
+      ) {
+        return;
+      }
 
-      if (e.key === 'Escape') closeLightbox();
+      if (event.key === 'Escape') {
+        closeLightbox();
+      }
 
-      if (e.key === 'ArrowLeft') {
+      if (event.key === 'ArrowLeft') {
         currentImageIndex =
-          (currentImageIndex - 1 + images.length) % images.length;
+          (currentImageIndex - 1 + images.length) %
+          images.length;
+
         updateLightbox();
       }
 
-      if (e.key === 'ArrowRight') {
+      if (event.key === 'ArrowRight') {
         currentImageIndex =
-          (currentImageIndex + 1) % images.length;
+          (currentImageIndex + 1) %
+          images.length;
+
         updateLightbox();
       }
     });
@@ -472,59 +719,117 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
     if (!relatedProducts) return;
 
     try {
-      const rows = await api('mm_products', {
-        select: 'slug,name,short_description,featured_image_url,published,created_at',
-        published: 'eq.true',
-        'slug': 'not.eq.' + PRODUCT_SLUG,
-        order: 'created_at.desc',
-        limit: '6'
-      });
+      const rows = await api(
+        'mm_products',
+        {
+          select:
+            'slug,name,short_description,featured_image_url,source_url,published,created_at',
+          published: 'eq.true',
+          slug:
+            'not.eq.' + PRODUCT_SLUG,
+          order: 'created_at.desc',
+          limit: '6'
+        }
+      );
 
-      if (!rows.length) return;
+      if (!rows?.length) return;
 
-      relatedProducts.innerHTML = rows.map(p => `
-        <a class="glass rounded-2xl overflow-hidden block hover:border-[#7dd3fc]/40 transition"
-           href="${productUrl(p.slug)}">
-          <div class="aspect-video bg-[#0f1524]">
-            ${p.featured_image_url
-              ? `<img src="${esc(p.featured_image_url)}"
-                       alt="${esc(p.name)}"
-                       class="w-full h-full object-cover">`
-              : ''}
-          </div>
-          <div class="p-5">
-            <h3 class="font-semibold text-lg">${esc(p.name)}</h3>
-            <p class="text-sm text-[#8fa3b3] mt-2 line-clamp-3">
-              ${esc(p.short_description || '')}
-            </p>
-            <span class="inline-block mt-4 text-[#7dd3fc] text-sm">
-              Voir le produit →
-            </span>
-          </div>
-        </a>
-      `).join('');
-    } catch (e) {
-      console.warn('Produits associés:', e);
+      relatedProducts.innerHTML =
+        rows.map(p => `
+          <a
+            class="glass rounded-2xl overflow-hidden block hover:border-[#7dd3fc]/40 transition"
+            href="${productUrl(p.slug)}">
+
+            <div class="aspect-video bg-[#0f1524]">
+              ${
+                p.featured_image_url
+                  ? `
+                    <img
+                      src="${esc(p.featured_image_url)}"
+                      data-fallback="${esc(p.source_url || '')}"
+                      alt="${esc(p.name)}"
+                      class="w-full h-full object-cover">
+                  `
+                  : ''
+              }
+            </div>
+
+            <div class="p-5">
+              <h3 class="font-semibold text-lg">
+                ${esc(p.name)}
+              </h3>
+
+              <p class="text-sm text-[#8fa3b3] mt-2 line-clamp-3">
+                ${esc(p.short_description || '')}
+              </p>
+
+              <span class="inline-block mt-4 text-[#7dd3fc] text-sm">
+                Voir le produit →
+              </span>
+            </div>
+
+          </a>
+        `).join('');
+
+      relatedProducts
+        .querySelectorAll('img[data-fallback]')
+        .forEach(img => {
+          img.addEventListener('error', () => {
+            const fallback =
+              img.dataset.fallback;
+
+            if (
+              fallback &&
+              img.dataset.fallbackUsed !== '1'
+            ) {
+              img.dataset.fallbackUsed = '1';
+              img.src = fallback;
+            }
+          });
+        });
+
+    } catch (error) {
+      console.warn(
+        'Produits associés:',
+        error
+      );
     }
   }
 
   async function init() {
     try {
       await loadProduct();
+
       updateMeta();
       renderThumbs();
       renderPax();
       wireGallery();
+
       setMain(currentImageIndex);
+
       await loadRelated();
-    } catch (e) {
-      console.error('Produit:', e);
-      productTitle.textContent = 'Produit indisponible';
+
+    } catch (error) {
+      console.error(
+        'Produit:',
+        error
+      );
+
+      productTitle.textContent =
+        'Produit indisponible';
+
       productShortDescription.textContent =
         'Impossible de charger ce produit.';
+
       productDescription.innerHTML = `
-        <p>Vérifiez le slug du produit et sa présence dans Supabase.</p>
+        <p>Impossible de charger les données de ce produit depuis Supabase.</p>
       `;
+
+      /*
+        On affiche l'erreur réelle dans la console
+        pour faciliter le prochain diagnostic,
+        mais on ne bloque pas la page entière.
+      */
     }
   }
 
