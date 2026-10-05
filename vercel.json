@@ -1,8 +1,9 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/:slug([a-z0-9-]+)",
-      "destination": "/blog-article.html?slug=:slug"
+      "source": "/produit/:slug",
+      "destination": "/produit.html?slug=:slug"
     }
   ]
 }

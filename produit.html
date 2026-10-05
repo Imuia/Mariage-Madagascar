@@ -113,6 +113,8 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 <script>
 (() => {
   // UNE SEULE PAGE POUR TOUS LES PRODUITS
+  // URL publique : /produit/<slug>
+  // Compatibilité conservée : /produit.html?slug=<slug>
   // Exemple :
   // /produit.html?slug=-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe
   // /produit.html?slug=-mariage-symbolique-couple-enfants-une-celebration-familiale-unique-
@@ -122,7 +124,13 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 
   // Garde la fiche Nosy Komba accessible si /produit.html est appelé sans slug.
   const params = new URLSearchParams(location.search);
-  const PRODUCT_SLUG = (params.get('slug') || '-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe').trim();
+  const pathnameParts = location.pathname.split('/').filter(Boolean);
+  const pathnameSlug = pathnameParts[0] === 'produit' ? decodeURIComponent(pathnameParts[1] || '') : '';
+  const PRODUCT_SLUG = (
+    params.get('slug') ||
+    pathnameSlug ||
+    '-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe'
+  ).trim();
 
   const mainImage = document.getElementById('mainImage');
   const mainImageButton = document.getElementById('mainImageButton');
@@ -157,7 +165,7 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
   }
 
   function productUrl(slug) {
-    return '/produit.html?slug=' + encodeURIComponent(slug);
+    return '/produit/' + String(slug || '').replace(/^\/+/, '');
   }
 
   function contactUrl(pax) {
