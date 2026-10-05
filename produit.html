@@ -61,6 +61,7 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 </div>
 <div id="variationLabel" class="text-sm font-medium mb-3">Nombre de personnes (pax)</div>
 <div class="grid grid-cols-5 gap-2" id="paxButtons"></div>
+<div id="bookingDateWrap" class="mt-5"></div>
 </div>
 <a class="btn rounded-2xl py-4 mt-5 flex items-center justify-center gap-2 font-semibold" href="/contact.html" id="contactBtn">
         Ajouter au panier <span class="material-symbols-outlined text-[19px]">arrow_forward</span>
@@ -199,7 +200,8 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
     lightbox: document.getElementById('imageLightbox'),
     lightboxImage: document.getElementById('lightboxImage'),
     lightboxCaption: document.getElementById('lightboxCaption'),
-    lightboxCount: document.getElementById('lightboxCount')
+    lightboxCount: document.getElementById('lightboxCount'),
+    bookingDateWrap: document.getElementById('bookingDateWrap')
   };
 
   let product = null;
@@ -217,7 +219,8 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
     { key: 'pirogue', label: 'Location Bateau pirogue' }
   ];
   let selectedStayOptions = {};
-  let bookingDates = '';
+  // Date de réservation commune à TOUS les produits.
+  let bookingDate = params.get('date') || '';
 
   const euro = value =>
     new Intl.NumberFormat('fr-FR', {
@@ -250,14 +253,15 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
           url += '&' + encodeURIComponent(def.key) + '=' + encodeURIComponent(value);
         }
       }
-      if (bookingDates.trim()) {
-        url += '&dates=' + encodeURIComponent(bookingDates.trim());
-      }
-      return url;
     }
 
-    if (pax) {
+    if (!IS_STAY_PRODUCT && pax) {
       url += '&pax=' + encodeURIComponent(pax);
+    }
+
+    // La date sélectionnée est commune à TOUS les produits.
+    if (bookingDate) {
+      url += '&date=' + encodeURIComponent(bookingDate);
     }
 
     return url;
@@ -474,21 +478,7 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
           </select>
         </div>
       `;
-    }).join('') + `
-      <div>
-        <label class="block text-sm font-medium mb-2" for="stay-dates">
-          Merci d'indiquer vos dates de réservations ici
-          <span class="block text-xs text-[#8fa3b3] mt-1">Ex:17/12/2025 au 27/12/2025</span>
-        </label>
-        <input
-          id="stay-dates"
-          type="text"
-          value="${esc(bookingDates)}"
-          placeholder="Ex:17/12/2025 au 27/12/2025"
-          class="w-full border border-white/10 rounded-xl px-3 py-3 text-sm bg-[#0f1524]/80 text-[#dbe7f0] placeholder:text-[#71869a] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
-        >
-      </div>
-    `;
+    }).join('');
 
     els.paxButtons
       .querySelectorAll('[data-stay-option]')
@@ -500,14 +490,61 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
         });
       });
 
-    els.paxButtons
-      .querySelector('#stay-dates')
-      ?.addEventListener('input', event => {
-        bookingDates = event.target.value;
-        updateStayActionLinks(findStayVariation());
-      });
-
     updateStayPrice();
+  }
+
+  function todayISO() {
+    const now = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${now.getFullYear()}-${month}-${day}`;
+  }
+
+  function renderBookingDatePicker() {
+    if (!els.bookingDateWrap) return;
+
+    const minDate = todayISO();
+    if (bookingDate && bookingDate < minDate) {
+      bookingDate = '';
+    }
+
+    els.bookingDateWrap.innerHTML = `
+      <div>
+        <label class="block text-sm font-medium mb-2" for="booking-date">
+          Date souhaitée de réservation
+        </label>
+        <input
+          id="booking-date"
+          type="date"
+          min="${minDate}"
+          value="${esc(bookingDate)}"
+          class="w-full border border-white/10 rounded-xl px-3 py-3 text-sm bg-[#0f1524]/80 text-[#dbe7f0] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+          aria-label="Choisir la date souhaitée de réservation"
+        >
+      </div>
+    `;
+
+    els.bookingDateWrap
+      .querySelector('#booking-date')
+      ?.addEventListener('change', event => {
+        bookingDate = event.target.value || '';
+
+        if (IS_STAY_PRODUCT) {
+          updateStayActionLinks(findStayVariation());
+        } else if (IS_SINGLE_ATTRIBUTE_PRODUCT) {
+          const select = document.getElementById('singleAttributeSelect');
+          selectSingleAttribute(select?.value || '');
+        } else {
+          updateCurrentActionLinks();
+        }
+      });
+  }
+
+  function updateCurrentActionLinks() {
+    const url = contactUrl(selectedPax);
+
+    if (els.contactBtn) els.contactBtn.href = url;
+    if (els.bottomContactBtn) els.bottomContactBtn.href = url;
   }
 
   async function loadProduct() {
@@ -860,11 +897,15 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 
     els.price.textContent = euro(variation.regular_price);
 
-    const url =
+    let url =
       '/contact.html?produit=' +
       encodeURIComponent(PRODUCT_SLUG) +
       '&option=' +
       encodeURIComponent(variation.attribute_value || '');
+
+    if (bookingDate) {
+      url += '&date=' + encodeURIComponent(bookingDate);
+    }
 
     if (els.contactBtn) els.contactBtn.href = url;
     if (els.bottomContactBtn) els.bottomContactBtn.href = url;
@@ -1156,6 +1197,7 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
       }
 
       renderPax();
+      renderBookingDatePicker();
       wireGallery();
       await loadRelated();
 
