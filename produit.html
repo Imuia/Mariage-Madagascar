@@ -23,6 +23,8 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 .prose-mm h4{font-size:1.06rem;font-weight:650;margin:1.4rem 0 .45rem;color:#e0e8f0}
 .prose-mm p{color:#b8c8d5;line-height:1.85;margin:.7rem 0}
 
+.thumb{display:block;min-width:80px;width:80px;height:60px;cursor:pointer}
+.thumb img{display:block;width:100%;height:100%;object-fit:cover}
 .scrollbar-thin::-webkit-scrollbar{height:6px}
 .scrollbar-thin::-webkit-scrollbar-thumb{background:rgba(125,211,252,.22);border-radius:999px}
 .scrollbar-thin::-webkit-scrollbar-track{background:transparent}
@@ -39,8 +41,17 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 </div>
 <section class="grid lg:grid-cols-[1.15fr_.85fr] gap-8 items-start">
 <div class="space-y-4">
-<div class="glass rounded-3xl overflow-hidden aspect-[4/3] relative"><button aria-label="Ouvrir les images du produit en grand" class="group w-full h-full relative cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7dd3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0e1a]" id="mainImageButton" type="button" onclick="openLightbox(currentImageIndex)"><img alt="Mariage scénique à Nosy Komba - Union sur l'île Ambariobe" class="w-full h-full object-cover transition-opacity duration-200" fetchpriority="high" id="mainImage" src="/assets/img/products/MM-NOSYKOMBA-001/01-4fdfeeec-733e-487c-b97e-124a6038547d.jpg" style="cursor:zoom-in"/><span aria-label="Image précédente" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="prevImage" onclick="event.preventDefault();event.stopPropagation();showPrev()"><span class="material-symbols-outlined">chevron_left</span></span><span aria-label="Image suivante" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="nextImage" onclick="event.preventDefault();event.stopPropagation();showNext()"><span class="material-symbols-outlined">chevron_right</span></span><span class="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-[#0a0e1a]/55 border border-white/10 text-xs text-white/80 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md">Cliquer pour agrandir</span><div class="absolute inset-0 bg-gradient-to-t from-[#0a0e1a]/75 via-transparent to-transparent pointer-events-none"></div></button></div>
-<div class="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-thin" id="thumbs"></div>
+<div class="glass rounded-3xl overflow-hidden aspect-[4/3] relative"><button aria-label="Ouvrir les images du produit en grand" class="group w-full h-full relative cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7dd3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0e1a]" id="mainImageButton" type="button"><img alt="Mariage scénique à Nosy Komba - Union sur l'île Ambariobe" class="w-full h-full object-cover transition-opacity duration-200" fetchpriority="high" id="mainImage" src="/assets/img/products/MM-NOSYKOMBA-001/01-4fdfeeec-733e-487c-b97e-124a6038547d.jpg"/><span aria-label="Image précédente" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="prevImage"><span class="material-symbols-outlined">chevron_left</span></span><span aria-label="Image suivante" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="nextImage"><span class="material-symbols-outlined">chevron_right</span></span><span class="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-[#0a0e1a]/55 border border-white/10 text-xs text-white/80 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md">Cliquer pour agrandir</span><div class="absolute inset-0 bg-gradient-to-t from-[#0a0e1a]/75 via-transparent to-transparent pointer-events-none"></div></button></div>
+<div id="thumbs" class="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-thin min-h-[72px]
+  [&>button]:shrink-0 [&>button]:w-20 [&>button]:md:w-24 [&>button]:aspect-[4/3] [&>button]:rounded-xl [&>button]:overflow-hidden [&>button]:border [&>button]:border-white/10 [&>button]:snap-start">
+  <button type="button" data-i="0" class="thumb" aria-label="Afficher la photo 1"><img src="/assets/img/products/MM-NOSYKOMBA-001/01-4fdfeeec-733e-487c-b97e-124a6038547d.jpg" alt="Mariage scénique à Nosy Komba — photo 1" class="w-full h-full object-cover" loading="lazy"></button>
+  <button type="button" data-i="1" class="thumb" aria-label="Afficher la photo 2"><img src="/assets/img/products/MM-NOSYKOMBA-001/02-0df7c94c-73fb-4199-9ee9-9c380d7f6cd7.jpeg" alt="Mariage scénique à Nosy Komba — photo 2" class="w-full h-full object-cover" loading="lazy"></button>
+  <button type="button" data-i="2" class="thumb" aria-label="Afficher la photo 3"><img src="/assets/img/products/MM-NOSYKOMBA-001/03-9c8e8498-685d-40da-81b8-3537013a6fd9.jpg" alt="Mariage scénique à Nosy Komba — photo 3" class="w-full h-full object-cover" loading="lazy"></button>
+  <button type="button" data-i="3" class="thumb" aria-label="Afficher la photo 4"><img src="/assets/img/products/MM-NOSYKOMBA-001/04-895575d8-2728-4ba4-b697-0ae8fd7f1259.jpeg" alt="Mariage scénique à Nosy Komba — photo 4" class="w-full h-full object-cover" loading="lazy"></button>
+  <button type="button" data-i="4" class="thumb" aria-label="Afficher la photo 5"><img src="/assets/img/products/MM-NOSYKOMBA-001/05-1637c763-4083-4bfe-b353-83ddb7c28b7e.jpg" alt="Mariage scénique à Nosy Komba — photo 5" class="w-full h-full object-cover" loading="lazy"></button>
+  <button type="button" data-i="5" class="thumb" aria-label="Afficher la photo 6"><img src="/assets/img/products/MM-NOSYKOMBA-001/06-98f4604b-068e-4061-9c16-251d1fa633a9.jpg" alt="Mariage scénique à Nosy Komba — photo 6" class="w-full h-full object-cover" loading="lazy"></button>
+  <button type="button" data-i="6" class="thumb" aria-label="Afficher la photo 7"><img src="/assets/img/products/MM-NOSYKOMBA-001/07-f91395f7-a52c-4890-b913-d67624560f49.jpeg" alt="Mariage scénique à Nosy Komba — photo 7" class="w-full h-full object-cover" loading="lazy"></button>
+</div>
 </div>
 <aside class="glass-strong rounded-3xl p-7 md:p-8 lg:sticky lg:top-24">
 <div class="flex items-center justify-between gap-3 mb-4">
@@ -60,13 +71,14 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 <div class="text-sm font-medium mb-3">Nombre de personnes (pax)</div>
 <div class="grid grid-cols-5 gap-2" id="paxButtons"></div>
 </div>
-<a class="btn rounded-2xl py-4 mt-5 flex items-center justify-center gap-2 font-semibold" href="/contact.html?produit=-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe&amp;pax=3" id="contactBtn" aria-label="Ajouter au panier">
-        Ajouter au panier <span class="material-symbols-outlined text-[19px]">add_shopping_cart</span>
+<a class="btn rounded-2xl py-4 mt-5 flex items-center justify-center gap-2 font-semibold" href="/contact.html?produit=-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe&amp;pax=3" id="contactBtn">
+        Demander ce mariage <span class="material-symbols-outlined text-[19px]">arrow_forward</span>
 </a>
+<a class="mt-3 block text-center text-sm text-[#8fa3b3] hover:text-[#7dd3fc]" href="https://www.mariage-madagascar.com/-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe" rel="noopener" target="_blank">Voir l'URL source du produit ↗</a>
 </aside>
 </section>
-<section class="mt-10">
-<article class="glass rounded-3xl p-7 md:p-10 w-full">
+<section class="grid lg:grid-cols-[1.25fr_.75fr] gap-8 mt-10">
+<article class="glass rounded-3xl p-7 md:p-9">
 <div class="flex items-center gap-3 mb-5">
 <div class="w-11 h-11 rounded-xl bg-[#7dd3fc]/10 border border-[#7dd3fc]/15 flex items-center justify-center">
 <span class="material-symbols-outlined text-[#7dd3fc]">favorite</span>
@@ -103,7 +115,9 @@ Un film d’amour grandeur nature.</p>
 <h3>💖 Mariage Madagascar — L’amour célébré entre ciel, mer et tradition.</h3>
 <p>🌸 Une expérience unique, authentique et pensée pour ceux qui veulent s’unir dans la magie des îles.</p></div>
 </article>
+
 </section>
+
 
 <section class="mt-10 mb-16">
 <div class="glass-strong rounded-3xl p-8 md:p-10">
@@ -160,11 +174,6 @@ function contactUrl(pax){return '/contact.html?produit='+encodeURIComponent(PROD
 function getAllImages(){ return SOURCE_DATA.images || []; }
 
 function renderThumbs(){
-  const images=getAllImages();
-  thumbs.innerHTML=images.map((src,i)=>`
-    <button type="button" data-i="${i}" class="thumb shrink-0 w-20 md:w-24 aspect-[4/3] rounded-xl overflow-hidden border border-white/10 snap-start transition hover:border-[#7dd3fc]/50" aria-label="Afficher la photo ${i+1}">
-      <img src="${src}" alt="${SOURCE_DATA.name} — photo ${i+1}" class="w-full h-full object-cover" loading="lazy">
-    </button>`).join('');
   document.querySelectorAll('.thumb').forEach(b=>{
     b.addEventListener('click',()=>setMain(Number(b.dataset.i)));
   });
@@ -212,9 +221,11 @@ paxButtons.innerHTML=SOURCE_DATA.variations.map(v=>`
 `).join('');
 document.querySelectorAll('.pax').forEach(btn=>btn.addEventListener('click',()=>selectPax(btn.dataset.pax)));
 
+mainImage.addEventListener('click',(e)=>{ e.preventDefault(); e.stopPropagation(); openLightbox(currentImageIndex); });
+
 mainImageButton.addEventListener('click',(e)=>{
   // Ignore clicks directly on the arrow hit areas; let arrow handlers manage them.
-  if(e.target.closest('#prevImage') || e.target.closest('#nextImage')) return;
+  if(e.target.closest('#prevImage') || e.target.closest('#nextImage') || e.target === mainImage) return;
   openLightbox(currentImageIndex);
 });
 document.getElementById('prevImage').addEventListener('click',(e)=>{e.preventDefault();e.stopPropagation();showPrev();});
