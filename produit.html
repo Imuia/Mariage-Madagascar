@@ -144,6 +144,11 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
     '-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe'
   ).trim();
 
+  // Ce produit utilise les 4 sélecteurs du séjour officiel.
+  // Tous les autres produits conservent exactement le sélecteur pax existant.
+  const STAY_PRODUCT_SLUG = 'sejour-romantique-a-nosy-komba-10-jours-de-reve';
+  const IS_STAY_PRODUCT = PRODUCT_SLUG === STAY_PRODUCT_SLUG;
+
   const els = {
     mainImage: document.getElementById('mainImage'),
     mainImageButton: document.getElementById('mainImageButton'),
@@ -172,6 +177,16 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
   let currentImageIndex = 0;
   let selectedPax = null;
 
+  // Sélection du séjour : les 4 options + la date libre.
+  const STAY_OPTION_DEFS = [
+    { key: 'traiteur', label: 'Service Traiteur' },
+    { key: 'experience', label: 'Expériences uniques pour les amoureux' },
+    { key: 'bateau', label: 'Location Bateau avec moteur' },
+    { key: 'pirogue', label: 'Location Bateau pirogue' }
+  ];
+  let selectedStayOptions = {};
+  let bookingDates = '';
+
   const euro = value =>
     new Intl.NumberFormat('fr-FR', {
       maximumFractionDigits: 0
@@ -195,6 +210,19 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
     let url =
       '/contact.html?produit=' +
       encodeURIComponent(PRODUCT_SLUG);
+
+    if (IS_STAY_PRODUCT) {
+      for (const def of STAY_OPTION_DEFS) {
+        const value = selectedStayOptions[def.key];
+        if (value) {
+          url += '&' + encodeURIComponent(def.key) + '=' + encodeURIComponent(value);
+        }
+      }
+      if (bookingDates.trim()) {
+        url += '&dates=' + encodeURIComponent(bookingDates.trim());
+      }
+      return url;
+    }
 
     if (pax) {
       url += '&pax=' + encodeURIComponent(pax);
@@ -227,6 +255,229 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
     return response.json();
   }
 
+  function parseVariationAttributes(variation) {
+    const names = String(variation.attribute_name || '')
+      .split('|')
+      .map(v => v.trim())
+      .filter(Boolean);
+
+    const values = String(variation.attribute_value || '')
+      .split('|')
+      .map(v => v.trim());
+
+    const byPosition = values.map((value, index) => ({
+      name: names[index] || '',
+      value
+    }));
+
+    return {
+      traiteur: byPosition[0]?.value || '',
+      bateau: byPosition[1]?.value || '',
+      experience: byPosition[2]?.value || '',
+      pirogue: byPosition[3]?.value || ''
+    };
+  }
+
+  function getVariationImageUrl(variation) {
+    const raw = variation?.raw_export;
+
+    try {
+      const data =
+        typeof raw === 'string' ? JSON.parse(raw) : raw;
+
+      const value =
+        data?.Images ||
+        data?.images ||
+        data?.image_url ||
+        data?.source_image_url ||
+        data?.local_image_path ||
+        '';
+
+      if (!value) return '';
+
+      return String(value)
+        .split(',')
+        .map(v => v.trim())
+        .find(Boolean) || '';
+    } catch {
+      return '';
+    }
+  }
+
+  function imageBasename(value) {
+    try {
+      const url = new URL(String(value), location.origin);
+      return decodeURIComponent(url.pathname.split('/').pop() || '')
+        .toLowerCase()
+        .replace(/^\d+-/, '');
+    } catch {
+      return String(value || '')
+        .split('?')[0]
+        .split('/')
+        .pop()
+        .toLowerCase()
+        .replace(/^\d+-/, '');
+    }
+  }
+
+  function findGalleryImageForVariation(variation) {
+    const variationUrl =
+      variationImages.get(String(variation.id)) ||
+      getVariationImageUrl(variation);
+
+    if (!variationUrl) return '';
+
+    const target = imageBasename(variationUrl);
+
+    return images.find(src => imageBasename(src) === target) || '';
+  }
+
+  function findStayVariation() {
+    if (!IS_STAY_PRODUCT) return null;
+
+    return variations.find(variation => {
+      const attrs = parseVariationAttributes(variation);
+
+      return STAY_OPTION_DEFS.every(
+        def => attrs[def.key] === selectedStayOptions[def.key]
+      );
+    }) || null;
+  }
+
+  function updateStayActionLinks(variation) {
+    const url = contactUrl(null);
+
+    if (els.contactBtn) els.contactBtn.href = url;
+    if (els.bottomContactBtn) els.bottomContactBtn.href = url;
+
+    const imageUrl = variation
+      ? findGalleryImageForVariation(variation)
+      : '';
+
+    if (imageUrl) {
+      const index = images.indexOf(imageUrl);
+      if (index >= 0) setMain(index);
+    }
+  }
+
+  function updateStayPrice() {
+    const variation = findStayVariation();
+
+    if (!variation) {
+      els.price.textContent = 'Sélection indisponible';
+      updateStayActionLinks(null);
+      return;
+    }
+
+    els.price.textContent = euro(variation.regular_price);
+    updateStayActionLinks(variation);
+  }
+
+  function optionIsAvailable(def, candidateValue) {
+    return variations.some(variation => {
+      const attrs = parseVariationAttributes(variation);
+
+      if (attrs[def.key] !== candidateValue) return false;
+
+      return STAY_OPTION_DEFS.every(other => {
+        if (other.key === def.key) return true;
+        const selected = selectedStayOptions[other.key];
+        return !selected || attrs[other.key] === selected;
+      });
+    });
+  }
+
+  function renderStayOptions() {
+    if (!IS_STAY_PRODUCT || !els.paxButtons) return;
+
+    // Le libellé pax appartient aux anciens produits ; le nouveau séjour
+    // affiche uniquement ses 4 sélecteurs comme sur la fiche d'origine.
+    if (els.paxButtons.previousElementSibling) {
+      els.paxButtons.previousElementSibling.style.display = 'none';
+    }
+
+    const currentValues = {};
+    const firstVariation = variations[0];
+
+    STAY_OPTION_DEFS.forEach(def => {
+      const firstAttrs = firstVariation
+        ? parseVariationAttributes(firstVariation)
+        : {};
+      currentValues[def.key] =
+        selectedStayOptions[def.key] ||
+        firstAttrs[def.key] ||
+        '';
+    });
+
+    selectedStayOptions = currentValues;
+
+    els.paxButtons.className = 'space-y-4';
+    els.paxButtons.innerHTML = STAY_OPTION_DEFS.map(def => {
+      const values = [];
+      variations.forEach(variation => {
+        const attrs = parseVariationAttributes(variation);
+        const value = attrs[def.key];
+        if (value && !values.includes(value)) values.push(value);
+      });
+
+      const optionsHtml = values.map(value => `
+        <option
+          value="${esc(value)}"
+          ${value === selectedStayOptions[def.key] ? 'selected' : ''}
+          ${optionIsAvailable(def, value) ? '' : 'disabled'}
+        >${esc(value)}</option>
+      `).join('');
+
+      return `
+        <div>
+          <label class="block text-sm font-medium mb-2" for="stay-${def.key}">
+            ${esc(def.label)}
+          </label>
+          <select
+            id="stay-${def.key}"
+            data-stay-option="${esc(def.key)}"
+            class="w-full border border-white/10 rounded-xl px-3 py-3 text-sm font-medium bg-[#0f1524]/80 text-[#dbe7f0] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+          >
+            ${optionsHtml}
+          </select>
+        </div>
+      `;
+    }).join('') + `
+      <div>
+        <label class="block text-sm font-medium mb-2" for="stay-dates">
+          Merci d'indiquer vos dates de réservations ici
+          <span class="block text-xs text-[#8fa3b3] mt-1">Ex:17/12/2025 au 27/12/2025</span>
+        </label>
+        <input
+          id="stay-dates"
+          type="text"
+          value="${esc(bookingDates)}"
+          placeholder="Ex:17/12/2025 au 27/12/2025"
+          class="w-full border border-white/10 rounded-xl px-3 py-3 text-sm bg-[#0f1524]/80 text-[#dbe7f0] placeholder:text-[#71869a] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+        >
+      </div>
+    `;
+
+    els.paxButtons
+      .querySelectorAll('[data-stay-option]')
+      .forEach(select => {
+        select.addEventListener('change', () => {
+          selectedStayOptions[select.dataset.stayOption] = select.value;
+          renderStayOptions();
+          updateStayPrice();
+        });
+      });
+
+    els.paxButtons
+      .querySelector('#stay-dates')
+      ?.addEventListener('input', event => {
+        bookingDates = event.target.value;
+        updateStayActionLinks(findStayVariation());
+      });
+
+    updateStayPrice();
+  }
+
   async function loadProduct() {
     // Produit principal
     const products = await api('mm_products', {
@@ -253,6 +504,10 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
     variations = (variations || [])
       .filter(v => v.published !== false)
       .sort((a, b) => Number(a.pax || 0) - Number(b.pax || 0));
+
+    if (IS_STAY_PRODUCT && variations.length) {
+      selectedStayOptions = parseVariationAttributes(variations[0]);
+    }
 
     // Images : vraie structure Supabase
     // Une erreur d'images ne doit PAS empêcher le texte/prix de s'afficher.
@@ -294,6 +549,27 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
           String(img.variation_id),
           url
         );
+      }
+    }
+
+    // Pour le séjour, chaque variation du CSV contient aussi l'image
+    // de la combinaison. On la conserve pour changer automatiquement
+    // de photo au changement de sélection.
+    if (IS_STAY_PRODUCT) {
+      for (const variation of variations) {
+        const variationUrl = getVariationImageUrl(variation);
+        if (variationUrl) {
+          const localMatch = images.find(
+            src => imageBasename(src) === imageBasename(variationUrl)
+          );
+
+          if (localMatch) {
+            variationImages.set(
+              String(variation.id),
+              localMatch
+            );
+          }
+        }
       }
     }
 
@@ -441,6 +717,13 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
   function renderPax() {
     if (!els.paxButtons) return;
 
+    // IMPORTANT : uniquement pour le nouveau séjour.
+    // Les autres produits gardent exactement leur fonctionnement pax.
+    if (IS_STAY_PRODUCT) {
+      renderStayOptions();
+      return;
+    }
+
     if (!variations.length) {
       els.paxButtons.innerHTML =
         '<span class="text-sm text-[#8fa3b3]">Formule sur demande</span>';
@@ -510,8 +793,10 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
       });
 
     // Image liée à la variation via mm_product_images.variation_id
+    // ou son image définie dans raw_export.
     const variationImage =
-      variationImages.get(String(variation.id));
+      variationImages.get(String(variation.id)) ||
+      findGalleryImageForVariation(variation);
 
     if (variationImage) {
       const index =
