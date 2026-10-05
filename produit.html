@@ -39,7 +39,7 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 </div>
 <section class="grid lg:grid-cols-[1.15fr_.85fr] gap-8 items-start">
 <div class="space-y-4">
-<div class="glass rounded-3xl overflow-hidden aspect-[4/3] relative"><button aria-label="Ouvrir les images du produit en grand" class="group w-full h-full relative cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7dd3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0e1a]" id="mainImageButton" type="button"><img alt="Mariage scénique à Nosy Komba - Union sur l'île Ambariobe" class="w-full h-full object-cover transition-opacity duration-200" fetchpriority="high" id="mainImage" src="/assets/img/products/MM-NOSYKOMBA-001/01-4fdfeeec-733e-487c-b97e-124a6038547d.jpg"/><span aria-label="Image précédente" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="prevImage"><span class="material-symbols-outlined">chevron_left</span></span><span aria-label="Image suivante" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="nextImage"><span class="material-symbols-outlined">chevron_right</span></span><span class="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-[#0a0e1a]/55 border border-white/10 text-xs text-white/80 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md">Cliquer pour agrandir</span><div class="absolute inset-0 bg-gradient-to-t from-[#0a0e1a]/75 via-transparent to-transparent pointer-events-none"></div></button></div>
+<div class="glass rounded-3xl overflow-hidden aspect-[4/3] relative"><button aria-label="Ouvrir les images du produit en grand" class="group w-full h-full relative cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7dd3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0e1a]" id="mainImageButton" type="button" onclick="openLightbox(currentImageIndex)"><img alt="Mariage scénique à Nosy Komba - Union sur l'île Ambariobe" class="w-full h-full object-cover transition-opacity duration-200" fetchpriority="high" id="mainImage" src="/assets/img/products/MM-NOSYKOMBA-001/01-4fdfeeec-733e-487c-b97e-124a6038547d.jpg" style="cursor:zoom-in"/><span aria-label="Image précédente" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="prevImage" onclick="event.preventDefault();event.stopPropagation();showPrev()"><span class="material-symbols-outlined">chevron_left</span></span><span aria-label="Image suivante" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="nextImage" onclick="event.preventDefault();event.stopPropagation();showNext()"><span class="material-symbols-outlined">chevron_right</span></span><span class="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-[#0a0e1a]/55 border border-white/10 text-xs text-white/80 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md">Cliquer pour agrandir</span><div class="absolute inset-0 bg-gradient-to-t from-[#0a0e1a]/75 via-transparent to-transparent pointer-events-none"></div></button></div>
 <div class="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-thin" id="thumbs"></div>
 </div>
 <aside class="glass-strong rounded-3xl p-7 md:p-8 lg:sticky lg:top-24">
@@ -60,14 +60,13 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 <div class="text-sm font-medium mb-3">Nombre de personnes (pax)</div>
 <div class="grid grid-cols-5 gap-2" id="paxButtons"></div>
 </div>
-<a class="btn rounded-2xl py-4 mt-5 flex items-center justify-center gap-2 font-semibold" href="/contact.html?produit=-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe&amp;pax=3" id="contactBtn">
-        Demander ce mariage <span class="material-symbols-outlined text-[19px]">arrow_forward</span>
+<a class="btn rounded-2xl py-4 mt-5 flex items-center justify-center gap-2 font-semibold" href="/contact.html?produit=-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe&amp;pax=3" id="contactBtn" aria-label="Ajouter au panier">
+        Ajouter au panier <span class="material-symbols-outlined text-[19px]">add_shopping_cart</span>
 </a>
-<a class="mt-3 block text-center text-sm text-[#8fa3b3] hover:text-[#7dd3fc]" href="https://www.mariage-madagascar.com/-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe" rel="noopener" target="_blank">Voir l'URL source du produit ↗</a>
 </aside>
 </section>
-<section class="grid lg:grid-cols-[1.25fr_.75fr] gap-8 mt-10">
-<article class="glass rounded-3xl p-7 md:p-9">
+<section class="mt-10">
+<article class="glass rounded-3xl p-7 md:p-10 w-full">
 <div class="flex items-center gap-3 mb-5">
 <div class="w-11 h-11 rounded-xl bg-[#7dd3fc]/10 border border-[#7dd3fc]/15 flex items-center justify-center">
 <span class="material-symbols-outlined text-[#7dd3fc]">favorite</span>
@@ -104,9 +103,7 @@ Un film d’amour grandeur nature.</p>
 <h3>💖 Mariage Madagascar — L’amour célébré entre ciel, mer et tradition.</h3>
 <p>🌸 Une expérience unique, authentique et pensée pour ceux qui veulent s’unir dans la magie des îles.</p></div>
 </article>
-
 </section>
-
 
 <section class="mt-10 mb-16">
 <div class="glass-strong rounded-3xl p-8 md:p-10">
