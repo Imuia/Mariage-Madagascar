@@ -37,7 +37,7 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 <div class="mb-6 text-sm text-[#8fa3b3]">
 <a class="hover:text-[#7dd3fc]" href="/">Accueil</a>
 <span class="mx-2">/</span>
-<span>Produit</span>
+<span id="breadcrumbProduct">Produit</span>
 </div>
 <section class="grid lg:grid-cols-[1.15fr_.85fr] gap-8 items-start">
 <div class="space-y-4">
@@ -62,7 +62,7 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 <div class="text-sm font-medium mb-3">Nombre de personnes (pax)</div>
 <div class="grid grid-cols-5 gap-2" id="paxButtons"></div>
 </div>
-<a class="btn rounded-2xl py-4 mt-5 flex items-center justify-center gap-2 font-semibold" href="/contact.html?produit=-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe&amp;pax=3" id="contactBtn">
+<a class="btn rounded-2xl py-4 mt-5 flex items-center justify-center gap-2 font-semibold" href="/contact.html" id="contactBtn">
         Ajouter au panier <span class="material-symbols-outlined text-[19px]">arrow_forward</span>
 </a>
 </aside>
@@ -75,7 +75,7 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 </div>
 <div>
 <div class="text-xs uppercase tracking-widest text-[#7dd3fc] font-semibold">Description complète</div>
-<h2 class="text-2xl font-semibold">Mariage magique à Nosy Komba &amp; Nosy Ambariobe</h2>
+<h2 id="productDescriptionTitle" class="text-2xl font-semibold">Description du produit</h2>
 </div>
 </div>
 <div id="productDescription" class="prose-mm"><p>Chargement de la description…</p></div>
@@ -89,10 +89,10 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 <div class="grid md:grid-cols-[1fr_auto] gap-7 items-center">
 <div>
 <div class="text-xs uppercase tracking-[.24em] text-[#c8a0f0] font-semibold mb-3">Mariage Madagascar</div>
-<h2 class="text-3xl md:text-4xl font-semibold text-glow">Une expérience sur mesure à Nosy Komba</h2>
+<h2 id="bottomTitle" class="text-3xl md:text-4xl font-semibold text-glow">Une expérience sur mesure</h2>
 <p class="text-[#a8bbc8] mt-3 max-w-2xl">Sélectionnez le nombre de personnes pour afficher le tarif correspondant et poursuivre votre demande.</p>
 </div>
-<a class="btn rounded-full px-7 py-3.5 font-semibold whitespace-nowrap text-center" href="/contact.html?produit=-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe&amp;pax=3" id="bottomContactBtn">Demander un devis →</a>
+<a class="btn rounded-full px-7 py-3.5 font-semibold whitespace-nowrap text-center" href="/contact.html" id="bottomContactBtn">Demander un devis →</a>
 </div>
 </div>
 </section>
@@ -114,9 +114,13 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 
 <script>
 (() => {
-  // UNE SEULE PAGE POUR TOUS LES PRODUITS
+  // ============================================================
+  // UNE SEULE FICHE POUR TOUS LES PRODUITS
   // URL publique : /produit/<slug>
-  // Compatibilité conservée : /produit.html?slug=<slug>
+  // Exemple :
+  // /produit/-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe
+  // /produit/-mariage-symbolique-couple-enfants-une-celebration-familiale-unique-
+  // ============================================================
 
   const SUPABASE_URL =
     window.MARIAGE_SUPABASE?.url ||
@@ -140,28 +144,31 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
     '-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe'
   ).trim();
 
-  const mainImage = document.getElementById('mainImage');
-  const mainImageButton = document.getElementById('mainImageButton');
-  const thumbs = document.getElementById('thumbs');
-  const paxButtons = document.getElementById('paxButtons');
-  const price = document.getElementById('price');
-  const contactBtn = document.getElementById('contactBtn');
-  const bottomContactBtn = document.getElementById('bottomContactBtn');
-  const relatedProducts = document.getElementById('relatedProducts');
-  const productTitle = document.getElementById('productTitle');
-  const productShortDescription =
-    document.getElementById('productShortDescription');
-  const productDescription =
-    document.getElementById('productDescription');
-
-  const lightbox = document.getElementById('imageLightbox');
-  const lightboxImage = document.getElementById('lightboxImage');
-  const lightboxCaption = document.getElementById('lightboxCaption');
-  const lightboxCount = document.getElementById('lightboxCount');
+  const els = {
+    mainImage: document.getElementById('mainImage'),
+    mainImageButton: document.getElementById('mainImageButton'),
+    thumbs: document.getElementById('thumbs'),
+    paxButtons: document.getElementById('paxButtons'),
+    price: document.getElementById('price'),
+    contactBtn: document.getElementById('contactBtn'),
+    bottomContactBtn: document.getElementById('bottomContactBtn'),
+    relatedProducts: document.getElementById('relatedProducts'),
+    productTitle: document.getElementById('productTitle'),
+    productShortDescription: document.getElementById('productShortDescription'),
+    productDescription: document.getElementById('productDescription'),
+    productDescriptionTitle: document.getElementById('productDescriptionTitle'),
+    breadcrumbProduct: document.getElementById('breadcrumbProduct'),
+    bottomTitle: document.getElementById('bottomTitle'),
+    lightbox: document.getElementById('imageLightbox'),
+    lightboxImage: document.getElementById('lightboxImage'),
+    lightboxCaption: document.getElementById('lightboxCaption'),
+    lightboxCount: document.getElementById('lightboxCount')
+  };
 
   let product = null;
   let variations = [];
   let images = [];
+  let variationImages = new Map();
   let currentImageIndex = 0;
   let selectedPax = null;
 
@@ -197,13 +204,12 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
   }
 
   async function api(path, query = {}) {
-    const search = new URLSearchParams(query).toString();
-
+    const qs = new URLSearchParams(query).toString();
     const url =
       SUPABASE_URL +
       '/rest/v1/' +
       path +
-      (search ? '?' + search : '');
+      (qs ? '?' + qs : '');
 
     const response = await fetch(url, {
       headers: {
@@ -213,9 +219,8 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
     });
 
     if (!response.ok) {
-      const body = await response.text().catch(() => '');
       throw new Error(
-        `Supabase ${response.status} ${path}: ${body}`
+        `Supabase ${response.status} sur ${path}`
       );
     }
 
@@ -223,125 +228,118 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
   }
 
   async function loadProduct() {
-    /*
-      IMPORTANT :
-      On utilise uniquement les colonnes réellement présentes
-      dans les tables actuelles.
-
-      mm_product_variations :
-        attribute_name
-        attribute_value
-        pax
-        regular_price
-        currency
-        published
-        in_stock
-
-      mm_product_images :
-        image_url
-        alt_text
-        sort_order
-        is_featured
-        source_url
-    */
-
-    const productRows = await api('mm_products', {
+    // Produit principal
+    const products = await api('mm_products', {
       select: '*',
       slug: 'eq.' + PRODUCT_SLUG,
       limit: '1'
     });
 
-    if (!productRows?.length) {
+    if (!products.length) {
       throw new Error(
-        'Produit introuvable pour le slug : ' + PRODUCT_SLUG
+        'Produit introuvable : ' + PRODUCT_SLUG
       );
     }
 
-    product = productRows[0];
+    product = products[0];
 
-    // Variations : structure exacte de Supabase
+    // Variations : vraie structure Supabase
     variations = await api('mm_product_variations', {
-      select:
-        'id,product_id,sku,name,attribute_name,attribute_value,pax,regular_price,currency,published,in_stock',
+      select: '*',
       product_id: 'eq.' + product.id,
-      published: 'eq.true',
       order: 'pax.asc'
     });
 
-    // Images : structure exacte de Supabase
-    const imageRows = await api('mm_product_images', {
-      select:
-        'id,product_id,variation_id,image_url,alt_text,sort_order,is_featured,source_url',
-      product_id: 'eq.' + product.id,
-      order: 'sort_order.asc'
-    });
+    variations = (variations || [])
+      .filter(v => v.published !== false)
+      .sort((a, b) => Number(a.pax || 0) - Number(b.pax || 0));
 
-    /*
-      Galerie :
-      - featured_image_url du produit
-      - image_url de mm_product_images
-      - fallback source_url pour les anciennes images
-      Aucun doublon.
-    */
-    const seen = new Set();
+    // Images : vraie structure Supabase
+    // Une erreur d'images ne doit PAS empêcher le texte/prix de s'afficher.
+    let productImages = [];
 
-    function addImage(url, fallback, alt) {
-      if (!url || seen.has(url)) return;
-
-      seen.add(url);
-
-      images.push({
-        url,
-        fallback: fallback && fallback !== url ? fallback : null,
-        alt: alt || product.name || 'Image produit'
+    try {
+      productImages = await api('mm_product_images', {
+        select: '*',
+        product_id: 'eq.' + product.id,
+        order: 'sort_order.asc'
       });
+    } catch (imageError) {
+      console.warn(
+        'Galerie produit indisponible, utilisation de l’image vedette.',
+        imageError
+      );
     }
 
-    addImage(
-      product.featured_image_url,
-      product.source_url,
-      product.name
-    );
+    images = [];
+    variationImages = new Map();
 
-    (imageRows || []).forEach(img => {
-      addImage(
-        img.image_url || img.source_url,
-        img.source_url,
-        img.alt_text || product.name
-      );
-    });
+    const addUnique = url => {
+      if (!url || images.includes(url)) return;
+      images.push(url);
+    };
 
-    /*
-      On ne suppose plus que les variations possèdent des colonnes
-      d'image qui n'existent pas dans le schéma actuel.
-    */
+    // Image vedette du produit
+    addUnique(product.featured_image_url);
+
+    // Galerie : image_url est le vrai champ de la table.
+    for (const img of productImages) {
+      const url = img.image_url || img.source_url;
+      if (!url) continue;
+
+      addUnique(url);
+
+      if (img.variation_id) {
+        variationImages.set(
+          String(img.variation_id),
+          url
+        );
+      }
+    }
+
+    // Compatibilité avec d'éventuelles variations déjà importées
+    // avec une image locale dans raw_export.
+    for (const variation of variations) {
+      const raw = variation.raw_export || {};
+      const variationImage =
+        raw.local_image_path ||
+        raw.image_url ||
+        raw.source_image_url ||
+        null;
+
+      if (variationImage) {
+        addUnique(variationImage);
+        variationImages.set(
+          String(variation.id),
+          variationImage
+        );
+      }
+    }
 
     if (!images.length) {
-      throw new Error(
-        'Aucune image disponible pour ce produit.'
-      );
+      throw new Error('Aucune image disponible pour ce produit.');
     }
 
-    const requestedPax = Number(params.get('pax'));
-
     selectedPax =
-      variations.find(v => Number(v.pax) === requestedPax)?.pax ||
-      variations[0]?.pax ||
+      Number(params.get('pax')) ||
+      Number(variations[0]?.pax) ||
       null;
   }
 
-  function updateMeta() {
-    const title =
-      product.name || 'Produit Mariage Madagascar';
+  function updateProductText() {
+    const title = product.name || 'Produit Mariage Madagascar';
+    const description =
+      product.description_html ||
+      '<p>Description non disponible pour ce produit.</p>';
 
     document.title =
       title + ' | Mariage Madagascar';
 
-    const meta =
+    const metaDescription =
       document.getElementById('metaDescription');
 
-    if (meta) {
-      meta.content =
+    if (metaDescription) {
+      metaDescription.content =
         product.short_description || '';
     }
 
@@ -354,90 +352,65 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
         productUrl(PRODUCT_SLUG);
     }
 
-    productTitle.textContent = title;
-
-    productShortDescription.textContent =
+    els.productTitle.textContent = title;
+    els.productShortDescription.textContent =
       product.short_description || '';
 
-    productDescription.innerHTML =
-      product.description_html ||
-      '<p>Aucune description disponible.</p>';
+    els.productDescription.innerHTML = description;
 
-    const breadcrumb =
-      document.querySelector('.mb-6 span:last-child');
-
-    if (breadcrumb) {
-      breadcrumb.textContent = title;
+    if (els.productDescriptionTitle) {
+      els.productDescriptionTitle.textContent = title;
     }
 
-    const descriptionTitle =
-      document.querySelector('#productDescription')
-        ?.closest('article')
-        ?.querySelector('h2');
-
-    if (descriptionTitle) {
-      descriptionTitle.textContent = title;
+    if (els.breadcrumbProduct) {
+      els.breadcrumbProduct.textContent = title;
     }
 
-    const bottomHeading =
-      bottomContactBtn
-        ?.closest('.glass-strong')
-        ?.querySelector('h2');
-
-    if (bottomHeading) {
-      bottomHeading.textContent =
+    if (els.bottomTitle) {
+      els.bottomTitle.textContent =
         'Une expérience sur mesure';
     }
 
-    mainImage.alt = title;
+    els.mainImage.alt = title;
   }
 
   function renderThumbs() {
-    thumbs.innerHTML = images.map((img, index) => `
-      <button
-        type="button"
-        data-i="${index}"
-        class="thumb rounded-xl overflow-hidden border border-white/10 aspect-[4/3] shrink-0
-               ring-1 ${index === currentImageIndex
-                 ? 'ring-[#7dd3fc]'
-                 : 'ring-transparent'}"
-        aria-label="Afficher la photo ${index + 1}">
-        <img
-          src="${esc(img.url)}"
-          alt="${esc(img.alt)}"
-          class="w-full h-full object-cover"
-          loading="${index === 0 ? 'eager' : 'lazy'}">
-      </button>
-    `).join('');
+    if (!els.thumbs) return;
 
-    thumbs
+    els.thumbs.innerHTML = images
+      .map((src, index) => `
+        <button
+          type="button"
+          data-index="${index}"
+          class="thumb rounded-xl overflow-hidden border border-white/10 aspect-[4/3] shrink-0 ring-1 ${
+            index === currentImageIndex
+              ? 'ring-[#7dd3fc]'
+              : 'ring-transparent'
+          }"
+          aria-label="Afficher la photo ${index + 1}"
+        >
+          <img
+            src="${esc(src)}"
+            alt="${esc(product.name)} — photo ${index + 1}"
+            class="w-full h-full object-cover"
+            loading="${index === 0 ? 'eager' : 'lazy'}"
+          >
+        </button>
+      `)
+      .join('');
+
+    els.thumbs
       .querySelectorAll('.thumb')
       .forEach(button => {
         button.addEventListener('click', () => {
-          setMain(Number(button.dataset.i));
-        });
-      });
-
-    thumbs
-      .querySelectorAll('img')
-      .forEach((img, index) => {
-        img.addEventListener('error', () => {
-          const data = images[index];
-
-          if (
-            data?.fallback &&
-            img.dataset.fallbackUsed !== '1'
-          ) {
-            img.dataset.fallbackUsed = '1';
-            img.src = data.fallback;
-          }
+          setMain(Number(button.dataset.index));
         });
       });
   }
 
   function syncThumbs() {
-    thumbs
-      .querySelectorAll('.thumb')
+    els.thumbs
+      ?.querySelectorAll('.thumb')
       .forEach((button, index) => {
         button.classList.toggle(
           'ring-[#7dd3fc]',
@@ -457,77 +430,38 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
     currentImageIndex =
       (index + images.length) % images.length;
 
-    const data = images[currentImageIndex];
+    const src = images[currentImageIndex];
 
-    mainImage.style.opacity = '.35';
+    els.mainImage.src = src;
+    els.mainImage.style.opacity = '1';
 
-    const preload = new Image();
-
-    preload.onload = () => {
-      mainImage.src = data.url;
-      mainImage.alt =
-        data.alt || product.name || '';
-
-      mainImage.style.opacity = '1';
-
-      syncThumbs();
-    };
-
-    preload.onerror = () => {
-      if (data.fallback) {
-        const fallback = new Image();
-
-        fallback.onload = () => {
-          mainImage.src = data.fallback;
-          mainImage.alt =
-            data.alt || product.name || '';
-          mainImage.style.opacity = '1';
-          syncThumbs();
-        };
-
-        fallback.onerror = () => {
-          mainImage.style.opacity = '1';
-        };
-
-        fallback.src = data.fallback;
-
-      } else {
-        mainImage.style.opacity = '1';
-      }
-    };
-
-    preload.src = data.url;
-  }
-
-  function showPrev() {
-    setMain(currentImageIndex - 1);
-  }
-
-  function showNext() {
-    setMain(currentImageIndex + 1);
+    syncThumbs();
   }
 
   function renderPax() {
-    if (!paxButtons) return;
+    if (!els.paxButtons) return;
 
     if (!variations.length) {
-      paxButtons.innerHTML =
+      els.paxButtons.innerHTML =
         '<span class="text-sm text-[#8fa3b3]">Formule sur demande</span>';
 
-      price.textContent = 'Sur demande';
+      els.price.textContent = 'Sur demande';
       return;
     }
 
-    paxButtons.innerHTML = variations.map(v => `
-      <button
-        type="button"
-        data-pax="${Number(v.pax)}"
-        class="pax border border-white/10 rounded-xl py-3 text-sm font-semibold text-[#a0b4c4]">
-        ${Number(v.pax)}
-      </button>
-    `).join('');
+    els.paxButtons.innerHTML = variations
+      .map(v => `
+        <button
+          type="button"
+          data-pax="${Number(v.pax || v.attribute_value || 0)}"
+          class="pax border border-white/10 rounded-xl py-3 text-sm font-semibold text-[#a0b4c4]"
+        >
+          ${Number(v.pax || v.attribute_value || 0)}
+        </button>
+      `)
+      .join('');
 
-    paxButtons
+    els.paxButtons
       .querySelectorAll('.pax')
       .forEach(button => {
         button.addEventListener('click', () => {
@@ -536,55 +470,57 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
       });
 
     selectPax(
-      Number(selectedPax || variations[0].pax)
+      selectedPax ||
+      Number(variations[0].pax)
     );
   }
 
   function selectPax(paxValue) {
-    /*
-      IMPORTANT :
-      Le prix réel est regular_price.
-      attribute_value est la valeur de la variation.
-    */
     const variation =
       variations.find(
         v => Number(v.pax) === Number(paxValue)
-      ) ||
-      variations.find(
-        v => Number(v.attribute_value) === Number(paxValue)
       ) ||
       variations[0];
 
     if (!variation) return;
 
-    selectedPax =
-      Number(variation.pax || variation.attribute_value);
+    selectedPax = Number(variation.pax);
 
-    price.textContent =
+    // VRAI champ Supabase : regular_price
+    els.price.textContent =
       euro(variation.regular_price);
 
-    if (contactBtn) {
-      contactBtn.href =
+    if (els.contactBtn) {
+      els.contactBtn.href =
         contactUrl(selectedPax);
     }
 
-    if (bottomContactBtn) {
-      bottomContactBtn.href =
+    if (els.bottomContactBtn) {
+      els.bottomContactBtn.href =
         contactUrl(selectedPax);
     }
 
-    paxButtons
-      .querySelectorAll('.pax')
+    els.paxButtons
+      ?.querySelectorAll('.pax')
       .forEach(button => {
-        const active =
-          Number(button.dataset.pax) ===
-          selectedPax;
-
         button.classList.toggle(
           'active',
-          active
+          Number(button.dataset.pax) === selectedPax
         );
       });
+
+    // Image liée à la variation via mm_product_images.variation_id
+    const variationImage =
+      variationImages.get(String(variation.id));
+
+    if (variationImage) {
+      const index =
+        images.indexOf(variationImage);
+
+      if (index >= 0) {
+        setMain(index);
+      }
+    }
   }
 
   function openLightbox(index = currentImageIndex) {
@@ -595,47 +531,67 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 
     updateLightbox();
 
-    lightbox.classList.remove('hidden');
+    els.lightbox?.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
   }
 
   function closeLightbox() {
-    lightbox.classList.add('hidden');
+    els.lightbox?.classList.add('hidden');
     document.body.classList.remove('overflow-hidden');
   }
 
   function updateLightbox() {
-    const data =
+    if (!els.lightboxImage) return;
+
+    els.lightboxImage.src =
       images[currentImageIndex];
 
-    lightboxImage.src = data.url;
-    lightboxImage.alt =
-      data.alt || product.name || '';
+    els.lightboxImage.alt =
+      `${product.name} — photo ${currentImageIndex + 1}`;
 
-    lightboxCaption.textContent =
-      product.name || '';
+    if (els.lightboxCaption) {
+      els.lightboxCaption.textContent =
+        product.name;
+    }
 
-    lightboxCount.textContent =
-      `Image ${currentImageIndex + 1} / ${images.length}`;
+    if (els.lightboxCount) {
+      els.lightboxCount.textContent =
+        `Image ${currentImageIndex + 1} / ${images.length}`;
+    }
+  }
+
+  function showPrev() {
+    setMain(currentImageIndex - 1);
+  }
+
+  function showNext() {
+    setMain(currentImageIndex + 1);
   }
 
   function wireGallery() {
-    mainImage.addEventListener('click', event => {
-      event.preventDefault();
-      event.stopPropagation();
-      openLightbox(currentImageIndex);
-    });
+    els.mainImageButton?.addEventListener(
+      'click',
+      event => {
+        if (
+          event.target.closest('#prevImage') ||
+          event.target.closest('#nextImage')
+        ) {
+          return;
+        }
 
-    mainImageButton.addEventListener('click', event => {
-      if (
-        event.target.closest('#prevImage') ||
-        event.target.closest('#nextImage')
-      ) {
-        return;
+        openLightbox(currentImageIndex);
       }
+    );
 
-      openLightbox(currentImageIndex);
-    });
+    // Clic direct sur la grande image
+    els.mainImage?.addEventListener(
+      'click',
+      event => {
+        event.preventDefault();
+        event.stopPropagation();
+        openLightbox(currentImageIndex);
+      }
+    );
 
     document
       .getElementById('prevImage')
@@ -680,15 +636,19 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
         updateLightbox();
       });
 
-    lightbox.addEventListener('click', event => {
-      if (event.target === lightbox) {
-        closeLightbox();
+    els.lightbox?.addEventListener(
+      'click',
+      event => {
+        if (event.target === els.lightbox) {
+          closeLightbox();
+        }
       }
-    });
+    );
 
     document.addEventListener('keydown', event => {
       if (
-        lightbox.classList.contains('hidden')
+        !els.lightbox ||
+        els.lightbox.classList.contains('hidden')
       ) {
         return;
       }
@@ -707,8 +667,7 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 
       if (event.key === 'ArrowRight') {
         currentImageIndex =
-          (currentImageIndex + 1) %
-          images.length;
+          (currentImageIndex + 1) % images.length;
 
         updateLightbox();
       }
@@ -716,40 +675,38 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
   }
 
   async function loadRelated() {
-    if (!relatedProducts) return;
+    if (!els.relatedProducts) return;
 
     try {
       const rows = await api(
         'mm_products',
         {
           select:
-            'slug,name,short_description,featured_image_url,source_url,published,created_at',
+            'slug,name,short_description,featured_image_url,published,created_at',
           published: 'eq.true',
-          slug:
-            'not.eq.' + PRODUCT_SLUG,
+          slug: 'not.eq.' + PRODUCT_SLUG,
           order: 'created_at.desc',
           limit: '6'
         }
       );
 
-      if (!rows?.length) return;
+      if (!rows.length) return;
 
-      relatedProducts.innerHTML =
+      els.relatedProducts.innerHTML =
         rows.map(p => `
           <a
             class="glass rounded-2xl overflow-hidden block hover:border-[#7dd3fc]/40 transition"
-            href="${productUrl(p.slug)}">
-
+            href="${productUrl(p.slug)}"
+          >
             <div class="aspect-video bg-[#0f1524]">
               ${
                 p.featured_image_url
-                  ? `
-                    <img
+                  ? `<img
                       src="${esc(p.featured_image_url)}"
-                      data-fallback="${esc(p.source_url || '')}"
                       alt="${esc(p.name)}"
-                      class="w-full h-full object-cover">
-                  `
+                      class="w-full h-full object-cover"
+                      loading="lazy"
+                    >`
                   : ''
               }
             </div>
@@ -767,30 +724,11 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
                 Voir le produit →
               </span>
             </div>
-
           </a>
         `).join('');
-
-      relatedProducts
-        .querySelectorAll('img[data-fallback]')
-        .forEach(img => {
-          img.addEventListener('error', () => {
-            const fallback =
-              img.dataset.fallback;
-
-            if (
-              fallback &&
-              img.dataset.fallbackUsed !== '1'
-            ) {
-              img.dataset.fallbackUsed = '1';
-              img.src = fallback;
-            }
-          });
-        });
-
     } catch (error) {
       console.warn(
-        'Produits associés:',
+        'Produits associés indisponibles:',
         error
       );
     }
@@ -800,36 +738,43 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
     try {
       await loadProduct();
 
-      updateMeta();
-      renderThumbs();
+      // IMPORTANT :
+      // Le texte est rendu avant toute logique de galerie.
+      // Ainsi le titre et la description ne disparaissent jamais
+      // à cause d'un problème d'image.
+      updateProductText();
+
+      if (images.length) {
+        renderThumbs();
+        setMain(currentImageIndex);
+      }
+
       renderPax();
       wireGallery();
-
-      setMain(currentImageIndex);
-
       await loadRelated();
 
     } catch (error) {
       console.error(
-        'Produit:',
+        'Erreur chargement produit:',
         error
       );
 
-      productTitle.textContent =
-        'Produit indisponible';
+      // Ne pas afficher "Produit indisponible" si le produit
+      // n'est pas réellement introuvable.
+      if (!product) {
+        els.productTitle.textContent =
+          'Produit indisponible';
 
-      productShortDescription.textContent =
-        'Impossible de charger ce produit.';
+        els.productShortDescription.textContent =
+          'Impossible de charger ce produit.';
 
-      productDescription.innerHTML = `
-        <p>Impossible de charger les données de ce produit depuis Supabase.</p>
-      `;
-
-      /*
-        On affiche l'erreur réelle dans la console
-        pour faciliter le prochain diagnostic,
-        mais on ne bloque pas la page entière.
-      */
+        els.productDescription.innerHTML = `
+          <p>
+            Le produit demandé n'a pas été trouvé
+            dans Supabase.
+          </p>
+        `;
+      }
     }
   }
 
