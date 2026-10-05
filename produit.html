@@ -59,7 +59,7 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 </div>
 
 </div>
-<div class="text-sm font-medium mb-3">Nombre de personnes (pax)</div>
+<div id="variationLabel" class="text-sm font-medium mb-3">Nombre de personnes (pax)</div>
 <div class="grid grid-cols-5 gap-2" id="paxButtons"></div>
 </div>
 <a class="btn rounded-2xl py-4 mt-5 flex items-center justify-center gap-2 font-semibold" href="/contact.html" id="contactBtn">
@@ -149,11 +149,43 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
   const STAY_PRODUCT_SLUG = 'sejour-romantique-a-nosy-komba-10-jours-de-reve';
   const IS_STAY_PRODUCT = PRODUCT_SLUG === STAY_PRODUCT_SLUG;
 
+  // Produit variable à attribut unique (ex. Nombres de jours).
+  // Le sélecteur pax des autres produits reste inchangé.
+  let IS_SINGLE_ATTRIBUTE_PRODUCT = false;
+  let SINGLE_ATTRIBUTE_NAME = '';
+
+  // Images LOCALES du séjour : on ne touche pas aux autres produits.
+  // Les noms correspondent exactement aux fichiers présents dans
+  // /assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/
+  const STAY_LOCAL_IMAGES = [
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/c876d761-fdf6-4d49-a47c-52839189244e.jpg',
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/02.jpg',
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/03.webp',
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/04.jpg',
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/05.jpeg',
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/06.jpg',
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/07.jpg',
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/08.jpeg'
+  ];
+
+  // Correspondance des images du CSV avec les noms locaux.
+  const STAY_IMAGE_SOURCE_TO_LOCAL = {
+    'c876d761-fdf6-4d49-a47c-52839189244e.jpg': STAY_LOCAL_IMAGES[0],
+    '5e2a2532-378d-42b4-8171-79bf9fd431fa.jpg': STAY_LOCAL_IMAGES[1],
+    'e6b5d8ef-6605-4322-92a4-8e08e68b8b31.jpg': STAY_LOCAL_IMAGES[2],
+    'a877f3f4-d983-4d8f-9d58-cbc062cb4a71.jpeg': STAY_LOCAL_IMAGES[3],
+    'c736fa34-c13b-4db6-939a-0584460d65c5.jpg': STAY_LOCAL_IMAGES[4],
+    '3488a74e-a60f-4ff5-8300-f697be404b3e.jpg': STAY_LOCAL_IMAGES[5],
+    '9fe4227b-ce2b-49b3-908d-33fa9d7e1b1c.jpeg': STAY_LOCAL_IMAGES[6],
+    'c5d1d2c2-d333-42f9-9756-5e7f4d0a6806.jpg': STAY_LOCAL_IMAGES[7]
+  };
+
   const els = {
     mainImage: document.getElementById('mainImage'),
     mainImageButton: document.getElementById('mainImageButton'),
     thumbs: document.getElementById('thumbs'),
     paxButtons: document.getElementById('paxButtons'),
+    variationLabel: document.getElementById('variationLabel'),
     price: document.getElementById('price'),
     contactBtn: document.getElementById('contactBtn'),
     bottomContactBtn: document.getElementById('bottomContactBtn'),
@@ -503,29 +535,33 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 
     variations = (variations || [])
       .filter(v => v.published !== false)
-      .sort((a, b) => Number(a.pax || 0) - Number(b.pax || 0));
+      .sort((a, b) => {
+        const pa = Number(a.pax);
+        const pb = Number(b.pax);
+        if (Number.isFinite(pa) && Number.isFinite(pb)) return pa - pb;
+        return String(a.sku || '').localeCompare(String(b.sku || ''));
+      });
+
+    if (
+      !IS_STAY_PRODUCT &&
+      variations.length &&
+      variations.every(v =>
+        v.pax == null &&
+        String(v.attribute_name || '').trim()
+      )
+    ) {
+      IS_SINGLE_ATTRIBUTE_PRODUCT = true;
+      SINGLE_ATTRIBUTE_NAME = String(variations[0].attribute_name || '').trim();
+    }
 
     if (IS_STAY_PRODUCT && variations.length) {
       selectedStayOptions = parseVariationAttributes(variations[0]);
     }
 
-    // Images : vraie structure Supabase
-    // Une erreur d'images ne doit PAS empêcher le texte/prix de s'afficher.
-    let productImages = [];
-
-    try {
-      productImages = await api('mm_product_images', {
-        select: '*',
-        product_id: 'eq.' + product.id,
-        order: 'sort_order.asc'
-      });
-    } catch (imageError) {
-      console.warn(
-        'Galerie produit indisponible, utilisation de l’image vedette.',
-        imageError
-      );
-    }
-
+    // Images :
+    // - CE séjour : 100 % des images viennent du dossier local Vercel.
+    //   Aucun appel Supabase n'est nécessaire pour les images.
+    // - AUTRES PRODUITS : fonctionnement existant conservé avec Supabase.
     images = [];
     variationImages = new Map();
 
@@ -534,61 +570,73 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
       images.push(url);
     };
 
-    // Image vedette du produit
-    addUnique(product.featured_image_url);
-
-    // Galerie : image_url est le vrai champ de la table.
-    for (const img of productImages) {
-      const url = img.image_url || img.source_url;
-      if (!url) continue;
-
-      addUnique(url);
-
-      if (img.variation_id) {
-        variationImages.set(
-          String(img.variation_id),
-          url
-        );
-      }
-    }
-
-    // Pour le séjour, chaque variation du CSV contient aussi l'image
-    // de la combinaison. On la conserve pour changer automatiquement
-    // de photo au changement de sélection.
     if (IS_STAY_PRODUCT) {
+      // Galerie locale exacte :
+      // /assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/
+      STAY_LOCAL_IMAGES.forEach(addUnique);
+
+      // Chaque variation du CSV contient l'image source officielle.
+      // On convertit le nom de cette image vers le fichier local.
       for (const variation of variations) {
         const variationUrl = getVariationImageUrl(variation);
-        if (variationUrl) {
-          const localMatch = images.find(
-            src => imageBasename(src) === imageBasename(variationUrl)
-          );
+        const sourceName = imageBasename(variationUrl);
+        const localImage = STAY_IMAGE_SOURCE_TO_LOCAL[sourceName];
 
-          if (localMatch) {
-            variationImages.set(
-              String(variation.id),
-              localMatch
-            );
-          }
+        if (localImage) {
+          variationImages.set(String(variation.id), localImage);
         }
       }
-    }
+    } else {
+      // AUTRES PRODUITS : fonctionnement strictement inchangé.
+      let productImages = [];
 
-    // Compatibilité avec d'éventuelles variations déjà importées
-    // avec une image locale dans raw_export.
-    for (const variation of variations) {
-      const raw = variation.raw_export || {};
-      const variationImage =
-        raw.local_image_path ||
-        raw.image_url ||
-        raw.source_image_url ||
-        null;
-
-      if (variationImage) {
-        addUnique(variationImage);
-        variationImages.set(
-          String(variation.id),
-          variationImage
+      try {
+        productImages = await api('mm_product_images', {
+          select: '*',
+          product_id: 'eq.' + product.id,
+          order: 'sort_order.asc'
+        });
+      } catch (imageError) {
+        console.warn(
+          'Galerie produit indisponible, utilisation de l’image vedette.',
+          imageError
         );
+      }
+
+      addUnique(product.featured_image_url);
+
+      // Galerie : image_url est le vrai champ de la table.
+      for (const img of productImages) {
+        const url = img.image_url || img.source_url;
+        if (!url) continue;
+
+        addUnique(url);
+
+        if (img.variation_id) {
+          variationImages.set(
+            String(img.variation_id),
+            url
+          );
+        }
+      }
+
+      // Compatibilité avec d'éventuelles variations déjà importées
+      // avec une image locale dans raw_export.
+      for (const variation of variations) {
+        const raw = variation.raw_export || {};
+        const variationImage =
+          raw.local_image_path ||
+          raw.image_url ||
+          raw.source_image_url ||
+          null;
+
+        if (variationImage) {
+          addUnique(variationImage);
+          variationImages.set(
+            String(variation.id),
+            variationImage
+          );
+        }
       }
     }
 
@@ -717,11 +765,53 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
   function renderPax() {
     if (!els.paxButtons) return;
 
-    // IMPORTANT : uniquement pour le nouveau séjour.
-    // Les autres produits gardent exactement leur fonctionnement pax.
     if (IS_STAY_PRODUCT) {
+      if (els.variationLabel) els.variationLabel.textContent = '';
       renderStayOptions();
       return;
+    }
+
+    // Nouveau produit à attribut unique : Nombres de jours.
+    // Aucun changement pour les produits pax existants.
+    if (IS_SINGLE_ATTRIBUTE_PRODUCT) {
+      const values = [];
+
+      variations.forEach(v => {
+        const value = String(v.attribute_value || '').trim();
+        if (value && !values.includes(value)) values.push(value);
+      });
+
+      if (els.variationLabel) {
+        els.variationLabel.textContent =
+          SINGLE_ATTRIBUTE_NAME || 'Options';
+      }
+
+      els.paxButtons.className = 'space-y-0';
+      els.paxButtons.innerHTML = `
+        <select
+          id="singleAttributeSelect"
+          class="w-full border border-white/10 rounded-xl px-3 py-3 text-sm font-medium bg-[#0f1524]/80 text-[#dbe7f0] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+        >
+          ${values.map(value => `
+            <option value="${esc(value)}">${esc(value)}</option>
+          `).join('')}
+        </select>
+      `;
+
+      const select = document.getElementById('singleAttributeSelect');
+
+      select?.addEventListener('change', () => {
+        selectSingleAttribute(select.value);
+      });
+
+      selectSingleAttribute(
+        select?.value || values[0] || ''
+      );
+      return;
+    }
+
+    if (els.variationLabel) {
+      els.variationLabel.textContent = 'Nombre de personnes (pax)';
     }
 
     if (!variations.length) {
@@ -732,6 +822,7 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
       return;
     }
 
+    els.paxButtons.className = 'grid grid-cols-5 gap-2';
     els.paxButtons.innerHTML = variations
       .map(v => `
         <button
@@ -756,6 +847,36 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
       selectedPax ||
       Number(variations[0].pax)
     );
+  }
+
+  function selectSingleAttribute(value) {
+    const variation =
+      variations.find(v =>
+        String(v.attribute_value || '').trim() === String(value || '').trim()
+      ) ||
+      variations[0];
+
+    if (!variation) return;
+
+    els.price.textContent = euro(variation.regular_price);
+
+    const url =
+      '/contact.html?produit=' +
+      encodeURIComponent(PRODUCT_SLUG) +
+      '&option=' +
+      encodeURIComponent(variation.attribute_value || '');
+
+    if (els.contactBtn) els.contactBtn.href = url;
+    if (els.bottomContactBtn) els.bottomContactBtn.href = url;
+
+    const variationImage =
+      variationImages.get(String(variation.id)) ||
+      findGalleryImageForVariation(variation);
+
+    if (variationImage) {
+      const index = images.indexOf(variationImage);
+      if (index >= 0) setMain(index);
+    }
   }
 
   function selectPax(paxValue) {
