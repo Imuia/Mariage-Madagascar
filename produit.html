@@ -30,6 +30,70 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 .scrollbar-thin::-webkit-scrollbar-track{background:transparent}
 body.villa-product #mainImageFrame{aspect-ratio:auto;height:min(540px,55vh)}
 body.villa-product #mainImageButton{height:100%}
+
+/* Carrousel des miniatures : uniquement pour la fiche Villa */
+.villa-thumb-carousel{
+  display:flex;
+  width:100%;
+}
+.villa-thumb-carousel.is-villa-carousel{
+  display:grid;
+  grid-template-columns:36px minmax(0,1fr) 36px;
+  align-items:center;
+  gap:8px;
+  width:100%;
+}
+.villa-thumb-carousel:not(.is-villa-carousel) #thumbs{
+  width:100%;
+  overflow-x:auto;
+}
+.villa-thumb-carousel.is-villa-carousel #thumbs{
+  display:flex;
+  flex-wrap:nowrap;
+  overflow:hidden;
+  scroll-behavior:smooth;
+  scrollbar-width:none;
+}
+.villa-thumb-carousel.is-villa-carousel #thumbs::-webkit-scrollbar{display:none}
+.villa-thumb-carousel.is-villa-carousel .thumb{
+  flex:0 0 72px;
+  width:72px;
+  height:54px;
+}
+.villa-thumb-arrow{
+  display:none;
+  width:36px;
+  height:36px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(15,21,36,.88);
+  border:1px solid rgba(125,211,252,.25);
+  color:#7dd3fc;
+  cursor:pointer;
+  transition:background .2s,opacity .2s;
+}
+.villa-thumb-carousel.is-villa-carousel .villa-thumb-arrow{
+  display:flex;
+}
+.villa-thumb-arrow:hover{background:rgba(125,211,252,.16)}
+.villa-thumb-arrow:disabled{opacity:.3;cursor:default}
+@media (max-width:640px){
+  .villa-thumb-carousel.is-villa-carousel{
+    grid-template-columns:32px minmax(0,1fr) 32px;
+    gap:5px;
+  }
+  .villa-thumb-carousel.is-villa-carousel .thumb{
+    flex-basis:64px;
+    width:64px;
+    height:48px;
+  }
+  .villa-thumb-arrow{
+    width:32px;
+    height:32px;
+  }
+}
 </style>
 </head>
 <body class="min-h-screen bg-[#0a0e1a]">
@@ -44,7 +108,15 @@ body.villa-product #mainImageButton{height:100%}
 <section class="grid lg:grid-cols-[1.15fr_.85fr] gap-8 items-start">
 <div class="space-y-4">
 <div id="mainImageFrame" class="glass rounded-3xl overflow-hidden aspect-[4/3] relative"><button aria-label="Ouvrir les images du produit en grand" class="group w-full h-full relative cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7dd3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0e1a]" id="mainImageButton" type="button"><img alt="" class="w-full h-full object-cover transition-opacity duration-200" fetchpriority="high" id="mainImage" src="" /><span aria-label="Image précédente" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="prevImage"><span class="material-symbols-outlined">chevron_left</span></span><span aria-label="Image suivante" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="nextImage"><span class="material-symbols-outlined">chevron_right</span></span><span class="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-[#0a0e1a]/55 border border-white/10 text-xs text-white/80 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md">Cliquer pour agrandir</span><div class="absolute inset-0 bg-gradient-to-t from-[#0a0e1a]/75 via-transparent to-transparent pointer-events-none"></div></button></div>
-<div id="thumbs" class="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-thin min-h-[72px]"></div>
+<div class="villa-thumb-carousel" id="thumbCarousel">
+  <button type="button" class="villa-thumb-arrow" id="thumbPrev" aria-label="Miniature précédente">
+    <span class="material-symbols-outlined">chevron_left</span>
+  </button>
+  <div id="thumbs" class="flex gap-2 overflow-hidden pb-2 min-h-[72px] min-w-0" aria-label="Miniatures du produit"></div>
+  <button type="button" class="villa-thumb-arrow" id="thumbNext" aria-label="Miniature suivante">
+    <span class="material-symbols-outlined">chevron_right</span>
+  </button>
+</div>
 </div>
 <aside class="glass-strong rounded-3xl p-7 md:p-8 lg:sticky lg:top-24">
 <div class="flex items-center justify-between gap-3 mb-4">
@@ -195,6 +267,8 @@ body.villa-product #mainImageButton{height:100%}
     mainImage: document.getElementById('mainImage'),
     mainImageButton: document.getElementById('mainImageButton'),
     thumbs: document.getElementById('thumbs'),
+    thumbPrev: document.getElementById('thumbPrev'),
+    thumbNext: document.getElementById('thumbNext'),
     paxButtons: document.getElementById('paxButtons'),
     variationLabel: document.getElementById('variationLabel'),
     price: document.getElementById('price'),
@@ -866,6 +940,41 @@ body.villa-product #mainImageButton{height:100%}
     els.mainImage.alt = title;
   }
 
+  function updateThumbCarousel() {
+    if (!IS_VILLA_PRODUCT || !els.thumbs) return;
+
+    const maxScroll = Math.max(
+      0,
+      els.thumbs.scrollWidth - els.thumbs.clientWidth
+    );
+
+    const currentScroll = els.thumbs.scrollLeft;
+
+    if (els.thumbPrev) {
+      els.thumbPrev.disabled = currentScroll <= 2;
+    }
+
+    if (els.thumbNext) {
+      els.thumbNext.disabled = currentScroll >= maxScroll - 2;
+    }
+  }
+
+  function scrollThumbs(direction) {
+    if (!IS_VILLA_PRODUCT || !els.thumbs) return;
+
+    const amount = Math.max(
+      els.thumbs.clientWidth * 0.75,
+      220
+    );
+
+    els.thumbs.scrollBy({
+      left: direction * amount,
+      behavior: 'smooth'
+    });
+
+    window.setTimeout(updateThumbCarousel, 250);
+  }
+
   function renderThumbs() {
     if (!els.thumbs) return;
 
@@ -898,6 +1007,22 @@ body.villa-product #mainImageButton{height:100%}
           setMain(Number(button.dataset.index));
         });
       });
+
+    if (IS_VILLA_PRODUCT) {
+      els.thumbs.addEventListener('scroll', updateThumbCarousel, {
+        passive: true
+      });
+
+      els.thumbPrev?.addEventListener('click', () => {
+        scrollThumbs(-1);
+      });
+
+      els.thumbNext?.addEventListener('click', () => {
+        scrollThumbs(1);
+      });
+
+      requestAnimationFrame(updateThumbCarousel);
+    }
   }
 
   function syncThumbs() {
@@ -913,7 +1038,22 @@ body.villa-product #mainImageButton{height:100%}
           'ring-transparent',
           index !== currentImageIndex
         );
+
+        if (
+          IS_VILLA_PRODUCT &&
+          index === currentImageIndex
+        ) {
+          button.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'center'
+          });
+        }
       });
+
+    if (IS_VILLA_PRODUCT) {
+      window.setTimeout(updateThumbCarousel, 120);
+    }
   }
 
   function setMain(index) {
@@ -1320,6 +1460,11 @@ body.villa-product #mainImageButton{height:100%}
   async function init() {
     try {
       await loadProduct();
+
+      const thumbCarousel = document.getElementById('thumbCarousel');
+      if (IS_VILLA_PRODUCT) {
+        thumbCarousel?.classList.add('is-villa-carousel');
+      }
 
       // IMPORTANT :
       // Le texte est rendu avant toute logique de galerie.
