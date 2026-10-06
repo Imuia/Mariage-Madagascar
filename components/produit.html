@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Mariage Madagascar — Produit</title>
+<meta id="metaDescription" content="Mariage Madagascar — expérience sur mesure." name="description"/>
+<link id="canonicalLink" href="https://mariage-madagascar.vercel.app/produit.html" rel="canonical"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
+.glass{background:rgba(15,21,36,.65);backdrop-filter:blur(18px);border:1px solid rgba(125,211,252,.10)}
+.glass-strong{background:rgba(15,21,36,.78);backdrop-filter:blur(24px);border:1px solid rgba(125,211,252,.14)}
+.text-glow{text-shadow:0 0 20px rgba(125,211,252,.25)}
+.btn{background:rgba(125,211,252,.12);border:1px solid rgba(125,211,252,.28);color:#7dd3fc}
+.btn:hover{background:rgba(125,211,252,.22)}
+.thumb.active{border-color:#7dd3fc;box-shadow:0 0 18px rgba(125,211,252,.18)}
+.pax.active{background:rgba(125,211,252,.14);border-color:rgba(125,211,252,.55);color:#7dd3fc}
+.prose-mm h3{font-size:1.35rem;font-weight:700;margin:2rem 0 .75rem;color:#e0e8f0}
+.prose-mm h4{font-size:1.06rem;font-weight:650;margin:1.4rem 0 .45rem;color:#e0e8f0}
+.prose-mm p{color:#b8c8d5;line-height:1.85;margin:.7rem 0}
+
+.thumb{display:block;min-width:80px;width:80px;height:60px;cursor:pointer}
+.thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.scrollbar-thin::-webkit-scrollbar{height:6px}
+.scrollbar-thin::-webkit-scrollbar-thumb{background:rgba(125,211,252,.22);border-radius:999px}
+.scrollbar-thin::-webkit-scrollbar-track{background:transparent}
+</style>
+</head>
+<body class="min-h-screen bg-[#0a0e1a]">
+<div data-global-header=""></div>
+<main class="pt-24">
+<div class="max-w-7xl mx-auto px-5 md:px-8 pb-24">
+<div class="mb-6 text-sm text-[#8fa3b3]">
+<a class="hover:text-[#7dd3fc]" href="/">Accueil</a>
+<span class="mx-2">/</span>
+<span id="breadcrumbProduct">Produit</span>
+</div>
+<section class="grid lg:grid-cols-[1.15fr_.85fr] gap-8 items-start">
+<div class="space-y-4">
+<div class="glass rounded-3xl overflow-hidden aspect-[4/3] relative"><button aria-label="Ouvrir les images du produit en grand" class="group w-full h-full relative cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7dd3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0e1a]" id="mainImageButton" type="button"><img alt="" class="w-full h-full object-cover transition-opacity duration-200" fetchpriority="high" id="mainImage" src="" /><span aria-label="Image précédente" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="prevImage"><span class="material-symbols-outlined">chevron_left</span></span><span aria-label="Image suivante" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="nextImage"><span class="material-symbols-outlined">chevron_right</span></span><span class="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-[#0a0e1a]/55 border border-white/10 text-xs text-white/80 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md">Cliquer pour agrandir</span><div class="absolute inset-0 bg-gradient-to-t from-[#0a0e1a]/75 via-transparent to-transparent pointer-events-none"></div></button></div>
+<div id="thumbs" class="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-thin min-h-[72px]"></div>
+</div>
+<aside class="glass-strong rounded-3xl p-7 md:p-8 lg:sticky lg:top-24">
+<div class="flex items-center justify-between gap-3 mb-4">
+<span class="text-xs uppercase tracking-[.24em] text-[#c8a0f0] font-semibold">Expérience exclusive</span>
+<span class="text-xs text-[#7dd3fc] border border-[#7dd3fc]/20 bg-[#7dd3fc]/5 rounded-full px-3 py-1">Disponible</span>
+</div>
+<h1 id="productTitle" class="text-3xl md:text-4xl font-semibold leading-tight text-glow">Chargement du produit…</h1>
+<p id="productShortDescription" class="text-lg text-[#c0d0dc] mt-3">Chargement…</p>
+<div class="mt-7 rounded-2xl border border-[#7dd3fc]/10 bg-[#0f1524]/70 p-5">
+<div class="flex items-end justify-between gap-4 mb-4">
+<div>
+<div class="text-xs uppercase tracking-widest text-[#8fa3b3] mb-1">Tarif sélectionné</div>
+<div class="text-3xl font-semibold text-[#7dd3fc]" id="price"></div>
+</div>
+
+</div>
+<div id="variationLabel" class="text-sm font-medium mb-3">Nombre de personnes (pax)</div>
+<div class="grid grid-cols-5 gap-2" id="paxButtons"></div>
+</div>
+<a class="btn rounded-2xl py-4 mt-5 flex items-center justify-center gap-2 font-semibold" href="/contact.html" id="contactBtn">
+        Ajouter au panier <span class="material-symbols-outlined text-[19px]">arrow_forward</span>
+</a>
+</aside>
+</section>
+<section class=" mt-10">
+<article class="glass rounded-3xl p-7 md:p-9">
+<div class="flex items-center gap-3 mb-5"> 
+<div class="w-11 h-11 rounded-xl bg-[#7dd3fc]/10 border border-[#7dd3fc]/15 flex items-center justify-center">
+<span class="material-symbols-outlined text-[#7dd3fc]">favorite</span>
+</div>
+<div>
+<div class="text-xs uppercase tracking-widest text-[#7dd3fc] font-semibold">Description complète</div>
+<h2 id="productDescriptionTitle" class="text-2xl font-semibold">Description du produit</h2>
+</div>
+</div>
+<div id="productDescription" class="prose-mm"><p>Chargement de la description…</p></div>
+</article>
+
+</section>
+
+
+<section class="mt-10 mb-16">
+<div class="glass-strong rounded-3xl p-8 md:p-10">
+<div class="grid md:grid-cols-[1fr_auto] gap-7 items-center">
+<div>
+<div class="text-xs uppercase tracking-[.24em] text-[#c8a0f0] font-semibold mb-3">Mariage Madagascar</div>
+<h2 id="bottomTitle" class="text-3xl md:text-4xl font-semibold text-glow">Une expérience sur mesure</h2>
+<p class="text-[#a8bbc8] mt-3 max-w-2xl">Sélectionnez le nombre de personnes pour afficher le tarif correspondant et poursuivre votre demande.</p>
+</div>
+<a class="btn rounded-full px-7 py-3.5 font-semibold whitespace-nowrap text-center" href="/contact.html" id="bottomContactBtn">Demander un devis →</a>
+</div>
+</div>
+</section>
+<section class="mt-10">
+<div class="mb-5">
+<div class="text-xs uppercase tracking-widest text-[#7dd3fc] font-semibold mb-2">Autres produits</div>
+<h2 class="text-3xl font-semibold">Vous pourriez aimer</h2>
+<p class="text-[#8fa3b3] mt-2">Cette zone sera alimentée automatiquement par les autres produits enregistrés dans Supabase.</p>
+</div>
+<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="relatedProducts">
+<div class="glass rounded-2xl p-6 text-[#8fa3b3]">Les autres produits apparaîtront ici après leur import dans Supabase.</div>
+</div>
+</section>
+</div>
+</main>
+<div data-global-footer=""></div>
+<script src="/components/components.js"></script>
+<script src="/assets/js/supabase-config.js"></script>
+
+<script>
+(() => {
+  // ============================================================
+  // UNE SEULE FICHE POUR TOUS LES PRODUITS
+  // URL publique : /produit/<slug>
+  // Exemple :
+  // /produit/-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe
+  // /produit/-mariage-symbolique-couple-enfants-une-celebration-familiale-unique-
+  // ============================================================
+
+  const SUPABASE_URL =
+    window.MARIAGE_SUPABASE?.url ||
+    'https://qrkinjuhtyfptldlvdyg.supabase.co';
+
+  const SUPABASE_ANON_KEY =
+    window.MARIAGE_SUPABASE?.anonKey ||
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
+
+  const params = new URLSearchParams(location.search);
+  const parts = location.pathname.split('/').filter(Boolean);
+
+  const pathnameSlug =
+    parts[0] === 'produit'
+      ? decodeURIComponent(parts.slice(1).join('/'))
+      : '';
+
+  const PRODUCT_SLUG = (
+    params.get('slug') ||
+    pathnameSlug ||
+    '-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe'
+  ).trim();
+
+  // Ce produit utilise les 4 sélecteurs du séjour officiel.
+  // Tous les autres produits conservent exactement le sélecteur pax existant.
+  const STAY_PRODUCT_SLUG = 'sejour-romantique-a-nosy-komba-10-jours-de-reve';
+  const IS_STAY_PRODUCT = PRODUCT_SLUG === STAY_PRODUCT_SLUG;
+
+  // Produit variable à attribut unique (ex. Nombres de jours).
+  // Le sélecteur pax des autres produits reste inchangé.
+  let IS_SINGLE_ATTRIBUTE_PRODUCT = false;
+  let SINGLE_ATTRIBUTE_NAME = '';
+
+  // Images LOCALES du séjour : on ne touche pas aux autres produits.
+  // Les noms correspondent exactement aux fichiers présents dans
+  // /assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/
+  const STAY_LOCAL_IMAGES = [
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/c876d761-fdf6-4d49-a47c-52839189244e.jpg',
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/02.jpg',
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/03.webp',
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/04.jpg',
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/05.jpeg',
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/06.jpg',
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/07.jpg',
+    '/assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/08.jpeg'
+  ];
+
+  // Correspondance des images du CSV avec les noms locaux.
+  const STAY_IMAGE_SOURCE_TO_LOCAL = {
+    'c876d761-fdf6-4d49-a47c-52839189244e.jpg': STAY_LOCAL_IMAGES[0],
+    '5e2a2532-378d-42b4-8171-79bf9fd431fa.jpg': STAY_LOCAL_IMAGES[1],
+    'e6b5d8ef-6605-4322-92a4-8e08e68b8b31.jpg': STAY_LOCAL_IMAGES[2],
+    'a877f3f4-d983-4d8f-9d58-cbc062cb4a71.jpeg': STAY_LOCAL_IMAGES[3],
+    'c736fa34-c13b-4db6-939a-0584460d65c5.jpg': STAY_LOCAL_IMAGES[4],
+    '3488a74e-a60f-4ff5-8300-f697be404b3e.jpg': STAY_LOCAL_IMAGES[5],
+    '9fe4227b-ce2b-49b3-908d-33fa9d7e1b1c.jpeg': STAY_LOCAL_IMAGES[6],
+    'c5d1d2c2-d333-42f9-9756-5e7f4d0a6806.jpg': STAY_LOCAL_IMAGES[7]
+  };
+
+  const els = {
+    mainImage: document.getElementById('mainImage'),
+    mainImageButton: document.getElementById('mainImageButton'),
+    thumbs: document.getElementById('thumbs'),
+    paxButtons: document.getElementById('paxButtons'),
+    variationLabel: document.getElementById('variationLabel'),
+    price: document.getElementById('price'),
+    contactBtn: document.getElementById('contactBtn'),
+    bottomContactBtn: document.getElementById('bottomContactBtn'),
+    relatedProducts: document.getElementById('relatedProducts'),
+    productTitle: document.getElementById('productTitle'),
+    productShortDescription: document.getElementById('productShortDescription'),
+    productDescription: document.getElementById('productDescription'),
+    productDescriptionTitle: document.getElementById('productDescriptionTitle'),
+    breadcrumbProduct: document.getElementById('breadcrumbProduct'),
+    bottomTitle: document.getElementById('bottomTitle'),
+    lightbox: document.getElementById('imageLightbox'),
+    lightboxImage: document.getElementById('lightboxImage'),
+    lightboxCaption: document.getElementById('lightboxCaption'),
+    lightboxCount: document.getElementById('lightboxCount')
+  };
+
+  let product = null;
+  let variations = [];
+  let images = [];
+  let variationImages = new Map();
+  let currentImageIndex = 0;
+  let selectedPax = null;
+
+  // Sélection du séjour : les 4 options + la date libre.
+  const STAY_OPTION_DEFS = [
+    { key: 'traiteur', label: 'Service Traiteur' },
+    { key: 'experience', label: 'Expériences uniques pour les amoureux' },
+    { key: 'bateau', label: 'Location Bateau avec moteur' },
+    { key: 'pirogue', label: 'Location Bateau pirogue' }
+  ];
+  let selectedStayOptions = {};
+  let bookingDates = '';
+
+  const euro = value =>
+    new Intl.NumberFormat('fr-FR', {
+      maximumFractionDigits: 0
+    }).format(Number(value || 0)) + ' €';
+
+  function esc(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    }[char]));
+  }
+
+  function productUrl(slug) {
+    return '/produit/' + String(slug || '').replace(/^\/+/, '');
+  }
+
+  function contactUrl(pax) {
+    let url =
+      '/contact.html?produit=' +
+      encodeURIComponent(PRODUCT_SLUG);
+
+    if (IS_STAY_PRODUCT) {
+      for (const def of STAY_OPTION_DEFS) {
+        const value = selectedStayOptions[def.key];
+        if (value) {
+          url += '&' + encodeURIComponent(def.key) + '=' + encodeURIComponent(value);
+        }
+      }
+      if (bookingDates.trim()) {
+        url += '&dates=' + encodeURIComponent(bookingDates.trim());
+      }
+      return url;
+    }
+
+    if (pax) {
+      url += '&pax=' + encodeURIComponent(pax);
+    }
+
+    return url;
+  }
+
+  async function api(path, query = {}) {
+    const qs = new URLSearchParams(query).toString();
+    const url =
+      SUPABASE_URL +
+      '/rest/v1/' +
+      path +
+      (qs ? '?' + qs : '');
+
+    const response = await fetch(url, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: 'Bearer ' + SUPABASE_ANON_KEY
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Supabase ${response.status} sur ${path}`
+      );
+    }
+
+    return response.json();
+  }
+
+  function parseVariationAttributes(variation) {
+    const names = String(variation.attribute_name || '')
+      .split('|')
+      .map(v => v.trim())
+      .filter(Boolean);
+
+    const values = String(variation.attribute_value || '')
+      .split('|')
+      .map(v => v.trim());
+
+    const byPosition = values.map((value, index) => ({
+      name: names[index] || '',
+      value
+    }));
+
+    return {
+      traiteur: byPosition[0]?.value || '',
+      bateau: byPosition[1]?.value || '',
+      experience: byPosition[2]?.value || '',
+      pirogue: byPosition[3]?.value || ''
+    };
+  }
+
+  function getVariationImageUrl(variation) {
+    const raw = variation?.raw_export;
+
+    try {
+      const data =
+        typeof raw === 'string' ? JSON.parse(raw) : raw;
+
+      const value =
+        data?.Images ||
+        data?.images ||
+        data?.image_url ||
+        data?.source_image_url ||
+        data?.local_image_path ||
+        '';
+
+      if (!value) return '';
+
+      return String(value)
+        .split(',')
+        .map(v => v.trim())
+        .find(Boolean) || '';
+    } catch {
+      return '';
+    }
+  }
+
+  function imageBasename(value) {
+    try {
+      const url = new URL(String(value), location.origin);
+      return decodeURIComponent(url.pathname.split('/').pop() || '')
+        .toLowerCase()
+        .replace(/^\d+-/, '');
+    } catch {
+      return String(value || '')
+        .split('?')[0]
+        .split('/')
+        .pop()
+        .toLowerCase()
+        .replace(/^\d+-/, '');
+    }
+  }
+
+  function findGalleryImageForVariation(variation) {
+    const variationUrl =
+      variationImages.get(String(variation.id)) ||
+      getVariationImageUrl(variation);
+
+    if (!variationUrl) return '';
+
+    const target = imageBasename(variationUrl);
+
+    return images.find(src => imageBasename(src) === target) || '';
+  }
+
+  function findStayVariation() {
+    if (!IS_STAY_PRODUCT) return null;
+
+    return variations.find(variation => {
+      const attrs = parseVariationAttributes(variation);
+
+      return STAY_OPTION_DEFS.every(
+        def => attrs[def.key] === selectedStayOptions[def.key]
+      );
+    }) || null;
+  }
+
+  function updateStayActionLinks(variation) {
+    const url = contactUrl(null);
+
+    if (els.contactBtn) els.contactBtn.href = url;
+    if (els.bottomContactBtn) els.bottomContactBtn.href = url;
+
+    const imageUrl = variation
+      ? findGalleryImageForVariation(variation)
+      : '';
+
+    if (imageUrl) {
+      const index = images.indexOf(imageUrl);
+      if (index >= 0) setMain(index);
+    }
+  }
+
+  function updateStayPrice() {
+    const variation = findStayVariation();
+
+    if (!variation) {
+      els.price.textContent = 'Sélection indisponible';
+      updateStayActionLinks(null);
+      return;
+    }
+
+    els.price.textContent = euro(variation.regular_price);
+    updateStayActionLinks(variation);
+  }
+
+  function optionIsAvailable(def, candidateValue) {
+    return variations.some(variation => {
+      const attrs = parseVariationAttributes(variation);
+
+      if (attrs[def.key] !== candidateValue) return false;
+
+      return STAY_OPTION_DEFS.every(other => {
+        if (other.key === def.key) return true;
+        const selected = selectedStayOptions[other.key];
+        return !selected || attrs[other.key] === selected;
+      });
+    });
+  }
+
+  function renderStayOptions() {
+    if (!IS_STAY_PRODUCT || !els.paxButtons) return;
+
+    // Le libellé pax appartient aux anciens produits ; le nouveau séjour
+    // affiche uniquement ses 4 sélecteurs comme sur la fiche d'origine.
+    if (els.paxButtons.previousElementSibling) {
+      els.paxButtons.previousElementSibling.style.display = 'none';
+    }
+
+    const currentValues = {};
+    const firstVariation = variations[0];
+
+    STAY_OPTION_DEFS.forEach(def => {
+      const firstAttrs = firstVariation
+        ? parseVariationAttributes(firstVariation)
+        : {};
+      currentValues[def.key] =
+        selectedStayOptions[def.key] ||
+        firstAttrs[def.key] ||
+        '';
+    });
+
+    selectedStayOptions = currentValues;
+
+    els.paxButtons.className = 'space-y-4';
+    els.paxButtons.innerHTML = STAY_OPTION_DEFS.map(def => {
+      const values = [];
+      variations.forEach(variation => {
+        const attrs = parseVariationAttributes(variation);
+        const value = attrs[def.key];
+        if (value && !values.includes(value)) values.push(value);
+      });
+
+      const optionsHtml = values.map(value => `
+        <option
+          value="${esc(value)}"
+          ${value === selectedStayOptions[def.key] ? 'selected' : ''}
+          ${optionIsAvailable(def, value) ? '' : 'disabled'}
+        >${esc(value)}</option>
+      `).join('');
+
+      return `
+        <div>
+          <label class="block text-sm font-medium mb-2" for="stay-${def.key}">
+            ${esc(def.label)}
+          </label>
+          <select
+            id="stay-${def.key}"
+            data-stay-option="${esc(def.key)}"
+            class="w-full border border-white/10 rounded-xl px-3 py-3 text-sm font-medium bg-[#0f1524]/80 text-[#dbe7f0] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+          >
+            ${optionsHtml}
+          </select>
+        </div>
+      `;
+    }).join('') + `
+      <div>
+        <label class="block text-sm font-medium mb-2" for="stay-dates">
+          Merci d'indiquer vos dates de réservations ici
+          <span class="block text-xs text-[#8fa3b3] mt-1">Ex:17/12/2025 au 27/12/2025</span>
+        </label>
+        <input
+          id="stay-dates"
+          type="text"
+          value="${esc(bookingDates)}"
+          placeholder="Ex:17/12/2025 au 27/12/2025"
+          class="w-full border border-white/10 rounded-xl px-3 py-3 text-sm bg-[#0f1524]/80 text-[#dbe7f0] placeholder:text-[#71869a] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+        >
+      </div>
+    `;
+
+    els.paxButtons
+      .querySelectorAll('[data-stay-option]')
+      .forEach(select => {
+        select.addEventListener('change', () => {
+          selectedStayOptions[select.dataset.stayOption] = select.value;
+          renderStayOptions();
+          updateStayPrice();
+        });
+      });
+
+    els.paxButtons
+      .querySelector('#stay-dates')
+      ?.addEventListener('input', event => {
+        bookingDates = event.target.value;
+        updateStayActionLinks(findStayVariation());
+      });
+
+    updateStayPrice();
+  }
+
+  async function loadProduct() {
+    // Produit principal
+    const products = await api('mm_products', {
+      select: '*',
+      slug: 'eq.' + PRODUCT_SLUG,
+      limit: '1'
+    });
+
+    if (!products.length) {
+      throw new Error(
+        'Produit introuvable : ' + PRODUCT_SLUG
+      );
+    }
+
+    product = products[0];
+
+    // Variations : vraie structure Supabase
+    variations = await api('mm_product_variations', {
+      select: '*',
+      product_id: 'eq.' + product.id,
+      order: 'pax.asc'
+    });
+
+    variations = (variations || [])
+      .filter(v => v.published !== false)
+      .sort((a, b) => {
+        const pa = Number(a.pax);
+        const pb = Number(b.pax);
+        if (Number.isFinite(pa) && Number.isFinite(pb)) return pa - pb;
+        return String(a.sku || '').localeCompare(String(b.sku || ''));
+      });
+
+    if (
+      !IS_STAY_PRODUCT &&
+      variations.length &&
+      variations.every(v =>
+        v.pax == null &&
+        String(v.attribute_name || '').trim()
+      )
+    ) {
+      IS_SINGLE_ATTRIBUTE_PRODUCT = true;
+      SINGLE_ATTRIBUTE_NAME = String(variations[0].attribute_name || '').trim();
+    }
+
+    if (IS_STAY_PRODUCT && variations.length) {
+      selectedStayOptions = parseVariationAttributes(variations[0]);
+    }
+
+    // Images :
+    // - CE séjour : 100 % des images viennent du dossier local Vercel.
+    //   Aucun appel Supabase n'est nécessaire pour les images.
+    // - AUTRES PRODUITS : fonctionnement existant conservé avec Supabase.
+    images = [];
+    variationImages = new Map();
+
+    const addUnique = url => {
+      if (!url || images.includes(url)) return;
+      images.push(url);
+    };
+
+    if (IS_STAY_PRODUCT) {
+      // Galerie locale exacte :
+      // /assets/img/products/MM-SEJOUR-NOSY-KOMBA-10J-001/
+      STAY_LOCAL_IMAGES.forEach(addUnique);
+
+      // Chaque variation du CSV contient l'image source officielle.
+      // On convertit le nom de cette image vers le fichier local.
+      for (const variation of variations) {
+        const variationUrl = getVariationImageUrl(variation);
+        const sourceName = imageBasename(variationUrl);
+        const localImage = STAY_IMAGE_SOURCE_TO_LOCAL[sourceName];
+
+        if (localImage) {
+          variationImages.set(String(variation.id), localImage);
+        }
+      }
+    } else {
+      // AUTRES PRODUITS : fonctionnement strictement inchangé.
+      let productImages = [];
+
+      try {
+        productImages = await api('mm_product_images', {
+          select: '*',
+          product_id: 'eq.' + product.id,
+          order: 'sort_order.asc'
+        });
+      } catch (imageError) {
+        console.warn(
+          'Galerie produit indisponible, utilisation de l’image vedette.',
+          imageError
+        );
+      }
+
+      addUnique(product.featured_image_url);
+
+      // Galerie : image_url est le vrai champ de la table.
+      for (const img of productImages) {
+        const url = img.image_url || img.source_url;
+        if (!url) continue;
+
+        addUnique(url);
+
+        if (img.variation_id) {
+          variationImages.set(
+            String(img.variation_id),
+            url
+          );
+        }
+      }
+
+      // Compatibilité avec d'éventuelles variations déjà importées
+      // avec une image locale dans raw_export.
+      for (const variation of variations) {
+        const raw = variation.raw_export || {};
+        const variationImage =
+          raw.local_image_path ||
+          raw.image_url ||
+          raw.source_image_url ||
+          null;
+
+        if (variationImage) {
+          addUnique(variationImage);
+          variationImages.set(
+            String(variation.id),
+            variationImage
+          );
+        }
+      }
+    }
+
+    if (!images.length) {
+      throw new Error('Aucune image disponible pour ce produit.');
+    }
+
+    selectedPax =
+      Number(params.get('pax')) ||
+      Number(variations[0]?.pax) ||
+      null;
+  }
+
+  function updateProductText() {
+    const title = product.name || 'Produit Mariage Madagascar';
+    const description =
+      product.description_html ||
+      '<p>Description non disponible pour ce produit.</p>';
+
+    document.title =
+      title + ' | Mariage Madagascar';
+
+    const metaDescription =
+      document.getElementById('metaDescription');
+
+    if (metaDescription) {
+      metaDescription.content =
+        product.short_description || '';
+    }
+
+    const canonical =
+      document.getElementById('canonicalLink');
+
+    if (canonical) {
+      canonical.href =
+        location.origin +
+        productUrl(PRODUCT_SLUG);
+    }
+
+    els.productTitle.textContent = title;
+    els.productShortDescription.textContent =
+      product.short_description || '';
+
+    els.productDescription.innerHTML = description;
+
+    if (els.productDescriptionTitle) {
+      els.productDescriptionTitle.textContent = title;
+    }
+
+    if (els.breadcrumbProduct) {
+      els.breadcrumbProduct.textContent = title;
+    }
+
+    if (els.bottomTitle) {
+      els.bottomTitle.textContent =
+        'Une expérience sur mesure';
+    }
+
+    els.mainImage.alt = title;
+  }
+
+  function renderThumbs() {
+    if (!els.thumbs) return;
+
+    els.thumbs.innerHTML = images
+      .map((src, index) => `
+        <button
+          type="button"
+          data-index="${index}"
+          class="thumb rounded-xl overflow-hidden border border-white/10 aspect-[4/3] shrink-0 ring-1 ${
+            index === currentImageIndex
+              ? 'ring-[#7dd3fc]'
+              : 'ring-transparent'
+          }"
+          aria-label="Afficher la photo ${index + 1}"
+        >
+          <img
+            src="${esc(src)}"
+            alt="${esc(product.name)} — photo ${index + 1}"
+            class="w-full h-full object-cover"
+            loading="${index === 0 ? 'eager' : 'lazy'}"
+          >
+        </button>
+      `)
+      .join('');
+
+    els.thumbs
+      .querySelectorAll('.thumb')
+      .forEach(button => {
+        button.addEventListener('click', () => {
+          setMain(Number(button.dataset.index));
+        });
+      });
+  }
+
+  function syncThumbs() {
+    els.thumbs
+      ?.querySelectorAll('.thumb')
+      .forEach((button, index) => {
+        button.classList.toggle(
+          'ring-[#7dd3fc]',
+          index === currentImageIndex
+        );
+
+        button.classList.toggle(
+          'ring-transparent',
+          index !== currentImageIndex
+        );
+      });
+  }
+
+  function setMain(index) {
+    if (!images.length) return;
+
+    currentImageIndex =
+      (index + images.length) % images.length;
+
+    const src = images[currentImageIndex];
+
+    els.mainImage.src = src;
+    els.mainImage.style.opacity = '1';
+
+    syncThumbs();
+  }
+
+  function renderPax() {
+    if (!els.paxButtons) return;
+
+    if (IS_STAY_PRODUCT) {
+      if (els.variationLabel) els.variationLabel.textContent = '';
+      renderStayOptions();
+      return;
+    }
+
+    // Nouveau produit à attribut unique : Nombres de jours.
+    // Aucun changement pour les produits pax existants.
+    if (IS_SINGLE_ATTRIBUTE_PRODUCT) {
+      const values = [];
+
+      variations.forEach(v => {
+        const value = String(v.attribute_value || '').trim();
+        if (value && !values.includes(value)) values.push(value);
+      });
+
+      if (els.variationLabel) {
+        els.variationLabel.textContent =
+          SINGLE_ATTRIBUTE_NAME || 'Options';
+      }
+
+      els.paxButtons.className = 'space-y-0';
+      els.paxButtons.innerHTML = `
+        <select
+          id="singleAttributeSelect"
+          class="w-full border border-white/10 rounded-xl px-3 py-3 text-sm font-medium bg-[#0f1524]/80 text-[#dbe7f0] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+        >
+          ${values.map(value => `
+            <option value="${esc(value)}">${esc(value)}</option>
+          `).join('')}
+        </select>
+      `;
+
+      const select = document.getElementById('singleAttributeSelect');
+
+      select?.addEventListener('change', () => {
+        selectSingleAttribute(select.value);
+      });
+
+      selectSingleAttribute(
+        select?.value || values[0] || ''
+      );
+      return;
+    }
+
+    if (els.variationLabel) {
+      els.variationLabel.textContent = 'Nombre de personnes (pax)';
+    }
+
+    if (!variations.length) {
+      els.paxButtons.innerHTML =
+        '<span class="text-sm text-[#8fa3b3]">Formule sur demande</span>';
+
+      els.price.textContent = 'Sur demande';
+      return;
+    }
+
+    els.paxButtons.className = 'grid grid-cols-5 gap-2';
+    els.paxButtons.innerHTML = variations
+      .map(v => `
+        <button
+          type="button"
+          data-pax="${Number(v.pax || v.attribute_value || 0)}"
+          class="pax border border-white/10 rounded-xl py-3 text-sm font-semibold text-[#a0b4c4]"
+        >
+          ${Number(v.pax || v.attribute_value || 0)}
+        </button>
+      `)
+      .join('');
+
+    els.paxButtons
+      .querySelectorAll('.pax')
+      .forEach(button => {
+        button.addEventListener('click', () => {
+          selectPax(Number(button.dataset.pax));
+        });
+      });
+
+    selectPax(
+      selectedPax ||
+      Number(variations[0].pax)
+    );
+  }
+
+  function selectSingleAttribute(value) {
+    const variation =
+      variations.find(v =>
+        String(v.attribute_value || '').trim() === String(value || '').trim()
+      ) ||
+      variations[0];
+
+    if (!variation) return;
+
+    els.price.textContent = euro(variation.regular_price);
+
+    const url =
+      '/contact.html?produit=' +
+      encodeURIComponent(PRODUCT_SLUG) +
+      '&option=' +
+      encodeURIComponent(variation.attribute_value || '');
+
+    if (els.contactBtn) els.contactBtn.href = url;
+    if (els.bottomContactBtn) els.bottomContactBtn.href = url;
+
+    const variationImage =
+      variationImages.get(String(variation.id)) ||
+      findGalleryImageForVariation(variation);
+
+    if (variationImage) {
+      const index = images.indexOf(variationImage);
+      if (index >= 0) setMain(index);
+    }
+  }
+
+  function selectPax(paxValue) {
+    const variation =
+      variations.find(
+        v => Number(v.pax) === Number(paxValue)
+      ) ||
+      variations[0];
+
+    if (!variation) return;
+
+    selectedPax = Number(variation.pax);
+
+    // VRAI champ Supabase : regular_price
+    els.price.textContent =
+      euro(variation.regular_price);
+
+    if (els.contactBtn) {
+      els.contactBtn.href =
+        contactUrl(selectedPax);
+    }
+
+    if (els.bottomContactBtn) {
+      els.bottomContactBtn.href =
+        contactUrl(selectedPax);
+    }
+
+    els.paxButtons
+      ?.querySelectorAll('.pax')
+      .forEach(button => {
+        button.classList.toggle(
+          'active',
+          Number(button.dataset.pax) === selectedPax
+        );
+      });
+
+    // Image liée à la variation via mm_product_images.variation_id
+    // ou son image définie dans raw_export.
+    const variationImage =
+      variationImages.get(String(variation.id)) ||
+      findGalleryImageForVariation(variation);
+
+    if (variationImage) {
+      const index =
+        images.indexOf(variationImage);
+
+      if (index >= 0) {
+        setMain(index);
+      }
+    }
+  }
+
+  function openLightbox(index = currentImageIndex) {
+    if (!images.length) return;
+
+    currentImageIndex =
+      (index + images.length) % images.length;
+
+    updateLightbox();
+
+    els.lightbox?.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+  }
+
+  function closeLightbox() {
+    els.lightbox?.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+  }
+
+  function updateLightbox() {
+    if (!els.lightboxImage) return;
+
+    els.lightboxImage.src =
+      images[currentImageIndex];
+
+    els.lightboxImage.alt =
+      `${product.name} — photo ${currentImageIndex + 1}`;
+
+    if (els.lightboxCaption) {
+      els.lightboxCaption.textContent =
+        product.name;
+    }
+
+    if (els.lightboxCount) {
+      els.lightboxCount.textContent =
+        `Image ${currentImageIndex + 1} / ${images.length}`;
+    }
+  }
+
+  function showPrev() {
+    setMain(currentImageIndex - 1);
+  }
+
+  function showNext() {
+    setMain(currentImageIndex + 1);
+  }
+
+  function wireGallery() {
+    els.mainImageButton?.addEventListener(
+      'click',
+      event => {
+        if (
+          event.target.closest('#prevImage') ||
+          event.target.closest('#nextImage')
+        ) {
+          return;
+        }
+
+        openLightbox(currentImageIndex);
+      }
+    );
+
+    // Clic direct sur la grande image
+    els.mainImage?.addEventListener(
+      'click',
+      event => {
+        event.preventDefault();
+        event.stopPropagation();
+        openLightbox(currentImageIndex);
+      }
+    );
+
+    document
+      .getElementById('prevImage')
+      ?.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        showPrev();
+      });
+
+    document
+      .getElementById('nextImage')
+      ?.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        showNext();
+      });
+
+    document
+      .getElementById('closeLightbox')
+      ?.addEventListener(
+        'click',
+        closeLightbox
+      );
+
+    document
+      .getElementById('lightboxPrev')
+      ?.addEventListener('click', () => {
+        currentImageIndex =
+          (currentImageIndex - 1 + images.length) %
+          images.length;
+
+        updateLightbox();
+      });
+
+    document
+      .getElementById('lightboxNext')
+      ?.addEventListener('click', () => {
+        currentImageIndex =
+          (currentImageIndex + 1) %
+          images.length;
+
+        updateLightbox();
+      });
+
+    els.lightbox?.addEventListener(
+      'click',
+      event => {
+        if (event.target === els.lightbox) {
+          closeLightbox();
+        }
+      }
+    );
+
+    document.addEventListener('keydown', event => {
+      if (
+        !els.lightbox ||
+        els.lightbox.classList.contains('hidden')
+      ) {
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        closeLightbox();
+      }
+
+      if (event.key === 'ArrowLeft') {
+        currentImageIndex =
+          (currentImageIndex - 1 + images.length) %
+          images.length;
+
+        updateLightbox();
+      }
+
+      if (event.key === 'ArrowRight') {
+        currentImageIndex =
+          (currentImageIndex + 1) % images.length;
+
+        updateLightbox();
+      }
+    });
+  }
+
+  async function loadRelated() {
+    if (!els.relatedProducts) return;
+
+    try {
+      const rows = await api(
+        'mm_products',
+        {
+          select:
+            'slug,name,short_description,featured_image_url,published,created_at',
+          published: 'eq.true',
+          slug: 'not.eq.' + PRODUCT_SLUG,
+          order: 'created_at.desc',
+          limit: '6'
+        }
+      );
+
+      if (!rows.length) return;
+
+      els.relatedProducts.innerHTML =
+        rows.map(p => `
+          <a
+            class="glass rounded-2xl overflow-hidden block hover:border-[#7dd3fc]/40 transition"
+            href="${productUrl(p.slug)}"
+          >
+            <div class="aspect-video bg-[#0f1524]">
+              ${
+                p.featured_image_url
+                  ? `<img
+                      src="${esc(p.featured_image_url)}"
+                      alt="${esc(p.name)}"
+                      class="w-full h-full object-cover"
+                      loading="lazy"
+                    >`
+                  : ''
+              }
+            </div>
+
+            <div class="p-5">
+              <h3 class="font-semibold text-lg">
+                ${esc(p.name)}
+              </h3>
+
+              <p class="text-sm text-[#8fa3b3] mt-2 line-clamp-3">
+                ${esc(p.short_description || '')}
+              </p>
+
+              <span class="inline-block mt-4 text-[#7dd3fc] text-sm">
+                Voir le produit →
+              </span>
+            </div>
+          </a>
+        `).join('');
+    } catch (error) {
+      console.warn(
+        'Produits associés indisponibles:',
+        error
+      );
+    }
+  }
+
+  async function init() {
+    try {
+      await loadProduct();
+
+      // IMPORTANT :
+      // Le texte est rendu avant toute logique de galerie.
+      // Ainsi le titre et la description ne disparaissent jamais
+      // à cause d'un problème d'image.
+      updateProductText();
+
+      if (images.length) {
+        renderThumbs();
+        setMain(currentImageIndex);
+      }
+
+      renderPax();
+      wireGallery();
+      await loadRelated();
+
+    } catch (error) {
+      console.error(
+        'Erreur chargement produit:',
+        error
+      );
+
+      // Ne pas afficher "Produit indisponible" si le produit
+      // n'est pas réellement introuvable.
+      if (!product) {
+        els.productTitle.textContent =
+          'Produit indisponible';
+
+        els.productShortDescription.textContent =
+          'Impossible de charger ce produit.';
+
+        els.productDescription.innerHTML = `
+          <p>
+            Le produit demandé n'a pas été trouvé
+            dans Supabase.
+          </p>
+        `;
+      }
+    }
+  }
+
+  init();
+})();
+</script>
+<div aria-label="Galerie photo du produit" aria-modal="true" class="fixed inset-0 z-[100] hidden bg-[#050914]/95 backdrop-blur-lg" id="imageLightbox" role="dialog"><button aria-label="Fermer" class="absolute top-5 right-5 z-20 w-12 h-12 rounded-full bg-white/10 border border-white/15 text-white flex items-center justify-center hover:bg-white/15" id="closeLightbox" type="button"><span class="material-symbols-outlined">close</span></button><button aria-label="Image précédente" class="absolute top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/10 border border-white/15 text-white flex items-center justify-center hover:bg-white/15 left-4 md:left-8" id="lightboxPrev" type="button"><span class="material-symbols-outlined">chevron_left</span></button><button aria-label="Image suivante" class="absolute top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/10 border border-white/15 text-white flex items-center justify-center hover:bg-white/15 right-4 md:right-8" id="lightboxNext" type="button"><span class="material-symbols-outlined">chevron_right</span></button><div class="h-full flex flex-col items-center justify-center px-16 md:px-24 py-16 gap-5"><img alt="" class="max-w-full max-h-[78vh] object-contain rounded-2xl" id="lightboxImage"/><div class="text-sm text-[#c8d6e3] text-center" id="lightboxCaption"></div><div class="text-xs uppercase tracking-widest text-[#7dd3fc]" id="lightboxCount"></div></div></div></body></html>
