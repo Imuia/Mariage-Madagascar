@@ -28,6 +28,8 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 .scrollbar-thin::-webkit-scrollbar{height:6px}
 .scrollbar-thin::-webkit-scrollbar-thumb{background:rgba(125,211,252,.22);border-radius:999px}
 .scrollbar-thin::-webkit-scrollbar-track{background:transparent}
+body.villa-product #mainImageFrame{aspect-ratio:auto;height:min(540px,55vh)}
+body.villa-product #mainImageButton{height:100%}
 </style>
 </head>
 <body class="min-h-screen bg-[#0a0e1a]">
@@ -41,7 +43,7 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 </div>
 <section class="grid lg:grid-cols-[1.15fr_.85fr] gap-8 items-start">
 <div class="space-y-4">
-<div class="glass rounded-3xl overflow-hidden aspect-[4/3] relative"><button aria-label="Ouvrir les images du produit en grand" class="group w-full h-full relative cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7dd3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0e1a]" id="mainImageButton" type="button"><img alt="" class="w-full h-full object-cover transition-opacity duration-200" fetchpriority="high" id="mainImage" src="" /><span aria-label="Image précédente" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="prevImage"><span class="material-symbols-outlined">chevron_left</span></span><span aria-label="Image suivante" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="nextImage"><span class="material-symbols-outlined">chevron_right</span></span><span class="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-[#0a0e1a]/55 border border-white/10 text-xs text-white/80 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md">Cliquer pour agrandir</span><div class="absolute inset-0 bg-gradient-to-t from-[#0a0e1a]/75 via-transparent to-transparent pointer-events-none"></div></button></div>
+<div id="mainImageFrame" class="glass rounded-3xl overflow-hidden aspect-[4/3] relative"><button aria-label="Ouvrir les images du produit en grand" class="group w-full h-full relative cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7dd3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0e1a]" id="mainImageButton" type="button"><img alt="" class="w-full h-full object-cover transition-opacity duration-200" fetchpriority="high" id="mainImage" src="" /><span aria-label="Image précédente" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="prevImage"><span class="material-symbols-outlined">chevron_left</span></span><span aria-label="Image suivante" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="nextImage"><span class="material-symbols-outlined">chevron_right</span></span><span class="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-[#0a0e1a]/55 border border-white/10 text-xs text-white/80 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md">Cliquer pour agrandir</span><div class="absolute inset-0 bg-gradient-to-t from-[#0a0e1a]/75 via-transparent to-transparent pointer-events-none"></div></button></div>
 <div id="thumbs" class="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-thin min-h-[72px]"></div>
 </div>
 <aside class="glass-strong rounded-3xl p-7 md:p-8 lg:sticky lg:top-24">
@@ -150,6 +152,14 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
   const STAY_PRODUCT_SLUG = 'sejour-romantique-a-nosy-komba-10-jours-de-reve';
   const IS_STAY_PRODUCT = PRODUCT_SLUG === STAY_PRODUCT_SLUG;
 
+  const VILLA_PRODUCT_SLUG =
+    'villa-de-luxe-au-paradis-les-pieds-dans-leau-demande-en-mariage-sur-le-ponton';
+  const IS_VILLA_PRODUCT = PRODUCT_SLUG === VILLA_PRODUCT_SLUG;
+
+  if (IS_VILLA_PRODUCT) {
+    document.body.classList.add('villa-product');
+  }
+
   // Produit variable à attribut unique (ex. Nombres de jours).
   // Le sélecteur pax des autres produits reste inchangé.
   let IS_SINGLE_ATTRIBUTE_PRODUCT = false;
@@ -219,6 +229,14 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
     { key: 'pirogue', label: 'Location Bateau pirogue' }
   ];
   let selectedStayOptions = {};
+
+  const VILLA_OPTION_DEFS = [
+    { key: 'chef', label: 'Chef à domicile' },
+    { key: 'bateau', label: 'Location Bateau' },
+    { key: 'experience', label: 'Expériences uniques pour les amoureux' }
+  ];
+  let selectedVillaOptions = {};
+
   // Date de réservation commune à TOUS les produits.
   let bookingDate = params.get('date') || '';
 
@@ -255,7 +273,16 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
       }
     }
 
-    if (!IS_STAY_PRODUCT && pax) {
+    if (IS_VILLA_PRODUCT) {
+      for (const def of VILLA_OPTION_DEFS) {
+        const value = selectedVillaOptions[def.key];
+        if (value) {
+          url += '&' + encodeURIComponent(def.key) + '=' + encodeURIComponent(value);
+        }
+      }
+    }
+
+    if (!IS_STAY_PRODUCT && !IS_VILLA_PRODUCT && pax) {
       url += '&pax=' + encodeURIComponent(pax);
     }
 
@@ -312,6 +339,103 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
       experience: byPosition[2]?.value || '',
       pirogue: byPosition[3]?.value || ''
     };
+  }
+
+  function parseVillaVariation(variation) {
+    const values = String(variation.attribute_value || '')
+      .split('|')
+      .map(v => v.trim());
+
+    return {
+      chef: values[0] || '',
+      bateau: values[1] || '',
+      experience: values[2] || ''
+    };
+  }
+
+  function findVillaVariation() {
+    if (!IS_VILLA_PRODUCT) return null;
+
+    return variations.find(variation => {
+      const attrs = parseVillaVariation(variation);
+      return VILLA_OPTION_DEFS.every(
+        def => attrs[def.key] === selectedVillaOptions[def.key]
+      );
+    }) || null;
+  }
+
+  function updateVillaPrice() {
+    const variation = findVillaVariation();
+
+    if (!variation) {
+      els.price.textContent = 'Sélection indisponible';
+      updateVillaLinks(null);
+      return;
+    }
+
+    els.price.textContent = euro(variation.regular_price);
+    updateVillaLinks(variation);
+  }
+
+  function updateVillaLinks(variation) {
+    const url = contactUrl(null);
+    if (els.contactBtn) els.contactBtn.href = url;
+    if (els.bottomContactBtn) els.bottomContactBtn.href = url;
+
+    const imageUrl = variation ? findGalleryImageForVariation(variation) : '';
+    if (imageUrl) {
+      const index = images.indexOf(imageUrl);
+      if (index >= 0) setMain(index);
+    }
+  }
+
+  function renderVillaOptions() {
+    if (!IS_VILLA_PRODUCT || !els.paxButtons) return;
+
+    if (els.variationLabel) {
+      els.variationLabel.textContent = '';
+      els.variationLabel.style.display = 'none';
+    }
+
+    const firstAttrs = variations[0] ? parseVillaVariation(variations[0]) : {};
+    VILLA_OPTION_DEFS.forEach(def => {
+      selectedVillaOptions[def.key] =
+        selectedVillaOptions[def.key] || firstAttrs[def.key] || '';
+    });
+
+    els.paxButtons.className = 'space-y-4';
+    els.paxButtons.innerHTML = VILLA_OPTION_DEFS.map(def => {
+      const values = [];
+      variations.forEach(variation => {
+        const value = parseVillaVariation(variation)[def.key];
+        if (value && !values.includes(value)) values.push(value);
+      });
+
+      return `
+        <div>
+          <label class="block text-sm font-medium mb-2" for="villa-${esc(def.key)}">
+            ${esc(def.label)}
+          </label>
+          <select id="villa-${esc(def.key)}" data-villa-option="${esc(def.key)}"
+            class="w-full border border-white/10 rounded-xl px-3 py-3 text-sm font-medium bg-[#0f1524]/80 text-[#dbe7f0] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40">
+            ${values.map(value => `
+              <option value="${esc(value)}" ${value === selectedVillaOptions[def.key] ? 'selected' : ''}>
+                ${esc(value)}
+              </option>
+            `).join('')}
+          </select>
+        </div>
+      `;
+    }).join('');
+
+    els.paxButtons.querySelectorAll('[data-villa-option]').forEach(select => {
+      select.addEventListener('change', () => {
+        selectedVillaOptions[select.dataset.villaOption] = select.value;
+        renderVillaOptions();
+      });
+    });
+
+    updateVillaPrice();
   }
 
   function getVariationImageUrl(variation) {
@@ -531,6 +655,8 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 
         if (IS_STAY_PRODUCT) {
           updateStayActionLinks(findStayVariation());
+        } else if (IS_VILLA_PRODUCT) {
+          updateVillaPrice();
         } else if (IS_SINGLE_ATTRIBUTE_PRODUCT) {
           const select = document.getElementById('singleAttributeSelect');
           selectSingleAttribute(select?.value || '');
@@ -581,6 +707,7 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 
     if (
       !IS_STAY_PRODUCT &&
+      !IS_VILLA_PRODUCT &&
       variations.length &&
       variations.every(v =>
         v.pax == null &&
@@ -593,6 +720,10 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 
     if (IS_STAY_PRODUCT && variations.length) {
       selectedStayOptions = parseVariationAttributes(variations[0]);
+    }
+
+    if (IS_VILLA_PRODUCT && variations.length) {
+      selectedVillaOptions = parseVillaVariation(variations[0]);
     }
 
     // Images :
@@ -805,6 +936,11 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
     if (IS_STAY_PRODUCT) {
       if (els.variationLabel) els.variationLabel.textContent = '';
       renderStayOptions();
+      return;
+    }
+
+    if (IS_VILLA_PRODUCT) {
+      renderVillaOptions();
       return;
     }
 
