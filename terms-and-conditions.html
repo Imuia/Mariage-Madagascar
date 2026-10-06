@@ -129,6 +129,16 @@
         display: none;
       }
     }
+
+    /* Ajustements finaux : plus lisible, plus compact, sans changer l'identité visuelle */
+    .legal-section p, .legal-section li { font-size: 15px !important; line-height: 1.7 !important; }
+    .legal-document-intro { font-size: 15px !important; line-height: 1.7 !important; }
+    .legal-section { padding-top: 28px !important; padding-bottom: 28px !important; }
+    .legal-nav-link { font-size: 12px !important; }
+    @media (max-width: 767px) {
+      .legal-section p, .legal-section li, .legal-document-intro { font-size: 14px !important; }
+      .legal-section { padding-top: 23px !important; padding-bottom: 23px !important; }
+    }
   </style>
 </head>
 
@@ -147,12 +157,12 @@
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(125,211,252,0.10),transparent_42%)]"></div>
       </div>
 
-      <div class="relative max-w-5xl mx-auto px-6 py-28 md:py-36 text-center">
+      <div class="relative max-w-5xl mx-auto px-6 py-20 md:py-24 text-center">
         <div class="inline-flex items-center px-4 py-2 rounded-full bg-primary/5 border border-primary/15 text-primary text-[10px] font-semibold tracking-[0.22em] uppercase">
           Informations légales
         </div>
 
-        <h1 class="font-headline text-4xl md:text-6xl lg:text-7xl font-bold text-on-surface mt-7 mb-6 text-glow tracking-tight">
+        <h1 class="font-headline text-4xl md:text-6xl lg:text-7xl font-bold text-on-surface mt-5 mb-4 text-glow tracking-tight">
           Conditions Générales <span class="text-primary">de Vente</span>
         </h1>
 
@@ -164,10 +174,10 @@
     </section>
 
     <!-- DOCUMENT -->
-    <section class="py-16 md:py-24 px-5 md:px-8">
+    <section class="py-10 md:py-14 px-5 md:px-8">
       <div class="max-w-7xl mx-auto">
 
-        <div class="grid grid-cols-1 lg:grid-cols-[210px_minmax(0,1fr)] gap-10 lg:gap-14 items-start">
+        <div class="grid grid-cols-1 lg:grid-cols-[210px_minmax(0,1fr)] gap-7 lg:gap-10 items-start">
 
           <!-- SOMMAIRE -->
           <aside class="lg:sticky lg:top-28">
@@ -176,34 +186,34 @@
             </div>
 
             <nav class="legal-nav-scroll flex lg:block gap-2 overflow-x-auto pb-2 lg:pb-0">
-              <a href="#objet" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+              <a href="#objet" class="legal-nav-link shrink-0 block px-3 py-2 text-[13px] text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
                 01 · Objet
               </a>
-              <a href="#prestations" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+              <a href="#prestations" class="legal-nav-link shrink-0 block px-3 py-2 text-[13px] text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
                 02 · Prestations
               </a>
-              <a href="#reservations" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+              <a href="#reservations" class="legal-nav-link shrink-0 block px-3 py-2 text-[13px] text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
                 03 · Réservations
               </a>
-              <a href="#modifications" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+              <a href="#modifications" class="legal-nav-link shrink-0 block px-3 py-2 text-[13px] text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
                 04 · Modifications
               </a>
-              <a href="#inclus" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+              <a href="#inclus" class="legal-nav-link shrink-0 block px-3 py-2 text-[13px] text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
                 05 · Prestations
               </a>
-              <a href="#responsabilites" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+              <a href="#responsabilites" class="legal-nav-link shrink-0 block px-3 py-2 text-[13px] text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
                 06 · Responsabilités
               </a>
-              <a href="#assurances" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+              <a href="#assurances" class="legal-nav-link shrink-0 block px-3 py-2 text-[13px] text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
                 07 · Assurances
               </a>
-              <a href="#reclamations" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+              <a href="#reclamations" class="legal-nav-link shrink-0 block px-3 py-2 text-[13px] text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
                 08 · Réclamations
               </a>
-              <a href="#donnees" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+              <a href="#donnees" class="legal-nav-link shrink-0 block px-3 py-2 text-[13px] text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
                 09 · Données
               </a>
-              <a href="#litiges" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+              <a href="#litiges" class="legal-nav-link shrink-0 block px-3 py-2 text-[13px] text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
                 10 · Litiges
               </a>
             </nav>
@@ -212,27 +222,27 @@
           <!-- CGV -->
           <article class="glass-panel rounded-3xl overflow-hidden">
 
-            <div class="p-7 md:p-9 border-b border-primary/10">
-              <p class="text-on-surface-variant text-sm leading-7 m-0">
+            <div class="p-6 md:p-7 border-b border-primary/10">
+              <p class="text-on-surface-variant text-[15px] leading-7 m-0">
                 Organisation de Mariages, Services de Mariage, Séjours de Lune de Miel,
                 Voyages de Noces, Demandes en Mariage et Renouvellement de Vœux.
               </p>
             </div>
 
-            <section id="objet" class="legal-section p-7 md:p-9 border-b border-primary/10">
+            <section id="objet" class="legal-section p-6 md:p-7 border-b border-primary/10">
               <span class="text-primary text-[10px] font-bold tracking-[0.2em]">01</span>
-              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Objet</h2>
-              <p class="text-on-surface-variant text-sm leading-7 m-0">
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-4">Objet</h2>
+              <p class="text-on-surface-variant text-[15px] leading-7 m-0">
                 Les présentes CGV régissent la vente de prestations liées à l’organisation
                 de mariages, services annexes, séjours de lune de miel, voyages de noces,
                 demandes en mariage et renouvellement de vœux de mariage à Madagascar.
               </p>
             </section>
 
-            <section id="prestations" class="legal-section p-7 md:p-9 border-b border-primary/10">
+            <section id="prestations" class="legal-section p-6 md:p-7 border-b border-primary/10">
               <span class="text-primary text-[10px] font-bold tracking-[0.2em]">02</span>
-              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Prestations proposées</h2>
-              <ul class="space-y-3 pl-5 text-on-surface-variant text-sm leading-7 marker:text-primary">
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-4">Prestations proposées</h2>
+              <ul class="space-y-3 pl-5 text-on-surface-variant text-[15px] leading-7 marker:text-primary">
                 <li>Organisation complète ou partielle de mariages.</li>
                 <li>Services associés : décoration, photographie, officiant, animations, etc.</li>
                 <li>Séjours de lune de miel et voyages de noces : hébergements, activités, transferts, etc.</li>
@@ -240,30 +250,30 @@
               </ul>
             </section>
 
-            <section id="reservations" class="legal-section p-7 md:p-9 border-b border-primary/10">
+            <section id="reservations" class="legal-section p-6 md:p-7 border-b border-primary/10">
               <span class="text-primary text-[10px] font-bold tracking-[0.2em]">03</span>
-              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Réservations et paiements</h2>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-4">Réservations et paiements</h2>
 
-              <ul class="space-y-3 pl-5 text-on-surface-variant text-sm leading-7 marker:text-primary">
+              <ul class="space-y-3 pl-5 text-on-surface-variant text-[15px] leading-7 marker:text-primary">
                 <li><strong class="text-on-surface">Réservation :</strong> Toute prestation doit être confirmée par écrit (email ou contrat signé).</li>
                 <li><strong class="text-on-surface">Acompte :</strong> Un acompte de 50% du montant total est exigé à la réservation.</li>
                 <li><strong class="text-on-surface">Solde :</strong> Le solde doit être réglé au plus tard 7 jours avant la prestation.</li>
                 <li><strong class="text-on-surface">Moyens de paiement :</strong> Virement bancaire, carte de crédit ou tout autre moyen accepté par nos services.</li>
               </ul>
 
-              <div class="glass-panel mt-6 p-5 rounded-2xl">
-                <p class="text-on-surface-variant text-sm leading-7 m-0">
+              <div class="glass-panel mt-4 p-4 rounded-2xl">
+                <p class="text-on-surface-variant text-[15px] leading-7 m-0">
                   <strong class="text-primary">Réservation :</strong>
                   la prestation doit être confirmée par écrit et selon les modalités de paiement prévues.
                 </p>
               </div>
             </section>
 
-            <section id="modifications" class="legal-section p-7 md:p-9 border-b border-primary/10">
+            <section id="modifications" class="legal-section p-6 md:p-7 border-b border-primary/10">
               <span class="text-primary text-[10px] font-bold tracking-[0.2em]">04</span>
-              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Modifications et annulations</h2>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-4">Modifications et annulations</h2>
 
-              <ul class="space-y-4 pl-5 text-on-surface-variant text-sm leading-7 marker:text-primary">
+              <ul class="space-y-4 pl-5 text-on-surface-variant text-[15px] leading-7 marker:text-primary">
                 <li>
                   <strong class="text-on-surface">Modification par le client :</strong>
                   Toute demande de modification doit être formulée par mail. Les ajustements seront réalisés dans la limite des disponibilités et peuvent entraîner des frais supplémentaires.
@@ -285,75 +295,75 @@
               </ul>
             </section>
 
-            <section id="inclus" class="legal-section p-7 md:p-9 border-b border-primary/10">
+            <section id="inclus" class="legal-section p-6 md:p-7 border-b border-primary/10">
               <span class="text-primary text-[10px] font-bold tracking-[0.2em]">05</span>
-              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Prestations incluses et non incluses</h2>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-4">Prestations incluses et non incluses</h2>
 
-              <ul class="space-y-3 pl-5 text-on-surface-variant text-sm leading-7 marker:text-primary">
+              <ul class="space-y-3 pl-5 text-on-surface-variant text-[15px] leading-7 marker:text-primary">
                 <li><strong class="text-on-surface">Inclus :</strong> Services spécifiés dans le contrat (hébergement, repas, décoration, etc.).</li>
                 <li><strong class="text-on-surface">Non inclus :</strong> Assurances voyage, frais personnels, ou tout service non mentionné explicitement.</li>
               </ul>
             </section>
 
-            <section id="responsabilites" class="legal-section p-7 md:p-9 border-b border-primary/10">
+            <section id="responsabilites" class="legal-section p-6 md:p-7 border-b border-primary/10">
               <span class="text-primary text-[10px] font-bold tracking-[0.2em]">06</span>
-              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Responsabilités</h2>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-4">Responsabilités</h2>
 
-              <ul class="space-y-3 pl-5 text-on-surface-variant text-sm leading-7 marker:text-primary">
+              <ul class="space-y-3 pl-5 text-on-surface-variant text-[15px] leading-7 marker:text-primary">
                 <li>L’organisateur s’engage à fournir les services convenus dans les meilleures conditions.</li>
                 <li>Les clients doivent respecter les lois locales et les consignes de sécurité.</li>
                 <li>L’organisateur ne peut être tenu responsable des retards ou annulations dus à des causes extérieures (météo, grèves, etc.).</li>
               </ul>
             </section>
 
-            <section id="assurances" class="legal-section p-7 md:p-9 border-b border-primary/10">
+            <section id="assurances" class="legal-section p-6 md:p-7 border-b border-primary/10">
               <span class="text-primary text-[10px] font-bold tracking-[0.2em]">07</span>
-              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Assurances</h2>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-4">Assurances</h2>
 
-              <p class="text-on-surface-variant text-sm leading-7 m-0">
+              <p class="text-on-surface-variant text-[15px] leading-7 m-0">
                 Il est fortement recommandé de souscrire à une assurance voyage incluant
                 l’annulation, la responsabilité civile et l’assistance rapatriement.
               </p>
             </section>
 
-            <section id="reclamations" class="legal-section p-7 md:p-9 border-b border-primary/10">
+            <section id="reclamations" class="legal-section p-6 md:p-7 border-b border-primary/10">
               <span class="text-primary text-[10px] font-bold tracking-[0.2em]">08</span>
-              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Réclamations</h2>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-4">Réclamations</h2>
 
-              <p class="text-on-surface-variant text-sm leading-7 m-0">
+              <p class="text-on-surface-variant text-[15px] leading-7 m-0">
                 Toute réclamation doit être formulée par email dans un délai de 7 jours après la prestation.
               </p>
             </section>
 
-            <section id="donnees" class="legal-section p-7 md:p-9 border-b border-primary/10">
+            <section id="donnees" class="legal-section p-6 md:p-7 border-b border-primary/10">
               <span class="text-primary text-[10px] font-bold tracking-[0.2em]">09</span>
-              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Protection des données</h2>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-4">Protection des données</h2>
 
-              <p class="text-on-surface-variant text-sm leading-7 m-0">
+              <p class="text-on-surface-variant text-[15px] leading-7 m-0">
                 Les données personnelles collectées sont utilisées uniquement pour
                 l’organisation des prestations et ne seront pas partagées sans consentement.
               </p>
             </section>
 
-            <section id="litiges" class="legal-section p-7 md:p-9">
+            <section id="litiges" class="legal-section p-6 md:p-7">
               <span class="text-primary text-[10px] font-bold tracking-[0.2em]">10</span>
-              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Litiges</h2>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-4">Litiges</h2>
 
-              <p class="text-on-surface-variant text-sm leading-7">
+              <p class="text-on-surface-variant text-[15px] leading-7">
                 En cas de litige, les parties s’efforceront de trouver une solution amiable.
                 À défaut, les tribunaux compétents de Madagascar seront seuls compétents.
               </p>
 
-              <div class="glass-panel-elevated p-7 rounded-2xl mt-8 text-center">
+              <div class="glass-panel-elevated p-7 rounded-2xl mt-5 text-center">
                 <span class="text-primary text-[10px] font-semibold tracking-[0.2em] uppercase">Acceptation</span>
-                <h3 class="font-headline text-2xl font-bold text-on-surface mt-2 mb-3">Signature</h3>
-                <p class="text-on-surface-variant text-sm leading-7 max-w-2xl mx-auto m-0">
+                <h3 class="font-headline text-2xl font-bold text-on-surface mt-2 mb-2">Signature</h3>
+                <p class="text-on-surface-variant text-[15px] leading-7 max-w-2xl mx-auto m-0">
                   L'acceptation des présentes CGV vaut pour validation de la réservation
                   et des conditions de la prestation.
                 </p>
               </div>
 
-              <div class="text-center mt-8">
+              <div class="text-center mt-5">
                 <a href="/" class="inline-flex items-center gap-2 text-primary text-xs font-semibold hover:text-white transition-colors">
                   <span class="material-symbols-outlined text-sm">arrow_back</span>
                   Retour à l'accueil
