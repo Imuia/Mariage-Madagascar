@@ -310,6 +310,7 @@ body.villa-product #mainImageButton{height:100%}
   // Le sélecteur pax des autres produits reste inchangé.
   let IS_SINGLE_ATTRIBUTE_PRODUCT = false;
   let SINGLE_ATTRIBUTE_NAME = '';
+  let IS_SIMPLE_PRODUCT = false;
 
   // Images LOCALES du séjour : on ne touche pas aux autres produits.
   // Les noms correspondent exactement aux fichiers présents dans
@@ -846,6 +847,10 @@ body.villa-product #mainImageButton{height:100%}
 
     product = products[0];
 
+    // Produit simple : pas de sélecteur d'attribut/pax.
+    // Le prix est pris depuis sa variation unique dans Supabase.
+    IS_SIMPLE_PRODUCT = String(product.product_type || '').toLowerCase() === 'simple';
+
     // Variations : vraie structure Supabase
     variations = await api('mm_product_variations', {
       select: '*',
@@ -1153,8 +1158,50 @@ body.villa-product #mainImageButton{height:100%}
     syncThumbs();
   }
 
+  function renderSimpleProduct() {
+    if (!IS_SIMPLE_PRODUCT || !els.paxButtons) return;
+
+    // Un produit simple n'affiche ni pax ni attribut.
+    if (els.variationLabel) {
+      els.variationLabel.textContent = '';
+      els.variationLabel.style.display = 'none';
+    }
+
+    els.paxButtons.innerHTML = '';
+    els.paxButtons.style.display = 'none';
+
+    const variation = variations[0] || null;
+
+    if (variation) {
+      els.price.textContent = euro(variation.regular_price);
+    } else if (product?.regular_price != null) {
+      els.price.textContent = euro(product.regular_price);
+    } else {
+      els.price.textContent = 'Sur demande';
+    }
+
+    updateCurrentActionLinks();
+
+    // Si la variation possède une image dédiée, l'afficher.
+    if (variation) {
+      const variationImage =
+        variationImages.get(String(variation.id)) ||
+        findGalleryImageForVariation(variation);
+
+      if (variationImage) {
+        const index = images.indexOf(variationImage);
+        if (index >= 0) setMain(index);
+      }
+    }
+  }
+
   function renderPax() {
     if (!els.paxButtons) return;
+
+    if (IS_SIMPLE_PRODUCT) {
+      renderSimpleProduct();
+      return;
+    }
 
     if (IS_STAY_PRODUCT) {
       if (els.variationLabel) els.variationLabel.textContent = '';
