@@ -28,6 +28,31 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 .scrollbar-thin::-webkit-scrollbar{height:6px}
 .scrollbar-thin::-webkit-scrollbar-thumb{background:rgba(125,211,252,.22);border-radius:999px}
 .scrollbar-thin::-webkit-scrollbar-track{background:transparent}
+
+/* Champ date : zone entièrement cliquable + calendrier natif lisible */
+#booking-date{
+  width:100%;
+  min-height:52px;
+  color:#c8d6e3 !important;
+  color-scheme:dark;
+  cursor:pointer;
+}
+#booking-date::-webkit-calendar-picker-indicator{
+  filter:invert(1);
+  opacity:.82;
+  cursor:pointer;
+}
+#booking-date::-webkit-datetime-edit,
+#booking-date::-webkit-datetime-edit-text,
+#booking-date::-webkit-datetime-edit-month-field,
+#booking-date::-webkit-datetime-edit-day-field,
+#booking-date::-webkit-datetime-edit-year-field{
+  color:#c8d6e3;
+}
+#booking-date:focus{
+  border-color:rgba(125,211,252,.45) !important;
+  box-shadow:0 0 0 2px rgba(125,211,252,.14);
+}
 body.villa-product #mainImageFrame{aspect-ratio:auto;height:min(540px,55vh)}
 body.villa-product #mainImageButton{height:100%}
 
@@ -707,8 +732,8 @@ body.villa-product #mainImageButton{height:100%}
     }
 
     els.bookingDateWrap.innerHTML = `
-      <div>
-        <label class="block text-sm font-medium mb-2" for="booking-date">
+      <div class="w-full">
+        <label class="block text-sm font-medium mb-2 cursor-pointer" for="booking-date">
           Date souhaitée de réservation
         </label>
         <input
@@ -716,15 +741,24 @@ body.villa-product #mainImageButton{height:100%}
           type="date"
           min="${minDate}"
           value="${esc(bookingDate)}"
-          class="w-full border border-white/10 rounded-xl px-3 py-3 text-sm bg-[#0f1524]/80 text-[#dbe7f0] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+          class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
           aria-label="Choisir la date souhaitée de réservation"
         >
       </div>
     `;
 
-    els.bookingDateWrap
-      .querySelector('#booking-date')
-      ?.addEventListener('change', event => {
+    const bookingDateInput =
+      els.bookingDateWrap.querySelector('#booking-date');
+
+    // Sur les navigateurs compatibles, un clic n'importe où dans le champ
+    // ouvre directement le calendrier natif.
+    bookingDateInput?.addEventListener('click', () => {
+      try {
+        bookingDateInput.showPicker?.();
+      } catch {}
+    });
+
+    bookingDateInput?.addEventListener('change', event => {
         bookingDate = event.target.value || '';
 
         if (IS_STAY_PRODUCT) {
