@@ -104,10 +104,36 @@ body.villa-product #mainImageButton{height:100%}
 }
 .villa-thumb-arrow:hover{background:rgba(125,211,252,.16)}
 .villa-thumb-arrow:disabled{opacity:.3;cursor:default}
+@media (max-width:1023px){
+  /* Tablette : la fiche passe en une seule colonne avant le desktop. */
+  body.villa-product #mainImageFrame{
+    height:380px;
+  }
+}
+
 @media (max-width:640px){
+  /* Mobile : image principale plus compacte et contrôles tactiles visibles. */
+  body.villa-product #mainImageFrame{
+    height:280px;
+    border-radius:1.25rem;
+  }
+  #mainImage{
+    object-position:center;
+  }
+  #prevImage,#nextImage{
+    opacity:.9;
+    width:38px;
+    height:38px;
+  }
+
   .villa-thumb-carousel.is-villa-carousel{
     grid-template-columns:32px minmax(0,1fr) 32px;
     gap:5px;
+  }
+  .villa-thumb-carousel.is-villa-carousel #thumbs{
+    gap:5px;
+    min-height:58px;
+    padding-bottom:2px;
   }
   .villa-thumb-carousel.is-villa-carousel .thumb{
     flex-basis:64px;
@@ -117,6 +143,29 @@ body.villa-product #mainImageButton{height:100%}
   .villa-thumb-arrow{
     width:32px;
     height:32px;
+  }
+
+  /* Colonne informations : moins de padding sur petit écran. */
+  body.villa-product aside{
+    padding:20px;
+    border-radius:1.25rem;
+  }
+  body.villa-product #productTitle{
+    font-size:1.6rem;
+    line-height:1.15;
+  }
+  body.villa-product #productShortDescription{
+    font-size:1rem;
+    line-height:1.6;
+  }
+  body.villa-product .prose-mm p{
+    line-height:1.7;
+  }
+  body.villa-product .prose-mm h3{
+    font-size:1.2rem;
+  }
+  body.villa-product .prose-mm h4{
+    font-size:1rem;
   }
 }
 </style>
