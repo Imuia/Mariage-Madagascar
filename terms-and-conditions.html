@@ -1,542 +1,378 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html class="dark" lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Conditions Générales de Vente | Mariage Madagascar</title>
-  <meta name="description" content="Conditions Générales de Vente de Mariage Madagascar — Luxury Wedding & Travel.">
-  <link rel="stylesheet" href="/assets/css/style.css">
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Conditions Générales de Vente | Mariage Madagascar Luxe</title>
+  <meta name="description" content="Conditions Générales de Vente de Mariage Madagascar : mariages, services de mariage, lunes de miel, voyages de noces, demandes en mariage et renouvellement de vœux."/>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "secondary-fixed-dim": "#88b4cc",
+            "inverse-primary": "#0a4c6e",
+            "primary-fixed-dim": "#7dd3fc",
+            "surface-variant": "#1a2438",
+            "on-primary": "#001f2e",
+            "on-secondary-fixed": "#0d1f2b",
+            "surface-container-high": "#1a2438",
+            "surface-container-low": "#111828",
+            "tertiary-container": "#3d2060",
+            "on-tertiary": "#1a002e",
+            "inverse-surface": "#e0e8f0",
+            "on-tertiary-fixed": "#1a002e",
+            "secondary-container": "#1a3a4e",
+            "background": "#0a0e1a",
+            "on-secondary-fixed-variant": "#2a4a5e",
+            "primary-container": "#0e4d6e",
+            "surface": "#0f1524",
+            "surface-container-highest": "#202c42",
+            "on-tertiary-container": "#e8d0ff",
+            "surface-bright": "#1a2438",
+            "tertiary-fixed-dim": "#c8a0f0",
+            "primary-fixed": "#c8eaff",
+            "on-surface": "#e0e8f0",
+            "tertiary": "#c8a0f0",
+            "on-tertiary-fixed-variant": "#4d2a73",
+            "outline-variant": "#2a3a48",
+            "error-container": "#3d1414",
+            "surface-tint": "#7dd3fc",
+            "primary": "#7dd3fc",
+            "on-primary-fixed-variant": "#004d73",
+            "outline": "#4a6070",
+            "secondary-fixed": "#c0d8e8",
+            "on-error": "#1a0000",
+            "on-surface-variant": "#a0b4c4",
+            "surface-container-lowest": "#0a0e1a",
+            "on-background": "#e0e8f0",
+            "inverse-on-surface": "#0a0e1a",
+            "on-secondary-container": "#c0d8e8",
+            "on-primary-fixed": "#001f2e",
+            "error": "#ff6b6b",
+            "on-error-container": "#ffb3b3",
+            "surface-container": "#141c2e",
+            "secondary": "#88b4cc"
+          },
+          borderRadius: {
+            DEFAULT: "0.5rem",
+            lg: "1rem",
+            xl: "1.5rem",
+            full: "9999px"
+          },
+          fontFamily: {
+            headline: ["Inter"],
+            display: ["Inter"],
+            body: ["Inter"],
+            label: ["Inter"]
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    /* ==========================================================
-       CGV — Design aligné sur l'accueil Mariage Madagascar
-       Header + footer = composants globaux
-       ========================================================== */
-
-    .legal-page {
-      --navy: #080e1c;
-      --navy-2: #0c1424;
-      --card: #101a2c;
-      --card-2: #111e31;
-      --blue: #58c8f7;
-      --blue-soft: #8edbfa;
-      --text: #e8f1f8;
-      --muted: #8e9bad;
-      --line: rgba(255,255,255,.09);
-      background: var(--navy);
-      color: var(--text);
-      min-height: 100vh;
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: #0a0e1a;
     }
 
-    .legal-hero {
-      position: relative;
-      overflow: hidden;
-      padding: 105px 24px 78px;
-      text-align: center;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(54,176,224,.13), transparent 42%),
-        linear-gradient(180deg, #0a1221 0%, #080e1c 100%);
-      border-bottom: 1px solid var(--line);
+    body {
+      overflow-x: hidden;
     }
 
-    .legal-hero::before,
-    .legal-hero::after {
-      content: "";
-      position: absolute;
-      border-radius: 50%;
-      pointer-events: none;
-      border: 1px solid rgba(88,200,247,.08);
+    .glass-panel {
+      background: rgba(15, 21, 36, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(125, 211, 252, 0.1);
     }
 
-    .legal-hero::before {
-      width: 420px;
-      height: 420px;
-      left: -260px;
-      top: -180px;
+    .glass-panel-elevated {
+      background: rgba(15, 21, 36, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(125, 211, 252, 0.15);
     }
 
-    .legal-hero::after {
-      width: 330px;
-      height: 330px;
-      right: -210px;
-      bottom: -190px;
-    }
-
-    .legal-kicker {
-      position: relative;
-      z-index: 1;
-      display: inline-flex;
-      align-items: center;
-      min-height: 27px;
-      padding: 0 13px;
-      border: 1px solid rgba(88,200,247,.18);
-      border-radius: 999px;
-      background: rgba(88,200,247,.06);
-      color: var(--blue-soft);
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-    }
-
-    .legal-hero h1 {
-      position: relative;
-      z-index: 1;
-      max-width: 850px;
-      margin: 22px auto 16px;
-      font-family: Marcellus, Georgia, serif;
-      font-size: clamp(40px, 6vw, 66px);
-      line-height: 1.08;
-      font-weight: 400;
-      color: #f1f7fb;
-    }
-
-    .legal-hero h1 span {
-      color: var(--blue);
-    }
-
-    .legal-hero p {
-      position: relative;
-      z-index: 1;
-      max-width: 700px;
-      margin: auto;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.8;
-    }
-
-    .legal-wrap {
-      width: min(1120px, calc(100% - 40px));
-      margin: auto;
-      padding: 62px 0 105px;
-    }
-
-    .legal-grid {
-      display: grid;
-      grid-template-columns: 205px minmax(0,1fr);
-      gap: 48px;
-      align-items: start;
-    }
-
-    .legal-nav {
-      position: sticky;
-      top: 100px;
-      padding: 20px 0;
-    }
-
-    .legal-nav-title {
-      margin-bottom: 14px;
-      color: var(--blue);
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-    }
-
-    .legal-nav a {
-      display: block;
-      padding: 8px 11px;
-      border-left: 1px solid transparent;
-      color: #758397;
-      font-size: 10px;
-      line-height: 1.4;
-      text-decoration: none;
-      transition: .2s ease;
-    }
-
-    .legal-nav a:hover {
-      color: var(--blue-soft);
-      border-left-color: var(--blue);
-      background: rgba(88,200,247,.04);
-    }
-
-    .legal-document {
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background:
-        linear-gradient(145deg, rgba(255,255,255,.025), transparent 28%),
-        var(--card);
-      box-shadow: 0 24px 70px rgba(0,0,0,.18);
-    }
-
-    .legal-document-intro {
-      padding: 31px 34px;
-      border-bottom: 1px solid var(--line);
-      color: #a8b4c2;
-      font-size: 13px;
-      line-height: 1.85;
+    .text-glow {
+      text-shadow: 0 0 20px rgba(125, 211, 252, 0.3);
     }
 
     .legal-section {
-      padding: 34px;
-      border-bottom: 1px solid var(--line);
-      scroll-margin-top: 95px;
+      scroll-margin-top: 110px;
     }
 
-    .legal-section:last-child {
-      border-bottom: 0;
+    .legal-nav-link {
+      transition: all .2s ease;
     }
 
-    .legal-number {
-      display: block;
-      margin-bottom: 7px;
-      color: var(--blue);
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: .2em;
+    .legal-nav-link:hover {
+      color: #7dd3fc;
+      transform: translateX(3px);
     }
 
-    .legal-section h2 {
-      margin: 0 0 15px;
-      color: #eaf3f8;
-      font-family: Marcellus, Georgia, serif;
-      font-size: 27px;
-      line-height: 1.25;
-      font-weight: 400;
-    }
-
-    .legal-section p,
-    .legal-section li {
-      color: #9ca9b8;
-      font-size: 13px;
-      line-height: 1.85;
-    }
-
-    .legal-section p {
-      margin: 0 0 12px;
-    }
-
-    .legal-section ul {
-      margin: 7px 0 0;
-      padding-left: 20px;
-    }
-
-    .legal-section li {
-      margin: 8px 0;
-      padding-left: 4px;
-    }
-
-    .legal-section li::marker {
-      color: var(--blue);
-    }
-
-    .legal-section strong {
-      color: #dce8ef;
-      font-weight: 600;
-    }
-
-    .legal-highlight {
-      margin-top: 21px;
-      padding: 18px 20px;
-      border: 1px solid rgba(88,200,247,.13);
-      border-radius: 12px;
-      background: rgba(88,200,247,.045);
-    }
-
-    .legal-highlight p {
-      margin: 0;
-    }
-
-    .legal-signature {
-      margin-top: 28px;
-      padding: 29px;
-      border: 1px solid rgba(88,200,247,.14);
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(88,200,247,.09), rgba(88,200,247,.025));
-      text-align: center;
-    }
-
-    .legal-signature small {
-      display: block;
-      margin-bottom: 7px;
-      color: var(--blue);
-      font-size: 9px;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-    }
-
-    .legal-signature strong {
-      display: block;
-      margin-bottom: 8px;
-      color: #f2f8fb;
-      font-family: Marcellus, Georgia, serif;
-      font-size: 25px;
-      font-weight: 400;
-    }
-
-    .legal-signature p {
-      max-width: 580px;
-      margin: auto;
-    }
-
-    .legal-back {
-      display: inline-flex;
-      margin-top: 28px;
-      color: var(--blue);
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      text-decoration: none;
-    }
-
-    .legal-back:hover {
-      color: #fff;
-    }
-
-    @media (max-width: 850px) {
-      .legal-hero {
-        padding: 76px 20px 60px;
+    @media (max-width: 767px) {
+      .legal-nav-scroll {
+        scrollbar-width: none;
       }
 
-      .legal-wrap {
-        width: min(100% - 24px, 1120px);
-        padding: 42px 0 70px;
-      }
-
-      .legal-grid {
-        display: block;
-      }
-
-      .legal-nav {
-        position: static;
-        display: flex;
-        gap: 7px;
-        overflow-x: auto;
-        padding: 0 0 18px;
-        margin-bottom: 18px;
-      }
-
-      .legal-nav-title {
+      .legal-nav-scroll::-webkit-scrollbar {
         display: none;
-      }
-
-      .legal-nav a {
-        flex: 0 0 auto;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        padding: 7px 11px;
-        white-space: nowrap;
-      }
-
-      .legal-nav a:hover {
-        border-color: rgba(88,200,247,.3);
-      }
-
-      .legal-section,
-      .legal-document-intro {
-        padding: 27px 22px;
-      }
-    }
-
-    @media (max-width: 520px) {
-      .legal-hero h1 {
-        font-size: 39px;
-      }
-
-      .legal-hero p,
-      .legal-section p,
-      .legal-section li {
-        font-size: 12.5px;
-      }
-
-      .legal-document {
-        border-radius: 14px;
       }
     }
   </style>
 </head>
 
-<body>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col selection:bg-primary selection:text-on-primary">
 
-  <!-- HEADER GLOBAL : identique aux autres pages du site -->
-  <div id="global-header"></div>
+  <!-- HEADER GLOBAL -->
+  <div data-global-header></div>
 
-  <main class="legal-page">
+  <main class="flex-grow pt-20">
 
-    <header class="legal-hero">
-      <span class="legal-kicker">Informations légales</span>
-      <h1>Conditions Générales <span>de Vente</span></h1>
-      <p>
-        Les conditions qui encadrent nos prestations de mariage,
-        voyages de noces, lunes de miel, demandes en mariage et
-        renouvellements de vœux à Madagascar.
-      </p>
-    </header>
+    <!-- HERO -->
+    <section class="relative overflow-hidden border-b border-primary/5">
+      <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute -left-48 -top-48 w-[520px] h-[520px] rounded-full border border-primary/5"></div>
+        <div class="absolute -right-44 bottom-[-300px] w-[620px] h-[620px] rounded-full border border-primary/5"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(125,211,252,0.10),transparent_42%)]"></div>
+      </div>
 
-    <div class="legal-wrap">
-      <div class="legal-grid">
+      <div class="relative max-w-5xl mx-auto px-6 py-28 md:py-36 text-center">
+        <div class="inline-flex items-center px-4 py-2 rounded-full bg-primary/5 border border-primary/15 text-primary text-[10px] font-semibold tracking-[0.22em] uppercase">
+          Informations légales
+        </div>
 
-        <nav class="legal-nav" aria-label="Sommaire des CGV">
-          <div class="legal-nav-title">Sommaire</div>
-          <a href="#objet">01 · Objet</a>
-          <a href="#prestations">02 · Prestations</a>
-          <a href="#reservations">03 · Réservations</a>
-          <a href="#modifications">04 · Modifications</a>
-          <a href="#inclus">05 · Prestations</a>
-          <a href="#responsabilites">06 · Responsabilités</a>
-          <a href="#assurances">07 · Assurances</a>
-          <a href="#reclamations">08 · Réclamations</a>
-          <a href="#donnees">09 · Données</a>
-          <a href="#litiges">10 · Litiges</a>
-        </nav>
+        <h1 class="font-headline text-4xl md:text-6xl lg:text-7xl font-bold text-on-surface mt-7 mb-6 text-glow tracking-tight">
+          Conditions Générales <span class="text-primary">de Vente</span>
+        </h1>
 
-        <article class="legal-document">
+        <p class="text-on-surface-variant text-sm md:text-base leading-8 max-w-3xl mx-auto">
+          Les conditions qui encadrent nos prestations de mariage, voyages de noces,
+          lunes de miel, demandes en mariage et renouvellements de vœux à Madagascar.
+        </p>
+      </div>
+    </section>
 
-          <div class="legal-document-intro">
-            Organisation de Mariages, Services de Mariage, Séjours de Lune de
-            Miel, Voyages de Noces, Demandes en Mariage et Renouvellement de Vœux.
-          </div>
+    <!-- DOCUMENT -->
+    <section class="py-16 md:py-24 px-5 md:px-8">
+      <div class="max-w-7xl mx-auto">
 
-          <section class="legal-section" id="objet">
-            <span class="legal-number">01</span>
-            <h2>Objet</h2>
-            <p>
-              Les présentes CGV régissent la vente de prestations liées à
-              l’organisation de mariages, services annexes, séjours de lune de miel,
-              voyages de noces, demandes en mariage et renouvellement de vœux de
-              mariage à Madagascar.
-            </p>
-          </section>
+        <div class="grid grid-cols-1 lg:grid-cols-[210px_minmax(0,1fr)] gap-10 lg:gap-14 items-start">
 
-          <section class="legal-section" id="prestations">
-            <span class="legal-number">02</span>
-            <h2>Prestations proposées</h2>
-            <ul>
-              <li>Organisation complète ou partielle de mariages.</li>
-              <li>Services associés : décoration, photographie, officiant, animations, etc.</li>
-              <li>Séjours de lune de miel et voyages de noces : hébergements, activités, transferts, etc.</li>
-              <li>Cérémonies de renouvellement de vœux et demandes en mariage.</li>
-            </ul>
-          </section>
-
-          <section class="legal-section" id="reservations">
-            <span class="legal-number">03</span>
-            <h2>Réservations et paiements</h2>
-            <ul>
-              <li><strong>Réservation :</strong> Toute prestation doit être confirmée par écrit (email ou contrat signé).</li>
-              <li><strong>Acompte :</strong> Un acompte de 50% du montant total est exigé à la réservation.</li>
-              <li><strong>Solde :</strong> Le solde doit être réglé au plus tard 7 jours avant la prestation.</li>
-              <li><strong>Moyens de paiement :</strong> Virement bancaire, carte de crédit ou tout autre moyen accepté par nos services.</li>
-            </ul>
-            <div class="legal-highlight">
-              <p><strong>Réservation :</strong> la prestation doit être confirmée par écrit et selon les modalités de paiement prévues.</p>
+          <!-- SOMMAIRE -->
+          <aside class="lg:sticky lg:top-28">
+            <div class="text-primary text-[10px] font-semibold tracking-[0.2em] uppercase mb-4">
+              Sommaire
             </div>
-          </section>
 
-          <section class="legal-section" id="modifications">
-            <span class="legal-number">04</span>
-            <h2>Modifications et annulations</h2>
-            <ul>
-              <li><strong>Modification par le client :</strong> Toute demande de modification doit être formulée par mail. Les ajustements seront réalisés dans la limite des disponibilités et peuvent entraîner des frais supplémentaires.</li>
-              <li><strong>Annulation par le client :</strong>
-                <ul>
-                  <li>Plus de 30 jours avant la date : remboursement de l’acompte.</li>
-                  <li>Entre 29 et 7 jours avant : remboursement de l’acompte, moins 5% pour frais de gestion.</li>
-                  <li>Moins de 7 jours avant : remboursement de l’acompte, moins 10% pour frais de gestion.</li>
-                </ul>
-              </li>
-              <li><strong>Annulation par l’organisateur :</strong> En cas de force majeure, le client sera intégralement remboursé ou une alternative sera proposée.</li>
-            </ul>
-          </section>
+            <nav class="legal-nav-scroll flex lg:block gap-2 overflow-x-auto pb-2 lg:pb-0">
+              <a href="#objet" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+                01 · Objet
+              </a>
+              <a href="#prestations" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+                02 · Prestations
+              </a>
+              <a href="#reservations" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+                03 · Réservations
+              </a>
+              <a href="#modifications" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+                04 · Modifications
+              </a>
+              <a href="#inclus" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+                05 · Prestations
+              </a>
+              <a href="#responsabilites" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+                06 · Responsabilités
+              </a>
+              <a href="#assurances" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+                07 · Assurances
+              </a>
+              <a href="#reclamations" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+                08 · Réclamations
+              </a>
+              <a href="#donnees" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+                09 · Données
+              </a>
+              <a href="#litiges" class="legal-nav-link shrink-0 block px-3 py-2 text-xs text-on-surface-variant lg:border-l lg:border-primary/0 hover:border-primary/30">
+                10 · Litiges
+              </a>
+            </nav>
+          </aside>
 
-          <section class="legal-section" id="inclus">
-            <span class="legal-number">05</span>
-            <h2>Prestations incluses et non incluses</h2>
-            <ul>
-              <li><strong>Inclus :</strong> Services spécifiés dans le contrat (hébergement, repas, décoration, etc.).</li>
-              <li><strong>Non inclus :</strong> Assurances voyage, frais personnels, ou tout service non mentionné explicitement.</li>
-            </ul>
-          </section>
+          <!-- CGV -->
+          <article class="glass-panel rounded-3xl overflow-hidden">
 
-          <section class="legal-section" id="responsabilites">
-            <span class="legal-number">06</span>
-            <h2>Responsabilités</h2>
-            <ul>
-              <li>L’organisateur s’engage à fournir les services convenus dans les meilleures conditions.</li>
-              <li>Les clients doivent respecter les lois locales et les consignes de sécurité.</li>
-              <li>L’organisateur ne peut être tenu responsable des retards ou annulations dus à des causes extérieures (météo, grèves, etc.).</li>
-            </ul>
-          </section>
-
-          <section class="legal-section" id="assurances">
-            <span class="legal-number">07</span>
-            <h2>Assurances</h2>
-            <p>
-              Il est fortement recommandé de souscrire à une assurance voyage
-              incluant l’annulation, la responsabilité civile et l’assistance rapatriement.
-            </p>
-          </section>
-
-          <section class="legal-section" id="reclamations">
-            <span class="legal-number">08</span>
-            <h2>Réclamations</h2>
-            <p>
-              Toute réclamation doit être formulée par email dans un délai de 7 jours après la prestation.
-            </p>
-          </section>
-
-          <section class="legal-section" id="donnees">
-            <span class="legal-number">09</span>
-            <h2>Protection des données</h2>
-            <p>
-              Les données personnelles collectées sont utilisées uniquement pour
-              l’organisation des prestations et ne seront pas partagées sans consentement.
-            </p>
-          </section>
-
-          <section class="legal-section" id="litiges">
-            <span class="legal-number">10</span>
-            <h2>Litiges</h2>
-            <p>
-              En cas de litige, les parties s’efforceront de trouver une solution amiable.
-              À défaut, les tribunaux compétents de Madagascar seront seuls compétents.
-            </p>
-
-            <div class="legal-signature">
-              <small>Acceptation</small>
-              <strong>Signature</strong>
-              <p>
-                L'acceptation des présentes CGV vaut pour validation de la réservation
-                et des conditions de la prestation.
+            <div class="p-7 md:p-9 border-b border-primary/10">
+              <p class="text-on-surface-variant text-sm leading-7 m-0">
+                Organisation de Mariages, Services de Mariage, Séjours de Lune de Miel,
+                Voyages de Noces, Demandes en Mariage et Renouvellement de Vœux.
               </p>
             </div>
 
-            <a class="legal-back" href="/">← Retour à l'accueil</a>
-          </section>
+            <section id="objet" class="legal-section p-7 md:p-9 border-b border-primary/10">
+              <span class="text-primary text-[10px] font-bold tracking-[0.2em]">01</span>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Objet</h2>
+              <p class="text-on-surface-variant text-sm leading-7 m-0">
+                Les présentes CGV régissent la vente de prestations liées à l’organisation
+                de mariages, services annexes, séjours de lune de miel, voyages de noces,
+                demandes en mariage et renouvellement de vœux de mariage à Madagascar.
+              </p>
+            </section>
 
-        </article>
+            <section id="prestations" class="legal-section p-7 md:p-9 border-b border-primary/10">
+              <span class="text-primary text-[10px] font-bold tracking-[0.2em]">02</span>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Prestations proposées</h2>
+              <ul class="space-y-3 pl-5 text-on-surface-variant text-sm leading-7 marker:text-primary">
+                <li>Organisation complète ou partielle de mariages.</li>
+                <li>Services associés : décoration, photographie, officiant, animations, etc.</li>
+                <li>Séjours de lune de miel et voyages de noces : hébergements, activités, transferts, etc.</li>
+                <li>Cérémonies de renouvellement de vœux et demandes en mariage.</li>
+              </ul>
+            </section>
+
+            <section id="reservations" class="legal-section p-7 md:p-9 border-b border-primary/10">
+              <span class="text-primary text-[10px] font-bold tracking-[0.2em]">03</span>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Réservations et paiements</h2>
+
+              <ul class="space-y-3 pl-5 text-on-surface-variant text-sm leading-7 marker:text-primary">
+                <li><strong class="text-on-surface">Réservation :</strong> Toute prestation doit être confirmée par écrit (email ou contrat signé).</li>
+                <li><strong class="text-on-surface">Acompte :</strong> Un acompte de 50% du montant total est exigé à la réservation.</li>
+                <li><strong class="text-on-surface">Solde :</strong> Le solde doit être réglé au plus tard 7 jours avant la prestation.</li>
+                <li><strong class="text-on-surface">Moyens de paiement :</strong> Virement bancaire, carte de crédit ou tout autre moyen accepté par nos services.</li>
+              </ul>
+
+              <div class="glass-panel mt-6 p-5 rounded-2xl">
+                <p class="text-on-surface-variant text-sm leading-7 m-0">
+                  <strong class="text-primary">Réservation :</strong>
+                  la prestation doit être confirmée par écrit et selon les modalités de paiement prévues.
+                </p>
+              </div>
+            </section>
+
+            <section id="modifications" class="legal-section p-7 md:p-9 border-b border-primary/10">
+              <span class="text-primary text-[10px] font-bold tracking-[0.2em]">04</span>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Modifications et annulations</h2>
+
+              <ul class="space-y-4 pl-5 text-on-surface-variant text-sm leading-7 marker:text-primary">
+                <li>
+                  <strong class="text-on-surface">Modification par le client :</strong>
+                  Toute demande de modification doit être formulée par mail. Les ajustements seront réalisés dans la limite des disponibilités et peuvent entraîner des frais supplémentaires.
+                </li>
+
+                <li>
+                  <strong class="text-on-surface">Annulation par le client :</strong>
+                  <ul class="mt-3 space-y-2 pl-5 list-disc marker:text-primary">
+                    <li>Plus de 30 jours avant la date : remboursement de l’acompte.</li>
+                    <li>Entre 29 et 7 jours avant : remboursement de l’acompte, moins 5% pour frais de gestion.</li>
+                    <li>Moins de 7 jours avant : remboursement de l’acompte, moins 10% pour frais de gestion.</li>
+                  </ul>
+                </li>
+
+                <li>
+                  <strong class="text-on-surface">Annulation par l’organisateur :</strong>
+                  En cas de force majeure, le client sera intégralement remboursé ou une alternative sera proposée.
+                </li>
+              </ul>
+            </section>
+
+            <section id="inclus" class="legal-section p-7 md:p-9 border-b border-primary/10">
+              <span class="text-primary text-[10px] font-bold tracking-[0.2em]">05</span>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Prestations incluses et non incluses</h2>
+
+              <ul class="space-y-3 pl-5 text-on-surface-variant text-sm leading-7 marker:text-primary">
+                <li><strong class="text-on-surface">Inclus :</strong> Services spécifiés dans le contrat (hébergement, repas, décoration, etc.).</li>
+                <li><strong class="text-on-surface">Non inclus :</strong> Assurances voyage, frais personnels, ou tout service non mentionné explicitement.</li>
+              </ul>
+            </section>
+
+            <section id="responsabilites" class="legal-section p-7 md:p-9 border-b border-primary/10">
+              <span class="text-primary text-[10px] font-bold tracking-[0.2em]">06</span>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Responsabilités</h2>
+
+              <ul class="space-y-3 pl-5 text-on-surface-variant text-sm leading-7 marker:text-primary">
+                <li>L’organisateur s’engage à fournir les services convenus dans les meilleures conditions.</li>
+                <li>Les clients doivent respecter les lois locales et les consignes de sécurité.</li>
+                <li>L’organisateur ne peut être tenu responsable des retards ou annulations dus à des causes extérieures (météo, grèves, etc.).</li>
+              </ul>
+            </section>
+
+            <section id="assurances" class="legal-section p-7 md:p-9 border-b border-primary/10">
+              <span class="text-primary text-[10px] font-bold tracking-[0.2em]">07</span>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Assurances</h2>
+
+              <p class="text-on-surface-variant text-sm leading-7 m-0">
+                Il est fortement recommandé de souscrire à une assurance voyage incluant
+                l’annulation, la responsabilité civile et l’assistance rapatriement.
+              </p>
+            </section>
+
+            <section id="reclamations" class="legal-section p-7 md:p-9 border-b border-primary/10">
+              <span class="text-primary text-[10px] font-bold tracking-[0.2em]">08</span>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Réclamations</h2>
+
+              <p class="text-on-surface-variant text-sm leading-7 m-0">
+                Toute réclamation doit être formulée par email dans un délai de 7 jours après la prestation.
+              </p>
+            </section>
+
+            <section id="donnees" class="legal-section p-7 md:p-9 border-b border-primary/10">
+              <span class="text-primary text-[10px] font-bold tracking-[0.2em]">09</span>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Protection des données</h2>
+
+              <p class="text-on-surface-variant text-sm leading-7 m-0">
+                Les données personnelles collectées sont utilisées uniquement pour
+                l’organisation des prestations et ne seront pas partagées sans consentement.
+              </p>
+            </section>
+
+            <section id="litiges" class="legal-section p-7 md:p-9">
+              <span class="text-primary text-[10px] font-bold tracking-[0.2em]">10</span>
+              <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface mt-2 mb-5">Litiges</h2>
+
+              <p class="text-on-surface-variant text-sm leading-7">
+                En cas de litige, les parties s’efforceront de trouver une solution amiable.
+                À défaut, les tribunaux compétents de Madagascar seront seuls compétents.
+              </p>
+
+              <div class="glass-panel-elevated p-7 rounded-2xl mt-8 text-center">
+                <span class="text-primary text-[10px] font-semibold tracking-[0.2em] uppercase">Acceptation</span>
+                <h3 class="font-headline text-2xl font-bold text-on-surface mt-2 mb-3">Signature</h3>
+                <p class="text-on-surface-variant text-sm leading-7 max-w-2xl mx-auto m-0">
+                  L'acceptation des présentes CGV vaut pour validation de la réservation
+                  et des conditions de la prestation.
+                </p>
+              </div>
+
+              <div class="text-center mt-8">
+                <a href="/" class="inline-flex items-center gap-2 text-primary text-xs font-semibold hover:text-white transition-colors">
+                  <span class="material-symbols-outlined text-sm">arrow_back</span>
+                  Retour à l'accueil
+                </a>
+              </div>
+            </section>
+
+          </article>
+        </div>
       </div>
-    </div>
+    </section>
+
   </main>
 
-  <!-- FOOTER GLOBAL : identique aux autres pages du site -->
-  <div id="global-footer"></div>
+  <!-- FOOTER GLOBAL -->
+  <div data-global-footer></div>
 
-  <script>
-    /*
-      Composants globaux.
-      Si ton projet utilise déjà un loader global pour header/footer,
-      conserve-le et supprime ce bloc.
-    */
-    async function loadGlobal(id, file) {
-      const el = document.getElementById(id);
-      if (!el) return;
-
-      try {
-        const response = await fetch(file);
-        if (!response.ok) throw new Error("HTTP " + response.status);
-        el.innerHTML = await response.text();
-      } catch (error) {
-        console.error("Erreur chargement composant :", file, error);
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      loadGlobal("global-header", "/global/header.html");
-      loadGlobal("global-footer", "/global/footer.html");
-    });
-  </script>
+  <!-- MÊME SYSTÈME QUE TES AUTRES PAGES -->
+  <script src="/components/components.js"></script>
 
 </body>
 </html>
