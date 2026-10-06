@@ -181,7 +181,7 @@ body.villa-product #mainImageButton{height:100%}
 </div>
 <section class="grid lg:grid-cols-[1.15fr_.85fr] gap-8 items-start">
 <div class="space-y-4">
-<div id="mainImageFrame" class="glass rounded-3xl overflow-hidden aspect-[4/3] relative"><button aria-label="Ouvrir les images du produit en grand" class="group w-full h-full relative cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7dd3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0e1a]" id="mainImageButton" type="button"><img alt="" class="w-full h-full object-cover transition-opacity duration-200" fetchpriority="high" id="mainImage" src="" /><span aria-label="Image précédente" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="prevImage"><span class="material-symbols-outlined">chevron_left</span></span><span aria-label="Image suivante" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="nextImage"><span class="material-symbols-outlined">chevron_right</span></span><span class="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-[#0a0e1a]/55 border border-white/10 text-xs text-white/80 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md">Cliquer pour agrandir</span><div class="absolute inset-0 bg-gradient-to-t from-[#0a0e1a]/75 via-transparent to-transparent pointer-events-none"></div></button></div>
+<div id="mainImageFrame" class="glass rounded-3xl overflow-hidden aspect-[4/3] relative"><button aria-label="Ouvrir les images du produit en grand" class="group w-full h-full relative focus:outline-none" id="mainImageButton" type="button"><img alt="" class="w-full h-full object-cover transition-opacity duration-200" fetchpriority="high" id="mainImage" src="" /><span aria-label="Image précédente" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="prevImage"><span class="material-symbols-outlined">chevron_left</span></span><span aria-label="Image suivante" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#0a0e1a]/60 border border-white/15 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md" id="nextImage"><span class="material-symbols-outlined">chevron_right</span></span><div class="absolute inset-0 bg-gradient-to-t from-[#0a0e1a]/75 via-transparent to-transparent pointer-events-none"></div></button></div>
 <div class="villa-thumb-carousel is-villa-carousel" id="thumbCarousel">
   <button type="button" class="villa-thumb-arrow" id="thumbPrev" aria-label="Miniature précédente">
     <span class="material-symbols-outlined">chevron_left</span>
@@ -356,10 +356,6 @@ body.villa-product #mainImageButton{height:100%}
     productDescriptionTitle: document.getElementById('productDescriptionTitle'),
     breadcrumbProduct: document.getElementById('breadcrumbProduct'),
     bottomTitle: document.getElementById('bottomTitle'),
-    lightbox: document.getElementById('imageLightbox'),
-    lightboxImage: document.getElementById('lightboxImage'),
-    lightboxCaption: document.getElementById('lightboxCaption'),
-    lightboxCount: document.getElementById('lightboxCount'),
     bookingDateWrap: document.getElementById('bookingDateWrap')
   };
 
@@ -1376,43 +1372,6 @@ body.villa-product #mainImageButton{height:100%}
     }
   }
 
-  function openLightbox(index = currentImageIndex) {
-    if (!images.length) return;
-
-    currentImageIndex =
-      (index + images.length) % images.length;
-
-    updateLightbox();
-
-    els.lightbox?.classList.remove('hidden');
-    document.body.classList.add('overflow-hidden');
-  }
-
-  function closeLightbox() {
-    els.lightbox?.classList.add('hidden');
-    document.body.classList.remove('overflow-hidden');
-  }
-
-  function updateLightbox() {
-    if (!els.lightboxImage) return;
-
-    els.lightboxImage.src =
-      images[currentImageIndex];
-
-    els.lightboxImage.alt =
-      `${product.name} — photo ${currentImageIndex + 1}`;
-
-    if (els.lightboxCaption) {
-      els.lightboxCaption.textContent =
-        product.name;
-    }
-
-    if (els.lightboxCount) {
-      els.lightboxCount.textContent =
-        `Image ${currentImageIndex + 1} / ${images.length}`;
-    }
-  }
-
   function showPrev() {
     setMain(currentImageIndex - 1);
   }
@@ -1422,30 +1381,8 @@ body.villa-product #mainImageButton{height:100%}
   }
 
   function wireGallery() {
-    els.mainImageButton?.addEventListener(
-      'click',
-      event => {
-        if (
-          event.target.closest('#prevImage') ||
-          event.target.closest('#nextImage')
-        ) {
-          return;
-        }
-
-        openLightbox(currentImageIndex);
-      }
-    );
-
-    // Clic direct sur la grande image
-    els.mainImage?.addEventListener(
-      'click',
-      event => {
-        event.preventDefault();
-        event.stopPropagation();
-        openLightbox(currentImageIndex);
-      }
-    );
-
+    // La grande image n'est volontairement plus cliquable.
+    // Les contrôles précédent/suivant restent actifs.
     document
       .getElementById('prevImage')
       ?.addEventListener('click', event => {
@@ -1461,70 +1398,6 @@ body.villa-product #mainImageButton{height:100%}
         event.stopPropagation();
         showNext();
       });
-
-    document
-      .getElementById('closeLightbox')
-      ?.addEventListener(
-        'click',
-        closeLightbox
-      );
-
-    document
-      .getElementById('lightboxPrev')
-      ?.addEventListener('click', () => {
-        currentImageIndex =
-          (currentImageIndex - 1 + images.length) %
-          images.length;
-
-        updateLightbox();
-      });
-
-    document
-      .getElementById('lightboxNext')
-      ?.addEventListener('click', () => {
-        currentImageIndex =
-          (currentImageIndex + 1) %
-          images.length;
-
-        updateLightbox();
-      });
-
-    els.lightbox?.addEventListener(
-      'click',
-      event => {
-        if (event.target === els.lightbox) {
-          closeLightbox();
-        }
-      }
-    );
-
-    document.addEventListener('keydown', event => {
-      if (
-        !els.lightbox ||
-        els.lightbox.classList.contains('hidden')
-      ) {
-        return;
-      }
-
-      if (event.key === 'Escape') {
-        closeLightbox();
-      }
-
-      if (event.key === 'ArrowLeft') {
-        currentImageIndex =
-          (currentImageIndex - 1 + images.length) %
-          images.length;
-
-        updateLightbox();
-      }
-
-      if (event.key === 'ArrowRight') {
-        currentImageIndex =
-          (currentImageIndex + 1) % images.length;
-
-        updateLightbox();
-      }
-    });
   }
 
   async function loadRelated() {
@@ -1640,4 +1513,4 @@ body.villa-product #mainImageButton{height:100%}
   init();
 })();
 </script>
-<div aria-label="Galerie photo du produit" aria-modal="true" class="fixed inset-0 z-[100] hidden bg-[#050914]/95 backdrop-blur-lg" id="imageLightbox" role="dialog"><button aria-label="Fermer" class="absolute top-5 right-5 z-20 w-12 h-12 rounded-full bg-white/10 border border-white/15 text-white flex items-center justify-center hover:bg-white/15" id="closeLightbox" type="button"><span class="material-symbols-outlined">close</span></button><button aria-label="Image précédente" class="absolute top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/10 border border-white/15 text-white flex items-center justify-center hover:bg-white/15 left-4 md:left-8" id="lightboxPrev" type="button"><span class="material-symbols-outlined">chevron_left</span></button><button aria-label="Image suivante" class="absolute top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/10 border border-white/15 text-white flex items-center justify-center hover:bg-white/15 right-4 md:right-8" id="lightboxNext" type="button"><span class="material-symbols-outlined">chevron_right</span></button><div class="h-full flex flex-col items-center justify-center px-16 md:px-24 py-16 gap-5"><img alt="" class="max-w-full max-h-[78vh] object-contain rounded-2xl" id="lightboxImage"/><div class="text-sm text-[#c8d6e3] text-center" id="lightboxCaption"></div><div class="text-xs uppercase tracking-widest text-[#7dd3fc]" id="lightboxCount"></div></div></div></body></html>
+</body></html>
