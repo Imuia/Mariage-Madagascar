@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html class="dark" lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Politique de Confidentialité | Mariage Madagascar</title>
+  <meta name="description" content="Politique de Confidentialité de Mariage Madagascar, propriété de IMUIA LLC."/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            background: "#0a0e1a",
+            surface: "#0f1524",
+            "surface-low": "#111828",
+            "surface-high": "#1a2438",
+            primary: "#7dd3fc",
+            "primary-dim": "#58bde9",
+            "on-surface": "#e0e8f0",
+            "on-surface-variant": "#a0b4c4",
+            outline: "#2a3a48",
+            secondary: "#88b4cc",
+            tertiary: "#c8a0f0"
+          },
+          borderRadius: {
+            DEFAULT: "0.5rem",
+            lg: "1rem",
+            xl: "1.5rem",
+            full: "9999px"
+          },
+          fontFamily: {
+            headline: ["Inter"],
+            body: ["Inter"],
+            label: ["Inter"]
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: #0a0e1a;
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    .privacy-hero {
+      background:
+        radial-gradient(circle at 18% 15%, rgba(125,211,252,.11), transparent 27%),
+        radial-gradient(circle at 84% 78%, rgba(200,160,240,.08), transparent 28%),
+        #0a0e1a;
+    }
+
+    .privacy-card {
+      background: rgba(15,21,36,.58);
+      border: 1px solid rgba(125,211,252,.09);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .privacy-card:hover {
+      border-color: rgba(125,211,252,.18);
+    }
+
+    .privacy-section {
+      scroll-margin-top: 105px;
+    }
+
+    .privacy-rule {
+      border-color: rgba(125,211,252,.08);
+    }
+
+    .privacy-index a {
+      transition: .2s ease;
+    }
+
+    .privacy-index a:hover {
+      color: #7dd3fc;
+      transform: translateX(3px);
+    }
+
+    .privacy-glow {
+      text-shadow: 0 0 25px rgba(125,211,252,.22);
+    }
+
+    @media (max-width: 767px) {
+      .privacy-index-scroll {
+        scrollbar-width: none;
+      }
+      .privacy-index-scroll::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-background text-on-surface font-body min-h-screen flex flex-col selection:bg-primary selection:text-[#001f2e]">
+
+  <!-- HEADER GLOBAL -->
+  <div data-global-header></div>
+
+  <main class="flex-grow pt-20">
+
+    <!-- HERO : style différent des CGV, plus éditorial -->
+    <section class="privacy-hero relative overflow-hidden border-b privacy-rule">
+      <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute left-[8%] top-16 w-32 h-32 rounded-full border border-primary/10"></div>
+        <div class="absolute left-[12%] top-24 w-16 h-16 rounded-full border border-primary/5"></div>
+        <div class="absolute right-[7%] bottom-[-80px] w-64 h-64 rounded-full border border-tertiary/10"></div>
+      </div>
+
+      <div class="relative max-w-7xl mx-auto px-6 py-20 md:py-24">
+        <div class="grid lg:grid-cols-[1.15fr_.85fr] gap-12 lg:gap-20 items-end">
+
+          <div>
+            <div class="flex items-center gap-3 mb-5">
+              <span class="w-8 h-px bg-primary"></span>
+              <span class="text-primary text-[10px] font-semibold tracking-[.22em] uppercase">
+                Vie privée & données
+              </span>
+            </div>
+
+            <h1 class="font-headline text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] privacy-glow">
+              Politique de<br/>
+              <span class="text-primary">Confidentialité</span>
+            </h1>
+          </div>
+
+          <div class="lg:pb-2">
+            <p class="text-on-surface-variant text-sm md:text-base leading-7">
+              Nous accordons une importance particulière à la confidentialité,
+              à la sécurité et à la protection de vos données personnelles.
+            </p>
+            <div class="flex items-center gap-3 mt-6 text-xs text-secondary">
+              <span class="material-symbols-outlined text-base">verified_user</span>
+              <span>Vos données sont traitées avec soin et sécurité.</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENT -->
+    <section class="py-12 md:py-16 px-5 md:px-8">
+      <div class="max-w-7xl mx-auto">
+
+        <div class="grid grid-cols-1 lg:grid-cols-[190px_minmax(0,1fr)] gap-8 lg:gap-12 items-start">
+
+          <!-- INDEX -->
+          <aside class="lg:sticky lg:top-28">
+            <div class="text-primary text-[10px] font-semibold tracking-[.2em] uppercase mb-3">
+              Sur cette page
+            </div>
+
+            <nav class="privacy-index privacy-index-scroll flex lg:block gap-1 overflow-x-auto pb-2 lg:pb-0">
+              <a href="#intro" class="shrink-0 block px-3 py-2 text-xs text-on-surface-variant">Introduction</a>
+              <a href="#collecte" class="shrink-0 block px-3 py-2 text-xs text-on-surface-variant">Données collectées</a>
+              <a href="#traitement" class="shrink-0 block px-3 py-2 text-xs text-on-surface-variant">Pourquoi ?</a>
+              <a href="#droits" class="shrink-0 block px-3 py-2 text-xs text-on-surface-variant">Vos droits</a>
+              <a href="#liens" class="shrink-0 block px-3 py-2 text-xs text-on-surface-variant">Autres sites</a>
+              <a href="#securite" class="shrink-0 block px-3 py-2 text-xs text-on-surface-variant">Sécurité</a>
+              <a href="#legal" class="shrink-0 block px-3 py-2 text-xs text-on-surface-variant">Divulgation</a>
+              <a href="#contact" class="shrink-0 block px-3 py-2 text-xs text-on-surface-variant">Contact</a>
+            </nav>
+          </aside>
+
+          <article class="space-y-4">
+
+            <!-- INTRO -->
+            <section id="intro" class="privacy-section privacy-card rounded-2xl p-6 md:p-8">
+              <div class="flex gap-4">
+                <div class="shrink-0 w-10 h-10 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-primary">shield</span>
+                </div>
+                <div>
+                  <p class="text-on-surface text-[15px] leading-7 mb-4">
+                    Le site <strong>Mariage Madagascar</strong> est la propriété de
+                    <strong>IMUIA LLC</strong>, qui est le responsable du traitement de vos données personnelles.
+                  </p>
+                  <p class="text-on-surface-variant text-[15px] leading-7 mb-4">
+                    Nous avons adopté la présente Politique de Confidentialité, qui détermine
+                    comment nous traitons les informations collectées par Mariage Madagascar
+                    et explique également les raisons pour lesquelles nous devons recueillir
+                    certaines données personnelles vous concernant.
+                  </p>
+                  <p class="text-on-surface-variant text-[15px] leading-7 mb-0">
+                    Vous devez donc lire cette Politique de Confidentialité avant d’utiliser
+                    le site Mariage Madagascar.
+                  </p>
+                </div>
+              </div>
+
+              <div class="mt-6 pt-5 border-t privacy-rule">
+                <p class="text-primary text-sm font-medium leading-6 m-0">
+                  Nous prenons soin de vos données personnelles et nous nous engageons à en garantir la confidentialité et la sécurité.
+                </p>
+              </div>
+            </section>
+
+            <!-- COLLECTE -->
+            <section id="collecte" class="privacy-section privacy-card rounded-2xl p-6 md:p-8">
+              <div class="flex items-start justify-between gap-5 mb-5">
+                <div>
+                  <span class="text-primary text-[10px] font-bold tracking-[.2em]">01</span>
+                  <h2 class="font-headline text-2xl md:text-3xl font-bold mt-1">Informations personnelles que nous collectons</h2>
+                </div>
+                <span class="material-symbols-outlined hidden sm:block text-primary/70">database</span>
+              </div>
+
+              <p class="text-on-surface-variant text-[15px] leading-7 mb-4">
+                Lorsque vous visitez Mariage Madagascar, nous collectons automatiquement certaines
+                informations concernant votre appareil, y compris des informations sur votre navigateur web,
+                votre adresse IP, votre fuseau horaire et certains cookies installés sur votre appareil.
+              </p>
+
+              <p class="text-on-surface-variant text-[15px] leading-7 mb-4">
+                De plus, au fur et à mesure de votre navigation sur le site, nous recueillons des informations
+                sur les pages web ou les produits que vous consultez, sur les sites ou termes de recherche
+                qui vous ont dirigé vers le site, ainsi que sur la manière dont vous interagissez avec celui-ci.
+                Nous appelons ces informations collectées automatiquement « Informations sur l’appareil ».
+              </p>
+
+              <p class="text-on-surface-variant text-[15px] leading-7 m-0">
+                En outre, nous pouvons recueillir les données personnelles que vous nous fournissez
+                (y compris, mais sans s’y limiter, votre prénom, nom, adresse, informations de paiement, etc.)
+                lors de votre inscription afin de pouvoir exécuter le contrat.
+              </p>
+            </section>
+
+            <!-- TRAITEMENT -->
+            <section id="traitement" class="privacy-section privacy-card rounded-2xl p-6 md:p-8">
+              <div class="flex items-start justify-between gap-5 mb-5">
+                <div>
+                  <span class="text-primary text-[10px] font-bold tracking-[.2em]">02</span>
+                  <h2 class="font-headline text-2xl md:text-3xl font-bold mt-1">Pourquoi traitons-nous vos données ?</h2>
+                </div>
+                <span class="material-symbols-outlined hidden sm:block text-primary/70">manage_search</span>
+              </div>
+
+              <p class="text-on-surface-variant text-[15px] leading-7 mb-4">
+                Notre priorité absolue est la sécurité des données de nos clients. En conséquence,
+                nous ne traitons qu’un minimum de données utilisateurs, uniquement autant que nécessaire
+                pour maintenir le site.
+              </p>
+
+              <p class="text-on-surface-variant text-[15px] leading-7 mb-4">
+                Les informations collectées automatiquement sont utilisées uniquement pour identifier
+                d’éventuels cas d’abus et établir des statistiques sur l’utilisation du site.
+                Ces informations statistiques ne sont pas agrégées de manière à pouvoir identifier
+                un utilisateur en particulier.
+              </p>
+
+              <p class="text-on-surface-variant text-[15px] leading-7 mb-4">
+                Vous pouvez visiter le site sans nous révéler votre identité ou fournir des informations
+                permettant de vous identifier en tant qu’individu précis. Toutefois, si vous souhaitez
+                utiliser certaines fonctionnalités du site, recevoir notre newsletter ou remplir un formulaire,
+                vous pouvez nous fournir des données personnelles telles que votre adresse e-mail, prénom,
+                nom, ville de résidence, organisation, numéro de téléphone.
+              </p>
+
+              <p class="text-on-surface-variant text-[15px] leading-7 mb-4">
+                Vous pouvez choisir de ne pas nous fournir vos données personnelles, mais dans ce cas,
+                vous ne pourrez pas bénéficier de certaines fonctionnalités du site. Par exemple, vous ne
+                pourrez pas recevoir notre newsletter ni nous contacter directement via le site.
+              </p>
+
+              <div class="privacy-card rounded-xl p-5 border-primary/10">
+                <p class="text-on-surface-variant text-sm leading-6 m-0">
+                  Les utilisateurs qui se demandent quelles informations sont obligatoires sont invités
+                  à nous contacter à l’adresse
+                  <a href="mailto:HELLO@mariage-madagascar.com" class="text-primary hover:text-white transition-colors">
+                    HELLO@mariage-madagascar.com
+                  </a>.
+                </p>
+              </div>
+            </section>
+
+            <!-- DROITS -->
+            <section id="droits" class="privacy-section privacy-card rounded-2xl p-6 md:p-8">
+              <div class="flex items-start justify-between gap-5 mb-5">
+                <div>
+                  <span class="text-primary text-[10px] font-bold tracking-[.2em]">03</span>
+                  <h2 class="font-headline text-2xl md:text-3xl font-bold mt-1">Vos droits</h2>
+                </div>
+                <span class="material-symbols-outlined hidden sm:block text-primary/70">person_check</span>
+              </div>
+
+              <p class="text-on-surface-variant text-[15px] leading-7 mb-5">
+                Si vous résidez en Europe, vous disposez des droits suivants relatifs à vos données personnelles :
+              </p>
+
+              <div class="grid sm:grid-cols-2 gap-2">
+                <div class="privacy-card rounded-lg px-4 py-3 text-sm text-on-surface-variant">Le droit à l’information.</div>
+                <div class="privacy-card rounded-lg px-4 py-3 text-sm text-on-surface-variant">Le droit d’accès.</div>
+                <div class="privacy-card rounded-lg px-4 py-3 text-sm text-on-surface-variant">Le droit de rectification.</div>
+                <div class="privacy-card rounded-lg px-4 py-3 text-sm text-on-surface-variant">Le droit à l’effacement.</div>
+                <div class="privacy-card rounded-lg px-4 py-3 text-sm text-on-surface-variant">Le droit de restreindre le traitement.</div>
+                <div class="privacy-card rounded-lg px-4 py-3 text-sm text-on-surface-variant">Le droit à la portabilité des données.</div>
+                <div class="privacy-card rounded-lg px-4 py-3 text-sm text-on-surface-variant">Le droit d’opposition.</div>
+                <div class="privacy-card rounded-lg px-4 py-3 text-sm text-on-surface-variant">Les droits relatifs à la prise de décision automatisée et au profilage.</div>
+              </div>
+
+              <p class="text-on-surface-variant text-[15px] leading-7 mt-5 mb-4">
+                Si vous souhaitez exercer ces droits, veuillez nous contacter via les coordonnées ci-dessous.
+              </p>
+
+              <p class="text-on-surface-variant text-[15px] leading-7 m-0">
+                De plus, si vous êtes résident européen, nous vous informons que nous traitons vos informations
+                afin d’exécuter les contrats que nous pourrions avoir avec vous (par exemple, si vous passez une
+                commande via le site) ou pour poursuivre nos intérêts commerciaux légitimes mentionnés ci-dessus.
+                Veuillez également noter que vos informations peuvent être transférées en dehors de l’Europe,
+                notamment vers le Canada et les États-Unis.
+              </p>
+            </section>
+
+            <!-- LIENS -->
+            <section id="liens" class="privacy-section privacy-card rounded-2xl p-6 md:p-8">
+              <div class="flex items-start justify-between gap-5 mb-4">
+                <div>
+                  <span class="text-primary text-[10px] font-bold tracking-[.2em]">04</span>
+                  <h2 class="font-headline text-2xl md:text-3xl font-bold mt-1">Liens vers d'autres sites web</h2>
+                </div>
+                <span class="material-symbols-outlined hidden sm:block text-primary/70">open_in_new</span>
+              </div>
+
+              <p class="text-on-surface-variant text-[15px] leading-7 m-0">
+                Notre site peut contenir des liens vers d'autres sites qui ne sont pas la propriété
+                ou sous le contrôle de notre entreprise. Veuillez noter que nous ne sommes pas responsables
+                des pratiques de confidentialité de ces autres sites ou de tiers. Nous vous encourageons
+                à être vigilant lorsque vous quittez notre site et à consulter les politiques de confidentialité
+                de chaque site susceptible de collecter des informations personnelles.
+              </p>
+            </section>
+
+            <!-- SECURITE -->
+            <section id="securite" class="privacy-section privacy-card rounded-2xl p-6 md:p-8">
+              <div class="flex items-start justify-between gap-5 mb-4">
+                <div>
+                  <span class="text-primary text-[10px] font-bold tracking-[.2em]">05</span>
+                  <h2 class="font-headline text-2xl md:text-3xl font-bold mt-1">Sécurité de l'information</h2>
+                </div>
+                <span class="material-symbols-outlined hidden sm:block text-primary/70">lock</span>
+              </div>
+
+              <p class="text-on-surface-variant text-[15px] leading-7 m-0">
+                Nous sécurisons les informations que vous nous fournissez sur des serveurs informatiques
+                dans un environnement contrôlé et sécurisé, protégé contre tout accès, utilisation ou
+                divulgation non autorisés. Nous maintenons des mesures de sécurité administratives,
+                techniques et physiques raisonnables pour protéger contre tout accès, utilisation,
+                modification ou divulgation non autorisés des données personnelles placées sous notre contrôle.
+                Cependant, aucune transmission de données sur Internet ou via un réseau sans fil ne peut être
+                garantie comme étant totalement sécurisée.
+              </p>
+            </section>
+
+            <!-- DIVULGATION -->
+            <section id="legal" class="privacy-section privacy-card rounded-2xl p-6 md:p-8">
+              <div class="flex items-start justify-between gap-5 mb-4">
+                <div>
+                  <span class="text-primary text-[10px] font-bold tracking-[.2em]">06</span>
+                  <h2 class="font-headline text-2xl md:text-3xl font-bold mt-1">Divulgation légale</h2>
+                </div>
+                <span class="material-symbols-outlined hidden sm:block text-primary/70">gavel</span>
+              </div>
+
+              <p class="text-on-surface-variant text-[15px] leading-7 m-0">
+                Nous divulguerons toute information que nous collectons, utilisons ou recevons si la loi
+                l’exige ou le permet, par exemple pour répondre à une assignation ou à un processus légal
+                similaire, et lorsque nous estimons de bonne foi que la divulgation est nécessaire pour
+                protéger nos droits, assurer votre sécurité ou celle d’autrui, enquêter sur une fraude
+                ou répondre à une demande gouvernementale.
+              </p>
+            </section>
+
+            <!-- CONTACT -->
+            <section id="contact" class="privacy-section rounded-2xl p-7 md:p-9 border border-primary/15 bg-gradient-to-br from-primary/10 via-surface to-tertiary/5">
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-7">
+                <div>
+                  <span class="text-primary text-[10px] font-bold tracking-[.2em]">07 · CONTACT</span>
+                  <h2 class="font-headline text-2xl md:text-3xl font-bold mt-2 mb-3">Une question sur vos données ?</h2>
+                  <p class="text-on-surface-variant text-sm leading-6 max-w-2xl m-0">
+                    Si vous souhaitez nous contacter pour en savoir plus sur cette Politique
+                    ou pour toute question concernant vos droits individuels et vos informations personnelles,
+                    vous pouvez nous écrire.
+                  </p>
+                </div>
+
+                <a href="mailto:hello@mariage-madagascar.com"
+                   class="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary/15 border border-primary/25 text-primary text-sm font-semibold hover:bg-primary/25 transition-all">
+                  <span class="material-symbols-outlined text-base">mail</span>
+                  hello@mariage-madagascar.com
+                </a>
+              </div>
+            </section>
+
+            <div class="text-center pt-5">
+              <a href="/" class="inline-flex items-center gap-2 text-primary text-xs font-semibold hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                Retour à l'accueil
+              </a>
+            </div>
+
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER GLOBAL -->
+  <div data-global-footer></div>
+
+  <!-- MÊME SYSTÈME QUE TES AUTRES PAGES -->
+  <script src="/components/components.js"></script>
+
+</body>
+</html>
