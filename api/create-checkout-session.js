@@ -1,13 +1,13 @@
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://qrkinjuhtyfptldlvdyg.supabase.co';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 
 async function supabaseFetch(path, options = {}) {
   const url = `${SUPABASE_URL}/rest/v1/${path}`;
   const headers = {
     'Content-Type': 'application/json',
-    'apikey': SUPABASE_SERVICE_ROLE_KEY,
-    'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
     ...(options.headers || {})
   };
 
@@ -35,12 +35,8 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ message: 'Votre panier est vide.' });
     }
 
-    if (!SUPABASE_SERVICE_ROLE_KEY) {
-      return res.status(500).json({ message: 'Configuration serveur incomplète (SUPABASE_SERVICE_ROLE_KEY manquante).' });
-    }
-
     if (!STRIPE_SECRET_KEY) {
-      return res.status(500).json({ message: 'Configuration Stripe serveur incomplète (STRIPE_SECRET_KEY manquante).' });
+      return res.status(500).json({ message: 'Configuration Stripe serveur incomplète : la variable d’environnement STRIPE_SECRET_KEY est manquante dans Vercel.' });
     }
 
     // 1. RE-VÉRIFICATION STRICTE DES PRIX ET PRODUITS DEPUIS SUPABASE (SERVEUR DE VÉRITÉ)
