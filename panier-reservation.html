@@ -279,7 +279,10 @@
 
     let html = '';
 
-    cart.forEach((item, itemIdx) => {
+    // Affichage des éléments du panier dans l'ordre inverse (le plus récent en premier)
+    const displayItems = cart.map((item, originalIndex) => ({ item, originalIndex })).reverse();
+
+    displayItems.forEach(({ item, originalIndex }) => {
       const formattedDate = item.booking_date
         ? new Date(item.booking_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
         : 'Date à définir avec nos conseillers';
@@ -327,7 +330,7 @@
                 <a href="/produit/${esc(item.slug)}" class="text-xs text-[#7dd3fc] hover:underline flex items-center gap-1">
                   <span class="material-symbols-outlined text-[16px]">edit</span> Modifier ma sélection
                 </a>
-                <button type="button" onclick="window.removeCartItem(${itemIdx})" class="bg-[#ff6b6b]/10 hover:bg-[#ff6b6b]/20 text-[#ff6b6b] px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-xs uppercase tracking-wider font-semibold border border-[#ff6b6b]/20">
+                <button type="button" onclick="window.removeCartItem(${originalIndex})" class="bg-[#ff6b6b]/10 hover:bg-[#ff6b6b]/20 text-[#ff6b6b] px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-xs uppercase tracking-wider font-semibold border border-[#ff6b6b]/20">
                   <span class="material-symbols-outlined text-[16px]">delete</span>
                   Retirer du panier
                 </button>
@@ -346,7 +349,7 @@
                       <span class="font-medium text-[#e0e8f0]">${esc(key.toUpperCase())} :</span>
                       <span class="text-[#a0b4c4]">${esc(val)}</span>
                     </div>
-                    <button type="button" onclick="window.removeCartOption(${itemIdx}, '${esc(key)}')" class="text-[#a0b4c4] hover:text-[#ff6b6b] transition p-1">
+                    <button type="button" onclick="window.removeCartOption(${originalIndex}, '${esc(key)}')" class="text-[#a0b4c4] hover:text-[#ff6b6b] transition p-1">
                       <span class="material-symbols-outlined text-[18px]">close</span>
                     </button>
                   </div>
