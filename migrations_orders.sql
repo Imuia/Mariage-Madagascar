@@ -64,7 +64,7 @@ BEGIN
 
     RETURN TRUE;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
 
 -- Sécurisation des privilèges de la fonction
 REVOKE ALL ON FUNCTION public.increment_promo_code_usage(TEXT) FROM PUBLIC;

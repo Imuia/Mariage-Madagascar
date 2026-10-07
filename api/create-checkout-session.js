@@ -30,6 +30,8 @@ function isValidHttpUrl(string) {
 }
 
 module.exports = async function handler(req, res) {
+  res.setHeader('Content-Type', 'application/json');
+
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Méthode non autorisée. Utilisez POST.' });
   }
@@ -215,6 +217,10 @@ module.exports = async function handler(req, res) {
       headers: { 'Prefer': 'return=representation' },
       body: JSON.stringify(orderRecord)
     });
+
+    if (!insertedOrders || !insertedOrders.length) {
+      throw new Error('Échec de l’enregistrement de la commande dans Supabase (réponse vide).');
+    }
 
     const insertedOrder = insertedOrders[0];
 
