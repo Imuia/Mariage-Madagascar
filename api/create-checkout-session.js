@@ -19,6 +19,16 @@ async function supabaseFetch(path, options = {}) {
   return res.json();
 }
 
+function isValidHttpUrl(string) {
+  let url;
+  try {
+    url = new URL(string);
+  } catch (_) {
+    return false;
+  }
+  return url.protocol === "http:" || url.protocol === "https:";
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Méthode non autorisée. Utilisez POST.' });
@@ -90,13 +100,15 @@ module.exports = async function handler(req, res) {
         options_snapshot: item.options || {}
       });
 
+      const imageUrl = isValidHttpUrl(dbProduct.featured_image_url) ? dbProduct.featured_image_url : null;
+
       lineItemsForStripe.push({
         price_data: {
           currency: 'eur',
           product_data: {
             name: dbProduct.name,
             description: variationName ? `Formule : ${variationName}` : (dbProduct.short_description || undefined),
-            images: dbProduct.featured_image_url ? [dbProduct.featured_image_url] : []
+            images: imageUrl ? [imageUrl] : []
           },
           unit_amount: Math.round(unitPrice * 100) // Montant en centimes
         },
@@ -135,14 +147,19 @@ module.exports = async function handler(req, res) {
     const verifiedTotalAmount = Math.max(0, verifiedSubtotal - discountAmount);
     const orderNumber = `MM-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
+    // Construction stricte et sécurisée des URLs absolues
+    const baseUrl = 'https://mariage-madagascar.vercel.app';
+    const successUrl = `${baseUrl}/confirmation-paiement.html?session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = `${baseUrl}/paiement-annule.html`;
+
     // 3. CRÉATION DU PAIEMENT DANS STRIPE CHECKOUT VIA API STRIPE REST
     const stripeParams = new URLSearchParams();
     stripeParams.append('payment_method_types[0]', 'card');
     stripeParams.append('mode', 'payment');
     stripeParams.append('customer_email', customer.email);
     stripeParams.append('client_reference_id', orderNumber);
-    stripeParams.append('success_url', `${req.headers.origin || 'https://mariage-madagascar.vercel.app'}/confirmation-paiement.html?session_id={CHECKOUT_SESSION_ID}`);
-    stripeParams.append('cancel_url', `${req.headers.origin || 'https://mariage-madagascar.vercel.app'}/paiement-annule.html`);
+    stripeParams.append('success_url', successUrl);
+    stripeParams.append('cancel_url', cancelUrl);
 
     lineItemsForStripe.forEach((item, index) => {
       stripeParams.append(`line_items[${index}][price_data][currency]`, item.price_data.currency);
