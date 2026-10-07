@@ -49,7 +49,7 @@ async function fetchStripeInvoiceUrl(invoiceId) {
 
 async function sendConfirmationEmail(order, orderItems, invoiceUrl) {
   if (!RESEND_API_KEY) {
-    console.log('RESEND_API_KEY non configuré. Saut de l’envoi de l’email client.');
+    console.log('[Resend] RESEND_API_KEY non configuré. Saut de l’envoi client.');
     return;
   }
 
@@ -69,8 +69,11 @@ async function sendConfirmationEmail(order, orderItems, invoiceUrl) {
     </div>
   ` : '';
 
+  // Utiliser la boîte d'envoi par défaut ou de domaine vérifié (Resend sandbox impose onlining ou domaine validé)
+  const fromAddress = process.env.RESEND_FROM_EMAIL || 'Mariage Madagascar Luxe <onboarding@resend.dev>';
+
   const emailPayload = {
-    from: 'Mariage Madagascar Luxe <contact@mariage-madagascar.com>',
+    from: fromAddress,
     to: [order.guest_email],
     subject: `Confirmation de votre réservation — Mariage Madagascar — ${order.order_number}`,
     html: `
@@ -117,7 +120,7 @@ async function sendConfirmationEmail(order, orderItems, invoiceUrl) {
   };
 
   try {
-    await fetch('https://api.resend.com/emails', {
+    const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
@@ -125,13 +128,18 @@ async function sendConfirmationEmail(order, orderItems, invoiceUrl) {
       },
       body: JSON.stringify(emailPayload)
     });
-    console.log(`Email client envoyé avec succès à ${order.guest_email}`);
 
-    // Marquer la date d'envoi dans la commande
-    await supabaseFetch(`orders?id=eq.${order.id}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ confirmation_email_sent_at: new Date().toISOString() })
-    });
+    const resText = await res.text();
+    console.log(`[Resend client] HTTP Status: ${res.status}, Body: ${resText}`);
+
+    if (res.ok) {
+      await supabaseFetch(`orders?id=eq.${order.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ confirmation_email_sent_at: new Date().toISOString() })
+      });
+    } else {
+      console.error(`[Resend client error] HTTP ${res.status}: ${resText}`);
+    }
   } catch (err) {
     console.error('Erreur lors de l’envoi de l’email Resend au client:', err);
   }
@@ -139,7 +147,7 @@ async function sendConfirmationEmail(order, orderItems, invoiceUrl) {
 
 async function sendInternalNotificationEmail(order, orderItems, session, invoiceUrl) {
   if (!RESEND_API_KEY) {
-    console.log('RESEND_API_KEY non configuré. Saut de la notification interne.');
+    console.log('[Resend] RESEND_API_KEY non configuré. Saut notification interne.');
     return;
   }
 
@@ -147,8 +155,10 @@ async function sendInternalNotificationEmail(order, orderItems, session, invoice
     - ${item.product_name} ${item.variation_name ? `(${item.variation_name})` : ''} | Date : ${item.booking_date || 'N/A'} | Quantité : ${item.quantity} | Prix : ${item.total_price} EUR
   `).join('\n');
 
+  const fromAddress = process.env.RESEND_FROM_EMAIL || 'Mariage Madagascar Luxe <onboarding@resend.dev>';
+
   const emailPayload = {
-    from: 'Mariage Madagascar Luxe <contact@mariage-madagascar.com>',
+    from: fromAddress,
     to: ['info@mariage-madagascar.com'],
     subject: `🔔 Nouvelle réservation PAYÉE — ${order.order_number} — ${order.total_amount} €`,
     text: `
@@ -175,7 +185,7 @@ Identifiants Stripe :
   };
 
   try {
-    await fetch('https://api.resend.com/emails', {
+    const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
@@ -183,13 +193,18 @@ Identifiants Stripe :
       },
       body: JSON.stringify(emailPayload)
     });
-    console.log('Notification interne envoyée à info@mariage-madagascar.com');
 
-    // Marquer la date de notification interne dans la commande
-    await supabaseFetch(`orders?id=eq.${order.id}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ internal_notification_sent_at: new Date().toISOString() })
-    });
+    const resText = await res.text();
+    console.log(`[Resend interne] HTTP Status: ${res.status}, Body: ${resText}`);
+
+    if (res.ok) {
+      await supabaseFetch(`orders?id=eq.${order.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ internal_notification_sent_at: new Date().toISOString() })
+      });
+    } else {
+      console.error(`[Resend interne error] HTTP ${res.status}: ${resText}`);
+    }
   } catch (err) {
     console.error('Erreur lors de l’envoi de la notification interne Resend:', err);
   }
@@ -214,11 +229,13 @@ module.exports = async function handler(req, res) {
       const paymentIntentId = session.payment_intent;
       const invoiceId = session.invoice || null;
 
+      console.log(`[Webhook Stripe] Traitement de checkout.session.completed pour session ID: ${sessionId}`);
+
       // 1. Recherche de la commande dans Supabase
       const orders = await supabaseFetch(`orders?stripe_checkout_session_id=eq.${sessionId}&limit=1`);
 
       if (!orders || orders.length === 0) {
-        console.warn(`Aucune commande trouvée pour la session Stripe ${sessionId}`);
+        console.warn(`[Webhook Stripe] Aucune commande trouvée pour la session Stripe ${sessionId}`);
         return res.status(200).json({ received: true, note: 'Order not found' });
       }
 
@@ -226,7 +243,7 @@ module.exports = async function handler(req, res) {
 
       // IDEMPOTENCE STRICTE : Si la commande a DEJA été traitée (email client et notification déjà envoyés)
       if (order.payment_status === 'paid' && order.status === 'confirmed' && order.confirmation_email_sent_at && order.internal_notification_sent_at) {
-        console.log(`Commande ${order.order_number} déjà entièrement traitée.`);
+        console.log(`[Webhook Stripe] Commande ${order.order_number} déjà entièrement traitée.`);
         return res.status(200).json({ received: true, note: 'Already fully processed' });
       }
 
@@ -295,7 +312,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({ received: true });
   } catch (err) {
-    console.error('Erreur webhook Stripe:', err);
+    console.error('[Webhook Stripe Error]:', err);
     return res.status(500).json({ message: 'Erreur interne lors du traitement du webhook.' });
   }
 };
