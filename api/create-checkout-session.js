@@ -1,13 +1,13 @@
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://qrkinjuhtyfptldlvdyg.supabase.co';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 
 async function supabaseFetch(path, options = {}) {
   const url = `${SUPABASE_URL}/rest/v1/${path}`;
   const headers = {
     'Content-Type': 'application/json',
-    'apikey': SUPABASE_SERVICE_ROLE_KEY,
-    'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
     ...(options.headers || {})
   };
 
@@ -17,6 +17,16 @@ async function supabaseFetch(path, options = {}) {
     throw new Error(`Supabase error [${res.status}] ${path}: ${errorText}`);
   }
   return res.json();
+}
+
+function isValidHttpUrl(string) {
+  let url;
+  try {
+    url = new URL(string);
+  } catch (_) {
+    return false;
+  }
+  return url.protocol === "http:" || url.protocol === "https:";
 }
 
 module.exports = async function handler(req, res) {
@@ -35,12 +45,8 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ message: 'Votre panier est vide.' });
     }
 
-    if (!SUPABASE_SERVICE_ROLE_KEY) {
-      return res.status(500).json({ message: 'Configuration serveur incomplète (SUPABASE_SERVICE_ROLE_KEY manquante).' });
-    }
-
     if (!STRIPE_SECRET_KEY) {
-      return res.status(500).json({ message: 'Configuration Stripe serveur incomplète (STRIPE_SECRET_KEY manquante).' });
+      return res.status(500).json({ message: 'Configuration Stripe serveur incomplète : la variable d’environnement STRIPE_SECRET_KEY est manquante dans Vercel.' });
     }
 
     // 1. RE-VÉRIFICATION STRICTE DES PRIX ET PRODUITS DEPUIS SUPABASE (SERVEUR DE VÉRITÉ)
@@ -94,13 +100,15 @@ module.exports = async function handler(req, res) {
         options_snapshot: item.options || {}
       });
 
+      const imageUrl = isValidHttpUrl(dbProduct.featured_image_url) ? dbProduct.featured_image_url : null;
+
       lineItemsForStripe.push({
         price_data: {
           currency: 'eur',
           product_data: {
             name: dbProduct.name,
             description: variationName ? `Formule : ${variationName}` : (dbProduct.short_description || undefined),
-            images: dbProduct.featured_image_url ? [dbProduct.featured_image_url] : []
+            images: imageUrl ? [imageUrl] : []
           },
           unit_amount: Math.round(unitPrice * 100) // Montant en centimes
         },
@@ -139,14 +147,19 @@ module.exports = async function handler(req, res) {
     const verifiedTotalAmount = Math.max(0, verifiedSubtotal - discountAmount);
     const orderNumber = `MM-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
+    // Construction stricte et sécurisée des URLs absolues
+    const baseUrl = 'https://mariage-madagascar.vercel.app';
+    const successUrl = `${baseUrl}/confirmation-paiement.html?session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = `${baseUrl}/paiement-annule.html`;
+
     // 3. CRÉATION DU PAIEMENT DANS STRIPE CHECKOUT VIA API STRIPE REST
     const stripeParams = new URLSearchParams();
     stripeParams.append('payment_method_types[0]', 'card');
     stripeParams.append('mode', 'payment');
     stripeParams.append('customer_email', customer.email);
     stripeParams.append('client_reference_id', orderNumber);
-    stripeParams.append('success_url', `${req.headers.origin || 'https://mariage-madagascar.vercel.app'}/confirmation-paiement.html?session_id={CHECKOUT_SESSION_ID}`);
-    stripeParams.append('cancel_url', `${req.headers.origin || 'https://mariage-madagascar.vercel.app'}/paiement-annule.html`);
+    stripeParams.append('success_url', successUrl);
+    stripeParams.append('cancel_url', cancelUrl);
 
     lineItemsForStripe.forEach((item, index) => {
       stripeParams.append(`line_items[${index}][price_data][currency]`, item.price_data.currency);
