@@ -12,11 +12,21 @@ async function supabaseFetch(path, options = {}) {
   };
 
   const res = await fetch(url, { ...options, headers });
+  const text = await res.text();
+
   if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`Supabase error [${res.status}] ${path}: ${errorText}`);
+    throw new Error(`Supabase error [${res.status}] ${path}: ${text}`);
   }
-  return res.json();
+
+  if (!text || !text.trim()) {
+    return [];
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    throw new Error(`Erreur parse JSON Supabase sur ${path}: ${text}`);
+  }
 }
 
 function isValidHttpUrl(string) {
@@ -37,7 +47,22 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { customer, cart, promoCode } = req.body || {};
+    console.log('[checkout] body type:', typeof req.body);
+    console.log('[checkout] body:', req.body);
+
+    let body = req.body;
+    if (typeof body === 'string') {
+      if (!body.trim()) {
+        return res.status(400).json({ message: 'Corps de requête vide.' });
+      }
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        return res.status(400).json({ message: 'Format JSON invalide dans la requête.' });
+      }
+    }
+
+    const { customer, cart, promoCode } = body || {};
 
     if (!customer || !customer.first_name || !customer.last_name || !customer.email) {
       return res.status(400).json({ message: 'Informations client incomplètes (prénom, nom et email requis).' });
@@ -185,12 +210,14 @@ module.exports = async function handler(req, res) {
       body: stripeParams
     });
 
+    const stripeText = await stripeRes.text();
     if (!stripeRes.ok) {
-      const stripeErr = await stripeRes.json();
-      throw new Error(`Erreur Stripe Checkout: ${stripeErr.error?.message || 'Impossible de créer la session Stripe'}`);
+      let stripeErr = {};
+      try { stripeErr = JSON.parse(stripeText); } catch (_) {}
+      throw new Error(`Erreur Stripe Checkout: ${stripeErr.error?.message || stripeText || 'Impossible de créer la session Stripe'}`);
     }
 
-    const session = await stripeRes.json();
+    const session = JSON.parse(stripeText);
 
     // 4. CRÉATION DE LA COMMANDE EN STATUT 'pending' DANS SUPABASE
     const orderRecord = {
@@ -229,6 +256,7 @@ module.exports = async function handler(req, res) {
       itemRecord.order_id = insertedOrder.id;
       await supabaseFetch('order_items', {
         method: 'POST',
+        headers: { 'Prefer': 'return=representation' },
         body: JSON.stringify(itemRecord)
       });
     }
