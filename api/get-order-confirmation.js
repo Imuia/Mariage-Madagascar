@@ -1,5 +1,6 @@
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://qrkinjuhtyfptldlvdyg.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 
 async function supabaseFetch(path) {
   const url = `${SUPABASE_URL}/rest/v1/${path}`;
@@ -10,11 +11,38 @@ async function supabaseFetch(path) {
   };
 
   const res = await fetch(url, { headers });
+  const text = await res.text();
+
   if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`Supabase error [${res.status}] ${path}: ${errorText}`);
+    throw new Error(`Supabase error [${res.status}] ${path}: ${text}`);
   }
-  return res.json();
+
+  if (!text || !text.trim()) {
+    return [];
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    throw new Error(`Erreur parse JSON Supabase sur ${path}: ${text}`);
+  }
+}
+
+async function fetchStripeInvoiceUrl(invoiceId) {
+  if (!invoiceId || !STRIPE_SECRET_KEY) return null;
+  try {
+    const res = await fetch(`https://api.stripe.com/v1/invoices/${encodeURIComponent(invoiceId)}`, {
+      headers: {
+        'Authorization': `Bearer ${STRIPE_SECRET_KEY}`
+      }
+    });
+    if (!res.ok) return null;
+    const invoice = await res.json();
+    return invoice.hosted_invoice_url || invoice.invoice_pdf || null;
+  } catch (err) {
+    console.error('Erreur récupération facture Stripe:', err);
+    return null;
+  }
 }
 
 module.exports = async function handler(req, res) {
@@ -45,6 +73,11 @@ module.exports = async function handler(req, res) {
     const order = orders[0];
     const orderItems = await supabaseFetch(`order_items?order_id=eq.${order.id}`);
 
+    let stripeInvoiceUrl = null;
+    if (order.stripe_invoice_id) {
+      stripeInvoiceUrl = await fetchStripeInvoiceUrl(order.stripe_invoice_id);
+    }
+
     return res.status(200).json({
       order: {
         order_number: order.order_number,
@@ -61,7 +94,8 @@ module.exports = async function handler(req, res) {
         total_amount: order.total_amount,
         booking_date: order.booking_date,
         created_at: order.created_at,
-        stripe_checkout_session_id: order.stripe_checkout_session_id
+        stripe_checkout_session_id: order.stripe_checkout_session_id,
+        stripe_invoice_url: stripeInvoiceUrl
       },
       items: orderItems.map(item => ({
         product_name: item.product_name,

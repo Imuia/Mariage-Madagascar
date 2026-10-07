@@ -47,9 +47,6 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    console.log('[checkout] body type:', typeof req.body);
-    console.log('[checkout] body:', req.body);
-
     let body = req.body;
     if (typeof body === 'string') {
       if (!body.trim()) {
@@ -187,6 +184,16 @@ module.exports = async function handler(req, res) {
     stripeParams.append('client_reference_id', orderNumber);
     stripeParams.append('success_url', successUrl);
     stripeParams.append('cancel_url', cancelUrl);
+
+    // ACTIVATION FACTURATION NATIVE STRIPE
+    stripeParams.append('invoice_creation[enabled]', 'true');
+
+    // TRANSMISSION METADATA CLIENT
+    stripeParams.append('payment_intent_data[description]', `Commande ${orderNumber} - Mariage Madagascar Luxe`);
+    stripeParams.append('metadata[first_name]', customer.first_name);
+    stripeParams.append('metadata[last_name]', customer.last_name);
+    stripeParams.append('metadata[phone]', customer.phone || '');
+    stripeParams.append('metadata[country]', customer.country || 'France');
 
     lineItemsForStripe.forEach((item, index) => {
       stripeParams.append(`line_items[${index}][price_data][currency]`, item.price_data.currency);
