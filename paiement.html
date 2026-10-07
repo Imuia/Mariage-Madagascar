@@ -285,10 +285,24 @@
         body: JSON.stringify(payload)
       });
 
-      const data = await response.json();
+      const rawText = await response.text();
+      console.log('HTTP Status:', response.status);
+      console.log('Content-Type:', response.headers.get('content-type'));
+      console.log('Body brut:', rawText);
+
+      let data = {};
+      if (rawText && rawText.trim()) {
+        try {
+          data = JSON.parse(rawText);
+        } catch (jsonErr) {
+          throw new Error(`Réponse serveur non-JSON [${response.status}]: ${rawText.slice(0, 200)}`);
+        }
+      } else {
+        throw new Error(`Réponse serveur vide [${response.status}]`);
+      }
 
       if (!response.ok) {
-        throw new Error(data.message || 'Une erreur est survenue lors de la préparation du paiement.');
+        throw new Error(data.message || data.error || `Erreur serveur [${response.status}] lors de la préparation du paiement.`);
       }
 
       if (data.url) {
