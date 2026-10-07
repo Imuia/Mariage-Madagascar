@@ -1,0 +1,58 @@
+<!DOCTYPE html><html class="dark" lang="fr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Paiement Annulé — Mariage Madagascar Luxe</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #0a0e1a; color: #e0e8f0; }
+        .glass-panel {
+            background: rgba(15, 21, 36, 0.65);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(125, 211, 252, 0.12);
+        }
+        .text-glow {
+            text-shadow: 0 0 20px rgba(125, 211, 252, 0.35);
+        }
+    </style>
+</head>
+<body class="bg-[#0a0e1a] text-[#e0e8f0] min-h-screen flex flex-col font-body selection:bg-[#7dd3fc]/30">
+<!-- Global header -->
+<div data-global-header></div>
+
+<main class="flex-grow pt-32 pb-20 px-4 md:px-8">
+  <div class="max-w-2xl mx-auto space-y-8">
+
+    <div class="glass-panel rounded-3xl p-8 md:p-12 text-center space-y-6 border border-[#2a3a48]">
+      <div class="w-16 h-16 rounded-full bg-[#ff6b6b]/15 border border-[#ff6b6b]/30 text-[#ff6b6b] flex items-center justify-center mx-auto">
+        <span class="material-symbols-outlined text-3xl">cancel</span>
+      </div>
+
+      <span class="text-xs uppercase tracking-[.24em] text-[#ff6b6b] font-semibold">Paiement Non Finalisé</span>
+
+      <h1 class="text-3xl md:text-4xl font-semibold text-[#e0e8f0]">Votre paiement n'a pas été finalisé</h1>
+
+      <p class="text-[#a0b4c4] text-sm leading-relaxed max-w-lg mx-auto">
+        Vous avez interrompu le processus de paiement sur Stripe ou la transaction a été annulée.
+        <strong class="text-[#e0e8f0]">Aucun montant n'a été débité</strong> de votre compte et votre panier a été conservé.
+      </p>
+
+      <div class="pt-4 flex flex-wrap gap-4 justify-center">
+        <a href="/panier-reservation.html" class="bg-[#7dd3fc] hover:bg-[#c8eaff] text-[#001f2e] font-bold px-8 py-4 rounded-xl transition shadow-[0_0_20px_rgba(125,211,252,0.2)] flex items-center gap-2">
+          <span class="material-symbols-outlined">shopping_cart</span>
+          Retourner à mon panier
+        </a>
+        <a href="/contact.html" class="bg-[#141c2e] hover:bg-[#1a2438] text-[#e0e8f0] border border-[#2a3a48] font-semibold px-8 py-4 rounded-xl transition flex items-center gap-2">
+          <span class="material-symbols-outlined">support_agent</span>
+          Aide & Assistance
+        </a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div data-global-footer></div>
+<script src="/components/components.js"></script>
+</body></html>

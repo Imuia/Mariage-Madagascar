@@ -1,0 +1,197 @@
+<!DOCTYPE html><html class="dark" lang="fr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Confirmation de Paiement — Mariage Madagascar Luxe</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #0a0e1a; color: #e0e8f0; }
+        .glass-panel {
+            background: rgba(15, 21, 36, 0.65);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(125, 211, 252, 0.12);
+        }
+        .text-glow {
+            text-shadow: 0 0 20px rgba(125, 211, 252, 0.35);
+        }
+    </style>
+</head>
+<body class="bg-[#0a0e1a] text-[#e0e8f0] min-h-screen flex flex-col font-body selection:bg-[#7dd3fc]/30">
+<!-- Global header -->
+<div data-global-header></div>
+
+<main class="flex-grow pt-32 pb-20 px-4 md:px-8">
+  <div class="max-w-3xl mx-auto space-y-8">
+
+    <div id="loadingState" class="glass-panel rounded-3xl p-12 text-center space-y-4">
+      <span class="material-symbols-outlined text-5xl text-[#7dd3fc] animate-spin">progress_activity</span>
+      <h2 class="text-2xl font-semibold text-[#e0e8f0]">Vérification de votre paiement en cours...</h2>
+      <p class="text-[#a0b4c4] text-sm">Nous confirmons votre réservation avec nos serveurs sécurisés.</p>
+    </div>
+
+    <div id="errorState" class="glass-panel rounded-3xl p-12 text-center space-y-4 hidden">
+      <span class="material-symbols-outlined text-5xl text-[#ff6b6b]">error</span>
+      <h2 class="text-2xl font-semibold text-[#e0e8f0]">Commande introuvable</h2>
+      <p id="errorText" class="text-[#a0b4c4] text-sm">Impossible de récupérer les détails de la confirmation de paiement.</p>
+      <div class="pt-4">
+        <a href="/" class="inline-flex items-center gap-2 bg-[#7dd3fc]/15 border border-[#7dd3fc]/30 text-[#7dd3fc] font-semibold px-6 py-3 rounded-xl hover:bg-[#7dd3fc]/25 transition">
+          Retour à l'accueil
+        </a>
+      </div>
+    </div>
+
+    <div id="successState" class="space-y-8 hidden">
+      <!-- Status Banner -->
+      <div class="glass-panel rounded-3xl p-8 text-center space-y-3 border border-[#7dd3fc]/30 shadow-[0_0_30px_rgba(125,211,252,0.1)]">
+        <div class="w-16 h-16 rounded-full bg-[#7dd3fc]/20 border border-[#7dd3fc]/40 text-[#7dd3fc] flex items-center justify-center mx-auto mb-2">
+          <span class="material-symbols-outlined text-3xl">check_circle</span>
+        </div>
+        <span class="text-xs uppercase tracking-[.24em] text-[#c8a0f0] font-semibold">Réservation Confirmée</span>
+        <h1 class="text-3xl md:text-4xl font-semibold text-[#e0e8f0] text-glow">Paiement Confirmé !</h1>
+        <p class="text-[#a0b4c4] max-w-lg mx-auto text-sm">
+          Merci pour votre confiance. Votre paiement a été validé et votre expérience de luxe à Madagascar est officiellement réservée.
+        </p>
+      </div>
+
+      <!-- Order Details Panel -->
+      <div class="glass-panel rounded-3xl p-6 md:p-8 space-y-6">
+        <div class="flex flex-wrap justify-between items-center gap-4 pb-4 border-b border-[#2a3a48]">
+          <div>
+            <div class="text-xs uppercase tracking-widest text-[#a0b4c4]">Numéro de réservation</div>
+            <div class="text-xl font-bold text-[#7dd3fc] font-mono mt-1" id="orderNumber">-</div>
+          </div>
+          <div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#7dd3fc]/10 text-[#7dd3fc] border border-[#7dd3fc]/30" id="orderStatusBadge">
+              <span class="w-2 h-2 rounded-full bg-[#7dd3fc]"></span> Payée & Confirmée
+            </span>
+          </div>
+        </div>
+
+        <!-- Client Info Summary -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-[#141c2e]/60 p-4 rounded-2xl border border-[#2a3a48]/50">
+          <div>
+            <span class="text-xs text-[#a0b4c4] block">Client</span>
+            <span class="font-semibold text-[#e0e8f0]" id="clientName">-</span>
+          </div>
+          <div>
+            <span class="text-xs text-[#a0b4c4] block">Email de confirmation</span>
+            <span class="font-semibold text-[#e0e8f0]" id="clientEmail">-</span>
+          </div>
+        </div>
+
+        <!-- Reserved Items -->
+        <div>
+          <h3 class="text-sm font-semibold uppercase tracking-wider text-[#a0b4c4] mb-3">Détail des prestations réservées</h3>
+          <div id="confirmedItemsList" class="space-y-3"></div>
+        </div>
+
+        <!-- Total Paid -->
+        <div class="pt-4 border-t border-[#2a3a48] flex justify-between items-center">
+          <span class="text-lg font-medium text-[#e0e8f0]">Montant Total Payé</span>
+          <span class="text-2xl font-bold text-[#7dd3fc] text-glow" id="totalPaid">- €</span>
+        </div>
+      </div>
+
+      <!-- Actions CTA -->
+      <div class="flex flex-wrap gap-4 justify-center pt-2">
+        <a href="/" class="bg-[#7dd3fc] hover:bg-[#c8eaff] text-[#001f2e] font-bold px-8 py-4 rounded-xl transition shadow-[0_0_20px_rgba(125,211,252,0.2)] flex items-center gap-2">
+          <span class="material-symbols-outlined">home</span>
+          Retour à l'accueil
+        </a>
+        <a href="/contact.html" class="bg-[#141c2e] hover:bg-[#1a2438] text-[#e0e8f0] border border-[#2a3a48] font-semibold px-8 py-4 rounded-xl transition flex items-center gap-2">
+          <span class="material-symbols-outlined">support_agent</span>
+          Contacter Mariage Madagascar
+        </a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div data-global-footer></div>
+<script src="/components/components.js"></script>
+
+<script>
+(() => {
+  const loadingState = document.getElementById('loadingState');
+  const errorState = document.getElementById('errorState');
+  const errorText = document.getElementById('errorText');
+  const successState = document.getElementById('successState');
+
+  const orderNumber = document.getElementById('orderNumber');
+  const clientName = document.getElementById('clientName');
+  const clientEmail = document.getElementById('clientEmail');
+  const confirmedItemsList = document.getElementById('confirmedItemsList');
+  const totalPaid = document.getElementById('totalPaid');
+
+  function euro(value) {
+    return new Intl.NumberFormat('fr-FR', {
+      maximumFractionDigits: 0
+    }).format(Number(value || 0)) + ' €';
+  }
+
+  function esc(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    }[char]));
+  }
+
+  async function loadOrderConfirmation() {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+
+    if (!sessionId) {
+      loadingState.classList.add('hidden');
+      errorText.textContent = 'Identifiant de session de paiement absent dans l’URL.';
+      errorState.classList.remove('hidden');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/get-order-confirmation?session_id=${encodeURIComponent(sessionId)}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Impossible de récupérer la confirmation.');
+      }
+
+      const order = data.order;
+      const items = data.items || [];
+
+      // Vider le panier local post-paiement réussi
+      localStorage.removeItem('mariage_cart');
+
+      orderNumber.textContent = order.order_number;
+      clientName.textContent = `${order.guest_first_name} ${order.guest_last_name}`;
+      clientEmail.textContent = order.guest_email;
+      totalPaid.textContent = euro(order.total_amount);
+
+      confirmedItemsList.innerHTML = items.map(item => `
+        <div class="p-4 bg-[#141c2e]/60 rounded-xl border border-[#2a3a48]/50 flex justify-between items-center">
+          <div>
+            <div class="font-semibold text-[#e0e8f0]">${esc(item.product_name)}</div>
+            ${item.variation_name ? `<div class="text-xs text-[#a0b4c4]">${esc(item.variation_name)}</div>` : ''}
+            <div class="text-xs text-[#7dd3fc] mt-1">Date réservée : ${item.booking_date ? esc(item.booking_date) : 'À confirmer avec conseiller'}</div>
+          </div>
+          <div class="font-bold text-[#e0e8f0] text-lg">${euro(item.total_price)}</div>
+        </div>
+      `).join('');
+
+      loadingState.classList.add('hidden');
+      successState.classList.remove('hidden');
+    } catch (err) {
+      loadingState.classList.add('hidden');
+      errorText.textContent = err.message || 'Erreur lors de la récupération de la commande.';
+      errorState.classList.remove('hidden');
+    }
+  }
+
+  loadOrderConfirmation();
+})();
+</script>
+</body></html>
