@@ -5,9 +5,8 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; background-color: #0a0e1a; color: #e0e8f0; }
         .glass-panel {
             background: rgba(15, 21, 36, 0.6);
             backdrop-filter: blur(16px);
@@ -21,9 +20,6 @@
         .text-glow {
             text-shadow: 0 0 20px rgba(125, 211, 252, 0.3);
         }
-        .interactive-glow:hover {
-            box-shadow: 0 0 30px rgba(125, 211, 252, 0.1);
-        }
     </style>
 <script id="tailwind-config">
         tailwind.config = {
@@ -33,237 +29,140 @@
                     "colors": {
                         "tertiary": "#c8a0f0",
                         "background": "#0a0e1a",
-                        "secondary-fixed": "#c0d8e8",
-                        "on-error": "#1a0000",
-                        "surface-container-high": "#1a2438",
                         "on-surface-variant": "#a0b4c4",
-                        "on-secondary-fixed": "#0d1f2b",
                         "primary-fixed-dim": "#7dd3fc",
-                        "surface-container-highest": "#202c42",
-                        "tertiary-fixed": "#e8d0ff",
-                        "on-primary": "#001f2e",
-                        "inverse-primary": "#0a4c6e",
                         "on-surface": "#e0e8f0",
-                        "tertiary-container": "#3d2060",
                         "error": "#ff6b6b",
-                        "on-primary-container": "#c8eaff",
-                        "on-background": "#e0e8f0",
-                        "tertiary-fixed-dim": "#c8a0f0",
                         "surface": "#0f1524",
-                        "surface-tint": "#7dd3fc",
                         "primary": "#7dd3fc",
-                        "on-tertiary-fixed": "#1a002e",
-                        "on-tertiary": "#1a002e",
                         "surface-container": "#141c2e",
                         "outline-variant": "#2a3a48",
-                        "on-primary-fixed-variant": "#004d73",
-                        "on-error-container": "#ffb3b3",
-                        "secondary-fixed-dim": "#88b4cc",
-                        "on-secondary-fixed-variant": "#2a4a5e",
-                        "on-tertiary-container": "#e8d0ff",
-                        "surface-variant": "#1a2438",
-                        "inverse-on-surface": "#0a0e1a",
-                        "inverse-surface": "#e0e8f0",
-                        "on-primary-fixed": "#001f2e",
-                        "surface-container-low": "#111828",
-                        "error-container": "#3d1414",
-                        "surface-bright": "#1a2438",
-                        "surface-dim": "#0f1524",
-                        "outline": "#4a6070",
-                        "primary-container": "#0e4d6e",
-                        "surface-container-lowest": "#0a0e1a",
-                        "secondary-container": "#1a3a4e",
-                        "on-secondary-container": "#c0d8e8",
-                        "secondary": "#88b4cc",
-                        "on-tertiary-fixed-variant": "#4d2a73",
-                        "on-secondary": "#001f2e",
-                        "primary-fixed": "#c8eaff"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.5rem",
-                        "lg": "1rem",
-                        "xl": "1.5rem",
-                        "full": "9999px"
-                    },
-                    "fontFamily": {
-                        "headline": ["Inter"],
-                        "display": ["Inter"],
-                        "body": ["Inter"],
-                        "label": ["Inter"]
+                        "surface-variant": "#1a2438"
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-background text-on-surface min-h-screen flex flex-col font-body selection:bg-primary/30">
+<body class="bg-[#0a0e1a] text-[#e0e8f0] min-h-screen flex flex-col font-body selection:bg-[#7dd3fc]/30">
 <!-- Global header -->
 <div data-global-header></div>
 
 <!-- Hero Section -->
-<header class="relative pt-32 pb-16 px-8 flex items-center justify-center min-h-[307px]">
-<div class="absolute inset-0 z-0 opacity-40" data-alt="A breathtaking night view of the milky way over a serene Malagasy coastline, featuring deep indigo and ice-blue hues reflecting off dark, calm waters. The composition is atmospheric and ethereal, establishing a premium, mysterious luxury travel vibe. High resolution, long exposure photography style, subtle glowing bioluminescence in the water matching the ice-blue accent color." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDkY5JNBAq6mNRdCP1EhNXR13NMgWPtyA8C8VGNyvGC80IDx5WlGKflthxYFZ5r55i5Ck88DKqosW3pN64197eLqJ2OGyVgVdaq7H4OjLtPhCwLYQ6m32kcz0niVbeRG020Xc8YacC_QmcyDi_ffZC--QHd3eBCRH9hPwjmaJlBbBYnyzbJy2tFh3tChSCxCnT9E3_0LTxApadVFwdXR32yLda21VGeATcJt48K1fSY1u5aTCo8DqLJ0w')"></div>
-<div class="absolute inset-0 bg-gradient-to-b from-background/80 via-background/90 to-background z-10"></div>
+<header class="relative pt-32 pb-12 px-8 flex items-center justify-center min-h-[220px]">
+<div class="absolute inset-0 bg-gradient-to-b from-[#0a0e1a]/80 via-[#0a0e1a]/90 to-[#0a0e1a] z-10"></div>
 <div class="relative z-20 text-center max-w-3xl mx-auto">
-<h1 class="text-4xl md:text-5xl font-headline font-semibold text-on-surface tracking-tight text-glow mb-4">Votre Panier de Réservation</h1>
-<p class="text-on-surface-variant text-lg">Finalisez votre expérience de luxe à Madagascar.</p>
+<h1 class="text-4xl md:text-5xl font-semibold tracking-tight text-glow mb-2">Votre Panier de Réservation</h1>
+<p class="text-[#a0b4c4] text-lg">Finalisez votre expérience de luxe à Madagascar.</p>
 </div>
-</header><div class="max-w-7xl mx-auto px-4 md:px-8 -mt-8 relative z-30">
+</header>
+
+<div class="max-w-7xl mx-auto px-4 md:px-8 -mt-4 relative z-30 w-full">
     <div class="glass-panel rounded-2xl p-4 flex justify-between items-center max-w-3xl mx-auto">
-        <div class="flex items-center gap-3 text-primary">
-            <span class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold border border-primary/30">1</span>
+        <div class="flex items-center gap-3 text-[#7dd3fc]">
+            <span class="w-8 h-8 rounded-full bg-[#7dd3fc]/20 flex items-center justify-center text-sm font-bold border border-[#7dd3fc]/30">1</span>
             <span class="text-sm font-medium">Sélection</span>
         </div>
-        <div class="flex-grow h-px bg-outline-variant mx-4"></div>
-        <div class="flex items-center gap-3 text-primary">
-            <span class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-on-primary shadow-[0_0_15px_rgba(125,211,252,0.4)]">2</span>
-            <span class="text-sm font-bold">Options</span>
+        <div class="flex-grow h-px bg-[#2a3a48] mx-4"></div>
+        <div class="flex items-center gap-3 text-[#7dd3fc]">
+            <span class="w-8 h-8 rounded-full bg-[#7dd3fc] flex items-center justify-center text-sm font-bold text-[#001f2e] shadow-[0_0_15px_rgba(125,211,252,0.4)]">2</span>
+            <span class="text-sm font-bold">Panier & Options</span>
         </div>
-        <div class="flex-grow h-px bg-outline-variant mx-4"></div>
-        <div class="flex items-center gap-3 text-on-surface-variant/50">
-            <span class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-sm font-bold border border-outline-variant">3</span>
+        <div class="flex-grow h-px bg-[#2a3a48] mx-4"></div>
+        <div class="flex items-center gap-3 text-[#a0b4c4]/50">
+            <span class="w-8 h-8 rounded-full bg-[#202c42] flex items-center justify-center text-sm font-bold border border-[#2a3a48]">3</span>
             <span class="text-sm font-medium">Paiement</span>
         </div>
     </div>
 </div>
+
 <!-- Main Layout -->
-<main class="flex-grow px-4 md:px-8 py-12">
+<main class="flex-grow px-4 md:px-8 py-10">
 <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
 <!-- Cart Items (2/3) -->
-<div class="lg:col-span-2 space-y-6">
-<!-- Main Stay -->
-<div class="glass-panel rounded-xl p-6 flex flex-col sm:flex-row gap-6 items-start relative group transition-all duration-300 hover:border-primary/30">
-<div class="w-full sm:w-48 h-32 rounded-lg overflow-hidden shrink-0 relative">
-<img class="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105" data-alt="A luxurious overwater bungalow in Ambatomilo, Madagascar at twilight, featuring modern minimalist architecture blending with nature. The scene is illuminated by soft, cool lighting against a deep navy sky, highlighting the crystal-clear water below. Premium aesthetic, high-end resort photography, emphasizing exclusivity and tranquility with subtle ice-blue light accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdYUgBiiVamIEeQJ1Slr5r_novJl3UH4cc0BDepelEkAKkFrdfLN_IIsOH1v0iB3PP7__VRLasSr5IyFh2V2MfeFziCI6NfhTT2wA6oaA1fXnI4AtJYyGaTQMBrGinP4RedzUg4lDF7nm742KVU-95IChQf1zfbFkoVJHGOKxLOcHYquN4Lp6q_zcFGGJ0f7NZvq60FNfkysaHD5QiJ7MMPgijZlCGRs02zHUslYOJHpd8vf0VO21c_g">
-<div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
+<div class="lg:col-span-2 space-y-6" id="cartContainer">
+  <!-- Dynamic Cart Content injected by JS -->
+  <div class="glass-panel rounded-xl p-8 text-center text-[#a0b4c4]">
+    Chargement de votre panier...
+  </div>
 </div>
-<div class="flex-grow flex flex-col justify-between h-full w-full">
-<div class="flex justify-between items-start mb-2">
-<div>
-<h3 class="text-xl font-semibold text-primary mb-1">Lune de Miel à Ambatomilo</h3>
-<p class="text-sm text-on-surface-variant flex items-center gap-2">
-<span class="material-symbols-outlined text-[18px]">calendar_today</span>
-                                    12 Sept 2026 — 19 Sept 2026 (7 Nuits)
-                                </p>
-</div>
-<div class="text-right">
-<span class="text-lg font-bold">2 100 €</span>
-</div>
-</div>
-<div class="mt-4 pt-4 border-t border-outline-variant flex justify-between items-center text-sm">
-<div class="flex gap-4">
-<span class="flex items-center gap-1 text-on-surface-variant">
-<span class="material-symbols-outlined text-[16px]">group</span> 2 Adultes
-                                </span>
-<span class="flex items-center gap-1 text-on-surface-variant">
-<span class="material-symbols-outlined text-[16px]">king_bed</span> Suite Océan
-                                </span>
-</div>
-<button class="bg-error/10 hover:bg-error/20 text-error px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-xs uppercase tracking-wider font-semibold border border-error/20">
-<span class="material-symbols-outlined text-[16px]">delete</span>
-                                Retirer
-                            </button>
-</div>
-</div>
-</div>
-<h4 class="text-lg font-medium text-on-surface-variant pt-4 pb-2">Options Ajoutées</h4>
-<!-- Option 1 -->
-<div class="glass-panel rounded-xl p-5 flex flex-col sm:flex-row justify-between items-center gap-4 transition-all duration-300 hover:border-primary/20">
-<div class="flex items-center gap-4 w-full sm:w-auto">
-<div class="w-16 h-16 rounded-lg overflow-hidden shrink-0">
-<img class="object-cover w-full h-full opacity-80" data-alt="A sleek luxury catamaran sailing on dark, calm waters during the magic hour, with ethereal cool-toned lighting. The image conveys high-end maritime travel, sophisticated and solitary, matching a dark and moody luxury aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmnHBLMy1fIy2pHxcWDTCB8445I2x6Pm4-Ot6s5oSjnQlVWMVkNdG3EgTsV7iU4ckyw87tEuzNbWHeNZxQmHCfPQFDCc7N-LjeW2eHI-OzfChe1gk4gcKhoqO3rZoYaChw2X9zp7dGKnXxZw8UngKL0yhmbq_SnUAU5JMi0SedQop0zLlKH62xPcvq9VCXVLtHJT4vZYv5turt-oj0mEHYPn2A8c8Hwcp3MOJzQuYKwqUZ4-JD14uUCw">
-</div>
-<div>
-<h4 class="font-medium text-on-surface">Croisière Privée en Catamaran</h4>
-<p class="text-xs text-on-surface-variant mt-1">Journée complète · Repas inclus</p>
-</div>
-</div>
-<div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto">
-<span class="font-semibold text-primary">450 €</span>
-<button class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-full bg-surface-container-highest hover:bg-error/20 border border-outline-variant/50">
-<span class="material-symbols-outlined text-[20px]">close</span>
-</button>
-</div>
-</div>
-<!-- Option 2 -->
-<div class="glass-panel rounded-xl p-5 flex flex-col sm:flex-row justify-between items-center gap-4 transition-all duration-300 hover:border-primary/20">
-<div class="flex items-center gap-4 w-full sm:w-auto">
-<div class="w-16 h-16 rounded-lg overflow-hidden shrink-0">
-<img class="object-cover w-full h-full opacity-80" data-alt="A majestic humpback whale breaching the surface of a deep, dark ocean, captured in sharp detail. The lighting is cinematic and cool-toned, emphasizing the raw power of nature while maintaining a refined, premium documentary photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBx0nwmxedt4_wm11QPVNMtZtXlLgGwmqpyDqGFEQo3u5sgLjxqg6Y3ffFYQWuMvaJ44p1oo8bOT7aJ7Kt5sh-YbTYXfErcxtw45qUTX41bY8f8F9iUGHaKswjXeTnHS2KVqhW46RYt0O6DLgzH5IKlgjMR5nuj83ZAxy4pwN43ZQFJIIBpsDvG8Qim9lkmbL_5PBlXtzTCfTMMkuhhLzAEghvIuX0gynR4la-zGZMPRxPen7Ed6M1XBA">
-</div>
-<div>
-<h4 class="font-medium text-on-surface">Observation des Baleines</h4>
-<p class="text-xs text-on-surface-variant mt-1">Demi-journée · Guide expert</p>
-</div>
-</div>
-<div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto">
-<span class="font-semibold text-primary">300 €</span>
-<button class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-full bg-surface-container-highest hover:bg-error/20 border border-outline-variant/50">
-<span class="material-symbols-outlined text-[20px]">close</span>
-</button>
-</div>
-</div>
-</div>
+
 <!-- Summary Sidebar (1/3) -->
 <div class="lg:col-span-1">
 <div class="glass-panel-elevated rounded-2xl p-6 sticky top-28 shadow-[0_0_40px_rgba(125,211,252,0.03)]">
-<h3 class="text-xl font-semibold mb-6 pb-4 border-b border-outline-variant">Résumé de la commande</h3>
+<h3 class="text-xl font-semibold mb-6 pb-4 border-b border-[#2a3a48]">Résumé de la commande</h3>
+
 <div class="space-y-4 mb-6">
-<div class="flex justify-between text-on-surface-variant">
-<span class="">Sous-total</span>
-<span class="">2 850 €</span>
+<div class="flex justify-between text-[#a0b4c4]">
+<span>Sous-total estimé</span>
+<span id="summarySubtotal">0 €</span>
 </div>
-<div class="flex justify-between text-on-surface-variant">
-<span class="">Taxes (20%)</span>
-<span class="">Incluses</span>
+<div class="flex justify-between text-[#a0b4c4]" id="discountRow" style="display: none;">
+<span class="text-[#c8a0f0]">Réduction Promo</span>
+<span class="text-[#c8a0f0]" id="summaryDiscount">-0 €</span>
 </div>
-<div class="flex justify-between text-on-surface-variant text-sm">
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">verified</span> Garantie Premium</span>
-<span class="">Offerte</span>
+<div class="flex justify-between text-[#a0b4c4]">
+<span>Taxes (20%)</span>
+<span>Incluses</span>
+</div>
+<div class="flex justify-between text-[#a0b4c4] text-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px] text-[#7dd3fc]">verified</span> Garantie Premium</span>
+<span class="text-[#7dd3fc]">Offerte</span>
 </div>
 </div>
-<div class="border-t border-outline-variant pt-4 mb-8">
+
+<div class="border-t border-[#2a3a48] pt-4 mb-6">
 <div class="flex justify-between items-end">
 <span class="text-lg">Total</span>
-<span class="text-3xl font-bold text-primary text-glow">2 850 €</span>
+<span class="text-3xl font-bold text-[#7dd3fc] text-glow" id="summaryTotal">0 €</span>
 </div>
+<p class="text-xs text-[#a0b4c4] mt-1">Les prix seront re-vérifiés et confirmés avant le paiement.</p>
 </div>
+
 <!-- Promo Code -->
-<div class="mb-8">
+<div class="mb-6">
 <div class="relative flex items-center">
-<span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[20px]">sell</span>
-<input class="w-full bg-surface-container/50 border border-outline-variant rounded-lg py-2.5 pl-10 pr-24 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-on-surface-variant/50" placeholder="Code promotionnel" type="text">
-<button class="absolute right-2 text-xs font-medium text-primary hover:text-primary-fixed-dim transition-colors uppercase tracking-wide">
-                                Appliquer
-                            </button>
+<span class="material-symbols-outlined absolute left-3 text-[#a0b4c4] text-[20px]">sell</span>
+<input id="promoInput" class="w-full bg-[#141c2e]/60 border border-[#2a3a48] rounded-lg py-2.5 pl-10 pr-24 text-sm text-[#e0e8f0] focus:outline-none focus:border-[#7dd3fc]/50 focus:ring-1 focus:ring-[#7dd3fc]/50 transition-all placeholder:text-[#a0b4c4]/50" placeholder="Code promo (ex: LUXE10)" type="text">
+<button id="applyPromoBtn" type="button" class="absolute right-2 text-xs font-semibold text-[#7dd3fc] hover:text-[#c8eaff] transition-colors uppercase tracking-wide px-2 py-1">
+  Appliquer
+</button>
 </div>
+<p id="promoMessage" class="text-xs mt-2 hidden"></p>
 </div>
+
 <!-- CTA -->
-<button class="w-full bg-primary hover:bg-primary-fixed-dim text-on-primary font-bold py-4 rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(125,211,252,0.2)] flex justify-center items-center gap-2 mb-6 active:scale-[0.98]"><span class="material-symbols-outlined">lock</span>
-<span class="">Confirmer et Payer en toute sécurité</span></button>
+<a id="checkoutBtn" href="/paiement.html" class="w-full bg-[#7dd3fc] hover:bg-[#c8eaff] text-[#001f2e] font-bold py-4 rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(125,211,252,0.2)] flex justify-center items-center gap-2 mb-6 active:scale-[0.98]">
+  <span class="material-symbols-outlined">lock</span>
+  <span>Procéder au paiement sécurisé</span>
+</a>
+
 <!-- Trust Badges -->
-<div class="space-y-3 mb-6 pt-4 border-t border-outline-variant/30">
-    <div class="flex items-center gap-3 text-xs text-on-surface-variant">
-        <span class="material-symbols-outlined text-primary text-[18px]">verified_user</span>
-        <span class="">Accompagnement premium Mariage Madagascar</span>
+<div class="space-y-3 mb-6 pt-4 border-t border-[#2a3a48]/50">
+    <div class="flex items-center gap-3 text-xs text-[#a0b4c4]">
+        <span class="material-symbols-outlined text-[#7dd3fc] text-[18px]">verified_user</span>
+        <span>Accompagnement premium Mariage Madagascar</span>
     </div>
-    <div class="flex items-center gap-3 text-xs text-on-surface-variant">
-        <span class="material-symbols-outlined text-primary text-[18px]">event_repeat</span>
-        <span class="">Annulation flexible selon les conditions de vente</span>
+    <div class="flex items-center gap-3 text-xs text-[#a0b4c4]">
+        <span class="material-symbols-outlined text-[#7dd3fc] text-[18px]">event_repeat</span>
+        <span>Annulation flexible selon les conditions de vente</span>
     </div>
-</div><div class="flex justify-center items-center gap-4 text-on-surface-variant/60">
+</div>
+
+<div class="flex justify-center items-center gap-4 text-[#a0b4c4]/60">
 <div class="flex items-center gap-1" title="Paiement Sécurisé SSL">
 <span class="material-symbols-outlined text-[24px]">shield_locked</span>
 </div>
-<div class="w-px h-6 bg-outline-variant"></div>
-<div class="flex items-center gap-1 text-sm font-medium" title="Stripe">
-                            STRIPE
-                        </div>
-<div class="w-px h-6 bg-outline-variant"></div>
+<div class="w-px h-6 bg-[#2a3a48]"></div>
+<div class="flex items-center gap-1 text-sm font-semibold tracking-wider" title="Stripe">
+    STRIPE
+</div>
+<div class="w-px h-6 bg-[#2a3a48]"></div>
 <div class="flex items-center gap-1" title="Service Client 24/7">
 <span class="material-symbols-outlined text-[24px]">support_agent</span>
 </div>
 </div>
+
 </div>
 </div>
 </div>
@@ -271,4 +170,239 @@
 
 <div data-global-footer></div>
 <script src="/components/components.js"></script>
+
+<script>
+(() => {
+  const cartContainer = document.getElementById('cartContainer');
+  const summarySubtotal = document.getElementById('summarySubtotal');
+  const summaryDiscount = document.getElementById('summaryDiscount');
+  const summaryTotal = document.getElementById('summaryTotal');
+  const discountRow = document.getElementById('discountRow');
+  const promoInput = document.getElementById('promoInput');
+  const applyPromoBtn = document.getElementById('applyPromoBtn');
+  const promoMessage = document.getElementById('promoMessage');
+  const checkoutBtn = document.getElementById('checkoutBtn');
+
+  let activeDiscount = 0; // en pourcentage ou valeur fixe
+  let appliedPromoCode = null;
+
+  function euro(value) {
+    return new Intl.NumberFormat('fr-FR', {
+      maximumFractionDigits: 0
+    }).format(Number(value || 0)) + ' €';
+  }
+
+  function esc(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    }[char]));
+  }
+
+  function getCart() {
+    try {
+      const cart = JSON.parse(localStorage.getItem('mariage_cart') || '[]');
+      return Array.isArray(cart) ? cart : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveCart(cart) {
+    localStorage.setItem('mariage_cart', JSON.stringify(cart));
+    renderCart();
+  }
+
+  function removeFromCart(index) {
+    const cart = getCart();
+    cart.splice(index, 1);
+    saveCart(cart);
+  }
+
+  function removeOption(cartIndex, optionKey) {
+    const cart = getCart();
+    if (cart[cartIndex] && cart[cartIndex].options) {
+      delete cart[cartIndex].options[optionKey];
+      saveCart(cart);
+    }
+  }
+
+  function calculateTotals(cart) {
+    let subtotal = 0;
+    cart.forEach(item => {
+      subtotal += Number(item.price || 0) * Number(item.quantity || 1);
+    });
+
+    let discountAmount = 0;
+    if (appliedPromoCode) {
+      if (appliedPromoCode.discount_type === 'percentage') {
+        discountAmount = (subtotal * appliedPromoCode.discount_value) / 100;
+      } else if (appliedPromoCode.discount_type === 'fixed_amount') {
+        discountAmount = appliedPromoCode.discount_value;
+      }
+    }
+
+    const total = Math.max(0, subtotal - discountAmount);
+
+    return { subtotal, discountAmount, total };
+  }
+
+  function renderCart() {
+    const cart = getCart();
+
+    if (!cart.length) {
+      cartContainer.innerHTML = `
+        <div class="glass-panel rounded-2xl p-12 text-center space-y-4">
+          <span class="material-symbols-outlined text-5xl text-[#7dd3fc]">shopping_bag</span>
+          <h2 class="text-2xl font-semibold text-[#e0e8f0]">Votre panier est actuellement vide</h2>
+          <p class="text-[#a0b4c4]">Découvrez nos expériences et séjours d'exception à Madagascar.</p>
+          <div class="pt-4">
+            <a href="/" class="inline-flex items-center gap-2 bg-[#7dd3fc]/15 border border-[#7dd3fc]/30 text-[#7dd3fc] font-semibold px-6 py-3 rounded-xl hover:bg-[#7dd3fc]/25 transition">
+              <span class="material-symbols-outlined">arrow_back</span>
+              Découvrir nos offres
+            </a>
+          </div>
+        </div>
+      `;
+
+      summarySubtotal.textContent = '0 €';
+      summaryTotal.textContent = '0 €';
+      discountRow.style.display = 'none';
+      checkoutBtn.classList.add('opacity-50', 'pointer-events-none');
+      return;
+    }
+
+    checkoutBtn.classList.remove('opacity-50', 'pointer-events-none');
+
+    let html = '';
+
+    cart.forEach((item, itemIdx) => {
+      const formattedDate = item.booking_date
+        ? new Date(item.booking_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+        : 'Date à définir avec nos conseillers';
+
+      const paxText = item.pax ? `${item.pax} Personnes` : '';
+      const options = item.options || {};
+      const hasOptions = Object.keys(options).length > 0;
+
+      html += `
+        <div class="glass-panel rounded-xl p-6 relative group transition-all duration-300 border border-[#2a3a48] hover:border-[#7dd3fc]/30 mb-6">
+          <div class="flex flex-col sm:flex-row gap-6 items-start">
+            <div class="w-full sm:w-48 h-36 rounded-lg overflow-hidden shrink-0 relative bg-[#0f1524]">
+              <img src="${esc(item.image || '/assets/img/placeholder.jpg')}" alt="${esc(item.name)}" class="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105">
+              <div class="absolute inset-0 bg-gradient-to-t from-[#0a0e1a]/80 to-transparent"></div>
+            </div>
+
+            <div class="flex-grow flex flex-col justify-between h-full w-full">
+              <div>
+                <div class="flex justify-between items-start mb-2 gap-4">
+                  <div>
+                    <span class="text-xs uppercase tracking-widest text-[#c8a0f0] font-semibold">Réservation Principale</span>
+                    <h3 class="text-xl font-semibold text-[#7dd3fc] mt-1">${esc(item.name)}</h3>
+                    ${item.variation_name ? `<p class="text-sm text-[#a0b4c4]">${esc(item.variation_name)}</p>` : ''}
+                  </div>
+                  <div class="text-right shrink-0">
+                    <span class="text-2xl font-bold text-[#e0e8f0]">${euro(item.price)}</span>
+                  </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-4 text-sm text-[#a0b4c4] mt-3">
+                  <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
+                    <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">calendar_today</span>
+                    ${esc(formattedDate)}
+                  </span>
+                  ${paxText ? `
+                    <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
+                      <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">group</span>
+                      ${esc(paxText)}
+                    </span>
+                  ` : ''}
+                </div>
+              </div>
+
+              <div class="mt-5 pt-4 border-t border-[#2a3a48] flex justify-between items-center">
+                <a href="/produit/${esc(item.slug)}" class="text-xs text-[#7dd3fc] hover:underline flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px]">edit</span> Modifier ma sélection
+                </a>
+                <button type="button" onclick="window.removeCartItem(${itemIdx})" class="bg-[#ff6b6b]/10 hover:bg-[#ff6b6b]/20 text-[#ff6b6b] px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-xs uppercase tracking-wider font-semibold border border-[#ff6b6b]/20">
+                  <span class="material-symbols-outlined text-[16px]">delete</span>
+                  Retirer du panier
+                </button>
+              </div>
+            </div>
+          </div>
+
+          ${hasOptions ? `
+            <div class="mt-6 pt-5 border-t border-[#2a3a48]/60">
+              <h4 class="text-sm font-semibold uppercase tracking-wider text-[#a0b4c4] mb-3">Options incluses dans cette formule :</h4>
+              <div class="space-y-2">
+                ${Object.entries(options).map(([key, val]) => `
+                  <div class="flex items-center justify-between bg-[#141c2e]/60 rounded-lg p-3 border border-[#2a3a48]/40 text-sm">
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[#7dd3fc] text-[18px]">check_circle</span>
+                      <span class="font-medium text-[#e0e8f0]">${esc(key.toUpperCase())} :</span>
+                      <span class="text-[#a0b4c4]">${esc(val)}</span>
+                    </div>
+                    <button type="button" onclick="window.removeCartOption(${itemIdx}, '${esc(key)}')" class="text-[#a0b4c4] hover:text-[#ff6b6b] transition p-1">
+                      <span class="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    });
+
+    cartContainer.innerHTML = html;
+
+    const { subtotal, discountAmount, total } = calculateTotals(cart);
+
+    summarySubtotal.textContent = euro(subtotal);
+    summaryTotal.textContent = euro(total);
+
+    if (discountAmount > 0) {
+      discountRow.style.display = 'flex';
+      summaryDiscount.textContent = '- ' + euro(discountAmount);
+    } else {
+      discountRow.style.display = 'none';
+    }
+  }
+
+  // Fonctions globales accessibles depuis les attributs onclick
+  window.removeCartItem = index => removeFromCart(index);
+  window.removeCartOption = (cartIndex, optionKey) => removeOption(cartIndex, optionKey);
+
+  applyPromoBtn.addEventListener('click', async () => {
+    const code = promoInput.value.trim().toUpperCase();
+    if (!code) {
+      promoMessage.className = 'text-xs mt-2 text-[#ff6b6b] block';
+      promoMessage.textContent = 'Veuillez saisir un code promotionnel.';
+      return;
+    }
+
+    // Code promo temporaire de test/pré-validation frontend
+    if (code === 'LUXE10') {
+      appliedPromoCode = {
+        code: 'LUXE10',
+        discount_type: 'percentage',
+        discount_value: 10
+      };
+      promoMessage.className = 'text-xs mt-2 text-[#7dd3fc] block';
+      promoMessage.textContent = 'Code promotionnel LUXE10 appliqué (-10%).';
+      renderCart();
+    } else {
+      promoMessage.className = 'text-xs mt-2 text-[#ff6b6b] block';
+      promoMessage.textContent = 'Code promotionnel non reconnu ou expiré.';
+    }
+  });
+
+  // Initialisation au chargement
+  renderCart();
+})();
+</script>
 </body></html>

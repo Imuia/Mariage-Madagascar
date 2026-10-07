@@ -796,8 +796,6 @@ body.villa-product #mainImageButton{height:100%}
     const bookingDateInput =
       els.bookingDateWrap.querySelector('#booking-date');
 
-    // Sur les navigateurs compatibles, un clic n'importe où dans le champ
-    // ouvre directement le calendrier natif.
     bookingDateInput?.addEventListener('click', () => {
       try {
         bookingDateInput.showPicker?.();
@@ -825,6 +823,66 @@ body.villa-product #mainImageButton{height:100%}
 
     if (els.contactBtn) els.contactBtn.href = url;
     if (els.bottomContactBtn) els.bottomContactBtn.href = url;
+  }
+
+  function addToCart(event) {
+    if (event) event.preventDefault();
+
+    let selectedVariation = null;
+    let currentOptions = {};
+
+    if (IS_STAY_PRODUCT) {
+      selectedVariation = findStayVariation() || variations[0];
+      currentOptions = { ...selectedStayOptions };
+    } else if (IS_VILLA_PRODUCT) {
+      selectedVariation = findVillaVariation() || variations[0];
+      currentOptions = { ...selectedVillaOptions };
+    } else if (IS_SINGLE_ATTRIBUTE_PRODUCT) {
+      const select = document.getElementById('singleAttributeSelect');
+      const val = select?.value || '';
+      selectedVariation = variations.find(v => String(v.attribute_value || '').trim() === String(val).trim()) || variations[0];
+      if (val) currentOptions[SINGLE_ATTRIBUTE_NAME || 'Option'] = val;
+    } else if (!IS_SIMPLE_PRODUCT) {
+      selectedVariation = variations.find(v => Number(v.pax) === Number(selectedPax)) || variations[0];
+    } else {
+      selectedVariation = variations[0] || null;
+    }
+
+    const currentImage = images[currentImageIndex] || product?.featured_image_url || '';
+
+    const cartItem = {
+      product_id: product.id,
+      variation_id: selectedVariation ? selectedVariation.id : null,
+      slug: PRODUCT_SLUG,
+      name: product.name,
+      variation_name: selectedVariation ? (selectedVariation.name || selectedVariation.attribute_value || '') : '',
+      image: currentImage,
+      quantity: 1,
+      booking_date: bookingDate || '',
+      pax: selectedPax || (selectedVariation ? selectedVariation.pax : null),
+      price: selectedVariation ? selectedVariation.regular_price : (product.regular_price || 0),
+      options: currentOptions,
+      added_at: new Date().toISOString()
+    };
+
+    let cart = [];
+    try {
+      cart = JSON.parse(localStorage.getItem('mariage_cart') || '[]');
+      if (!Array.isArray(cart)) cart = [];
+    } catch {
+      cart = [];
+    }
+
+    // Un seul produit principal par réservation dans le panier (remplace l'ancien produit principal si présent)
+    const existingIndex = cart.findIndex(item => item.product_id === cartItem.product_id);
+    if (existingIndex >= 0) {
+      cart[existingIndex] = cartItem;
+    } else {
+      cart.push(cartItem);
+    }
+
+    localStorage.setItem('mariage_cart', JSON.stringify(cart));
+    window.location.href = '/panier-reservation.html';
   }
 
   async function loadProduct() {
@@ -1483,6 +1541,16 @@ body.villa-product #mainImageButton{height:100%}
       renderPax();
       renderBookingDatePicker();
       wireGallery();
+
+      // Brancher le bouton "Ajouter au panier" vers la fonction addToCart
+      if (els.contactBtn) {
+        els.contactBtn.addEventListener('click', addToCart);
+      }
+      if (els.bottomContactBtn) {
+        els.bottomContactBtn.innerText = 'Ajouter au panier →';
+        els.bottomContactBtn.addEventListener('click', addToCart);
+      }
+
       await loadRelated();
 
     } catch (error) {
