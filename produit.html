@@ -1004,6 +1004,21 @@ body.villa-product #mainImageButton{height:100%}
     // pas la durée totale du séjour.
     if (IS_STAY_PRODUCT) return 10;
 
+    // 4) Certains imports anciens/mal structurés ont placé la durée
+    // directement dans une valeur de variation, sans nommer l'attribut
+    // "durée" (ex. Villa : "Chaque jours | 3 jours | ...").
+    // On reconnaît alors la durée uniquement si elle est une valeur
+    // distincte d'une option et si la variation contient réellement
+    // plusieurs jours. Cela évite de transformer une expérience ponctuelle
+    // qui mentionnerait un nombre quelconque en produit à durée.
+    const durationCandidates = values
+      .map(value => extractDurationDays(value))
+      .filter(days => Number.isInteger(days) && days > 0);
+
+    if (durationCandidates.length) {
+      return durationCandidates[0];
+    }
+
     return null;
   }
 
