@@ -328,14 +328,14 @@
 </div>
 </div>
 </section>
-<!-- PACKAGES & STAYS GRID — PRODUITS SUPABASE -->
+<!-- PACKAGES & STAYS GRID — 3 VRAIS PRODUITS SUPABASE -->
 <section class="mb-24" id="sejours">
   <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
     <div>
-      <span class="text-xs uppercase tracking-widest text-primary font-semibold">Nos offres à Nosy Be</span>
+      <span class="text-xs uppercase tracking-widest text-primary font-semibold">Formules haute couture</span>
       <h2 class="text-3xl lg:text-4xl font-black text-white mt-1 tracking-tight">Séjours Romantiques &amp; Célébrations Nuptiales</h2>
       <p class="text-on-surface-variant mt-2 max-w-xl text-sm">
-        Découvrez une sélection de véritables produits Mariage Madagascar, avec leurs tarifs et leurs images issus de notre catalogue.
+        Des expériences réelles de notre catalogue Mariage Madagascar, personnalisables selon vos envies.
       </p>
     </div>
     <div class="flex items-center gap-3">
@@ -346,16 +346,11 @@
     </div>
   </div>
 
-  <div id="nosyBeProductsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-    <div class="glass-card rounded-2xl overflow-hidden p-7 min-h-[300px] flex items-center justify-center text-center text-sm text-on-surface-variant">
-      Chargement des produits…
-    </div>
-    <div class="glass-card rounded-2xl overflow-hidden p-7 min-h-[300px] flex items-center justify-center text-center text-sm text-on-surface-variant">
-      Chargement des produits…
-    </div>
-    <div class="glass-card rounded-2xl overflow-hidden p-7 min-h-[300px] flex items-center justify-center text-center text-sm text-on-surface-variant">
-      Chargement des produits…
-    </div>
+  <div id="nosyBeProductsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+    <!-- Les 3 cartes sont alimentées avec les vrais produits ci-dessous. -->
+    <div class="glass-card rounded-2xl p-7 min-h-[556px] animate-pulse"></div>
+    <div class="glass-card rounded-2xl p-7 min-h-[556px] animate-pulse"></div>
+    <div class="glass-card rounded-2xl p-7 min-h-[556px] animate-pulse"></div>
   </div>
 </section>
 
@@ -420,26 +415,53 @@
 <script src="/assets/js/supabase-config.js"></script>
 <script>
 (function () {
-  const PRODUCT_SLUGS = [
-    "-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe",
-    "sejour-romantique-a-nosy-komba-10-jours-de-reve",
-    "-diner-romantique-anniversaire-de-mariage-sur-un-ponton-prive-a-nosy-komba-"
+  const PRODUCT_CONFIG = [
+    {
+      slug: "-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe",
+      label: "CÉLÉBRATION NUPTIALE",
+      title: "Mariage scénique à Nosy Komba - Union sur l'île Ambariobe",
+      description: "Célébrez votre mariage symbolique en famille à Nosy Be / Nosy Komba, avec une organisation pensée sur mesure.",
+      bullets: [
+        "Cérémonie symbolique sur l'île Ambariobe",
+        "Retour en pirogue au coucher du soleil",
+        "Dîner romantique sur le ponton privé",
+        "Photographe professionnel & drone"
+      ],
+      unit: " / expérience",
+      cta: "DEMANDER UN DEVIS NUPTIAL",
+      featured: true
+    },
+    {
+      slug: "sejour-romantique-a-nosy-komba-10-jours-de-reve",
+      label: "SÉJOUR ROMANTIQUE",
+      title: "Séjour Romantique à Nosy Komba - 10 Jours de Rêve",
+      description: "Un séjour romantique d'exception de 10 jours à Nosy Komba avec options personnalisées.",
+      bullets: [
+        "Hébergement de charme à Nosy Komba",
+        "Excursion en bateau pirogue (3 îlots)",
+        "Expérience romantique sur mesure",
+        "Options traiteur et bateau avec moteur"
+      ],
+      unit: " / séjour",
+      cta: "PERSONNALISER CE SÉJOUR",
+      featured: false
+    },
+    {
+      slug: "-diner-romantique-anniversaire-de-mariage-sur-un-ponton-prive-a-nosy-komba-",
+      label: "EXPÉRIENCE ROMANTIQUE",
+      title: "Dîner Romantique sur un Ponton Privé à Nosy Komba",
+      description: "Un dîner romantique exclusif et féerique au coucher du soleil sur un ponton privé à Nosy Komba.",
+      bullets: [
+        "Privatisation exclusive du ponton",
+        "Dîner gastronomique romantique pour 2",
+        "Décoration florale & ambiance lumineuse",
+        "Service personnalisé toute la soirée"
+      ],
+      unit: " / expérience",
+      cta: "VOIR L'EXPÉRIENCE",
+      featured: false
+    }
   ];
-
-  const FALLBACK_IMAGES = {
-    "-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe":
-      "/assets/img/products/MM-NOSYKOMBA-001/01-4fdfeeec-733e-487c-b97e-124a6038547d.jpg",
-    "sejour-romantique-a-nosy-komba-10-jours-de-reve":
-      "/assets/img/products/MM-SEJOUR-NOSYKOMBA-10J/01-c876d761-fdf6-4d49-a47c-52839189244e.jpg",
-    "-diner-romantique-anniversaire-de-mariage-sur-un-ponton-prive-a-nosy-komba-":
-      "/assets/img/products/MM-DINER-PONTON-NOSYKOMBA/01.jpg"
-  };
-
-  const FALLBACK_LABELS = {
-    "-mariage-scenique-a-nosy-komba-union-sur-lile-ambariobe": "Célébration nuptiale",
-    "sejour-romantique-a-nosy-komba-10-jours-de-reve": "Séjour romantique",
-    "-diner-romantique-anniversaire-de-mariage-sur-un-ponton-prive-a-nosy-komba-": "Expérience romantique"
-  };
 
   const grid = document.getElementById("nosyBeProductsGrid");
 
@@ -451,17 +473,15 @@
 
   function formatPrice(value) {
     const n = Number(value);
-    if (!Number.isFinite(n)) return "";
-    return new Intl.NumberFormat("fr-FR", {
-      maximumFractionDigits: 0
-    }).format(n) + " €";
+    if (!Number.isFinite(n)) return "Sur demande";
+    return new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(n) + " €";
   }
 
-  async function fetchJson(table, params) {
+  async function api(table, params) {
     const cfg = window.MARIAGE_SUPABASE || {};
     if (!cfg.url || !cfg.anonKey) throw new Error("Configuration Supabase absente");
-    const url = cfg.url + "/rest/v1/" + table + "?" + new URLSearchParams(params);
-    const response = await fetch(url, {
+    const qs = new URLSearchParams(params).toString();
+    const response = await fetch(cfg.url + "/rest/v1/" + table + "?" + qs, {
       headers: {
         apikey: cfg.anonKey,
         Authorization: "Bearer " + cfg.anonKey
@@ -471,18 +491,17 @@
     return response.json();
   }
 
-  async function getProduct(slug) {
-    const products = await fetchJson("mm_products", {
-      select: "id,slug,name,short_description,featured_image_url,published",
+  async function getPrice(slug) {
+    const products = await api("mm_products", {
+      select: "id,slug,published",
       slug: "eq." + slug,
       published: "eq.true",
       limit: "1"
     });
-
     const product = products[0];
     if (!product) return null;
 
-    const variations = await fetchJson("mm_product_variations", {
+    const variations = await api("mm_product_variations", {
       select: "regular_price,published,in_stock",
       product_id: "eq." + product.id,
       published: "eq.true",
@@ -491,65 +510,51 @@
       limit: "1"
     });
 
-    const images = await fetchJson("mm_product_images", {
-      select: "image_url,sort_order,is_featured",
-      product_id: "eq." + product.id,
-      order: "is_featured.desc,sort_order.asc",
-      limit: "1"
-    });
-
-    return {
-      ...product,
-      price: variations[0]?.regular_price ?? null,
-      image: images[0]?.image_url || product.featured_image_url || FALLBACK_IMAGES[slug],
-      label: FALLBACK_LABELS[slug] || "Offre à Nosy Be"
-    };
+    return variations[0]?.regular_price ?? null;
   }
 
-  function renderCard(product, index) {
-    const image = product.image || FALLBACK_IMAGES[product.slug];
-    const title = product.name || "Offre Mariage Madagascar";
-    const description = product.short_description || "Une expérience sur mesure à Nosy Be et Nosy Komba.";
-    const price = formatPrice(product.price);
-    const slug = encodeURIComponent(product.slug);
-    const featured = index === 1;
+  function renderCard(item, price, index) {
+    const featured = item.featured;
+    const slug = encodeURIComponent(item.slug);
+    const cardClass = featured
+      ? "border-2 border-primary shadow-2xl shadow-primary/10"
+      : "border border-outline-variant/70";
 
     return `
-      <article class="glass-card rounded-2xl overflow-hidden group flex flex-col ${featured ? "border-2 border-primary shadow-2xl" : "border-t-2 border-t-primary/30"}">
-        <a href="/produit/${slug}" class="relative h-56 overflow-hidden block" aria-label="Voir ${escapeHtml(title)}">
-          <img src="${escapeHtml(image)}"
-               alt="${escapeHtml(title)}"
-               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-               loading="lazy"
-               onerror="this.src='${escapeHtml(FALLBACK_IMAGES[product.slug] || "")}'">
-          <div class="absolute inset-0 bg-gradient-to-t from-background/80 via-background/10 to-transparent"></div>
-          <span class="absolute top-4 left-4 bg-background/80 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-semibold text-primary border border-primary/20 uppercase tracking-wider">
-            ${escapeHtml(product.label)}
-          </span>
-        </a>
+      <article class="relative ${cardClass} rounded-2xl bg-surface-container-low/80 backdrop-blur-md p-7 sm:p-8 flex flex-col min-h-[556px] group transition-all duration-300 hover:-translate-y-1 hover:border-primary/60">
+        ${featured ? '<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-4 py-1 rounded-full text-[10px] font-black tracking-widest uppercase whitespace-nowrap">SIGNATURE MARIAGE</div>' : ''}
 
-        <div class="p-7 flex flex-col flex-1 justify-between gap-6">
-          <div>
-            ${featured ? '<div class="inline-flex mb-3 bg-primary text-on-primary text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full">Sélection</div>' : ""}
-            <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-primary transition-colors">
-              ${escapeHtml(title)}
-            </h3>
-            <p class="text-sm text-on-surface-variant leading-relaxed">
-              ${escapeHtml(description)}
-            </p>
+        <div>
+          <div class="text-xs uppercase tracking-widest font-bold mb-3 ${featured ? 'text-primary' : index === 2 ? 'text-tertiary-fixed' : 'text-secondary-fixed'}">
+            ${escapeHtml(item.label)}
           </div>
+          <h3 class="text-2xl font-black text-white leading-tight tracking-tight mb-3 group-hover:text-primary transition-colors">
+            ${escapeHtml(item.title)}
+          </h3>
+          <p class="text-sm text-on-surface-variant leading-relaxed min-h-[72px]">
+            ${escapeHtml(item.description)}
+          </p>
 
-          <div>
-            <div class="text-xs text-on-surface-variant">À partir de</div>
-            <div class="text-2xl font-black ${featured ? "text-primary" : "text-white"} tracking-tight">
-              ${price || "Sur demande"}
-              ${price ? '<span class="text-xs font-normal text-secondary"> / produit</span>' : ""}
-            </div>
-            <a href="/produit/${slug}"
-               class="block w-full mt-4 py-3 px-4 rounded-xl ${featured ? "bg-primary text-on-primary" : "bg-surface-container-high border border-outline-variant text-white hover:text-primary hover:border-primary"} font-bold text-xs uppercase tracking-wider text-center transition-all">
-              Voir le produit
-            </a>
+          <ul class="mt-6 space-y-4">
+            ${item.bullets.map(b => `
+              <li class="flex items-start gap-2.5 text-xs sm:text-[13px] text-white/85 leading-snug">
+                <span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+                <span>${escapeHtml(b)}</span>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+
+        <div class="mt-auto pt-8">
+          <div class="text-xs text-on-surface-variant mb-1">À partir de</div>
+          <div class="flex items-baseline gap-1.5">
+            <span class="text-3xl font-black tracking-tight ${featured ? 'text-primary' : 'text-white'}">${formatPrice(price)}</span>
+            ${price !== null && price !== undefined ? `<span class="text-xs text-secondary">${escapeHtml(item.unit)}</span>` : ''}
           </div>
+          <a href="/produit/${slug}"
+             class="mt-5 flex w-full h-11 items-center justify-center rounded-full px-5 text-xs font-black tracking-wide transition-all ${featured ? 'bg-primary text-on-primary shadow-lg shadow-primary/20 hover:brightness-105' : 'bg-surface-container-high border border-outline-variant text-white hover:border-primary/50 hover:text-primary'}">
+            ${escapeHtml(item.cta)}
+          </a>
         </div>
       </article>
     `;
@@ -557,20 +562,13 @@
 
   async function loadProducts() {
     try {
-      const products = (await Promise.all(PRODUCT_SLUGS.map(getProduct))).filter(Boolean);
-
-      if (!products.length) {
-        throw new Error("Aucun produit publié trouvé");
-      }
-
-      grid.innerHTML = products.map(renderCard).join("");
+      const prices = await Promise.all(PRODUCT_CONFIG.map(item => getPrice(item.slug)));
+      grid.innerHTML = PRODUCT_CONFIG.map((item, index) => renderCard(item, prices[index], index)).join('');
     } catch (error) {
       console.error("Nosy Be products:", error);
-      grid.innerHTML = `
-        <div class="md:col-span-3 glass-card rounded-2xl p-8 text-center text-sm text-on-surface-variant">
-          Les produits sont momentanément indisponibles. Veuillez consulter notre catalogue.
-        </div>
-      `;
+      // On conserve les 3 cartes même si Supabase rencontre momentanément un problème.
+      const fallbackPrices = [1460, 1950, 450];
+      grid.innerHTML = PRODUCT_CONFIG.map((item, index) => renderCard(item, fallbackPrices[index], index)).join('');
     }
   }
 
