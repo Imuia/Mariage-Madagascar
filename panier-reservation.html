@@ -283,9 +283,47 @@
     const displayItems = cart.map((item, originalIndex) => ({ item, originalIndex })).reverse();
 
     displayItems.forEach(({ item, originalIndex }) => {
-      const formattedDate = item.booking_date
-        ? new Date(item.booking_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
-        : 'Date à définir avec nos conseillers';
+      const formatDateStr = (dStr) => {
+        if (!dStr) return null;
+        try {
+          return new Date(dStr).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+        } catch {
+          return dStr;
+        }
+      };
+
+      const formattedStartDate = formatDateStr(item.booking_date);
+      const formattedEndDate = formatDateStr(item.booking_end_date);
+
+      let datesDisplayHtml = '';
+      if (formattedStartDate && formattedEndDate) {
+        datesDisplayHtml = `
+          <div class="flex flex-col gap-1 bg-[#141c2e] px-3 py-1.5 rounded-lg border border-[#2a3a48]">
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-[#7dd3fc]">login</span>
+              <span><strong>Date d'arrivée :</strong> ${esc(formattedStartDate)}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-[#7dd3fc]">logout</span>
+              <span><strong>Date de départ :</strong> ${esc(formattedEndDate)}</span>
+            </div>
+          </div>
+        `;
+      } else if (formattedStartDate) {
+        datesDisplayHtml = `
+          <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
+            <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">calendar_today</span>
+            ${esc(formattedStartDate)}
+          </span>
+        `;
+      } else {
+        datesDisplayHtml = `
+          <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
+            <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">calendar_today</span>
+            Date à définir avec nos conseillers
+          </span>
+        `;
+      }
 
       const paxText = item.pax ? `${item.pax} Personnes` : '';
       const options = item.options || {};
@@ -313,10 +351,7 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-4 text-sm text-[#a0b4c4] mt-3">
-                  <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
-                    <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">calendar_today</span>
-                    ${esc(formattedDate)}
-                  </span>
+                  ${datesDisplayHtml}
                   ${paxText ? `
                     <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
                       <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">group</span>

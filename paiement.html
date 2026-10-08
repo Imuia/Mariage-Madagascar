@@ -237,12 +237,31 @@
       const itemTotal = Number(item.price || 0) * Number(item.quantity || 1);
       subtotal += itemTotal;
 
+      const formatDateStr = (dStr) => {
+        if (!dStr) return null;
+        try {
+          return new Date(dStr).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+        } catch {
+          return dStr;
+        }
+      };
+
+      const formattedStart = formatDateStr(item.booking_date);
+      const formattedEnd = formatDateStr(item.booking_end_date);
+
+      let dateText = 'Date sur demande';
+      if (formattedStart && formattedEnd) {
+        dateText = `Du ${esc(formattedStart)} au ${esc(formattedEnd)}`;
+      } else if (formattedStart) {
+        dateText = `Date : ${esc(formattedStart)}`;
+      }
+
       html += `
         <div class="p-3 bg-[#141c2e]/60 rounded-xl border border-[#2a3a48]/50">
           <div class="font-semibold text-[#e0e8f0]">${esc(item.name)}</div>
           ${item.variation_name ? `<div class="text-xs text-[#a0b4c4]">${esc(item.variation_name)}</div>` : ''}
           <div class="flex justify-between items-center mt-2 text-xs text-[#a0b4c4]">
-            <span>${item.booking_date ? esc(item.booking_date) : 'Date sur demande'}</span>
+            <span>${dateText}</span>
             <span class="font-bold text-[#7dd3fc] text-sm">${euro(itemTotal)}</span>
           </div>
         </div>

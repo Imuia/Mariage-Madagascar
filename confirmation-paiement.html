@@ -188,16 +188,52 @@
         }
       }
 
-      confirmedItemsList.innerHTML = items.map(item => `
-        <div class="p-4 bg-[#141c2e]/60 rounded-xl border border-[#2a3a48]/50 flex justify-between items-center">
-          <div>
-            <div class="font-semibold text-[#e0e8f0]">${esc(item.product_name)}</div>
-            ${item.variation_name ? `<div class="text-xs text-[#a0b4c4]">${esc(item.variation_name)}</div>` : ''}
-            <div class="text-xs text-[#7dd3fc] mt-1">Date réservée : ${item.booking_date ? esc(item.booking_date) : 'À confirmer avec conseiller'}</div>
+      const formatDateStr = (dStr) => {
+        if (!dStr) return null;
+        try {
+          return new Date(dStr).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+        } catch {
+          return dStr;
+        }
+      };
+
+      confirmedItemsList.innerHTML = items.map(item => {
+        const startDate = formatDateStr(item.booking_date);
+        const endDate = formatDateStr(item.booking_end_date || (item.options && item.options.booking_end_date));
+
+        let dateDisplayHtml = '';
+        if (startDate && endDate) {
+          dateDisplayHtml = `
+            <div class="text-xs text-[#7dd3fc] mt-1 space-y-0.5">
+              <div>Date d'arrivée : ${esc(startDate)}</div>
+              <div>Date de départ : ${esc(endDate)}</div>
+            </div>
+          `;
+        } else if (startDate) {
+          dateDisplayHtml = `
+            <div class="text-xs text-[#7dd3fc] mt-1">
+              Date réservée : ${esc(startDate)}
+            </div>
+          `;
+        } else {
+          dateDisplayHtml = `
+            <div class="text-xs text-[#a0b4c4] mt-1">
+              Date à confirmer avec conseiller
+            </div>
+          `;
+        }
+
+        return `
+          <div class="p-4 bg-[#141c2e]/60 rounded-xl border border-[#2a3a48]/50 flex justify-between items-center">
+            <div>
+              <div class="font-semibold text-[#e0e8f0]">${esc(item.product_name)}</div>
+              ${item.variation_name ? `<div class="text-xs text-[#a0b4c4]">${esc(item.variation_name)}</div>` : ''}
+              ${dateDisplayHtml}
+            </div>
+            <div class="font-bold text-[#e0e8f0] text-lg">${euro(item.total_price)}</div>
           </div>
-          <div class="font-bold text-[#e0e8f0] text-lg">${euro(item.total_price)}</div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
 
       loadingState.classList.add('hidden');
       successState.classList.remove('hidden');
