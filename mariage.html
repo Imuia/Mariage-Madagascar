@@ -20,6 +20,128 @@ body{margin:0;background:radial-gradient(circle at 15% 10%,rgba(125,211,252,.09)
 .card:hover{transform:translateY(-3px);border-color:rgba(125,211,252,.3)}
 .hero-overlay{background:linear-gradient(180deg,rgba(10,14,26,.2),rgba(10,14,26,.58) 65%,#0f1524)}
 </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#e0e8f0",
+                    "tertiary-fixed": "#e8d0ff",
+                    "primary": "#7dd3fc",
+                    "surface-container-highest": "#202c42",
+                    "on-primary-fixed-variant": "#004d73",
+                    "tertiary": "#c8a0f0",
+                    "on-primary": "#001f2e",
+                    "on-background": "#e0e8f0",
+                    "outline-variant": "#2a3a48",
+                    "surface-dim": "#0f1524",
+                    "surface-container-lowest": "#0a0e1a",
+                    "inverse-on-surface": "#0a0e1a",
+                    "surface-bright": "#1a2438",
+                    "on-error-container": "#ffb3b3",
+                    "on-secondary": "#001f2e",
+                    "secondary-container": "#1a3a4e",
+                    "surface-container-low": "#111828",
+                    "tertiary-container": "#3d2060",
+                    "on-primary-fixed": "#001f2e",
+                    "on-surface": "#e0e8f0",
+                    "tertiary-fixed-dim": "#c8a0f0",
+                    "primary-fixed": "#c8eaff",
+                    "surface-tint": "#7dd3fc",
+                    "on-secondary-fixed": "#0d1f2b",
+                    "on-error": "#1a0000",
+                    "primary-container": "#0e4d6e",
+                    "outline": "#4a6070",
+                    "error-container": "#3d1414",
+                    "secondary": "#88b4cc",
+                    "on-surface-variant": "#a0b4c4",
+                    "secondary-fixed-dim": "#88b4cc",
+                    "background": "#0a0e1a",
+                    "error": "#ff6b6b",
+                    "on-tertiary": "#1a002e",
+                    "on-tertiary-container": "#e8d0ff",
+                    "primary-fixed-dim": "#7dd3fc",
+                    "surface": "#0f1524",
+                    "surface-variant": "#1a2438",
+                    "surface-container": "#141c2e",
+                    "on-primary-container": "#c8eaff",
+                    "on-secondary-fixed-variant": "#2a4a5e",
+                    "inverse-primary": "#0a4c6e",
+                    "on-tertiary-fixed-variant": "#4d2a73",
+                    "secondary-fixed": "#c0d8e8",
+                    "on-tertiary-fixed": "#1a002e",
+                    "surface-container-high": "#1a2438",
+                    "on-secondary-container": "#c0d8e8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.5rem",
+                    "lg": "1rem",
+                    "xl": "1.5rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "display": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #0a0e1a; color: #e0e8f0; }
+        .glass-panel { background: rgba(15, 21, 36, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(125, 211, 252, 0.1); }
+        .glass-elevated { background: rgba(15, 21, 36, 0.75); backdrop-filter: blur(24px); border: 1px solid rgba(125, 211, 252, 0.15); box-shadow: 0 0 30px rgba(125, 211, 252, 0.05); }
+        .text-glow { text-shadow: 0 0 20px rgba(125, 211, 252, 0.3); }
+        .border-glow { box-shadow: 0 0 15px rgba(125, 211, 252, 0.1); }
+        .hover-border-glow:hover { border-color: rgba(125, 211, 252, 0.3); box-shadow: 0 0 25px rgba(125, 211, 252, 0.2); }
+
+        .homepage-image { image-rendering: auto; filter: brightness(1.06) saturate(1.08) contrast(1.04); }
+        .homepage-hero-image { filter: brightness(1.10) saturate(1.10) contrast(1.05); }
+        .homepage-text-strong {
+            color: #f3f8ff !important;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.78), 0 0 18px rgba(0, 0, 0, 0.28);
+        }
+        .homepage-text-light {
+            color: rgba(232, 240, 248, 0.92) !important;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.78);
+        }
+        .homepage-text-meta {
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.72);
+        }
+        .homepage-hero-copy {
+            text-shadow: 0 3px 14px rgba(0, 0, 0, 0.82);
+        }
+
+        /* Personnalisation de la Vraie Carte Leaflet */
+        #realMadagascarMap {
+          width: 100%;
+          height: 480px;
+          border-radius: 1rem;
+          z-index: 10;
+        }
+        .leaflet-container {
+          background: #0a0e1a !important;
+        }
+        .map-badge {
+          background: #ffffff;
+          color: #0f172a;
+          font-weight: 800;
+          font-size: 11px;
+          padding: 2px 6px;
+          border-radius: 4px;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+          text-align: center;
+          border: 1px solid #cbd5e1;
+        }
+        .plane-marker-icon {
+          color: #38bdf8;
+          filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.9));
+          transition: all 0.2s linear;
+        }
+    </style>
 </head>
 <body>
 <!-- HEADER GLOBAL -->
