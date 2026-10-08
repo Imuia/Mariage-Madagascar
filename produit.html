@@ -796,6 +796,8 @@ body.villa-product #mainImageButton{height:100%}
     const bookingDateInput =
       els.bookingDateWrap.querySelector('#booking-date');
 
+    // Sur les navigateurs compatibles, un clic n'importe où dans le champ
+    // ouvre directement le calendrier natif.
     bookingDateInput?.addEventListener('click', () => {
       try {
         bookingDateInput.showPicker?.();
@@ -850,6 +852,17 @@ body.villa-product #mainImageButton{height:100%}
 
     const currentImage = images[currentImageIndex] || product?.featured_image_url || '';
 
+    let bookingEndDate = '';
+    if (bookingDate && product?.duration_days) {
+      try {
+        const startDateObj = new Date(bookingDate);
+        if (!isNaN(startDateObj.getTime())) {
+          startDateObj.setDate(startDateObj.getDate() + Number(product.duration_days));
+          bookingEndDate = startDateObj.toISOString().split('T')[0];
+        }
+      } catch (_) {}
+    }
+
     const cartItem = {
       product_id: product.id,
       variation_id: selectedVariation ? selectedVariation.id : null,
@@ -859,6 +872,7 @@ body.villa-product #mainImageButton{height:100%}
       image: currentImage,
       quantity: 1,
       booking_date: bookingDate || '',
+      booking_end_date: bookingEndDate || '',
       pax: selectedPax || (selectedVariation ? selectedVariation.pax : null),
       price: selectedVariation ? selectedVariation.regular_price : (product.regular_price || 0),
       options: currentOptions,

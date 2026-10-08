@@ -109,6 +109,11 @@ module.exports = async function handler(req, res) {
       const itemTotal = unitPrice * quantity;
       verifiedSubtotal += itemTotal;
 
+      const optionsSnapshot = { ...(item.options || {}) };
+      if (item.booking_end_date) {
+        optionsSnapshot.booking_end_date = item.booking_end_date;
+      }
+
       verifiedOrderItems.push({
         product_id: dbProduct.id,
         variation_id: item.variation_id || null,
@@ -121,7 +126,7 @@ module.exports = async function handler(req, res) {
         total_price: itemTotal,
         pax: item.pax || null,
         booking_date: item.booking_date || null,
-        options_snapshot: item.options || {}
+        options_snapshot: optionsSnapshot
       });
 
       const imageUrl = isValidHttpUrl(dbProduct.featured_image_url) ? dbProduct.featured_image_url : null;
