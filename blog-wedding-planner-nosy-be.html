@@ -193,7 +193,7 @@
   const DATE_RE = /^(?:le\s+)?(?:\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}|\d{1,2}\s+(?:janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre)\s+\d{4})$/i;
 
   function labelFor(index, total) {
-    const ratio = total <= 1 ? 0 : index / (total - 1);
+    const ratio = total <= 1 ? 1 : 1 - (index / (total - 1));
     const d = new Date(Math.round(START + (END - START) * ratio));
     return d.getUTCDate() + ' ' + MONTHS[d.getUTCMonth()] + ' ' + d.getUTCFullYear();
   }
@@ -242,7 +242,7 @@
 
     cards.forEach((card, index) => {
       const label = labelFor(index, cards.length);
-      const ratio = cards.length <= 1 ? 0 : index / (cards.length - 1);
+      const ratio = cards.length <= 1 ? 1 : 1 - (index / (cards.length - 1));
       const iso = new Date(Math.round(START + (END - START) * ratio)).toISOString();
       updateExistingDate(card, label, iso);
     });
