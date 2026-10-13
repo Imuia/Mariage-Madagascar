@@ -115,6 +115,29 @@
         @media (max-width: 640px) {
           #realMadagascarMap { height: 430px; }
         }
+        .map-filter {
+          border: 1px solid rgba(125, 211, 252, 0.28);
+          color: #cbd5e1;
+          background: rgba(17, 24, 40, 0.88);
+          padding: 9px 14px;
+          border-radius: 9999px;
+          font-size: 12px;
+          font-weight: 600;
+          letter-spacing: .01em;
+          transition: background .2s ease, border-color .2s ease, color .2s ease, transform .2s ease;
+        }
+        .map-filter:hover, .map-filter:focus-visible {
+          color: #7dd3fc;
+          border-color: rgba(125, 211, 252, .7);
+          outline: none;
+        }
+        .map-filter.is-active {
+          color: #001f2e;
+          background: #7dd3fc;
+          border-color: #7dd3fc;
+        }
+        .destination-popup h4 { color: #0f172a; font-weight: 700; margin: 0 0 4px; }
+        .destination-popup a { color: #0369a1; font-weight: 700; text-decoration: none; }
         .leaflet-container {
           background: #0a0e1a !important;
         }
@@ -473,12 +496,25 @@
 <!-- SECTION AVEC VRAIE MAP INTERACTIVE DYNAMIQUE DE MADAGASCAR -->
 <div class="md:col-span-3 block mt-6">
   <div class="glass-panel rounded-3xl p-8 border-glow hover-border-glow transition-all duration-500 relative overflow-hidden">
-    <div class="mb-6 text-center max-w-2xl mx-auto">
-      <span class="text-tertiary text-xs uppercase tracking-[0.2em] font-semibold mb-2 block">MOBILITÉ &amp; VOL PRIVÉ</span>
+    <div class="mb-6 text-center max-w-3xl mx-auto">
+      <span class="text-tertiary text-xs uppercase tracking-[0.2em] font-semibold mb-2 block">DESTINATIONS &amp; MOBILITÉ</span>
       <h3 class="text-2xl md:text-3xl font-headline font-semibold text-on-surface homepage-text-strong text-glow">Liaison Privée &amp; Transfert Charter</h3>
+      <p class="text-on-surface-variant homepage-text-light text-base md:text-lg font-light leading-relaxed mt-3">Explorez nos destinations à Madagascar. Sélectionnez une destination pour la localiser sur la carte et découvrir sa page dédiée.</p>
     </div>
 
-    <!-- VRAIE CARTE LEAFLET INTERACTIVE -->
+    <!-- Filtres de destinations : permettent de localiser rapidement chaque destination -->
+    <div id="madagascarMapFilters" class="flex flex-wrap justify-center gap-2 mb-5" aria-label="Filtrer les destinations sur la carte">
+      <button type="button" data-map-destination="all" aria-pressed="true" class="map-filter is-active">Toutes les destinations</button>
+      <button type="button" data-map-destination="nosy-be" aria-pressed="false" class="map-filter">Nosy Be</button>
+      <button type="button" data-map-destination="nosy-saba" aria-pressed="false" class="map-filter">Nosy Saba</button>
+      <button type="button" data-map-destination="sainte-marie" aria-pressed="false" class="map-filter">Sainte-Marie</button>
+      <button type="button" data-map-destination="diego-suarez" aria-pressed="false" class="map-filter">Diego-Suarez</button>
+      <button type="button" data-map-destination="antananarivo" aria-pressed="false" class="map-filter">Antananarivo</button>
+      <button type="button" data-map-destination="morondava" aria-pressed="false" class="map-filter">Morondava</button>
+      <button type="button" data-map-destination="tulear" aria-pressed="false" class="map-filter">Tuléar</button>
+    </div>
+
+    <!-- Carte Leaflet plein cadre -->
     <div class="relative w-full rounded-2xl overflow-hidden border border-outline-variant/40 shadow-2xl">
       <div id="realMadagascarMap"></div>
 
@@ -513,92 +549,109 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  // Coordonnées GPS Réelles : TNR (Antananarivo) et NOS (Nosy Be)
-  const TNR = [-18.7969, 47.4788];
-  const NOS = [-13.3125, 48.3153];
+  const mapElement = document.getElementById('realMadagascarMap');
+  if (!mapElement || !window.L) return;
 
-  // Initialisation de la Vraie Carte centrée sur Madagascar
-  const map = L.map('realMadagascarMap', {
-    zoomControl: false,
-    scrollWheelZoom: false
-  }).setView([-16.1000, 48.0000], 6);
+  // Destinations présentes dans les pages du site et destinations mises en avant sur l'accueil.
+  const destinations = [
+    { id: 'nosy-be', name: 'Nosy Be', code: 'NOS', coords: [-13.3125, 48.3153], url: '/nosy-be.html', description: 'Île aux Parfums, plages et lagons.' },
+    { id: 'nosy-saba', name: 'Nosy Saba', code: 'NSB', coords: [-14.36109, 47.64108], url: '/mariage-nosy-saba.html', description: 'Une parenthèse insulaire confidentielle.' },
+    { id: 'sainte-marie', name: 'Sainte-Marie', code: 'SMS', coords: [-16.91952, 49.89574], url: '/mariage-a-sainte-marie.html', description: 'Une île paisible bordée par l’océan Indien.' },
+    { id: 'diego-suarez', name: 'Diego-Suarez', code: 'DIE', coords: [-12.2765, 49.2917], url: '/diego-suarez.html', description: 'Baies spectaculaires et grand nord malgache.' },
+    { id: 'antananarivo', name: 'Antananarivo', code: 'TNR', coords: [-18.8792, 47.5079], url: '/organisateur-de-mariage-antananarivo.html', description: 'La capitale et ses demeures de charme.' },
+    { id: 'morondava', name: 'Morondava', code: 'MOQ', coords: [-20.2951, 44.2786], url: '/morondava.html', description: 'La côte ouest et l’allée des baobabs.' },
+    { id: 'tulear', name: 'Tuléar', code: 'TLE', coords: [-23.35, 43.67], url: '/tulear.html', description: 'Lagons, plages et paysages du sud.' }
+  ];
 
-  // Couche Satellite Réelle (Esri World Imagery)
+  const map = L.map(mapElement, {
+    zoomControl: true,
+    scrollWheelZoom: false,
+    tap: true
+  });
+
   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     attribution: 'Esri Satellite',
     maxZoom: 18
   }).addTo(map);
 
-  // Icônes personnalisées pour les badges d'aéroports
-  const iconNOS = L.divIcon({
-    className: 'custom-map-pin',
-    html: `<div style="display:flex; flex-direction:column; align-items:center;">
-             <div class="map-badge">NOS</div>
-             <div style="width:10px; height:10px; background:#ef4444; border:2px solid white; border-radius:50%; margin-top:2px;"></div>
-             <div style="font-size:10px; font-weight:600; color:white; background:rgba(0,0,0,0.7); px:4px; border-radius:3px; margin-top:2px; white-space:nowrap;">Nosy Be / Nosy Saba</div>
-           </div>`,
-    iconSize: [120, 50],
-    iconAnchor: [60, 25]
+  const allBounds = L.latLngBounds(destinations.map(destination => destination.coords));
+  const markerById = {};
+
+  destinations.forEach(destination => {
+    const icon = L.divIcon({
+      className: 'custom-map-pin',
+      html: `<div style="display:flex;flex-direction:column;align-items:center;min-width:82px;transform:translateY(-2px)">
+        <span class="map-badge">${destination.code}</span>
+        <span style="width:10px;height:10px;background:#ef4444;border:2px solid #fff;border-radius:50%;margin-top:3px;box-shadow:0 1px 6px #000"></span>
+        <span style="font-size:10px;font-weight:700;color:#fff;background:rgba(0,0,0,.78);padding:2px 5px;border-radius:3px;margin-top:3px;white-space:nowrap;text-shadow:0 1px 2px #000">${destination.name}</span>
+      </div>`,
+      iconSize: [100, 52],
+      iconAnchor: [50, 25]
+    });
+    const marker = L.marker(destination.coords, { icon, title: destination.name, alt: destination.name }).addTo(map);
+    marker.bindPopup(`<div class="destination-popup"><h4>${destination.name}</h4><p>${destination.description}</p><a href="${destination.url}">Découvrir la destination →</a></div>`);
+    markerById[destination.id] = marker;
   });
 
-  const iconTNR = L.divIcon({
-    className: 'custom-map-pin',
-    html: `<div style="display:flex; flex-direction:column; align-items:center;">
-             <div style="width:10px; height:10px; background:#ef4444; border:2px solid white; border-radius:50%; margin-bottom:2px;"></div>
-             <div class="map-badge">TNR</div>
-             <div style="font-size:10px; font-weight:600; color:white; background:rgba(0,0,0,0.7); px:4px; border-radius:3px; margin-top:2px; white-space:nowrap;">Antananarivo</div>
-           </div>`,
-    iconSize: [120, 50],
-    iconAnchor: [60, 25]
-  });
-
-  L.marker(NOS, {icon: iconNOS}).addTo(map);
-  L.marker(TNR, {icon: iconTNR}).addTo(map);
-
-  // Ligne de vol courbée entre TNR et NOS
+  // Trajet animé conservé entre Antananarivo et Nosy Be.
+  const TNR = destinations.find(d => d.id === 'antananarivo').coords;
+  const NOS = destinations.find(d => d.id === 'nosy-be').coords;
   const curvePoints = [];
-  const steps = 100;
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    const lat = (1 - t) * TNR[0] + t * NOS[0];
-    const lng = (1 - t) * TNR[1] + t * NOS[1] - Math.sin(t * Math.PI) * 1.2; // Courbure vers l'ouest
-    curvePoints.push([lat, lng]);
+  for (let i = 0; i <= 100; i++) {
+    const t = i / 100;
+    curvePoints.push([
+      (1 - t) * TNR[0] + t * NOS[0],
+      (1 - t) * TNR[1] + t * NOS[1] - Math.sin(t * Math.PI) * 1.2
+    ]);
   }
-
-  L.polyline(curvePoints, {
-    color: '#38bdf8',
-    weight: 3.5,
-    opacity: 0.9,
-    dashArray: '8, 8'
-  }).addTo(map);
-
-  // Avion animé le long de la ligne de vol
+  L.polyline(curvePoints, { color: '#38bdf8', weight: 3.5, opacity: .95, dashArray: '8, 8' }).addTo(map);
   const planeIcon = L.divIcon({
     className: 'plane-icon-container',
-    html: `<span class="material-symbols-outlined plane-marker-icon" style="font-size:24px;">flight</span>`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12]
+    html: '<span class="material-symbols-outlined plane-marker-icon" style="font-size:24px">flight</span>',
+    iconSize: [24, 24], iconAnchor: [12, 12]
   });
-
-  const planeMarker = L.marker(TNR, {icon: planeIcon}).addTo(map);
-
-  let step = 0;
-  let forward = true;
-
+  const planeMarker = L.marker(TNR, { icon: planeIcon, interactive: false, keyboard: false }).addTo(map);
+  let step = 0, direction = 1;
   function animatePlane() {
-    if (forward) {
-      step++;
-      if (step >= curvePoints.length - 1) forward = false;
-    } else {
-      step--;
-      if (step <= 0) forward = true;
-    }
-    
+    step += direction;
+    if (step >= curvePoints.length - 1 || step <= 0) direction *= -1;
     planeMarker.setLatLng(curvePoints[step]);
     requestAnimationFrame(animatePlane);
   }
-
   animatePlane();
+
+  function showAllDestinations() {
+    map.fitBounds(allBounds.pad(0.12), { animate: true, maxZoom: 6 });
+  }
+  function focusDestination(id) {
+    if (id === 'all') {
+      showAllDestinations();
+      return;
+    }
+    const destination = destinations.find(item => item.id === id);
+    if (!destination || !markerById[id]) return;
+    map.flyTo(destination.coords, 7, { duration: 0.8 });
+    window.setTimeout(() => markerById[id].openPopup(), 850);
+  }
+
+  const filterContainer = document.getElementById('madagascarMapFilters');
+  if (filterContainer) {
+    filterContainer.addEventListener('click', event => {
+      const button = event.target.closest('button[data-map-destination]');
+      if (!button) return;
+      filterContainer.querySelectorAll('button[data-map-destination]').forEach(item => {
+        const active = item === button;
+        item.classList.toggle('is-active', active);
+        item.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      focusDestination(button.dataset.mapDestination);
+    });
+  }
+
+  showAllDestinations();
+  // Leaflet recalcule sa taille si la carte s'affiche après le chargement des polices/images.
+  window.setTimeout(() => map.invalidateSize(), 250);
+  window.addEventListener('resize', () => map.invalidateSize());
 });
 </script>
 
