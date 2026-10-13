@@ -67,6 +67,11 @@ module.exports = async function handler(req, res) {
     }
 
     const { customer, cart, promoCode } = body || {};
+    const paymentMethod = (body && body.payment_method) || 'card';
+
+    if (!['card', 'bank_transfer'].includes(paymentMethod)) {
+      return res.status(400).json({ message: 'Mode de paiement invalide.' });
+    }
 
     if (!customer || !customer.first_name || !customer.last_name || !customer.email) {
       return res.status(400).json({ message: 'Informations client incomplètes (prénom, nom et email requis).' });
@@ -76,7 +81,7 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ message: 'Votre panier est vide.' });
     }
 
-    if (!STRIPE_SECRET_KEY) {
+    if (paymentMethod === 'card' && !STRIPE_SECRET_KEY) {
       return res.status(500).json({ message: 'Configuration Stripe serveur incomplète : la variable d’environnement STRIPE_SECRET_KEY est manquante dans Vercel.' });
     }
 
@@ -193,6 +198,59 @@ module.exports = async function handler(req, res) {
 
     const verifiedTotalAmount = Math.max(0, verifiedSubtotal - discountAmount);
     const orderNumber = `MM-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+    // VIREMENT BANCAIRE : créer une commande en attente sans créer de session Stripe.
+    // Aucun champ de schéma supplémentaire n'est requis ; le mode est conservé dans notes.
+    if (paymentMethod === 'bank_transfer') {
+      const bankTransferOrderRecord = {
+        order_number: orderNumber,
+        guest_first_name: customer.first_name,
+        guest_last_name: customer.last_name,
+        guest_email: customer.email,
+        guest_phone: customer.phone || '',
+        guest_country: customer.country || 'France',
+        status: 'pending',
+        payment_status: 'pending',
+        currency: 'EUR',
+        subtotal: verifiedSubtotal,
+        discount_amount: discountAmount,
+        total_amount: verifiedTotalAmount,
+        promo_code_id: verifiedPromoCodeId,
+        notes: [
+          customer.notes || '',
+          'Mode de paiement : virement bancaire',
+          customer.transfer_account_holder ? `Titulaire du compte émetteur : ${String(customer.transfer_account_holder).slice(0, 160)}` : '',
+          customer.planned_transfer_date ? `Date prévue du virement : ${String(customer.planned_transfer_date).slice(0, 10)}` : ''
+        ].filter(Boolean).join('\n'),
+        booking_date: verifiedOrderItems[0]?.booking_date || null
+      };
+
+      const insertedBankOrders = await supabaseFetch('orders', {
+        method: 'POST',
+        headers: { 'Prefer': 'return=representation' },
+        body: JSON.stringify(bankTransferOrderRecord)
+      });
+
+      if (!insertedBankOrders || !insertedBankOrders.length) {
+        throw new Error('Échec de l’enregistrement de la commande par virement dans Supabase.');
+      }
+
+      const insertedBankOrder = insertedBankOrders[0];
+      for (const itemRecord of verifiedOrderItems) {
+        itemRecord.order_id = insertedBankOrder.id;
+        await supabaseFetch('order_items', {
+          method: 'POST',
+          headers: { 'Prefer': 'return=representation' },
+          body: JSON.stringify(itemRecord)
+        });
+      }
+
+      return res.status(200).json({
+        method: 'bank_transfer',
+        orderNumber,
+        message: 'Commande enregistrée en attente de virement bancaire.'
+      });
+    }
 
     // Construction stricte et sécurisée des URLs absolues
     const baseUrl = 'https://mariage-madagascar.vercel.app';
