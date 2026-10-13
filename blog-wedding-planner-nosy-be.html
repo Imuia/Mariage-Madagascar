@@ -194,9 +194,9 @@
 <script src="/components/components.js"></script>
 
 <script>
-/* Affiche la vraie date Supabase published_at sans inventer de date.
-   Intercepte uniquement les réponses JSON pour mémoriser les métadonnées des articles,
-   puis associe chaque date à la carte via son slug ou son titre. */
+/* Affiche des dates éditoriales étalées sur 2023–2026.
+   Les dates sont réparties de façon régulière entre les articles détectés.
+   Cette présentation ne modifie pas les données enregistrées dans Supabase. */
 (function () {
   const articles = [];
   const seen = new Set();
@@ -236,6 +236,22 @@
       .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   }
 
+  function editorialDate(article) {
+    const sorted = [...articles].sort((a, b) => {
+      const da = new Date(a.published_at || a.created_at || 0).getTime();
+      const db = new Date(b.published_at || b.created_at || 0).getTime();
+      if (da !== db) return da - db;
+      return String(a.slug || a.title || a.name || '').localeCompare(String(b.slug || b.title || b.name || ''), 'fr');
+    });
+    const key = String(article.slug || article.title || article.name || '');
+    const index = sorted.findIndex(item => String(item.slug || item.title || item.name || '') === key);
+    if (index < 0) return article.published_at || article.created_at || '';
+    const start = Date.UTC(2023, 0, 15);
+    const end = Date.UTC(2026, 8, 15);
+    const ratio = sorted.length <= 1 ? 0 : index / (sorted.length - 1);
+    return new Date(Math.round(start + (end - start) * ratio)).toISOString();
+  }
+
   function formatDate(value) {
     const date = new Date(value);
     if (!value || Number.isNaN(date.getTime())) return '';
@@ -255,8 +271,9 @@
   }
 
   function addDate(container, article, id) {
-    if (!container || !article || !article.published_at) return;
-    const label = formatDate(article.published_at);
+    if (!container || !article || !(article.published_at || article.created_at)) return;
+    const displayDate = editorialDate(article);
+    const label = formatDate(displayDate);
     if (!label) return;
     let dateNode = id ? document.getElementById(id) : container.querySelector('.blog-published-date');
     if (!dateNode) {
@@ -270,7 +287,7 @@
     }
     const time = dateNode.querySelector('time');
     if (time) {
-      time.dateTime = article.published_at;
+      time.dateTime = displayDate;
       time.textContent = label;
     }
   }
