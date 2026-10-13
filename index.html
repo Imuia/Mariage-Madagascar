@@ -113,7 +113,7 @@
           z-index: 10;
         }
         @media (max-width: 640px) {
-          #realMadagascarMap { height: 430px; }
+          #realMadagascarMap { height: 500px; }
         }
         .map-filter {
           border: 1px solid rgba(125, 211, 252, 0.28);
@@ -141,6 +141,17 @@
         .leaflet-container {
           background: #0a0e1a !important;
         }
+        #realMadagascarMap .leaflet-control-attribution {
+          top: 6px;
+          right: 6px;
+          bottom: auto;
+          left: auto;
+          border-radius: 5px;
+          overflow: hidden;
+          background: rgba(10, 14, 26, 0.82);
+          color: #e0e8f0;
+        }
+        #realMadagascarMap .leaflet-control-attribution a { color: #7dd3fc; }
         .map-badge {
           background: #ffffff;
           color: #0f172a;
@@ -526,18 +537,6 @@
     <div class="relative w-full rounded-2xl overflow-hidden border border-outline-variant/40 shadow-2xl">
       <div id="realMadagascarMap"></div>
 
-      <!-- Badge Tarif & Réservation Flottant -->
-      <div class="absolute bottom-4 right-4 z-[1000] bg-surface-container/95 border border-outline-variant/60 rounded-xl p-3 backdrop-blur-md flex items-center gap-4 shadow-2xl">
-        <div>
-          <span class="text-[10px] text-on-surface-variant block uppercase font-mono">Vol Privé (A/R)</span>
-          <span class="text-sm font-bold text-primary font-headline">26 437 € <span class="text-[10px] font-normal text-on-surface-variant">TTC</span></span>
-        </div>
-        <a href="/contact-mariage-madagascar-nosy-be.html" class="px-3 py-2 bg-primary hover:bg-primary-fixed text-on-primary text-xs font-semibold rounded-lg transition-colors flex items-center gap-1 shadow-md">
-          <span>Réserver</span>
-          <span class="material-symbols-outlined text-sm">arrow_forward</span>
-        </a>
-      </div>
-
       <div class="absolute bottom-4 left-4 z-[1000] text-[10px] text-white/90 font-mono hidden sm:block bg-black/70 px-2.5 py-1 rounded-md backdrop-blur-sm border border-white/10">
         Airbus AS350 • 616 km / trajet
       </div>
@@ -582,7 +581,8 @@ document.addEventListener("DOMContentLoaded", function() {
     maxZoom: 18
   }).addTo(map);
 
-  const allBounds = L.latLngBounds(destinations.map(destination => destination.coords));
+  // Cadre géographique élargi pour afficher Madagascar jusqu'à son extrémité sud.
+  const allBounds = L.latLngBounds([[-25.8, 43.1], [-11.5, 50.8]]);
   const markerById = {};
 
   destinations.forEach(destination => {
@@ -622,9 +622,9 @@ document.addEventListener("DOMContentLoaded", function() {
       ]);
     }
     L.polyline(points, {
-      color: destination.id === 'nosy-be' ? '#38bdf8' : '#7dd3fc',
-      weight: destination.id === 'nosy-be' ? 3.5 : 2.5,
-      opacity: destination.id === 'nosy-be' ? .95 : .62,
+      color: '#38bdf8',
+      weight: 3.5,
+      opacity: .92,
       dashArray: '8, 8'
     }).addTo(map);
     return { destination, points };
@@ -638,6 +638,8 @@ document.addEventListener("DOMContentLoaded", function() {
   let routeStep = 0;
   let routeDirection = 1;
   let lastIntroDestination = '';
+  let lastPlaneStepAt = 0;
+  const PLANE_STEP_INTERVAL_MS = 45; // vitesse régulière, sans accélération
   function updateDestinationIntro(destination, isReturning = false) {
     if (!destination || lastIntroDestination === destination.id + (isReturning ? '-return' : '-outbound')) return;
     lastIntroDestination = destination.id + (isReturning ? '-return' : '-outbound');
@@ -651,8 +653,13 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   updateDestinationIntro(flightRoutes[0]?.destination);
 
-  function animatePlane() {
+  function animatePlane(timestamp) {
     if (!flightRoutes.length) return;
+    if (timestamp - lastPlaneStepAt < PLANE_STEP_INTERVAL_MS) {
+      requestAnimationFrame(animatePlane);
+      return;
+    }
+    lastPlaneStepAt = timestamp;
     const route = flightRoutes[activeRouteIndex];
     routeStep += routeDirection;
     if (routeStep >= route.points.length - 1) {
@@ -671,7 +678,7 @@ document.addEventListener("DOMContentLoaded", function() {
   animatePlane();
 
   function showAllDestinations() {
-    map.fitBounds(allBounds.pad(0.12), { animate: true, maxZoom: 6 });
+    map.fitBounds(allBounds.pad(0.035), { animate: true, maxZoom: 6 });
   }
   function focusDestination(id) {
     if (id === 'all') {
