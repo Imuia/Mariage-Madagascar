@@ -221,8 +221,9 @@
 
       confirmedItemsList.innerHTML = items.map((item, index) => {
         const localItem = findLocalCartItem(item, index, localCartSnapshot);
-        const arrivalDate = item.booking_date || item.arrival_date || localItem.booking_date || localItem.arrival_date || '';
-        const departureDate = item.booking_end_date || item.departure_date || localItem.booking_end_date || localItem.departure_date || '';
+        const savedOptions = item.options_snapshot && typeof item.options_snapshot === 'object' ? item.options_snapshot : {};
+        const arrivalDate = item.booking_date || item.arrival_date || savedOptions.arrival_date || localItem.booking_date || localItem.arrival_date || '';
+        const departureDate = item.booking_end_date || item.departure_date || savedOptions.booking_end_date || savedOptions.departure_date || localItem.booking_end_date || localItem.departure_date || '';
         return `
           <div class="p-4 bg-[#141c2e]/60 rounded-xl border border-[#2a3a48]/50 flex justify-between items-start gap-4">
             <div>

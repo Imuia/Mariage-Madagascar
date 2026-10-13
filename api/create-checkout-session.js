@@ -39,6 +39,13 @@ function isValidHttpUrl(string) {
   return url.protocol === "http:" || url.protocol === "https:";
 }
 
+// Validation stricte des dates du tunnel (format attendu : YYYY-MM-DD).
+function isValidIsoDate(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00.000Z`);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
 
@@ -83,6 +90,15 @@ module.exports = async function handler(req, res) {
         return res.status(400).json({ message: 'Produit invalide dans le panier.' });
       }
 
+      // Les dates sont obligatoires pour tous les produits, y compris côté serveur.
+      const arrivalDate = item.booking_date || item.arrival_date || '';
+      const departureDate = item.booking_end_date || item.departure_date || '';
+      if (!isValidIsoDate(arrivalDate) || !isValidIsoDate(departureDate) || departureDate <= arrivalDate) {
+        return res.status(400).json({
+          message: `Les dates d'arrivée et de départ sont obligatoires et doivent être valides pour « ${item.name || 'cette prestation'} ». Le départ doit être après l'arrivée.`
+        });
+      }
+
       // Requête Supabase pour récupérer le produit réel
       const products = await supabaseFetch(`mm_products?id=eq.${item.product_id}&published=eq.true&limit=1`);
       if (!products || products.length === 0) {
@@ -120,8 +136,15 @@ module.exports = async function handler(req, res) {
         quantity: quantity,
         total_price: itemTotal,
         pax: item.pax || null,
-        booking_date: item.booking_date || null,
-        options_snapshot: item.options || {}
+        // booking_date est la colonne existante pour l'arrivée.
+        booking_date: arrivalDate,
+        // Conserver le départ dans le JSONB existant, sans exiger de migration SQL.
+        options_snapshot: {
+          ...(item.options && typeof item.options === 'object' && !Array.isArray(item.options) ? item.options : {}),
+          arrival_date: arrivalDate,
+          departure_date: departureDate,
+          booking_end_date: departureDate
+        }
       });
 
       const imageUrl = isValidHttpUrl(dbProduct.featured_image_url) ? dbProduct.featured_image_url : null;
