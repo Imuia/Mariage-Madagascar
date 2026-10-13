@@ -149,6 +149,35 @@
     }[char]));
   }
 
+  function formatDate(value) {
+    if (!value) return 'À confirmer avec conseiller';
+    const date = new Date(`${value}T00:00:00`);
+    return Number.isNaN(date.getTime()) ? 'À confirmer avec conseiller' : date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  function readLocalCartSnapshot() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem('mariage_cart') || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function findLocalCartItem(orderItem, index, localCart) {
+    const productId = orderItem.product_id || orderItem.mm_product_id || orderItem.product?.id;
+    if (productId != null) {
+      const matchById = localCart.find(item => String(item.product_id) === String(productId));
+      if (matchById) return matchById;
+    }
+    const productName = String(orderItem.product_name || orderItem.name || '').trim().toLowerCase();
+    if (productName) {
+      const matchByName = localCart.find(item => String(item.name || '').trim().toLowerCase() === productName);
+      if (matchByName) return matchByName;
+    }
+    return localCart[index] || {};
+  }
+
   async function loadOrderConfirmation() {
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get('session_id');
@@ -170,8 +199,10 @@
 
       const order = data.order;
       const items = data.items || [];
+      // Garder les dates choisies dans le navigateur comme solution de repli si l'API ne renvoie encore que booking_date.
+      const localCartSnapshot = readLocalCartSnapshot();
 
-      // Vider le panier local post-paiement réussi
+      // Vider le panier local après avoir copié les dates nécessaires à l'affichage de confirmation.
       localStorage.removeItem('mariage_cart');
 
       orderNumber.textContent = order.order_number;
@@ -188,16 +219,22 @@
         }
       }
 
-      confirmedItemsList.innerHTML = items.map(item => `
-        <div class="p-4 bg-[#141c2e]/60 rounded-xl border border-[#2a3a48]/50 flex justify-between items-center">
-          <div>
-            <div class="font-semibold text-[#e0e8f0]">${esc(item.product_name)}</div>
-            ${item.variation_name ? `<div class="text-xs text-[#a0b4c4]">${esc(item.variation_name)}</div>` : ''}
-            <div class="text-xs text-[#7dd3fc] mt-1">Date réservée : ${item.booking_date ? esc(item.booking_date) : 'À confirmer avec conseiller'}</div>
+      confirmedItemsList.innerHTML = items.map((item, index) => {
+        const localItem = findLocalCartItem(item, index, localCartSnapshot);
+        const arrivalDate = item.booking_date || item.arrival_date || localItem.booking_date || localItem.arrival_date || '';
+        const departureDate = item.booking_end_date || item.departure_date || localItem.booking_end_date || localItem.departure_date || '';
+        return `
+          <div class="p-4 bg-[#141c2e]/60 rounded-xl border border-[#2a3a48]/50 flex justify-between items-start gap-4">
+            <div>
+              <div class="font-semibold text-[#e0e8f0]">${esc(item.product_name || item.name || localItem.name || 'Prestation')}</div>
+              ${item.variation_name ? `<div class="text-xs text-[#a0b4c4]">${esc(item.variation_name)}</div>` : ''}
+              <div class="text-xs text-[#7dd3fc] mt-2">Date d'arrivée : ${esc(formatDate(arrivalDate))}</div>
+              <div class="text-xs text-[#7dd3fc] mt-1">Date de départ : ${esc(formatDate(departureDate))}</div>
+            </div>
+            <div class="font-bold text-[#e0e8f0] text-lg whitespace-nowrap">${euro(item.total_price)}</div>
           </div>
-          <div class="font-bold text-[#e0e8f0] text-lg">${euro(item.total_price)}</div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
 
       loadingState.classList.add('hidden');
       successState.classList.remove('hidden');

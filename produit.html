@@ -30,7 +30,8 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 .scrollbar-thin::-webkit-scrollbar-track{background:transparent}
 
 /* Champ date : zone entièrement cliquable + calendrier natif lisible */
-#booking-date{
+#booking-date,
+#booking-date-end{
   width:100%;
   min-height:52px;
   color:#c8d6e3 !important;
@@ -450,9 +451,11 @@ body.villa-product #mainImageButton{height:100%}
     // arrivée + départ pour les produits avec une vraie durée.
     if (bookingDate) {
       url += '&date=' + encodeURIComponent(bookingDate);
+      url += '&arrival_date=' + encodeURIComponent(bookingDate);
     }
-    if (IS_DURATION_PRODUCT && bookingEndDate) {
+    if (bookingEndDate) {
       url += '&end_date=' + encodeURIComponent(bookingEndDate);
+      url += '&departure_date=' + encodeURIComponent(bookingEndDate);
     }
 
     return url;
@@ -788,67 +791,29 @@ body.villa-product #mainImageButton{height:100%}
     return `${now.getFullYear()}-${month}-${day}`;
   }
 
+  function addDaysISO(value, days = 1) {
+    const source = value || todayISO();
+    const [year, month, day] = source.split('-').map(Number);
+    const date = new Date(year, month - 1, day + days);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  }
+
   function renderBookingDatePicker() {
     if (!els.bookingDateWrap) return;
 
     const minDate = todayISO();
+    if (bookingDate && bookingDate < minDate) bookingDate = '';
+    if (bookingEndDate && bookingEndDate < minDate) bookingEndDate = '';
+    if (bookingEndDate && bookingDate && bookingEndDate <= bookingDate) bookingEndDate = '';
 
-    if (bookingDate && bookingDate < minDate) {
-      bookingDate = '';
-    }
-    if (bookingEndDate && bookingEndDate < minDate) {
-      bookingEndDate = '';
-    }
+    const endMinDate = addDaysISO(bookingDate || minDate, 1);
 
-    const endMinDate = bookingDate && bookingDate >= minDate
-      ? bookingDate
-      : minDate;
-
-    if (bookingEndDate && bookingDate && bookingEndDate <= bookingDate) {
-      bookingEndDate = '';
-    }
-
-    if (IS_DURATION_PRODUCT) {
-      els.bookingDateWrap.innerHTML = `
-        <div class="w-full space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-2 cursor-pointer" for="booking-date">
-              Date d'arrivée <span class="text-[#7dd3fc]">*</span>
-            </label>
-            <input
-              id="booking-date"
-              type="date"
-              min="${minDate}"
-              value="${esc(bookingDate)}"
-              required
-              class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
-              aria-label="Choisir la date d'arrivée"
-            >
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium mb-2 cursor-pointer" for="booking-date-end">
-              Date de départ <span class="text-[#7dd3fc]">*</span>
-            </label>
-            <input
-              id="booking-date-end"
-              type="date"
-              min="${endMinDate}"
-              value="${esc(bookingEndDate)}"
-              required
-              class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
-              aria-label="Choisir la date de départ"
-            >
-          </div>
-
-          <div id="bookingDurationHint" class="text-xs text-[#8fa3b3]"></div>
-        </div>
-      `;
-    } else {
-      els.bookingDateWrap.innerHTML = `
-        <div class="w-full">
-          <label class="block text-sm font-medium mb-2 cursor-pointer" for="booking-date">
-            Date souhaitée <span class="text-[#7dd3fc]">*</span>
+    // Les deux dates sont obligatoires pour tous les produits, y compris les expériences ponctuelles.
+    els.bookingDateWrap.innerHTML = `
+      <div class="w-full space-y-4">
+        <div>
+          <label class="block text-sm font-semibold mb-2 cursor-pointer" for="booking-date">
+            Date d'arrivée <span class="text-[#7dd3fc]">*</span>
           </label>
           <input
             id="booking-date"
@@ -857,34 +822,42 @@ body.villa-product #mainImageButton{height:100%}
             value="${esc(bookingDate)}"
             required
             class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
-            aria-label="Choisir la date souhaitée"
+            aria-label="Choisir la date d'arrivée"
           >
         </div>
-      `;
-    }
 
-    const bookingDateInput =
-      els.bookingDateWrap.querySelector('#booking-date');
-    const bookingEndDateInput =
-      els.bookingDateWrap.querySelector('#booking-date-end');
+        <div>
+          <label class="block text-sm font-semibold mb-2 cursor-pointer" for="booking-date-end">
+            Date de départ <span class="text-[#7dd3fc]">*</span>
+          </label>
+          <input
+            id="booking-date-end"
+            type="date"
+            min="${endMinDate}"
+            value="${esc(bookingEndDate)}"
+            required
+            class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+            aria-label="Choisir la date de départ"
+          >
+        </div>
 
-    bookingDateInput?.addEventListener('click', () => {
-      try {
-        bookingDateInput.showPicker?.();
-      } catch {}
-    });
+        <div id="bookingDurationHint" class="text-xs text-[#8fa3b3]" aria-live="polite"></div>
+      </div>
+    `;
 
-    bookingEndDateInput?.addEventListener('click', () => {
-      try {
-        bookingEndDateInput.showPicker?.();
-      } catch {}
+    const bookingDateInput = els.bookingDateWrap.querySelector('#booking-date');
+    const bookingEndDateInput = els.bookingDateWrap.querySelector('#booking-date-end');
+
+    [bookingDateInput, bookingEndDateInput].forEach(input => {
+      input?.addEventListener('click', () => {
+        try { input.showPicker?.(); } catch {}
+      });
     });
 
     bookingDateInput?.addEventListener('change', event => {
       bookingDate = event.target.value || '';
-
-      if (IS_DURATION_PRODUCT && bookingEndDateInput) {
-        bookingEndDateInput.min = bookingDate || minDate;
+      if (bookingEndDateInput) {
+        bookingEndDateInput.min = addDaysISO(bookingDate || minDate, 1);
         if (bookingEndDate && bookingEndDate <= bookingDate) {
           bookingEndDate = '';
           bookingEndDateInput.value = '';
@@ -892,7 +865,6 @@ body.villa-product #mainImageButton{height:100%}
       }
 
       refreshBookingState();
-
       if (IS_STAY_PRODUCT) {
         updateStayActionLinks(findStayVariation());
       } else if (IS_VILLA_PRODUCT) {
@@ -908,7 +880,6 @@ body.villa-product #mainImageButton{height:100%}
     bookingEndDateInput?.addEventListener('change', event => {
       bookingEndDate = event.target.value || '';
       refreshBookingState();
-
       if (IS_STAY_PRODUCT) {
         updateStayActionLinks(findStayVariation());
       } else if (IS_VILLA_PRODUCT) {
@@ -1027,7 +998,7 @@ body.villa-product #mainImageButton{height:100%}
   }
 
   function getBookingNights() {
-    if (!IS_DURATION_PRODUCT || !bookingDate || !bookingEndDate) return null;
+    if (!bookingDate || !bookingEndDate) return null;
 
     const start = new Date(`${bookingDate}T00:00:00`);
     const end = new Date(`${bookingEndDate}T00:00:00`);
@@ -1040,17 +1011,12 @@ body.villa-product #mainImageButton{height:100%}
     const hint = document.getElementById('bookingDurationHint');
     if (!hint) return;
 
-    if (!IS_DURATION_PRODUCT) {
-      hint.textContent = '';
-      return;
-    }
-
     const expectedDays = getSelectedDurationDays();
     const nights = getBookingNights();
 
     if (!bookingDate || !bookingEndDate) {
-      hint.textContent = expectedDays
-        ? `Durée de la formule sélectionnée : ${expectedDays} jour${expectedDays > 1 ? 's' : ''}.`
+      hint.textContent = expectedDays && IS_DURATION_PRODUCT
+        ? `Durée de la formule sélectionnée : ${expectedDays} jour${expectedDays > 1 ? 's' : ''}. Choisissez les deux dates.`
         : 'Sélectionnez une date d’arrivée et une date de départ.';
       hint.className = 'text-xs text-[#8fa3b3]';
       return;
@@ -1062,28 +1028,22 @@ body.villa-product #mainImageButton{height:100%}
       return;
     }
 
-    if (expectedDays && nights !== expectedDays) {
-      hint.textContent =
-        `Cette formule correspond à ${expectedDays} jour${expectedDays > 1 ? 's' : ''}. Sélectionnez une durée de séjour de ${expectedDays} jour${expectedDays > 1 ? 's' : ''}.`;
+    if (IS_DURATION_PRODUCT && expectedDays && nights !== expectedDays) {
+      hint.textContent = `Cette formule correspond à ${expectedDays} jour${expectedDays > 1 ? 's' : ''}. Sélectionnez une durée de séjour de ${expectedDays} jour${expectedDays > 1 ? 's' : ''}.`;
       hint.className = 'text-xs text-red-300';
       return;
     }
 
-    hint.textContent =
-      `Séjour sélectionné : ${nights} nuit${nights > 1 ? 's' : ''}.`;
+    hint.textContent = `Séjour sélectionné : ${nights} nuit${nights > 1 ? 's' : ''}.`;
     hint.className = 'text-xs text-[#7dd3fc]';
   }
 
   function validateBookingDates() {
     if (!bookingDate) {
-      alert(IS_DURATION_PRODUCT
-        ? "Merci de sélectionner une date d'arrivée."
-        : "Merci de sélectionner une date.");
+      alert("Merci de sélectionner une date d’arrivée.");
       document.getElementById('booking-date')?.focus();
       return false;
     }
-
-    if (!IS_DURATION_PRODUCT) return true;
 
     if (!bookingEndDate) {
       alert("Merci de sélectionner une date de départ.");
@@ -1099,10 +1059,8 @@ body.villa-product #mainImageButton{height:100%}
     }
 
     const expectedDays = getSelectedDurationDays();
-    if (expectedDays && nights !== expectedDays) {
-      alert(
-        `Cette formule correspond à ${expectedDays} jour${expectedDays > 1 ? 's' : ''}. Merci de sélectionner une date d'arrivée et une date de départ correspondant à cette durée.`
-      );
+    if (IS_DURATION_PRODUCT && expectedDays && nights !== expectedDays) {
+      alert(`Cette formule correspond à ${expectedDays} jour${expectedDays > 1 ? 's' : ''}. Merci de sélectionner une date d'arrivée et une date de départ correspondant à cette durée.`);
       document.getElementById('booking-date-end')?.focus();
       return false;
     }
@@ -1153,7 +1111,7 @@ body.villa-product #mainImageButton{height:100%}
       image: currentImage,
       quantity: 1,
       booking_date: bookingDate || '',
-      booking_end_date: IS_DURATION_PRODUCT ? (bookingEndDate || '') : '',
+      booking_end_date: bookingEndDate || '',
       pax: selectedPax || (selectedVariation ? selectedVariation.pax : null),
       price: selectedVariation ? selectedVariation.regular_price : (product.regular_price || 0),
       options: currentOptions,

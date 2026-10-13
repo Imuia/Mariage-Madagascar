@@ -281,11 +281,24 @@
 
     // Affichage des éléments du panier dans l'ordre inverse (le plus récent en premier)
     const displayItems = cart.map((item, originalIndex) => ({ item, originalIndex })).reverse();
+    const formatDate = value => {
+      if (!value) return 'À sélectionner';
+      const date = new Date(`${value}T00:00:00`);
+      return Number.isNaN(date.getTime()) ? 'À sélectionner' : date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    };
+    const hasInvalidDates = cart.some(item => { const arrival = item.booking_date || item.arrival_date || ''; const departure = item.booking_end_date || item.departure_date || ''; return !arrival || !departure || departure <= arrival; });
 
     displayItems.forEach(({ item, originalIndex }) => {
-      const formattedDate = item.booking_date
-        ? new Date(item.booking_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
-        : 'Date à définir avec nos conseillers';
+      const formattedArrivalDate = formatDate(item.booking_date || item.arrival_date);
+      const formattedDepartureDate = formatDate(item.booking_end_date || item.departure_date);
+      const editParams = new URLSearchParams();
+      if (item.booking_date || item.arrival_date) editParams.set('date', item.booking_date || item.arrival_date);
+      if (item.booking_date || item.arrival_date) editParams.set('arrival_date', item.booking_date || item.arrival_date);
+      if (item.booking_end_date || item.departure_date) {
+        editParams.set('end_date', item.booking_end_date || item.departure_date);
+        editParams.set('departure_date', item.booking_end_date || item.departure_date);
+      }
+      const editUrl = `/produit/${encodeURIComponent(item.slug || '')}${editParams.toString() ? `?${editParams.toString()}` : ''}`;
 
       const paxText = item.pax ? `${item.pax} Personnes` : '';
       const options = item.options || {};
@@ -314,8 +327,12 @@
 
                 <div class="flex flex-wrap items-center gap-4 text-sm text-[#a0b4c4] mt-3">
                   <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
-                    <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">calendar_today</span>
-                    ${esc(formattedDate)}
+                    <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">login</span>
+                    <span><strong class="text-[#e0e8f0]">Arrivée :</strong> ${esc(formattedArrivalDate)}</span>
+                  </span>
+                  <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
+                    <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">logout</span>
+                    <span><strong class="text-[#e0e8f0]">Départ :</strong> ${esc(formattedDepartureDate)}</span>
                   </span>
                   ${paxText ? `
                     <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
@@ -327,7 +344,7 @@
               </div>
 
               <div class="mt-5 pt-4 border-t border-[#2a3a48] flex justify-between items-center">
-                <a href="/produit/${esc(item.slug)}" class="text-xs text-[#7dd3fc] hover:underline flex items-center gap-1">
+                <a href="${esc(editUrl)}" class="text-xs text-[#7dd3fc] hover:underline flex items-center gap-1">
                   <span class="material-symbols-outlined text-[16px]">edit</span> Modifier ma sélection
                 </a>
                 <button type="button" onclick="window.removeCartItem(${originalIndex})" class="bg-[#ff6b6b]/10 hover:bg-[#ff6b6b]/20 text-[#ff6b6b] px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-xs uppercase tracking-wider font-semibold border border-[#ff6b6b]/20">
@@ -362,6 +379,20 @@
     });
 
     cartContainer.innerHTML = html;
+    if (hasInvalidDates) {
+      cartContainer.insertAdjacentHTML('beforeend', `
+        <div class="rounded-xl border border-amber-300/30 bg-amber-300/10 p-4 text-sm text-amber-100" role="alert">
+          <strong>Dates de séjour manquantes.</strong> Chaque prestation doit avoir une date d'arrivée et une date de départ (départ après arrivée). Utilisez « Modifier ma sélection » pour compléter les dates avant de payer.
+        </div>
+      `);
+      checkoutBtn.classList.add('opacity-50', 'pointer-events-none');
+      checkoutBtn.setAttribute('aria-disabled', 'true');
+      checkoutBtn.setAttribute('tabindex', '-1');
+    } else {
+      checkoutBtn.classList.remove('opacity-50', 'pointer-events-none');
+      checkoutBtn.setAttribute('aria-disabled', 'false');
+      checkoutBtn.removeAttribute('tabindex');
+    }
 
     const { subtotal, discountAmount, total } = calculateTotals(cart);
 

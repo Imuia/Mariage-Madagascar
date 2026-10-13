@@ -223,6 +223,12 @@
     }
   }
 
+  function formatDate(value) {
+    if (!value) return 'À sélectionner';
+    const date = new Date(`${value}T00:00:00`);
+    return Number.isNaN(date.getTime()) ? 'À sélectionner' : date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
   function renderSummary() {
     const cart = getCart();
     if (!cart.length) {
@@ -241,9 +247,10 @@
         <div class="p-3 bg-[#141c2e]/60 rounded-xl border border-[#2a3a48]/50">
           <div class="font-semibold text-[#e0e8f0]">${esc(item.name)}</div>
           ${item.variation_name ? `<div class="text-xs text-[#a0b4c4]">${esc(item.variation_name)}</div>` : ''}
-          <div class="flex justify-between items-center mt-2 text-xs text-[#a0b4c4]">
-            <span>${item.booking_date ? esc(item.booking_date) : 'Date sur demande'}</span>
-            <span class="font-bold text-[#7dd3fc] text-sm">${euro(itemTotal)}</span>
+          <div class="mt-3 space-y-1 text-xs text-[#a0b4c4]">
+            <div class="flex flex-wrap justify-between gap-2"><span>Date d'arrivée</span><span class="text-[#e0e8f0]">${esc(formatDate(item.booking_date || item.arrival_date))}</span></div>
+            <div class="flex flex-wrap justify-between gap-2"><span>Date de départ</span><span class="text-[#e0e8f0]">${esc(formatDate(item.booking_end_date || item.departure_date))}</span></div>
+            <div class="flex justify-between items-center pt-2 mt-2 border-t border-[#2a3a48]/60"><span>Montant</span><span class="font-bold text-[#7dd3fc] text-sm">${euro(itemTotal)}</span></div>
           </div>
         </div>
       `;
@@ -257,13 +264,27 @@
   checkoutForm.addEventListener('submit', async event => {
     event.preventDefault();
     errorMessage.classList.add('hidden');
+
+    const cart = getCart();
+    const invalidDateItem = cart.find(item => {
+      const arrival = item.booking_date || item.arrival_date || '';
+      const departure = item.booking_end_date || item.departure_date || '';
+      return !arrival || !departure || departure <= arrival;
+    });
+    if (!cart.length || invalidDateItem) {
+      errorMessage.textContent = !cart.length
+        ? 'Votre panier est vide. Retournez au panier pour sélectionner une prestation.'
+        : `Les dates d'arrivée et de départ sont obligatoires pour « ${invalidDateItem.name || 'cette prestation'} ». Le départ doit être après l'arrivée. Retournez au panier et cliquez sur « Modifier ma sélection ».`;
+      errorMessage.classList.remove('hidden');
+      return;
+    }
+
     submitPaymentBtn.disabled = true;
     submitPaymentBtn.innerHTML = `
       <span class="material-symbols-outlined animate-spin">progress_activity</span>
       <span>Préparation de votre session de paiement sécurisée...</span>
     `;
 
-    const cart = getCart();
     const payload = {
       customer: {
         first_name: document.getElementById('firstName').value.trim(),
