@@ -130,19 +130,44 @@
       <textarea id="notes" rows="3" class="w-full bg-[#141c2e]/80 border border-[#2a3a48] rounded-xl px-4 py-3 text-sm text-[#e0e8f0] focus:outline-none focus:border-[#7dd3fc] focus:ring-1 focus:ring-[#7dd3fc]" placeholder="Heure d'arrivée souhaitée, régime alimentaire..."></textarea>
     </div>
 
-    <div class="p-4 rounded-xl bg-[#141c2e]/50 border border-[#2a3a48] text-xs text-[#a0b4c4] space-y-1">
-      <div class="flex items-center gap-2 text-[#7dd3fc] font-semibold">
-        <span class="material-symbols-outlined text-[18px]">lock</span>
-        Paiement Sécurisé via Stripe
+    <!-- Mode de paiement : virement ajouté, option Stripe conservée -->
+    <div class="space-y-3">
+      <h3 class="text-sm font-semibold uppercase tracking-wider text-[#a0b4c4]">Mode de paiement *</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <label for="paymentMethodCard" class="flex items-start gap-3 p-4 rounded-xl border border-[#7dd3fc]/35 bg-[#7dd3fc]/[0.06] cursor-pointer hover:bg-[#7dd3fc]/10 transition-colors">
+          <input type="radio" id="paymentMethodCard" name="paymentMethod" value="card" checked class="mt-1 accent-[#7dd3fc]">
+          <span class="flex-1"><span class="block text-sm font-semibold text-[#e0e8f0]">Carte bancaire</span><span class="block text-xs text-[#a0b4c4] mt-1">Paiement sécurisé via Stripe</span></span>
+          <span class="material-symbols-outlined text-[#7dd3fc]">credit_card</span>
+        </label>
+        <label for="paymentMethodBank" class="flex items-start gap-3 p-4 rounded-xl border border-[#2a3a48] bg-[#141c2e]/50 cursor-pointer hover:border-[#7dd3fc]/35 transition-colors">
+          <input type="radio" id="paymentMethodBank" name="paymentMethod" value="bank_transfer" class="mt-1 accent-[#7dd3fc]">
+          <span class="flex-1"><span class="block text-sm font-semibold text-[#e0e8f0]">Virement bancaire</span><span class="block text-xs text-[#a0b4c4] mt-1">Commande enregistrée en attente de règlement</span></span>
+          <span class="material-symbols-outlined text-[#7dd3fc]">account_balance</span>
+        </label>
       </div>
+      <div id="bankTransferInfo" class="hidden p-4 rounded-xl bg-[#141c2e]/60 border border-[#7dd3fc]/20 text-sm text-[#a0b4c4]" role="status">
+        <div class="flex items-center gap-2 text-[#7dd3fc] font-semibold mb-2"><span class="material-symbols-outlined">account_balance</span> Règlement par virement</div>
+        <p>Votre commande sera enregistrée en attente de virement. Les coordonnées bancaires ne sont pas affichées sur cette page : contactez notre équipe après l'enregistrement de la commande pour les obtenir. Le règlement sera confirmé après réception du virement.</p>
+      </div>
+    </div>
+
+    <div id="bankTransferSuccess" class="hidden p-6 rounded-2xl bg-[#7dd3fc]/[0.07] border border-[#7dd3fc]/25 space-y-4" role="status" aria-live="polite">
+      <div class="flex items-center gap-3 text-[#7dd3fc]"><span class="material-symbols-outlined text-3xl">check_circle</span><h2 class="text-xl font-semibold">Commande enregistrée — virement en attente</h2></div>
+      <p class="text-sm text-[#c0d0dc]">Votre commande a été créée, mais elle n'est pas encore payée. Contactez-nous pour obtenir les coordonnées bancaires et indiquez la référence ci-dessous.</p>
+      <p class="text-sm">Référence de commande : <strong id="bankTransferOrderNumber" class="text-[#7dd3fc] font-mono"></strong></p>
+      <a href="/contact.html" class="inline-flex items-center gap-2 rounded-xl px-5 py-3 bg-[#7dd3fc]/15 border border-[#7dd3fc]/30 text-[#7dd3fc] font-semibold hover:bg-[#7dd3fc]/25 transition"><span class="material-symbols-outlined">support_agent</span>Contacter Mariage Madagascar</a>
+    </div>
+
+    <div id="stripeSecurityInfo" class="p-4 rounded-xl bg-[#141c2e]/50 border border-[#2a3a48] text-xs text-[#a0b4c4] space-y-1">
+      <div class="flex items-center gap-2 text-[#7dd3fc] font-semibold"><span class="material-symbols-outlined text-[18px]">lock</span>Paiement Sécurisé via Stripe</div>
       <p>Vous allez être redirigé vers l'interface de paiement sécurisée de Stripe. Mariage Madagascar ne conserve aucune donnée bancaire sur ses serveurs.</p>
     </div>
 
     <div id="errorMessage" class="p-4 rounded-xl bg-[#ff6b6b]/10 border border-[#ff6b6b]/30 text-[#ff6b6b] text-sm hidden"></div>
 
     <button type="submit" id="submitPaymentBtn" class="w-full bg-[#7dd3fc] hover:bg-[#c8eaff] text-[#001f2e] font-bold py-4 rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(125,211,252,0.2)] flex justify-center items-center gap-2 active:scale-[0.98]">
-      <span class="material-symbols-outlined">payment</span>
-      <span>Procéder au Paiement Sécurisé avec Stripe</span>
+      <span class="material-symbols-outlined" id="submitPaymentIcon">payment</span>
+      <span id="submitPaymentLabel">Procéder au Paiement Sécurisé avec Stripe</span>
     </button>
   </form>
 </div>
@@ -177,7 +202,7 @@
 <span class="material-symbols-outlined text-[20px]">shield_locked</span>
 </div>
 <div class="w-px h-5 bg-[#2a3a48]"></div>
-<div class="text-xs font-bold tracking-wider">STRIPE TEST MODE</div>
+<div class="text-xs font-bold tracking-wider" id="paymentModeBadge">STRIPE TEST MODE</div>
 </div>
 
 </div>
@@ -197,6 +222,37 @@
   const paymentTotal = document.getElementById('paymentTotal');
   const errorMessage = document.getElementById('errorMessage');
   const submitPaymentBtn = document.getElementById('submitPaymentBtn');
+  const paymentMethodInputs = Array.from(document.querySelectorAll('input[name="paymentMethod"]'));
+  const bankTransferInfo = document.getElementById('bankTransferInfo');
+  const bankTransferSuccess = document.getElementById('bankTransferSuccess');
+  const bankTransferOrderNumber = document.getElementById('bankTransferOrderNumber');
+  const stripeSecurityInfo = document.getElementById('stripeSecurityInfo');
+  const paymentModeBadge = document.getElementById('paymentModeBadge');
+
+  function selectedPaymentMethod() {
+    return paymentMethodInputs.find(input => input.checked)?.value || 'card';
+  }
+
+  function updatePaymentMethodUI() {
+    const bankSelected = selectedPaymentMethod() === 'bank_transfer';
+    bankTransferInfo.classList.toggle('hidden', !bankSelected);
+    stripeSecurityInfo.classList.toggle('hidden', bankSelected);
+    paymentModeBadge.textContent = bankSelected ? 'VIREMENT BANCAIRE' : 'STRIPE TEST MODE';
+    const icon = document.getElementById('submitPaymentIcon');
+    const label = document.getElementById('submitPaymentLabel');
+    if (icon) icon.textContent = bankSelected ? 'account_balance' : 'payment';
+    if (label) label.textContent = bankSelected ? 'Enregistrer la commande par virement' : 'Procéder au Paiement Sécurisé avec Stripe';
+    paymentMethodInputs.forEach(input => {
+      const labelElement = input.closest('label');
+      if (!labelElement) return;
+      labelElement.classList.toggle('border-[#7dd3fc]/35', input.checked);
+      labelElement.classList.toggle('bg-[#7dd3fc]/[0.06]', input.checked);
+      labelElement.classList.toggle('border-[#2a3a48]', !input.checked);
+      labelElement.classList.toggle('bg-[#141c2e]/50', !input.checked);
+    });
+  }
+
+  paymentMethodInputs.forEach(input => input.addEventListener('change', updatePaymentMethodUI));
 
   function euro(value) {
     return new Intl.NumberFormat('fr-FR', {
@@ -286,6 +342,7 @@
     `;
 
     const payload = {
+      payment_method: selectedPaymentMethod(),
       customer: {
         first_name: document.getElementById('firstName').value.trim(),
         last_name: document.getElementById('lastName').value.trim(),
@@ -326,6 +383,17 @@
         throw new Error(data.message || data.error || `Erreur serveur [${response.status}] lors de la préparation du paiement.`);
       }
 
+      if (data.method === 'bank_transfer') {
+        bankTransferOrderNumber.textContent = data.orderNumber || 'Référence non fournie';
+        checkoutForm.querySelectorAll('input, select, textarea, button').forEach(el => { el.disabled = true; });
+        checkoutForm.querySelectorAll(':scope > *').forEach(el => {
+          if (el !== bankTransferSuccess) el.classList.add('hidden');
+        });
+        bankTransferSuccess.classList.remove('hidden');
+        localStorage.removeItem('mariage_cart');
+        return;
+      }
+
       if (data.url) {
         window.location.href = data.url;
       } else {
@@ -336,12 +404,14 @@
       errorMessage.classList.remove('hidden');
       submitPaymentBtn.disabled = false;
       submitPaymentBtn.innerHTML = `
-        <span class="material-symbols-outlined">payment</span>
-        <span>Réessayer le Paiement Sécurisé</span>
+        <span class="material-symbols-outlined" id="submitPaymentIcon">payment</span>
+        <span id="submitPaymentLabel">Réessayer le paiement</span>
       `;
+      updatePaymentMethodUI();
     }
   });
 
+  updatePaymentMethodUI();
   renderSummary();
 })();
 </script>
