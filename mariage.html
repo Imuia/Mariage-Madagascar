@@ -199,6 +199,64 @@ font-family: 'Material Symbols Outlined';
   .experience-chip, .experience-chip::after { transition: none; }
 }
 </style>
+
+<style id="experience-text-interactions">
+/* Mise en valeur du texte et des mots-clés de la section « expérience complète » */
+.experience-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  color: #7dd3fc;
+  text-shadow: 0 0 16px rgba(125,211,252,.16);
+}
+.experience-kicker::after {
+  content: "";
+  display: inline-block;
+  width: 2.2rem;
+  height: 1px;
+  background: linear-gradient(90deg, #7dd3fc, rgba(125,211,252,0));
+  transition: width .25s ease;
+}
+.experience-copy:hover .experience-kicker::after { width: 3.5rem; }
+.experience-title-highlight {
+  color: #dff5ff;
+  text-decoration: underline;
+  text-decoration-color: rgba(125,211,252,.7);
+  text-decoration-thickness: 2px;
+  text-underline-offset: .16em;
+  transition: color .2s ease, text-shadow .2s ease, text-decoration-color .2s ease;
+}
+.experience-copy:hover .experience-title-highlight {
+  color: #7dd3fc;
+  text-decoration-color: #c8a0f0;
+  text-shadow: 0 0 22px rgba(125,211,252,.14);
+}
+.experience-keyword {
+  color: #d8f2ff;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: rgba(125,211,252,.65);
+  text-underline-offset: .22em;
+  border-radius: .2rem;
+  transition: color .2s ease, background-color .2s ease, text-decoration-color .2s ease, box-shadow .2s ease;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.experience-keyword:hover {
+  color: #fff;
+  text-decoration-color: #c8a0f0;
+  background: rgba(125,211,252,.10);
+  box-shadow: 0 0 0 .18rem rgba(125,211,252,.10);
+}
+.experience-keyword:focus-visible {
+  outline: 2px solid #7dd3fc;
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .experience-kicker::after, .experience-title-highlight, .experience-keyword { transition: none; }
+}
+</style>
 </head>
 <body>
 <!-- HEADER GLOBAL -->
@@ -258,7 +316,12 @@ font-family: 'Material Symbols Outlined';
 
 <section class="py-20 md:py-28">
 <div class="max-w-7xl mx-auto px-6 md:px-8 grid lg:grid-cols-2 gap-10 items-center">
-<div><p class="text-[#7dd3fc] uppercase tracking-[.25em] text-xs mb-4">Plus qu'une cérémonie</p><h2 class="font-display text-4xl md:text-5xl text-white mb-6">Créez une expérience complète</h2><p class="text-[#a0b4c4] leading-8 mb-7">Votre mariage peut devenir un véritable séjour : accueil des invités, hébergements, transferts, dîner, activités, brunch et lune de miel.</p><div class="flex flex-wrap gap-3"><a href="/lune-de-miel.html" class="experience-chip" aria-label="Découvrir nos idées de lune de miel">Lune de miel</a><a href="/services.html" class="experience-chip" aria-label="Découvrir nos services de mariage">Services</a><a href="/blog-wedding-planner-nosy-be.html" class="experience-chip" aria-label="Découvrir les inspirations du blog mariage">Inspirations</a></div></div>
+<div class="experience-copy">
+<p class="experience-kicker uppercase tracking-[.25em] text-xs mb-4">Plus qu'une cérémonie</p>
+<h2 class="font-display text-4xl md:text-5xl text-white mb-6">Créez une <span class="experience-title-highlight">expérience complète</span></h2>
+<p class="text-[#a0b4c4] leading-8 mb-7">Votre mariage peut devenir un véritable séjour : <a class="experience-keyword" href="/services.html" aria-label="Découvrir les services pour accueillir les invités">accueil des invités</a>, <a class="experience-keyword" href="/services.html" aria-label="Découvrir les solutions d'hébergement pour les invités">hébergements</a>, <a class="experience-keyword" href="/services.html" aria-label="Découvrir les services de transfert">transferts</a>, <a class="experience-keyword" href="/services.html" aria-label="Découvrir les prestations de dîner">dîner</a>, <a class="experience-keyword" href="/services.html" aria-label="Découvrir les activités proposées">activités</a>, <a class="experience-keyword" href="/services.html" aria-label="Découvrir les options de brunch">brunch</a> et <a class="experience-keyword" href="/lune-de-miel.html" aria-label="Découvrir les séjours de lune de miel">lune de miel</a>.</p>
+<div class="flex flex-wrap gap-3"><a href="/lune-de-miel.html" class="experience-chip" aria-label="Découvrir nos idées de lune de miel">Lune de miel</a><a href="/services.html" class="experience-chip" aria-label="Découvrir nos services de mariage">Services</a><a href="/blog-wedding-planner-nosy-be.html" class="experience-chip" aria-label="Découvrir les inspirations du blog mariage">Inspirations</a></div>
+</div>
 <div class="glass rounded-[2rem] p-8 md:p-10"><p class="text-[#c8a0f0] uppercase tracking-[.22em] text-xs mb-5">Votre projet</p><h3 class="font-display text-3xl text-white mb-5">Parlons de votre mariage</h3><p class="text-[#a0b4c4] leading-7 mb-7">Destination, période, nombre d'invités et ambiance souhaitée : partagez-nous votre vision et construisons une première proposition.</p><a href="/contact-mariage-madagascar-nosy-be.html" class="inline-flex w-full justify-center px-6 py-3.5 rounded-full bg-[#7dd3fc] text-[#0f1524] font-semibold">Demander un devis mariage</a></div>
 </div>
 </section>
