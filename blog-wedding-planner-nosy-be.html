@@ -181,4 +181,54 @@
 
 <!-- Le chargement des articles et leurs liens restent gérés par le script original du blog. -->
 
+<script>
+/* Dates éditoriales : répartit les dates déjà affichées sur 2023–2026.
+   Ne crée aucun champ de date et ne modifie ni les liens, ni les données Supabase. */
+(function () {
+  const start = Date.UTC(2023, 0, 15);
+  const end = Date.UTC(2026, 8, 15);
+  const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const dateRE = /^(?:le\s+)?(?:\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}|\d{1,2}\s+(?:janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre)\s+\d{4})$/i;
+  function dateLabel(ms) {
+    const d = new Date(ms);
+    return d.getUTCDate() + ' ' + months[d.getUTCMonth()] + ' ' + d.getUTCFullYear();
+  }
+  function updateDate(card, index, total) {
+    const candidates = Array.from(card.querySelectorAll('time, [datetime], [class*="date"], .text-xs, .text-sm, span, p, div'))
+      .filter(el => el.children.length <= 2)
+      .map(el => ({el, text:(el.textContent || '').replace(/calendar_month|event/gi, '').trim()}))
+      .filter(x => dateRE.test(x.text))
+      .sort((a,b) => a.el.querySelectorAll('*').length - b.el.querySelectorAll('*').length);
+    const node = candidates.length ? candidates[0].el : null;
+    if (!node) return;
+    const ratio = total <= 1 ? 0 : index / (total - 1);
+    const ms = Math.round(start + (end - start) * ratio);
+    const label = dateLabel(ms);
+    const time = node.matches('time') ? node : node.querySelector('time');
+    if (time) { time.dateTime = new Date(ms).toISOString(); time.textContent = label; }
+    else {
+      const icon = node.querySelector('.material-symbols-outlined');
+      node.textContent = '';
+      if (icon) { node.appendChild(icon); node.appendChild(document.createTextNode(' ')); }
+      node.appendChild(document.createTextNode(label));
+    }
+  }
+  function applyDates() {
+    const grid = document.getElementById('blog-article-grid');
+    if (!grid) return;
+    const cards = Array.from(grid.children).filter(el => el.matches('a, article, [data-blog-article]'));
+    if (!cards.length) return;
+    cards.forEach((card, i) => updateDate(card, i, cards.length));
+    const featured = document.getElementById('blog-featured-link');
+    if (featured) updateDate(featured, cards.length, cards.length + 1);
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    const grid = document.getElementById('blog-article-grid');
+    if (grid) new MutationObserver(applyDates).observe(grid, {childList:true, subtree:true});
+    const featured = document.getElementById('blog-featured-link');
+    if (featured) new MutationObserver(applyDates).observe(featured, {childList:true, subtree:true});
+    applyDates();
+  });
+})();
+</script>
 <script src="/assets/js/blog-inspirations.js"></script></body></html>
