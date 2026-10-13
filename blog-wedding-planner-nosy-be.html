@@ -113,6 +113,20 @@
 #blog-featured-link:hover { text-decoration: none; }
 #blog-article-grid p, #blog-article-grid h3 { overflow: visible; white-space: normal; overflow-wrap: break-word; word-break: normal; hyphens: none; }
 [data-blog-filter] { cursor: pointer; }
+
+        /* Dates éditoriales des articles : affichées depuis published_at */
+        .blog-published-date {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            color: #a0b4c4;
+            font-size: .8rem;
+            line-height: 1.4;
+            margin-top: .65rem;
+        }
+        .blog-published-date .material-symbols-outlined { font-size: 1rem; color: #7dd3fc; }
+        #blog-article-grid .blog-published-date { margin-bottom: .5rem; }
+        #blog-featured-date { color: #c0d8e8; }
 </style></head>
 <body class="bg-background text-on-background font-body min-h-screen flex flex-col antialiased">
 <!-- HEADER GLOBAL — identique au site Mariage Madagascar -->
@@ -121,7 +135,7 @@
 <main class="flex-grow pt-24 pb-20">
 <!-- Hero Section -->
 <section class="relative px-6 py-20 md:py-32 flex flex-col items-center justify-center text-center overflow-hidden">
-<div class="absolute inset-0 z-0 opacity-40 bg-[url('placeholder')] bg-cover bg-center" data-alt="A subtle, dark atmospheric gradient background with deep navy blues and soft ice-blue light leaks, creating a serene, elegant mood for a luxury wedding blog." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAeEXCzOrPlsj92gn-BdTH6ygGg6xAh1JIYkBZQM_W8oQGZHwelcWZcREv0b7nyM7TN5BR23JpG2tgzHH8g6GvMQBM5AV8FJJVw7btjckarhK1CDaSpkMqY3nsMpa0etjUdNKru4px9DLXIlmL0L7wfikuxlKdhdXfxjekLsFFmrOl_OnmevwdelruiMk53gvcohj7fnXDBEBZj14OCg8xjX7AmOyqLeYk9sYbQ6i0qzIn-4a-rgqUe3g')"></div>
+<div class="absolute inset-0 z-0 opacity-40 bg-[url('placeholder')] bg-cover bg-center" data-alt="A subtle, dark atmospheric gradient background with deep navy blues and soft ice-blue light leaks, creating a serene, elegant mood for a luxury wedding blog." style="background-image: url('/assets/img/blog/nosy-saba-une-ile-paradisiaque-pour-un-mariage-inoubliable/03-324840700_1753621835019613_1867557360440170701_n-AzGEwj6BVGiWwJk5.jpg')"></div>
 <div class="relative z-10 glass-panel-elevated rounded-xl p-8 md:p-12 max-w-4xl box-glow">
 <h1 class="font-headline text-4xl md:text-6xl font-semibold text-primary mb-6 text-glow tracking-wide">Inspirations &amp; Récits de Rêve</h1>
 <p class="text-on-surface-variant text-lg md:text-xl max-w-2xl mx-auto font-light">Plongez dans l'univers de l'excellence. Découvrez des histoires vraies, des conseils d'experts et l'art de vivre d'un mariage de luxe à Madagascar.</p>
@@ -178,4 +192,119 @@
 <!-- FOOTER GLOBAL — identique au site Mariage Madagascar -->
 <div data-global-footer=""></div>
 <script src="/components/components.js"></script>
+
+<script>
+/* Affiche la vraie date Supabase published_at sans inventer de date.
+   Intercepte uniquement les réponses JSON pour mémoriser les métadonnées des articles,
+   puis associe chaque date à la carte via son slug ou son titre. */
+(function () {
+  const articles = [];
+  const seen = new Set();
+  const originalFetch = window.fetch.bind(window);
+
+  function collect(value) {
+    if (!value) return;
+    if (Array.isArray(value)) {
+      value.forEach(collect);
+      return;
+    }
+    if (typeof value !== 'object') return;
+    if (value.published_at && (value.slug || value.title || value.name)) {
+      const key = String(value.slug || value.title || value.name);
+      const previous = articles.findIndex(a => String(a.slug || a.title || a.name) === key);
+      if (previous >= 0) articles[previous] = value;
+      else articles.push(value);
+    }
+    Object.values(value).forEach(v => {
+      if (v && typeof v === 'object') collect(v);
+    });
+  }
+
+  window.fetch = async function (...args) {
+    const response = await originalFetch(...args);
+    try {
+      const url = String(args[0] && args[0].url ? args[0].url : args[0]);
+      if (url.includes('/rest/v1/') || /supabase/i.test(url)) {
+        response.clone().json().then(collect).then(decorateAll).catch(() => {});
+      }
+    } catch (_) {}
+    return response;
+  };
+
+  function slugify(value) {
+    return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+
+  function formatDate(value) {
+    const date = new Date(value);
+    if (!value || Number.isNaN(date.getTime())) return '';
+    return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
+  }
+
+  function getArticleForLink(link) {
+    const href = String(link.getAttribute('href') || '');
+    const hrefSlug = slugify(href.split('?')[0].split('#')[0].split('/').filter(Boolean).pop() || '');
+    const textSlug = slugify(link.innerText || '');
+    return articles.find(article => {
+      const articleSlug = slugify(article.slug || article.url || article.permalink || '');
+      const titleSlug = slugify(article.title || article.name || '');
+      return (articleSlug && (hrefSlug === articleSlug || hrefSlug.endsWith(articleSlug) || articleSlug.endsWith(hrefSlug)))
+        || (titleSlug && (textSlug.includes(titleSlug) || titleSlug.includes(textSlug) && textSlug.length > 8));
+    });
+  }
+
+  function addDate(container, article, id) {
+    if (!container || !article || !article.published_at) return;
+    const label = formatDate(article.published_at);
+    if (!label) return;
+    let dateNode = id ? document.getElementById(id) : container.querySelector('.blog-published-date');
+    if (!dateNode) {
+      dateNode = document.createElement('div');
+      dateNode.className = 'blog-published-date';
+      dateNode.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">calendar_month</span><time></time>';
+      if (id) dateNode.id = id;
+      const title = container.querySelector('h2, h3, h4');
+      if (title && title.parentNode) title.insertAdjacentElement('afterend', dateNode);
+      else container.appendChild(dateNode);
+    }
+    const time = dateNode.querySelector('time');
+    if (time) {
+      time.dateTime = article.published_at;
+      time.textContent = label;
+    }
+  }
+
+  function decorateAll() {
+    const featuredLink = document.getElementById('blog-featured-link');
+    if (featuredLink) {
+      const article = getArticleForLink(featuredLink);
+      const content = featuredLink.querySelector('.absolute.bottom-0');
+      if (article && content) addDate(content, article, 'blog-featured-date');
+    }
+
+    const grid = document.getElementById('blog-article-grid');
+    if (grid) {
+      grid.querySelectorAll(':scope > a, a').forEach(link => {
+        if (link.dataset.dateDecorated === 'true') return;
+        const article = getArticleForLink(link);
+        if (article) {
+          const content = link.querySelector('.relative.z-10, .p-6, .p-8') || link;
+          addDate(content, article);
+          link.dataset.dateDecorated = 'true';
+        }
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const grid = document.getElementById('blog-article-grid');
+    if (grid) new MutationObserver(decorateAll).observe(grid, { childList: true, subtree: true });
+    const featured = document.getElementById('blog-featured-link');
+    if (featured) new MutationObserver(decorateAll).observe(featured, { attributes: true, attributeFilter: ['href'] });
+    decorateAll();
+  });
+})();
+</script>
+
 <script src="/assets/js/blog-inspirations.js"></script></body></html>
