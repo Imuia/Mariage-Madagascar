@@ -180,55 +180,91 @@
 <script src="/components/components.js"></script>
 
 <!-- Le chargement des articles et leurs liens restent gérés par le script original du blog. -->
-
 <script>
-/* Dates éditoriales : répartit les dates déjà affichées sur 2023–2026.
-   Ne crée aucun champ de date et ne modifie ni les liens, ni les données Supabase. */
+/*
+ * Répartition visuelle des dates sur 2023–2026.
+ * Ce script ne touche ni aux liens, ni aux filtres, ni aux données Supabase.
+ * Il ne modifie que le texte de la date déjà présente dans chaque carte.
+ */
 (function () {
-  const start = Date.UTC(2023, 0, 15);
-  const end = Date.UTC(2026, 8, 15);
-  const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-  const dateRE = /^(?:le\s+)?(?:\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}|\d{1,2}\s+(?:janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre)\s+\d{4})$/i;
-  function dateLabel(ms) {
-    const d = new Date(ms);
-    return d.getUTCDate() + ' ' + months[d.getUTCMonth()] + ' ' + d.getUTCFullYear();
-  }
-  function updateDate(card, index, total) {
-    const candidates = Array.from(card.querySelectorAll('time, [datetime], [class*="date"], .text-xs, .text-sm, span, p, div'))
-      .filter(el => el.children.length <= 2)
-      .map(el => ({el, text:(el.textContent || '').replace(/calendar_month|event/gi, '').trim()}))
-      .filter(x => dateRE.test(x.text))
-      .sort((a,b) => a.el.querySelectorAll('*').length - b.el.querySelectorAll('*').length);
-    const node = candidates.length ? candidates[0].el : null;
-    if (!node) return;
+  const START = Date.UTC(2023, 0, 15);
+  const END = Date.UTC(2026, 8, 15);
+  const MONTHS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const DATE_RE = /^(?:le\\s+)?(?:\\d{1,2}[\\/.-]\\d{1,2}[\\/.-]\\d{2,4}|\\d{1,2}\\s+(?:janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre)\\s+\\d{4})$/i;
+
+  function labelFor(index, total) {
     const ratio = total <= 1 ? 0 : index / (total - 1);
-    const ms = Math.round(start + (end - start) * ratio);
-    const label = dateLabel(ms);
-    const time = node.matches('time') ? node : node.querySelector('time');
-    if (time) { time.dateTime = new Date(ms).toISOString(); time.textContent = label; }
-    else {
-      const icon = node.querySelector('.material-symbols-outlined');
-      node.textContent = '';
-      if (icon) { node.appendChild(icon); node.appendChild(document.createTextNode(' ')); }
-      node.appendChild(document.createTextNode(label));
+    const d = new Date(Math.round(START + (END - START) * ratio));
+    return d.getUTCDate() + ' ' + MONTHS[d.getUTCMonth()] + ' ' + d.getUTCFullYear();
+  }
+
+  function findExistingDate(card) {
+    const nodes = Array.from(card.querySelectorAll('time, [datetime], [class*="date"], .text-xs, .text-sm, span, p, div'));
+    return nodes
+      .filter(el => el.children.length <= 2)
+      .map(el => ({ el, text: (el.textContent || '').replace(/calendar_month|event/gi, '').trim() }))
+      .filter(item => DATE_RE.test(item.text))
+      .sort((a, b) => a.el.querySelectorAll('*').length - b.el.querySelectorAll('*').length)[0]?.el || null;
+  }
+
+  function updateExistingDate(card, label, iso) {
+    const node = findExistingDate(card);
+    if (!node) return;
+
+    if (node.matches('time')) {
+      if (node.textContent.trim() !== label) node.textContent = label;
+      if (node.dateTime !== iso) node.dateTime = iso;
+      return;
+    }
+
+    // Modifier seulement le texte de date : ne jamais effacer l'icône ni les autres éléments.
+    const textNodes = Array.from(node.childNodes).filter(n => n.nodeType === Node.TEXT_NODE && n.nodeValue.trim());
+    if (textNodes.length) {
+      if (textNodes[0].nodeValue.trim() !== label) textNodes[0].nodeValue = ' ' + label;
+      textNodes.slice(1).forEach(n => {
+        if (DATE_RE.test(n.nodeValue.trim())) n.nodeValue = '';
+      });
+    } else {
+      // Si la date est imbriquée dans un élément enfant, ne pas remplacer le contenu du parent.
+      const nestedTime = node.querySelector('time');
+      if (nestedTime) {
+        if (nestedTime.textContent.trim() !== label) nestedTime.textContent = label;
+        if (nestedTime.dateTime !== iso) nestedTime.dateTime = iso;
+      }
     }
   }
+
   function applyDates() {
     const grid = document.getElementById('blog-article-grid');
     if (!grid) return;
     const cards = Array.from(grid.children).filter(el => el.matches('a, article, [data-blog-article]'));
     if (!cards.length) return;
-    cards.forEach((card, i) => updateDate(card, i, cards.length));
-    const featured = document.getElementById('blog-featured-link');
-    if (featured) updateDate(featured, cards.length, cards.length + 1);
+
+    cards.forEach((card, index) => {
+      const label = labelFor(index, cards.length);
+      const ratio = cards.length <= 1 ? 0 : index / (cards.length - 1);
+      const iso = new Date(Math.round(START + (END - START) * ratio)).toISOString();
+      updateExistingDate(card, label, iso);
+    });
   }
-  document.addEventListener('DOMContentLoaded', function () {
+
+  function init() {
     const grid = document.getElementById('blog-article-grid');
-    if (grid) new MutationObserver(applyDates).observe(grid, {childList:true, subtree:true});
-    const featured = document.getElementById('blog-featured-link');
-    if (featured) new MutationObserver(applyDates).observe(featured, {childList:true, subtree:true});
+    if (!grid) return;
     applyDates();
-  });
+
+    // Observer uniquement les ajouts/retraits de cartes, pas tous les changements de texte.
+    const observer = new MutationObserver(records => {
+      if (records.some(record => record.addedNodes.length || record.removedNodes.length)) applyDates();
+    });
+    observer.observe(grid, { childList: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
 })();
 </script>
 <script src="/assets/js/blog-inspirations.js"></script></body></html>
