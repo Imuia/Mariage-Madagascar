@@ -223,7 +223,12 @@
                                 <span class="material-symbols-outlined text-[18px]">send</span>
 </button>
 </div>
+<div aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden;" tabindex="-1">
+  <label for="contact-website">Ne pas remplir ce champ</label>
+  <input id="contact-website" name="website" type="text" autocomplete="off" tabindex="-1">
+</div>
 <div id="contact-status" class="hidden text-sm rounded-xl px-4 py-3 mt-2" role="status" aria-live="polite"></div>
+<div id="contact-email-status" class="hidden text-sm rounded-xl px-4 py-3 mt-2 border" role="status" aria-live="polite"></div>
 </form>
 </div>
 </div>
@@ -258,7 +263,10 @@
 </div>
 <div>
 <h3 class="text-sm font-semibold uppercase tracking-wider text-on-surface mb-1">Correspondance</h3>
-<a class="text-tertiary hover:text-primary transition-colors text-base font-light" href="mailto:hello@mariage-madagascar.com">hello@mariage-madagascar.com</a>
+<div class="flex flex-col gap-1">
+<a class="text-tertiary hover:text-primary transition-colors text-sm font-light" href="mailto:info@mariage-madagascar.com">info@mariage-madagascar.com</a>
+<a class="text-tertiary hover:text-primary transition-colors text-sm font-light" href="mailto:commercial@mariage-madagascar.com">commercial@mariage-madagascar.com</a>
+</div>
 </div>
 </div>
 </div>
@@ -270,4 +278,5 @@
 <script src="/components/components.js"></script>
 <script src="/assets/js/supabase-config.js"></script>
 <script src="/assets/js/supabase-contact.js"></script>
+<script src="/assets/js/contact-email-notifications.js"></script>
 </body></html>
