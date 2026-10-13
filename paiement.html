@@ -52,7 +52,7 @@
 <header class="relative pt-32 pb-8 px-8 flex items-center justify-center">
 <div class="relative z-20 text-center max-w-3xl mx-auto">
 <h1 class="text-3xl md:text-4xl font-semibold tracking-tight text-glow mb-2">Finalisation & Paiement</h1>
-<p class="text-[#a0b4c4] text-sm">Entrez vos coordonnées pour accéder au paiement Stripe sécurisé.</p>
+<p class="text-[#a0b4c4] text-sm">Choisissez votre mode de paiement : carte bancaire via Stripe ou virement en USD.</p>
 </div>
 </header>
 
@@ -149,31 +149,58 @@
         <div class="flex items-start gap-3">
           <span class="material-symbols-outlined text-2xl text-[#7dd3fc]">account_balance</span>
           <div>
-            <h4 class="font-semibold text-[#7dd3fc] text-base">Virement bancaire</h4>
-            <p class="mt-1">Votre commande sera enregistrée en attente de règlement. Utilisez les coordonnées du bénéficiaire ci-dessous et indiquez la référence de commande lors du virement.</p>
+            <h4 class="font-semibold text-[#7dd3fc] text-base">Virement bancaire — compte en USD</h4>
+            <p class="mt-1">Le bénéficiaire bancaire est <strong class="text-[#e0e8f0]">Numixtra LLC</strong>. Indiquez votre référence de commande dans le motif du virement. La réservation reste en attente jusqu’à réception et vérification des fonds.</p>
           </div>
         </div>
+
+        <div class="rounded-xl border border-amber-400/30 bg-amber-400/[0.06] p-4 space-y-1 text-amber-100">
+          <div class="flex items-center gap-2 font-semibold"><span class="material-symbols-outlined">info</span>Important — USD uniquement</div>
+          <p class="text-sm">Ce compte reçoit des fonds en dollars américains (USD) uniquement. Les prix de votre panier sont affichés en euros (EUR) : avant d’envoyer le virement, contactez-nous pour confirmer le montant exact en USD à transférer. N’envoyez pas le montant en euros à ces coordonnées.</p>
+        </div>
+
         <div class="rounded-xl border border-[#7dd3fc]/20 bg-[#0a0e1a]/45 p-4 space-y-3">
-          <h5 class="font-semibold text-[#e0e8f0]">Coordonnées du bénéficiaire</h5>
-          <div id="bankDetailsUnavailable" class="rounded-lg border border-[#c8a0f0]/20 bg-[#c8a0f0]/[0.06] p-3 text-sm text-[#c0d0dc]">
-            Les coordonnées bancaires officielles de Mariage Madagascar ne sont pas encore renseignées. Veuillez contacter notre équipe pour les obtenir. Aucun paiement par virement ne pourra être effectué sans ces informations.
+          <div class="flex items-center justify-between gap-3"><h5 class="font-semibold text-[#e0e8f0]">Virements depuis les États-Unis</h5><span class="text-xs rounded-full px-2 py-1 bg-[#7dd3fc]/10 text-[#7dd3fc]">USD · ACH / FedNow / Wire</span></div>
+          <div class="grid grid-cols-1 gap-2 text-sm">
+            <div class="flex flex-wrap items-start justify-between gap-3"><span>Bénéficiaire</span><strong class="text-right text-[#e0e8f0]">Numixtra LLC</strong></div>
+            <div class="flex flex-wrap items-start justify-between gap-3"><span>Adresse du bénéficiaire</span><strong class="max-w-md text-right text-[#e0e8f0]">30 N Gould St, Sheridan, WY 82801-6317, United States</strong></div>
+            <div class="flex flex-wrap items-start justify-between gap-3"><span>Numéro de compte</span><strong class="text-right text-[#e0e8f0] font-mono">218890536639</strong></div>
+            <div class="flex flex-wrap items-start justify-between gap-3"><span>Numéro de routage (ACH)</span><strong class="text-right text-[#e0e8f0] font-mono">101019644</strong></div>
+            <div class="flex flex-wrap items-start justify-between gap-3"><span>Numéro de routage Wire</span><strong class="text-right text-[#e0e8f0] font-mono">101019644</strong></div>
+            <div class="flex flex-wrap items-start justify-between gap-3"><span>Banque</span><strong class="text-right text-[#e0e8f0]">Lead Bank</strong></div>
+            <div class="flex flex-wrap items-start justify-between gap-3"><span>Adresse de la banque</span><strong class="max-w-md text-right text-[#e0e8f0]">1801 Main Street, Kansas City, MO 64108, United States</strong></div>
           </div>
-          <div id="bankDetailsConfigured" class="hidden space-y-3">
-            <div class="flex flex-wrap items-start justify-between gap-2"><span>Bénéficiaire</span><strong id="bankBeneficiary" class="text-right text-[#e0e8f0]"></strong></div>
-            <div class="flex flex-wrap items-start justify-between gap-2"><span>IBAN / RIB</span><strong id="bankIban" class="break-all text-right text-[#e0e8f0] font-mono"></strong></div>
-            <div class="flex flex-wrap items-start justify-between gap-2"><span>BIC</span><strong id="bankBic" class="text-right text-[#e0e8f0] font-mono"></strong></div>
-            <div class="flex flex-wrap items-start justify-between gap-2"><span>Référence à indiquer</span><strong id="bankTransferReference" class="text-right text-[#7dd3fc] font-mono">Générée après validation</strong></div>
-            <button type="button" id="copyBankDetailsBtn" class="inline-flex items-center gap-2 rounded-lg border border-[#7dd3fc]/30 bg-[#7dd3fc]/10 px-4 py-2.5 font-semibold text-[#7dd3fc] hover:bg-[#7dd3fc]/20 transition"><span class="material-symbols-outlined">content_copy</span>Copier les coordonnées</button>
-            <p id="copyBankDetailsFeedback" class="text-xs text-[#7dd3fc] hidden" aria-live="polite"></p>
-          </div>
+          <p class="text-xs text-[#8fa3b3]">Délais annoncés : virements Wire domestiques et FedNow jusqu’à 24 h ; ACH de 1 à 3 jours ouvrés. Des frais de 10 USD peuvent être déduits des virements bancaires Wire nationaux américains, selon les informations fournies par la banque.</p>
+          <button type="button" id="copyDomesticBankDetailsBtn" class="inline-flex items-center gap-2 rounded-lg border border-[#7dd3fc]/30 bg-[#7dd3fc]/10 px-4 py-2.5 font-semibold text-[#7dd3fc] hover:bg-[#7dd3fc]/20 transition"><span class="material-symbols-outlined">content_copy</span>Copier les coordonnées américaines</button>
         </div>
+
+        <div class="rounded-xl border border-[#7dd3fc]/20 bg-[#0a0e1a]/45 p-4 space-y-3">
+          <div class="flex items-center justify-between gap-3"><h5 class="font-semibold text-[#e0e8f0]">Virements internationaux</h5><span class="text-xs rounded-full px-2 py-1 bg-[#7dd3fc]/10 text-[#7dd3fc]">USD · SWIFT</span></div>
+          <div class="grid grid-cols-1 gap-2 text-sm">
+            <div class="flex flex-wrap items-start justify-between gap-3"><span>Bénéficiaire</span><strong class="text-right text-[#e0e8f0]">Numixtra LLC</strong></div>
+            <div class="flex flex-wrap items-start justify-between gap-3"><span>Adresse du bénéficiaire</span><strong class="max-w-md text-right text-[#e0e8f0]">30 N Gould St, Sheridan, WY 82801-6317, United States</strong></div>
+            <div class="flex flex-wrap items-start justify-between gap-3"><span>Numéro de compte</span><strong class="text-right text-[#e0e8f0] font-mono">218890536639</strong></div>
+            <div class="flex flex-wrap items-start justify-between gap-3"><span>SWIFT / BIC</span><strong class="text-right text-[#e0e8f0] font-mono">REVOUS31</strong></div>
+            <div class="flex flex-wrap items-start justify-between gap-3"><span>BIC intermédiaire</span><strong class="text-right text-[#e0e8f0] font-mono">CHASGB2L</strong></div>
+            <div class="flex flex-wrap items-start justify-between gap-3"><span>Banque</span><strong class="text-right text-[#e0e8f0]">Revolut Technologies Inc.</strong></div>
+            <div class="flex flex-wrap items-start justify-between gap-3"><span>Adresse de la banque</span><strong class="max-w-md text-right text-[#e0e8f0]">107 Greenwich Street, Floor 20, New York, NY 10006, United States</strong></div>
+          </div>
+          <p class="text-xs text-[#8fa3b3]">Délai annoncé : 3 à 5 jours ouvrés. La banque émettrice peut appliquer des frais aux virements internationaux ; elle peut également demander le BIC intermédiaire.</p>
+          <button type="button" id="copyInternationalBankDetailsBtn" class="inline-flex items-center gap-2 rounded-lg border border-[#7dd3fc]/30 bg-[#7dd3fc]/10 px-4 py-2.5 font-semibold text-[#7dd3fc] hover:bg-[#7dd3fc]/20 transition"><span class="material-symbols-outlined">content_copy</span>Copier les coordonnées SWIFT</button>
+        </div>
+
+        <div class="rounded-xl border border-[#7dd3fc]/20 bg-[#0a0e1a]/45 p-4 space-y-2">
+          <div class="flex flex-wrap items-start justify-between gap-3"><span class="font-semibold text-[#e0e8f0]">Référence à indiquer dans le virement</span><strong id="bankTransferReference" class="text-right text-[#7dd3fc] font-mono">Générée après validation de la commande</strong></div>
+          <p id="copyBankDetailsFeedback" class="text-xs text-[#7dd3fc] hidden" aria-live="polite"></p>
+        </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label for="transferAccountHolder" class="block text-xs font-semibold text-[#a0b4c4] mb-2">Nom du titulaire du compte émetteur</label>
-            <input type="text" id="transferAccountHolder" maxlength="160" autocomplete="name" class="w-full bg-[#0a0e1a]/70 border border-[#2a3a48] rounded-xl px-4 py-3 text-sm text-[#e0e8f0] focus:outline-none focus:border-[#7dd3fc] focus:ring-1 focus:ring-[#7dd3fc]" placeholder="Nom ou société (facultatif)">
+            <label for="transferAccountHolder" class="block text-xs font-semibold text-[#a0b4c4] mb-2">Nom du titulaire du compte émetteur (facultatif)</label>
+            <input type="text" id="transferAccountHolder" maxlength="160" autocomplete="name" class="w-full bg-[#0a0e1a]/70 border border-[#2a3a48] rounded-xl px-4 py-3 text-sm text-[#e0e8f0] focus:outline-none focus:border-[#7dd3fc] focus:ring-1 focus:ring-[#7dd3fc]" placeholder="Nom ou société">
           </div>
           <div>
-            <label for="plannedTransferDate" class="block text-xs font-semibold text-[#a0b4c4] mb-2">Date prévue du virement</label>
+            <label for="plannedTransferDate" class="block text-xs font-semibold text-[#a0b4c4] mb-2">Date prévue du virement (facultatif)</label>
             <input type="date" id="plannedTransferDate" class="w-full bg-[#0a0e1a]/70 border border-[#2a3a48] rounded-xl px-4 py-3 text-sm text-[#e0e8f0] focus:outline-none focus:border-[#7dd3fc] focus:ring-1 focus:ring-[#7dd3fc]">
           </div>
         </div>
@@ -183,9 +210,9 @@
 
     <div id="bankTransferSuccess" class="hidden p-6 rounded-2xl bg-[#7dd3fc]/[0.07] border border-[#7dd3fc]/25 space-y-4" role="status" aria-live="polite">
       <div class="flex items-center gap-3 text-[#7dd3fc]"><span class="material-symbols-outlined text-3xl">check_circle</span><h2 class="text-xl font-semibold">Commande enregistrée — virement en attente</h2></div>
-      <p class="text-sm text-[#c0d0dc]">Votre commande a été créée, mais elle n'est pas encore payée. Contactez-nous pour obtenir les coordonnées bancaires et indiquez la référence ci-dessous.</p>
+      <p class="text-sm text-[#c0d0dc]">Votre commande a été enregistrée en attente de virement. Utilisez les coordonnées bancaires affichées dans la section Virement bancaire et indiquez la référence ci-dessous. Le compte reçoit des USD uniquement : contactez-nous pour confirmer le montant exact en dollars avant le transfert.</p>
       <p class="text-sm">Référence de commande : <strong id="bankTransferOrderNumber" class="text-[#7dd3fc] font-mono"></strong></p>
-      <a href="/contact.html" class="inline-flex items-center gap-2 rounded-xl px-5 py-3 bg-[#7dd3fc]/15 border border-[#7dd3fc]/30 text-[#7dd3fc] font-semibold hover:bg-[#7dd3fc]/25 transition"><span class="material-symbols-outlined">support_agent</span>Contacter Mariage Madagascar</a>
+      <a href="/contact.html" class="inline-flex items-center gap-2 rounded-xl px-5 py-3 bg-[#7dd3fc]/15 border border-[#7dd3fc]/30 text-[#7dd3fc] font-semibold hover:bg-[#7dd3fc]/25 transition"><span class="material-symbols-outlined">support_agent</span>Confirmer le montant en USD</a>
     </div>
 
     <div id="stripeSecurityInfo" class="p-4 rounded-xl bg-[#141c2e]/50 border border-[#2a3a48] text-xs text-[#a0b4c4] space-y-1">
@@ -258,40 +285,58 @@
   const bankTransferOrderNumber = document.getElementById('bankTransferOrderNumber');
   const stripeSecurityInfo = document.getElementById('stripeSecurityInfo');
   const paymentModeBadge = document.getElementById('paymentModeBadge');
-  const bankDetailsConfigured = document.getElementById('bankDetailsConfigured');
-  const bankDetailsUnavailable = document.getElementById('bankDetailsUnavailable');
-  const bankBeneficiary = document.getElementById('bankBeneficiary');
-  const bankIban = document.getElementById('bankIban');
-  const bankBic = document.getElementById('bankBic');
   const bankTransferReference = document.getElementById('bankTransferReference');
-  const copyBankDetailsBtn = document.getElementById('copyBankDetailsBtn');
   const copyBankDetailsFeedback = document.getElementById('copyBankDetailsFeedback');
   const transferAccountHolder = document.getElementById('transferAccountHolder');
   const plannedTransferDate = document.getElementById('plannedTransferDate');
 
-  // Renseigner ces trois valeurs uniquement avec les coordonnées bancaires officielles.
-  const BANK_TRANSFER_DETAILS = { beneficiary: '', iban: '', bic: '' };
-  const hasRealBankDetails = Boolean(BANK_TRANSFER_DETAILS.beneficiary.trim() && BANK_TRANSFER_DETAILS.iban.replace(/\s/g, '').length >= 15);
-  if (hasRealBankDetails) {
-    bankBeneficiary.textContent = BANK_TRANSFER_DETAILS.beneficiary;
-    bankIban.textContent = BANK_TRANSFER_DETAILS.iban;
-    bankBic.textContent = BANK_TRANSFER_DETAILS.bic || 'Non communiqué';
-    bankDetailsConfigured.classList.remove('hidden');
-    bankDetailsUnavailable.classList.add('hidden');
-  }
+  // Coordonnées du bénéficiaire recopiées depuis le relevé fourni.
+  const copyDomesticBankDetailsBtn = document.getElementById('copyDomesticBankDetailsBtn');
+  const copyInternationalBankDetailsBtn = document.getElementById('copyInternationalBankDetailsBtn');
 
-  if (copyBankDetailsBtn) copyBankDetailsBtn.addEventListener('click', async () => {
-    if (!hasRealBankDetails) return;
-    const text = `Bénéficiaire : ${BANK_TRANSFER_DETAILS.beneficiary}\nIBAN / RIB : ${BANK_TRANSFER_DETAILS.iban}\nBIC : ${BANK_TRANSFER_DETAILS.bic || 'Non communiqué'}\nRéférence : ${bankTransferReference.textContent}`;
+  async function copyBankDetails(kind) {
+    const reference = bankTransferReference?.textContent?.trim() || 'À ajouter après la création de commande';
+    const common = [
+      'Bénéficiaire : Numixtra LLC',
+      'Adresse bénéficiaire : 30 N Gould St, Sheridan, WY 82801-6317, United States',
+      'Devise acceptée : USD uniquement',
+      `Référence commande : ${reference}`
+    ];
+    const domestic = [
+      'VIREMENT DEPUIS LES ÉTATS-UNIS (USD)',
+      ...common,
+      'Numéro de compte : 218890536639',
+      'Routing number (ACH) : 101019644',
+      'Wire routing number : 101019644',
+      'Banque : Lead Bank',
+      'Adresse banque : 1801 Main Street, Kansas City, MO 64108, United States',
+      'Délais indiqués : Wire/FedNow jusqu’à 24 h ; ACH 1 à 3 jours ouvrés',
+      'Frais indiqués : 10 USD déduits des virements bancaires Wire nationaux américains'
+    ];
+    const international = [
+      'VIREMENT INTERNATIONAL (USD / SWIFT)',
+      ...common,
+      'Numéro de compte : 218890536639',
+      'SWIFT / BIC : REVOUS31',
+      'BIC intermédiaire : CHASGB2L',
+      'Banque : Revolut Technologies Inc.',
+      'Adresse banque : 107 Greenwich Street, Floor 20, New York, NY 10006, United States',
+      'Délai indiqué : 3 à 5 jours ouvrés',
+      'La banque émettrice peut appliquer des frais de virement international.'
+    ];
+    const text = (kind === 'domestic' ? domestic : international).join('\n');
     try {
       await navigator.clipboard.writeText(text);
-      copyBankDetailsFeedback.textContent = 'Coordonnées copiées.';
+      copyBankDetailsFeedback.textContent = 'Coordonnées copiées. Vérifiez la référence et le montant en USD avant l’envoi.';
       copyBankDetailsFeedback.classList.remove('hidden');
     } catch (_) {
-      copyBankDetailsFeedback.textContent = 'Copie automatique indisponible. Vous pouvez sélectionner les coordonnées pour les copier.';
+      copyBankDetailsFeedback.textContent = 'Copie automatique indisponible. Sélectionnez les coordonnées pour les copier.';
       copyBankDetailsFeedback.classList.remove('hidden');
     }
-  });
+  }
+
+  copyDomesticBankDetailsBtn?.addEventListener('click', () => copyBankDetails('domestic'));
+  copyInternationalBankDetailsBtn?.addEventListener('click', () => copyBankDetails('international'));
 
   function selectedPaymentMethod() {
     return paymentMethodInputs.find(input => input.checked)?.value || 'card';
@@ -452,7 +497,7 @@
       if (data.method === 'bank_transfer') {
         bankTransferOrderNumber.textContent = data.orderNumber || 'Référence non fournie';
         if (bankTransferReference) bankTransferReference.textContent = data.orderNumber || 'Référence non fournie';
-        checkoutForm.querySelectorAll('input, select, textarea, button').forEach(el => { if (el.id !== 'copyBankDetailsBtn') el.disabled = true; });
+        checkoutForm.querySelectorAll('input, select, textarea, button').forEach(el => { if (!['copyDomesticBankDetailsBtn', 'copyInternationalBankDetailsBtn'].includes(el.id)) el.disabled = true; });
         checkoutForm.querySelectorAll(':scope > *').forEach(el => {
           // Garder la section virement visible après la création de commande,
           // afin que le client retrouve les coordonnées et la référence à indiquer.
