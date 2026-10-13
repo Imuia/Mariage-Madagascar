@@ -514,6 +514,14 @@
       <button type="button" data-map-destination="tulear" aria-pressed="false" class="map-filter">Tuléar</button>
     </div>
 
+    <!-- Présentation éditoriale dynamique : le texte suit la destination survolée par l’avion -->
+    <div id="mapDestinationIntro" class="glass-elevated rounded-2xl p-5 md:p-6 mb-5 text-center transition-all duration-500" aria-live="polite">
+      <span id="mapDestinationEyebrow" class="text-tertiary text-xs uppercase tracking-[0.2em] font-semibold block mb-2">ITINÉRAIRE EN COURS</span>
+      <h4 id="mapDestinationTitle" class="text-xl md:text-2xl font-semibold text-on-surface homepage-text-strong mb-2">Antananarivo → Nosy Be</h4>
+      <p id="mapDestinationDescription" class="text-on-surface-variant homepage-text-light text-sm md:text-base font-light leading-relaxed max-w-3xl mx-auto">Suivez l’animation aérienne et sélectionnez une destination pour afficher sa présentation et sa page dédiée.</p>
+      <a id="mapDestinationLink" href="/destinations.html" class="inline-flex items-center gap-2 mt-3 text-primary text-sm font-semibold hover:text-primary-fixed transition-colors">Découvrir la destination <span class="material-symbols-outlined text-base">arrow_forward</span></a>
+    </div>
+
     <!-- Carte Leaflet plein cadre -->
     <div class="relative w-full rounded-2xl overflow-hidden border border-outline-variant/40 shadow-2xl">
       <div id="realMadagascarMap"></div>
@@ -593,29 +601,71 @@ document.addEventListener("DOMContentLoaded", function() {
     markerById[destination.id] = marker;
   });
 
-  // Trajet animé conservé entre Antananarivo et Nosy Be.
+  // Plusieurs routes aériennes : l’avion parcourt successivement chaque destination
+  // depuis Antananarivo, puis revient à la capitale avant de poursuivre son circuit.
   const TNR = destinations.find(d => d.id === 'antananarivo').coords;
-  const NOS = destinations.find(d => d.id === 'nosy-be').coords;
-  const curvePoints = [];
-  for (let i = 0; i <= 100; i++) {
-    const t = i / 100;
-    curvePoints.push([
-      (1 - t) * TNR[0] + t * NOS[0],
-      (1 - t) * TNR[1] + t * NOS[1] - Math.sin(t * Math.PI) * 1.2
-    ]);
-  }
-  L.polyline(curvePoints, { color: '#38bdf8', weight: 3.5, opacity: .95, dashArray: '8, 8' }).addTo(map);
   const planeIcon = L.divIcon({
     className: 'plane-icon-container',
-    html: '<span class="material-symbols-outlined plane-marker-icon" style="font-size:24px">flight</span>',
-    iconSize: [24, 24], iconAnchor: [12, 12]
+    html: '<span class="material-symbols-outlined plane-marker-icon" style="font-size:25px">flight</span>',
+    iconSize: [28, 28], iconAnchor: [14, 14]
   });
-  const planeMarker = L.marker(TNR, { icon: planeIcon, interactive: false, keyboard: false }).addTo(map);
-  let step = 0, direction = 1;
+  const planeMarker = L.marker(TNR, { icon: planeIcon, interactive: false, keyboard: false, zIndexOffset: 1200 }).addTo(map);
+  const flightDestinations = destinations.filter(destination => destination.id !== 'antananarivo');
+  const flightRoutes = flightDestinations.map((destination, routeIndex) => {
+    const points = [];
+    const bend = (routeIndex % 2 === 0 ? -1 : 1) * 0.65;
+    for (let i = 0; i <= 100; i++) {
+      const t = i / 100;
+      points.push([
+        (1 - t) * TNR[0] + t * destination.coords[0] + Math.sin(t * Math.PI) * bend,
+        (1 - t) * TNR[1] + t * destination.coords[1] + Math.sin(t * Math.PI) * bend
+      ]);
+    }
+    L.polyline(points, {
+      color: destination.id === 'nosy-be' ? '#38bdf8' : '#7dd3fc',
+      weight: destination.id === 'nosy-be' ? 3.5 : 2.5,
+      opacity: destination.id === 'nosy-be' ? .95 : .62,
+      dashArray: '8, 8'
+    }).addTo(map);
+    return { destination, points };
+  });
+
+  const introTitle = document.getElementById('mapDestinationTitle');
+  const introDescription = document.getElementById('mapDestinationDescription');
+  const introEyebrow = document.getElementById('mapDestinationEyebrow');
+  const introLink = document.getElementById('mapDestinationLink');
+  let activeRouteIndex = 0;
+  let routeStep = 0;
+  let routeDirection = 1;
+  let lastIntroDestination = '';
+  function updateDestinationIntro(destination, isReturning = false) {
+    if (!destination || lastIntroDestination === destination.id + (isReturning ? '-return' : '-outbound')) return;
+    lastIntroDestination = destination.id + (isReturning ? '-return' : '-outbound');
+    if (introEyebrow) introEyebrow.textContent = isReturning ? 'VOL RETOUR VERS ANTANANARIVO' : 'DESTINATION À DÉCOUVRIR';
+    if (introTitle) introTitle.textContent = isReturning ? destination.name + ' → Antananarivo' : 'Antananarivo → ' + destination.name;
+    if (introDescription) introDescription.textContent = (isReturning ? 'Retour depuis ' : 'Découvrez ') + destination.name + ' : ' + destination.description + ' Mariage, lune de miel et séjour sur mesure selon vos envies.';
+    if (introLink) {
+      introLink.href = destination.url;
+      introLink.innerHTML = 'Découvrir ' + destination.name + ' <span class="material-symbols-outlined text-base">arrow_forward</span>';
+    }
+  }
+  updateDestinationIntro(flightRoutes[0]?.destination);
+
   function animatePlane() {
-    step += direction;
-    if (step >= curvePoints.length - 1 || step <= 0) direction *= -1;
-    planeMarker.setLatLng(curvePoints[step]);
+    if (!flightRoutes.length) return;
+    const route = flightRoutes[activeRouteIndex];
+    routeStep += routeDirection;
+    if (routeStep >= route.points.length - 1) {
+      routeStep = route.points.length - 1;
+      routeDirection = -1;
+      updateDestinationIntro(route.destination, true);
+    } else if (routeStep <= 0 && routeDirection === -1) {
+      routeStep = 0;
+      routeDirection = 1;
+      activeRouteIndex = (activeRouteIndex + 1) % flightRoutes.length;
+      updateDestinationIntro(flightRoutes[activeRouteIndex].destination, false);
+    }
+    planeMarker.setLatLng(route.points[routeStep]);
     requestAnimationFrame(animatePlane);
   }
   animatePlane();
@@ -631,6 +681,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const destination = destinations.find(item => item.id === id);
     if (!destination || !markerById[id]) return;
     map.flyTo(destination.coords, 7, { duration: 0.8 });
+    updateDestinationIntro(destination, false);
     window.setTimeout(() => markerById[id].openPopup(), 850);
   }
 
