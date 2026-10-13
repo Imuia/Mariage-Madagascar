@@ -1,3 +1,4 @@
+const { sendBankTransferOrderEmails } = require('../lib/mariage-emails');
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://qrkinjuhtyfptldlvdyg.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
@@ -245,9 +246,35 @@ module.exports = async function handler(req, res) {
         });
       }
 
+      // Envoyer les e-mails de commande en attente après l'enregistrement DB.
+      // Un échec Resend ne bloque pas la commande déjà créée : il est journalisé.
+      const emailOrder = {
+        ...bankTransferOrderRecord,
+        ...insertedBankOrder,
+        order_number: insertedBankOrder.order_number || orderNumber,
+        guest_email: insertedBankOrder.guest_email || customer.email,
+        guest_first_name: insertedBankOrder.guest_first_name || customer.first_name,
+        guest_last_name: insertedBankOrder.guest_last_name || customer.last_name,
+        guest_phone: insertedBankOrder.guest_phone || customer.phone || '',
+        guest_country: insertedBankOrder.guest_country || customer.country || 'France',
+        total_amount: insertedBankOrder.total_amount ?? verifiedTotalAmount,
+        subtotal: insertedBankOrder.subtotal ?? verifiedSubtotal,
+        discount_amount: insertedBankOrder.discount_amount ?? discountAmount,
+        currency: insertedBankOrder.currency || 'EUR',
+        notes: insertedBankOrder.notes || bankTransferOrderRecord.notes || ''
+      };
+      const emailResult = await sendBankTransferOrderEmails({
+        order: emailOrder,
+        items: verifiedOrderItems
+      }).catch(emailError => {
+        console.error('Commande par virement enregistrée, mais e-mails non envoyés :', emailError.message);
+        return { sent: 0, failed: 3 };
+      });
+
       return res.status(200).json({
         method: 'bank_transfer',
         orderNumber,
+        emailStatus: emailResult.failed === 0 ? 'sent' : 'partial_or_failed',
         message: 'Commande enregistrée en attente de virement bancaire.'
       });
     }
