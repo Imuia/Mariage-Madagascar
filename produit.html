@@ -320,10 +320,12 @@ body.villa-product #mainImageButton{height:100%}
   let SINGLE_ATTRIBUTE_NAME = '';
   let IS_SIMPLE_PRODUCT = false;
 
-  // Logique de réservation commune à tous les produits :
-  // - séjour / villa / voyage avec une vraie durée => arrivée + départ
-  // - expérience / cérémonie / dîner ponctuel => une seule date
+  // Le mode de réservation est détecté à partir des données produit.
+  // Si la base contient booking_mode / booking_type (ou une valeur équivalente
+  // dans raw_export), cette valeur est prioritaire. Sinon, on utilise des
+  // indices du titre, des descriptions et des variations.
   let IS_DURATION_PRODUCT = false;
+  let BOOKING_MODE = 'event';
 
   // Images LOCALES du séjour : on ne touche pas aux autres produits.
   // Les noms correspondent exactement aux fichiers présents dans
@@ -395,11 +397,13 @@ body.villa-product #mainImageButton{height:100%}
   ];
   let selectedVillaOptions = {};
 
-  // Dates de réservation.
-  // bookingDate = date de début / date de l'événement.
-  // bookingEndDate = date de départ pour les produits avec durée.
-  let bookingDate = params.get('date') || params.get('arrival_date') || '';
+  // Réservation commune à tous les produits.
+  // Mode « duration » : date de début + date de fin.
+  // Mode « event » : une date + heure de début + heure de fin.
+  let bookingDate = params.get('date') || params.get('arrival_date') || params.get('event_date') || '';
   let bookingEndDate = params.get('end_date') || params.get('departure_date') || '';
+  let bookingStartTime = params.get('event_start_time') || params.get('start_time') || '';
+  let bookingEndTime = params.get('event_end_time') || params.get('end_time') || '';
 
   const euro = value =>
     new Intl.NumberFormat('fr-FR', {
@@ -447,15 +451,26 @@ body.villa-product #mainImageButton{height:100%}
       url += '&pax=' + encodeURIComponent(pax);
     }
 
-    // Réservation : une date pour les expériences ponctuelles,
-    // arrivée + départ pour les produits avec une vraie durée.
+    // Transmettre le mode de réservation et les champs utiles à la page suivante.
+    url += '&booking_mode=' + encodeURIComponent(BOOKING_MODE);
     if (bookingDate) {
       url += '&date=' + encodeURIComponent(bookingDate);
       url += '&arrival_date=' + encodeURIComponent(bookingDate);
+      if (BOOKING_MODE === 'event') url += '&event_date=' + encodeURIComponent(bookingDate);
     }
-    if (bookingEndDate) {
+    if (BOOKING_MODE === 'duration' && bookingEndDate) {
       url += '&end_date=' + encodeURIComponent(bookingEndDate);
       url += '&departure_date=' + encodeURIComponent(bookingEndDate);
+    }
+    if (BOOKING_MODE === 'event') {
+      if (bookingStartTime) {
+        url += '&start_time=' + encodeURIComponent(bookingStartTime);
+        url += '&event_start_time=' + encodeURIComponent(bookingStartTime);
+      }
+      if (bookingEndTime) {
+        url += '&end_time=' + encodeURIComponent(bookingEndTime);
+        url += '&event_end_time=' + encodeURIComponent(bookingEndTime);
+      }
     }
 
     return url;
@@ -798,99 +813,279 @@ body.villa-product #mainImageButton{height:100%}
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   }
 
+  function refreshBookingState() {
+    const hint = document.getElementById('bookingDurationHint');
+    if (!hint) return;
+
+    if (BOOKING_MODE === 'event') {
+      if (!bookingDate) {
+        hint.textContent = 'Sélectionnez la date de votre événement, puis ses heures.';
+        hint.className = 'text-xs text-[#8fa3b3]';
+        return;
+      }
+      if (!bookingStartTime || !bookingEndTime) {
+        hint.textContent = 'Renseignez l’heure de début et l’heure de fin.';
+        hint.className = 'text-xs text-[#8fa3b3]';
+        return;
+      }
+      if (bookingEndTime <= bookingStartTime) {
+        hint.textContent = 'L’heure de fin doit être postérieure à l’heure de début.';
+        hint.className = 'text-xs text-red-300';
+        return;
+      }
+      hint.textContent = `Événement prévu le ${new Date(bookingDate + 'T00:00:00').toLocaleDateString('fr-FR')} de ${bookingStartTime} à ${bookingEndTime}.`;
+      hint.className = 'text-xs text-[#7dd3fc]';
+      return;
+    }
+
+    const expectedDays = getSelectedDurationDays();
+    const nights = getBookingNights();
+
+    if (!bookingDate || !bookingEndDate) {
+      hint.textContent = expectedDays && IS_DURATION_PRODUCT
+        ? `Durée de la formule sélectionnée : ${expectedDays} jour${expectedDays > 1 ? 's' : ''}. Choisissez la date de début et la date de fin.`
+        : 'Sélectionnez une date de début et une date de fin.';
+      hint.className = 'text-xs text-[#8fa3b3]';
+      return;
+    }
+
+    if (!nights) {
+      hint.textContent = 'La date de fin doit être postérieure à la date de début.';
+      hint.className = 'text-xs text-red-300';
+      return;
+    }
+
+    if (IS_DURATION_PRODUCT && expectedDays && nights !== expectedDays) {
+      hint.textContent = `Cette formule correspond à ${expectedDays} jour${expectedDays > 1 ? 's' : ''}. Sélectionnez une durée de ${expectedDays} jour${expectedDays > 1 ? 's' : ''}.`;
+      hint.className = 'text-xs text-red-300';
+      return;
+    }
+
+    hint.textContent = `Période sélectionnée : ${nights} jour${nights > 1 ? 's' : ''}.`;
+    hint.className = 'text-xs text-[#7dd3fc]';
+  }
+
+  function validateBookingDates() {
+    if (!bookingDate) {
+      alert(BOOKING_MODE === 'event'
+        ? "Merci de sélectionner la date de votre événement."
+        : "Merci de sélectionner une date de début.");
+      document.getElementById('booking-date')?.focus();
+      return false;
+    }
+
+    if (BOOKING_MODE === 'event') {
+      if (!bookingStartTime) {
+        alert("Merci de sélectionner l’heure de début.");
+        document.getElementById('booking-start-time')?.focus();
+        return false;
+      }
+      if (!bookingEndTime) {
+        alert("Merci de sélectionner l’heure de fin.");
+        document.getElementById('booking-end-time')?.focus();
+        return false;
+      }
+      if (bookingEndTime <= bookingStartTime) {
+        alert("L’heure de fin doit être postérieure à l’heure de début.");
+        document.getElementById('booking-end-time')?.focus();
+        return false;
+      }
+      return true;
+    }
+
+    if (!bookingEndDate) {
+      alert("Merci de sélectionner une date de fin.");
+      document.getElementById('booking-date-end')?.focus();
+      return false;
+    }
+
+    const nights = getBookingNights();
+    if (!nights) {
+      alert("La date de fin doit être postérieure à la date de début.");
+      document.getElementById('booking-date-end')?.focus();
+      return false;
+    }
+
+    const expectedDays = getSelectedDurationDays();
+    if (IS_DURATION_PRODUCT && expectedDays && nights !== expectedDays) {
+      alert(`Cette formule correspond à ${expectedDays} jour${expectedDays > 1 ? 's' : ''}. Merci de sélectionner une date de début et une date de fin correspondant à cette durée.`);
+      document.getElementById('booking-date-end')?.focus();
+      return false;
+    }
+
+    return true;
+  }
+
+  function refreshBookingActionLinks() {
+    if (IS_STAY_PRODUCT) {
+      updateStayActionLinks(findStayVariation());
+    } else if (IS_VILLA_PRODUCT) {
+      updateVillaPrice();
+    } else if (IS_SINGLE_ATTRIBUTE_PRODUCT) {
+      const select = document.getElementById('singleAttributeSelect');
+      selectSingleAttribute(select?.value || '');
+    } else {
+      updateCurrentActionLinks();
+    }
+  }
+
   function renderBookingDatePicker() {
     if (!els.bookingDateWrap) return;
 
     const minDate = todayISO();
     if (bookingDate && bookingDate < minDate) bookingDate = '';
-    if (bookingEndDate && bookingEndDate < minDate) bookingEndDate = '';
-    if (bookingEndDate && bookingDate && bookingEndDate <= bookingDate) bookingEndDate = '';
 
-    const endMinDate = addDaysISO(bookingDate || minDate, 1);
-
-    // Les deux dates sont obligatoires pour tous les produits, y compris les expériences ponctuelles.
-    els.bookingDateWrap.innerHTML = `
-      <div class="w-full space-y-4">
-        <div>
-          <label class="block text-sm font-semibold mb-2 cursor-pointer" for="booking-date">
-            Date d'arrivée <span class="text-[#7dd3fc]">*</span>
-          </label>
-          <input
-            id="booking-date"
-            type="date"
-            min="${minDate}"
-            value="${esc(bookingDate)}"
-            required
-            class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
-            aria-label="Choisir la date d'arrivée"
-          >
+    const isEvent = BOOKING_MODE === 'event';
+    if (isEvent) {
+      // Les expériences ponctuelles utilisent une date et deux heures.
+      // On ignore une éventuelle date de fin héritée d'une ancienne URL.
+      bookingEndDate = '';
+      els.bookingDateWrap.innerHTML = `
+        <div class="w-full space-y-4">
+          <div>
+            <label class="block text-sm font-semibold mb-2 cursor-pointer" for="booking-date">
+              Date de l’événement <span class="text-[#7dd3fc]">*</span>
+            </label>
+            <input
+              id="booking-date"
+              type="date"
+              min="${minDate}"
+              value="${esc(bookingDate)}"
+              required
+              class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+              aria-label="Choisir la date de l’événement"
+            >
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold mb-2 cursor-pointer" for="booking-start-time">
+                Heure de début <span class="text-[#7dd3fc]">*</span>
+              </label>
+              <input
+                id="booking-start-time"
+                type="time"
+                value="${esc(bookingStartTime)}"
+                required
+                step="900"
+                class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+                aria-label="Choisir l’heure de début"
+              >
+            </div>
+            <div>
+              <label class="block text-sm font-semibold mb-2 cursor-pointer" for="booking-end-time">
+                Heure de fin <span class="text-[#7dd3fc]">*</span>
+              </label>
+              <input
+                id="booking-end-time"
+                type="time"
+                value="${esc(bookingEndTime)}"
+                required
+                step="900"
+                class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+                aria-label="Choisir l’heure de fin"
+              >
+            </div>
+          </div>
+          <div id="bookingDurationHint" class="text-xs text-[#8fa3b3]" aria-live="polite"></div>
         </div>
+      `;
 
-        <div>
-          <label class="block text-sm font-semibold mb-2 cursor-pointer" for="booking-date-end">
-            Date de départ <span class="text-[#7dd3fc]">*</span>
-          </label>
-          <input
-            id="booking-date-end"
-            type="date"
-            min="${endMinDate}"
-            value="${esc(bookingEndDate)}"
-            required
-            class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
-            aria-label="Choisir la date de départ"
-          >
-        </div>
+      const dateInput = els.bookingDateWrap.querySelector('#booking-date');
+      const startInput = els.bookingDateWrap.querySelector('#booking-start-time');
+      const endInput = els.bookingDateWrap.querySelector('#booking-end-time');
 
-        <div id="bookingDurationHint" class="text-xs text-[#8fa3b3]" aria-live="polite"></div>
-      </div>
-    `;
-
-    const bookingDateInput = els.bookingDateWrap.querySelector('#booking-date');
-    const bookingEndDateInput = els.bookingDateWrap.querySelector('#booking-date-end');
-
-    [bookingDateInput, bookingEndDateInput].forEach(input => {
-      input?.addEventListener('click', () => {
-        try { input.showPicker?.(); } catch {}
+      [dateInput, startInput, endInput].forEach(input => {
+        input?.addEventListener('click', () => {
+          try { input.showPicker?.(); } catch {}
+        });
       });
-    });
 
-    bookingDateInput?.addEventListener('change', event => {
-      bookingDate = event.target.value || '';
-      if (bookingEndDateInput) {
-        bookingEndDateInput.min = addDaysISO(bookingDate || minDate, 1);
-        if (bookingEndDate && bookingEndDate <= bookingDate) {
-          bookingEndDate = '';
-          bookingEndDateInput.value = '';
+      dateInput?.addEventListener('change', event => {
+        bookingDate = event.target.value || '';
+        refreshBookingState();
+        refreshBookingActionLinks();
+      });
+      startInput?.addEventListener('change', event => {
+        bookingStartTime = event.target.value || '';
+        refreshBookingState();
+        refreshBookingActionLinks();
+      });
+      endInput?.addEventListener('change', event => {
+        bookingEndTime = event.target.value || '';
+        refreshBookingState();
+        refreshBookingActionLinks();
+      });
+    } else {
+      // Les séjours et prestations de plusieurs jours utilisent deux dates.
+      bookingStartTime = '';
+      bookingEndTime = '';
+      if (bookingEndDate && bookingEndDate < minDate) bookingEndDate = '';
+      if (bookingEndDate && bookingDate && bookingEndDate <= bookingDate) bookingEndDate = '';
+
+      const endMinDate = addDaysISO(bookingDate || minDate, 1);
+
+      els.bookingDateWrap.innerHTML = `
+        <div class="w-full space-y-4">
+          <div>
+            <label class="block text-sm font-semibold mb-2 cursor-pointer" for="booking-date">
+              Date de début / arrivée <span class="text-[#7dd3fc]">*</span>
+            </label>
+            <input
+              id="booking-date"
+              type="date"
+              min="${minDate}"
+              value="${esc(bookingDate)}"
+              required
+              class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+              aria-label="Choisir la date de début ou d’arrivée"
+            >
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-2 cursor-pointer" for="booking-date-end">
+              Date de fin / départ <span class="text-[#7dd3fc]">*</span>
+            </label>
+            <input
+              id="booking-date-end"
+              type="date"
+              min="${endMinDate}"
+              value="${esc(bookingEndDate)}"
+              required
+              class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+              aria-label="Choisir la date de fin ou de départ"
+            >
+          </div>
+          <div id="bookingDurationHint" class="text-xs text-[#8fa3b3]" aria-live="polite"></div>
+        </div>
+      `;
+
+      const startDateInput = els.bookingDateWrap.querySelector('#booking-date');
+      const endDateInput = els.bookingDateWrap.querySelector('#booking-date-end');
+
+      [startDateInput, endDateInput].forEach(input => {
+        input?.addEventListener('click', () => {
+          try { input.showPicker?.(); } catch {}
+        });
+      });
+
+      startDateInput?.addEventListener('change', event => {
+        bookingDate = event.target.value || '';
+        if (endDateInput) {
+          endDateInput.min = addDaysISO(bookingDate || minDate, 1);
+          if (bookingEndDate && bookingEndDate <= bookingDate) {
+            bookingEndDate = '';
+            endDateInput.value = '';
+          }
         }
-      }
+        refreshBookingState();
+        refreshBookingActionLinks();
+      });
 
-      refreshBookingState();
-      if (IS_STAY_PRODUCT) {
-        updateStayActionLinks(findStayVariation());
-      } else if (IS_VILLA_PRODUCT) {
-        updateVillaPrice();
-      } else if (IS_SINGLE_ATTRIBUTE_PRODUCT) {
-        const select = document.getElementById('singleAttributeSelect');
-        selectSingleAttribute(select?.value || '');
-      } else {
-        updateCurrentActionLinks();
-      }
-    });
-
-    bookingEndDateInput?.addEventListener('change', event => {
-      bookingEndDate = event.target.value || '';
-      refreshBookingState();
-      if (IS_STAY_PRODUCT) {
-        updateStayActionLinks(findStayVariation());
-      } else if (IS_VILLA_PRODUCT) {
-        updateVillaPrice();
-      } else if (IS_SINGLE_ATTRIBUTE_PRODUCT) {
-        const select = document.getElementById('singleAttributeSelect');
-        selectSingleAttribute(select?.value || '');
-      } else {
-        updateCurrentActionLinks();
-      }
-    });
+      endDateInput?.addEventListener('change', event => {
+        bookingEndDate = event.target.value || '';
+        refreshBookingState();
+        refreshBookingActionLinks();
+      });
+    }
 
     refreshBookingState();
   }
@@ -997,6 +1192,107 @@ body.villa-product #mainImageButton{height:100%}
     return getVariationDurationDays(getSelectedVariationForBooking());
   }
 
+  function normalizeBookingModeValue(value) {
+    const normalized = String(value || '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[\s-]+/g, '_');
+
+    if (/^(duration|stay|multi_day|date_range|arrival_departure|sejour|duree|multi_jour)$/.test(normalized)) {
+      return 'duration';
+    }
+    if (/^(event|single_date|date_unique|une_date|date_time|date_heure|date_et_heures|appointment|ponctuel|horaire|evenement|one_day_event)$/.test(normalized)) {
+      return 'event';
+    }
+    return '';
+  }
+
+  function getBookingModeOverride() {
+    const candidates = [
+      product?.booking_mode,
+      product?.booking_type,
+      product?.reservation_mode,
+      product?.reservation_type,
+      product?.schedule_type,
+      product?.date_mode
+    ];
+
+    for (const value of candidates) {
+      const mode = normalizeBookingModeValue(value);
+      if (mode) return mode;
+    }
+
+    // Compatibilité avec les imports CSV ou métadonnées stockés dans raw_export.
+    let raw = product?.raw_export || product?.metadata || product?.booking_settings || null;
+    try {
+      if (typeof raw === 'string') raw = JSON.parse(raw);
+    } catch {
+      raw = null;
+    }
+
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+      for (const [key, value] of Object.entries(raw)) {
+        if (/booking[_\s-]*mode|booking[_\s-]*type|reservation[_\s-]*mode|type de reservation|mode de reservation|mode de réservation/i.test(key)) {
+          const mode = normalizeBookingModeValue(value);
+          if (mode) return mode;
+        }
+      }
+    }
+
+    // Permet à « Modifier ma sélection » de rouvrir le même formulaire.
+    const modeFromUrl = normalizeBookingModeValue(params.get('booking_mode'));
+    if (modeFromUrl) return modeFromUrl;
+
+    return '';
+  }
+
+  function resolveBookingMode() {
+    const override = getBookingModeOverride();
+    if (override) return override;
+
+    const normalizeProductText = value => String(value || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[-_/]+/g, ' ');
+
+    const titleText = normalizeProductText([
+      PRODUCT_SLUG,
+      product?.name,
+      product?.short_description,
+      Array.isArray(product?.categories) ? product.categories.join(' ') : product?.categories
+    ].join(' '));
+
+    const detailedText = normalizeProductText([
+      product?.description_html,
+      product?.description,
+      ...(Array.isArray(variations) ? variations.map(v => [v?.name, v?.attribute_name, v?.attribute_value].join(' ')) : [])
+    ].join(' '));
+
+    // Un forfait explicitement annoncé en jours/nuits correspond à une durée,
+    // même si son nom contient aussi le mot « mariage ».
+    const titleHasDuration = /\b\d+\s*(?:jours?|nuits?)\b/i.test(titleText);
+    if (titleHasDuration) return 'duration';
+
+    // Les événements ponctuels doivent demander une date et des horaires,
+    // notamment les buffets, demandes en mariage et anniversaires.
+    const eventKeywords = /\b(buffet|demande en mariage|anniversaire|ceremonie|reception|cocktail|brunch|diner|dejeuner|gala|soiree|evenement|spectacle|shooting|seance photo|prestation|fete|fiancailles|organisation de mariage|mariage symbolique)\b/i;
+    if (eventKeywords.test(titleText)) return 'event';
+
+    // Séjours/déplacements avec durée détectée dans les variations.
+    if (IS_DURATION_PRODUCT) return 'duration';
+
+    // Le descriptif long sert de dernier indice si le titre est trop vague.
+    if (eventKeywords.test(detailedText)) return 'event';
+
+    // Pour le reste, l’hypothèse la moins contraignante est une prestation
+    // ponctuelle avec date et heures. Une valeur booking_mode explicite permet
+    // de forcer « duration » pour les produits ambigus.
+    return 'event';
+  }
+
   function getBookingNights() {
     if (!bookingDate || !bookingEndDate) return null;
 
@@ -1005,67 +1301,6 @@ body.villa-product #mainImageButton{height:100%}
     const diff = Math.round((end - start) / 86400000);
 
     return Number.isFinite(diff) && diff > 0 ? diff : null;
-  }
-
-  function refreshBookingState() {
-    const hint = document.getElementById('bookingDurationHint');
-    if (!hint) return;
-
-    const expectedDays = getSelectedDurationDays();
-    const nights = getBookingNights();
-
-    if (!bookingDate || !bookingEndDate) {
-      hint.textContent = expectedDays && IS_DURATION_PRODUCT
-        ? `Durée de la formule sélectionnée : ${expectedDays} jour${expectedDays > 1 ? 's' : ''}. Choisissez les deux dates.`
-        : 'Sélectionnez une date d’arrivée et une date de départ.';
-      hint.className = 'text-xs text-[#8fa3b3]';
-      return;
-    }
-
-    if (!nights) {
-      hint.textContent = 'La date de départ doit être postérieure à la date d’arrivée.';
-      hint.className = 'text-xs text-red-300';
-      return;
-    }
-
-    if (IS_DURATION_PRODUCT && expectedDays && nights !== expectedDays) {
-      hint.textContent = `Cette formule correspond à ${expectedDays} jour${expectedDays > 1 ? 's' : ''}. Sélectionnez une durée de séjour de ${expectedDays} jour${expectedDays > 1 ? 's' : ''}.`;
-      hint.className = 'text-xs text-red-300';
-      return;
-    }
-
-    hint.textContent = `Séjour sélectionné : ${nights} nuit${nights > 1 ? 's' : ''}.`;
-    hint.className = 'text-xs text-[#7dd3fc]';
-  }
-
-  function validateBookingDates() {
-    if (!bookingDate) {
-      alert("Merci de sélectionner une date d’arrivée.");
-      document.getElementById('booking-date')?.focus();
-      return false;
-    }
-
-    if (!bookingEndDate) {
-      alert("Merci de sélectionner une date de départ.");
-      document.getElementById('booking-date-end')?.focus();
-      return false;
-    }
-
-    const nights = getBookingNights();
-    if (!nights) {
-      alert("La date de départ doit être postérieure à la date d'arrivée.");
-      document.getElementById('booking-date-end')?.focus();
-      return false;
-    }
-
-    const expectedDays = getSelectedDurationDays();
-    if (IS_DURATION_PRODUCT && expectedDays && nights !== expectedDays) {
-      alert(`Cette formule correspond à ${expectedDays} jour${expectedDays > 1 ? 's' : ''}. Merci de sélectionner une date d'arrivée et une date de départ correspondant à cette durée.`);
-      document.getElementById('booking-date-end')?.focus();
-      return false;
-    }
-
-    return true;
   }
 
   function updateCurrentActionLinks() {
@@ -1111,10 +1346,29 @@ body.villa-product #mainImageButton{height:100%}
       image: currentImage,
       quantity: 1,
       booking_date: bookingDate || '',
-      booking_end_date: bookingEndDate || '',
+      booking_end_date: BOOKING_MODE === 'duration' ? (bookingEndDate || '') : '',
+      booking_mode: BOOKING_MODE,
+      booking_start_time: BOOKING_MODE === 'event' ? (bookingStartTime || '') : '',
+      booking_end_time: BOOKING_MODE === 'event' ? (bookingEndTime || '') : '',
+      event_date: BOOKING_MODE === 'event' ? (bookingDate || '') : '',
+      event_start_time: BOOKING_MODE === 'event' ? (bookingStartTime || '') : '',
+      event_end_time: BOOKING_MODE === 'event' ? (bookingEndTime || '') : '',
       pax: selectedPax || (selectedVariation ? selectedVariation.pax : null),
       price: selectedVariation ? selectedVariation.regular_price : (product.regular_price || 0),
-      options: currentOptions,
+      // Garder les horaires dans options_snapshot côté commande sans les afficher
+      // comme des options tarifaires du produit.
+      options: {
+        ...currentOptions,
+        booking_mode: BOOKING_MODE,
+        arrival_date: BOOKING_MODE === 'duration' ? (bookingDate || '') : '',
+        departure_date: BOOKING_MODE === 'duration' ? (bookingEndDate || '') : '',
+        booking_end_date: BOOKING_MODE === 'duration' ? (bookingEndDate || '') : '',
+        event_date: BOOKING_MODE === 'event' ? (bookingDate || '') : '',
+        booking_start_time: BOOKING_MODE === 'event' ? (bookingStartTime || '') : '',
+        event_start_time: BOOKING_MODE === 'event' ? (bookingStartTime || '') : '',
+        booking_end_time: BOOKING_MODE === 'event' ? (bookingEndTime || '') : '',
+        event_end_time: BOOKING_MODE === 'event' ? (bookingEndTime || '') : ''
+      },
       added_at: new Date().toISOString()
     };
 
@@ -1207,6 +1461,15 @@ body.villa-product #mainImageButton{height:100%}
       IS_DURATION_PRODUCT =
         /(séjour|sejour|villa|croisière|croisiere|voyage|lune de miel)/.test(productText) &&
         /\b\d+\s*(jours?|nuits?)\b/.test(productText);
+    }
+
+    BOOKING_MODE = resolveBookingMode();
+    // On utilise les dates/heures strictement compatibles avec le mode détecté.
+    if (BOOKING_MODE === 'event') {
+      bookingEndDate = '';
+    } else {
+      bookingStartTime = '';
+      bookingEndTime = '';
     }
 
     if (IS_STAY_PRODUCT) {

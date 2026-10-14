@@ -286,23 +286,72 @@
       const date = new Date(`${value}T00:00:00`);
       return Number.isNaN(date.getTime()) ? 'À sélectionner' : date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
     };
-    const hasInvalidDates = cart.some(item => { const arrival = item.booking_date || item.arrival_date || ''; const departure = item.booking_end_date || item.departure_date || ''; return !arrival || !departure || departure <= arrival; });
+    const itemBookingMode = item => {
+      if (item?.booking_mode === 'duration' || item?.booking_mode === 'event') return item.booking_mode;
+      const options = item?.options || item?.options_snapshot || {};
+      if (item?.booking_end_date || item?.departure_date || options?.booking_end_date || options?.departure_date) return 'duration';
+      return 'event';
+    };
+    const itemStartTime = item => {
+      const options = item?.options || item?.options_snapshot || {};
+      return item?.booking_start_time || item?.event_start_time || options?.booking_start_time || options?.event_start_time || '';
+    };
+    const itemEndTime = item => {
+      const options = item?.options || item?.options_snapshot || {};
+      return item?.booking_end_time || item?.event_end_time || options?.booking_end_time || options?.event_end_time || '';
+    };
+    const itemEventDate = item => item?.event_date || item?.booking_date || item?.arrival_date || '';
+    const hasInvalidDates = cart.some(item => {
+      const mode = itemBookingMode(item);
+      const firstDate = item.booking_date || item.event_date || item.arrival_date || '';
+      if (!firstDate) return true;
+      if (mode === 'duration') {
+        const lastDate = item.booking_end_date || item.departure_date || item.options?.booking_end_date || item.options?.departure_date || '';
+        return !lastDate || lastDate <= firstDate;
+      }
+      const startTime = itemStartTime(item);
+      const endTime = itemEndTime(item);
+      return !startTime || !endTime || endTime <= startTime;
+    });
 
     displayItems.forEach(({ item, originalIndex }) => {
+      const bookingMode = itemBookingMode(item);
       const formattedArrivalDate = formatDate(item.booking_date || item.arrival_date);
       const formattedDepartureDate = formatDate(item.booking_end_date || item.departure_date);
+      const formattedEventDate = formatDate(itemEventDate(item));
+      const startTime = itemStartTime(item);
+      const endTime = itemEndTime(item);
       const editParams = new URLSearchParams();
-      if (item.booking_date || item.arrival_date) editParams.set('date', item.booking_date || item.arrival_date);
-      if (item.booking_date || item.arrival_date) editParams.set('arrival_date', item.booking_date || item.arrival_date);
-      if (item.booking_end_date || item.departure_date) {
+      editParams.set('booking_mode', bookingMode);
+      if (item.booking_date || item.event_date || item.arrival_date) {
+        const firstDate = item.booking_date || item.event_date || item.arrival_date;
+        editParams.set('date', firstDate);
+      }
+      if (bookingMode === 'duration' && (item.booking_date || item.arrival_date)) {
+        editParams.set('arrival_date', item.booking_date || item.arrival_date);
+      }
+      if (bookingMode === 'duration' && (item.booking_end_date || item.departure_date)) {
         editParams.set('end_date', item.booking_end_date || item.departure_date);
         editParams.set('departure_date', item.booking_end_date || item.departure_date);
+      }
+      if (bookingMode === 'event') {
+        if (startTime) editParams.set('event_start_time', startTime);
+        if (endTime) editParams.set('event_end_time', endTime);
+        if (itemEventDate(item)) editParams.set('event_date', itemEventDate(item));
       }
       const editUrl = `/produit/${encodeURIComponent(item.slug || '')}${editParams.toString() ? `?${editParams.toString()}` : ''}`;
 
       const paxText = item.pax ? `${item.pax} Personnes` : '';
       const options = item.options || {};
-      const hasOptions = Object.keys(options).length > 0;
+      const bookingMetaKeys = new Set([
+        'booking_mode', 'arrival_date', 'departure_date', 'booking_end_date',
+        'event_date', 'booking_start_time', 'event_start_time',
+        'booking_end_time', 'event_end_time'
+      ]);
+      const displayOptions = Object.fromEntries(
+        Object.entries(options).filter(([key]) => !bookingMetaKeys.has(key))
+      );
+      const hasOptions = Object.keys(displayOptions).length > 0;
 
       html += `
         <div class="glass-panel rounded-xl p-6 relative group transition-all duration-300 border border-[#2a3a48] hover:border-[#7dd3fc]/30 mb-6">
@@ -326,14 +375,25 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-4 text-sm text-[#a0b4c4] mt-3">
-                  <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
-                    <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">login</span>
-                    <span><strong class="text-[#e0e8f0]">Arrivée :</strong> ${esc(formattedArrivalDate)}</span>
-                  </span>
-                  <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
-                    <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">logout</span>
-                    <span><strong class="text-[#e0e8f0]">Départ :</strong> ${esc(formattedDepartureDate)}</span>
-                  </span>
+                  ${bookingMode === 'duration' ? `
+                    <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
+                      <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">login</span>
+                      <span><strong class="text-[#e0e8f0]">Début / arrivée :</strong> ${esc(formattedArrivalDate)}</span>
+                    </span>
+                    <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
+                      <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">logout</span>
+                      <span><strong class="text-[#e0e8f0]">Fin / départ :</strong> ${esc(formattedDepartureDate)}</span>
+                    </span>
+                  ` : `
+                    <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
+                      <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">event</span>
+                      <span><strong class="text-[#e0e8f0]">Date de l’événement :</strong> ${esc(formattedEventDate)}</span>
+                    </span>
+                    <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
+                      <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">schedule</span>
+                      <span><strong class="text-[#e0e8f0]">Horaires :</strong> ${esc(startTime || 'À choisir')} – ${esc(endTime || 'À choisir')}</span>
+                    </span>
+                  `}
                   ${paxText ? `
                     <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
                       <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">group</span>
@@ -359,7 +419,7 @@
             <div class="mt-6 pt-5 border-t border-[#2a3a48]/60">
               <h4 class="text-sm font-semibold uppercase tracking-wider text-[#a0b4c4] mb-3">Options incluses dans cette formule :</h4>
               <div class="space-y-2">
-                ${Object.entries(options).map(([key, val]) => `
+                ${Object.entries(displayOptions).map(([key, val]) => `
                   <div class="flex items-center justify-between bg-[#141c2e]/60 rounded-lg p-3 border border-[#2a3a48]/40 text-sm">
                     <div class="flex items-center gap-2">
                       <span class="material-symbols-outlined text-[#7dd3fc] text-[18px]">check_circle</span>
@@ -382,7 +442,7 @@
     if (hasInvalidDates) {
       cartContainer.insertAdjacentHTML('beforeend', `
         <div class="rounded-xl border border-amber-300/30 bg-amber-300/10 p-4 text-sm text-amber-100" role="alert">
-          <strong>Dates de séjour manquantes.</strong> Chaque prestation doit avoir une date d'arrivée et une date de départ (départ après arrivée). Utilisez « Modifier ma sélection » pour compléter les dates avant de payer.
+          <strong>Informations de réservation incomplètes.</strong> Les séjours doivent avoir une date de début et une date de fin valides. Les événements doivent avoir une date, une heure de début et une heure de fin (postérieure à l’heure de début). Utilisez « Modifier ma sélection » pour compléter ces informations avant de payer.
         </div>
       `);
       checkoutBtn.classList.add('opacity-50', 'pointer-events-none');

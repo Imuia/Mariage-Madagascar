@@ -220,17 +220,26 @@
       }
 
       confirmedItemsList.innerHTML = items.map((item, index) => {
-        const localItem = findLocalCartItem(item, index, localCartSnapshot);
+        const localItem = findLocalCartItem(item, index, localCartSnapshot) || {};
         const savedOptions = item.options_snapshot && typeof item.options_snapshot === 'object' ? item.options_snapshot : {};
         const arrivalDate = item.booking_date || item.arrival_date || savedOptions.arrival_date || localItem.booking_date || localItem.arrival_date || '';
         const departureDate = item.booking_end_date || item.departure_date || savedOptions.booking_end_date || savedOptions.departure_date || localItem.booking_end_date || localItem.departure_date || '';
+        const bookingMode = savedOptions.booking_mode || item.booking_mode || localItem.booking_mode || (departureDate ? 'duration' : 'event');
+        const eventDate = savedOptions.event_date || item.event_date || localItem.event_date || arrivalDate;
+        const startTime = savedOptions.booking_start_time || savedOptions.event_start_time || item.booking_start_time || item.event_start_time || localItem.booking_start_time || localItem.event_start_time || '';
+        const endTime = savedOptions.booking_end_time || savedOptions.event_end_time || item.booking_end_time || item.event_end_time || localItem.booking_end_time || localItem.event_end_time || '';
         return `
           <div class="p-4 bg-[#141c2e]/60 rounded-xl border border-[#2a3a48]/50 flex justify-between items-start gap-4">
             <div>
               <div class="font-semibold text-[#e0e8f0]">${esc(item.product_name || item.name || localItem.name || 'Prestation')}</div>
               ${item.variation_name ? `<div class="text-xs text-[#a0b4c4]">${esc(item.variation_name)}</div>` : ''}
-              <div class="text-xs text-[#7dd3fc] mt-2">Date d'arrivée : ${esc(formatDate(arrivalDate))}</div>
-              <div class="text-xs text-[#7dd3fc] mt-1">Date de départ : ${esc(formatDate(departureDate))}</div>
+              ${bookingMode === 'duration' ? `
+                <div class="text-xs text-[#7dd3fc] mt-2">Date de début / arrivée : ${esc(formatDate(arrivalDate))}</div>
+                <div class="text-xs text-[#7dd3fc] mt-1">Date de fin / départ : ${esc(formatDate(departureDate))}</div>
+              ` : `
+                <div class="text-xs text-[#7dd3fc] mt-2">Date de l’événement : ${esc(formatDate(eventDate))}</div>
+                <div class="text-xs text-[#7dd3fc] mt-1">Horaires : ${esc(startTime || '—')} – ${esc(endTime || '—')}</div>
+              `}
             </div>
             <div class="font-bold text-[#e0e8f0] text-lg whitespace-nowrap">${euro(item.total_price)}</div>
           </div>

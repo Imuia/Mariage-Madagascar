@@ -394,6 +394,24 @@
     return Number.isNaN(date.getTime()) ? 'À sélectionner' : date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
+  function itemBookingMode(item) {
+    if (item?.booking_mode === 'duration' || item?.booking_mode === 'event') return item.booking_mode;
+    const options = item?.options || item?.options_snapshot || {};
+    return (item?.booking_end_date || item?.departure_date || options?.booking_end_date || options?.departure_date)
+      ? 'duration'
+      : 'event';
+  }
+
+  function itemStartTime(item) {
+    const options = item?.options || item?.options_snapshot || {};
+    return item?.booking_start_time || item?.event_start_time || options?.booking_start_time || options?.event_start_time || '';
+  }
+
+  function itemEndTime(item) {
+    const options = item?.options || item?.options_snapshot || {};
+    return item?.booking_end_time || item?.event_end_time || options?.booking_end_time || options?.event_end_time || '';
+  }
+
   function renderSummary() {
     const cart = getCart();
     if (!cart.length) {
@@ -407,14 +425,23 @@
     cart.forEach(item => {
       const itemTotal = Number(item.price || 0) * Number(item.quantity || 1);
       subtotal += itemTotal;
+      const mode = itemBookingMode(item);
+      const firstDate = item.booking_date || item.event_date || item.arrival_date || '';
+      const startTime = itemStartTime(item);
+      const endTime = itemEndTime(item);
 
       html += `
         <div class="p-3 bg-[#141c2e]/60 rounded-xl border border-[#2a3a48]/50">
           <div class="font-semibold text-[#e0e8f0]">${esc(item.name)}</div>
           ${item.variation_name ? `<div class="text-xs text-[#a0b4c4]">${esc(item.variation_name)}</div>` : ''}
           <div class="mt-3 space-y-1 text-xs text-[#a0b4c4]">
-            <div class="flex flex-wrap justify-between gap-2"><span>Date d'arrivée</span><span class="text-[#e0e8f0]">${esc(formatDate(item.booking_date || item.arrival_date))}</span></div>
-            <div class="flex flex-wrap justify-between gap-2"><span>Date de départ</span><span class="text-[#e0e8f0]">${esc(formatDate(item.booking_end_date || item.departure_date))}</span></div>
+            ${mode === 'duration' ? `
+              <div class="flex flex-wrap justify-between gap-2"><span>Date de début / arrivée</span><span class="text-[#e0e8f0]">${esc(formatDate(firstDate))}</span></div>
+              <div class="flex flex-wrap justify-between gap-2"><span>Date de fin / départ</span><span class="text-[#e0e8f0]">${esc(formatDate(item.booking_end_date || item.departure_date || item.options?.booking_end_date || item.options?.departure_date))}</span></div>
+            ` : `
+              <div class="flex flex-wrap justify-between gap-2"><span>Date de l’événement</span><span class="text-[#e0e8f0]">${esc(formatDate(firstDate))}</span></div>
+              <div class="flex flex-wrap justify-between gap-2"><span>Horaires</span><span class="text-[#e0e8f0]">${esc(startTime || 'À choisir')} – ${esc(endTime || 'À choisir')}</span></div>
+            `}
             <div class="flex justify-between items-center pt-2 mt-2 border-t border-[#2a3a48]/60"><span>Montant</span><span class="font-bold text-[#7dd3fc] text-sm">${euro(itemTotal)}</span></div>
           </div>
         </div>
@@ -432,14 +459,24 @@
 
     const cart = getCart();
     const invalidDateItem = cart.find(item => {
-      const arrival = item.booking_date || item.arrival_date || '';
-      const departure = item.booking_end_date || item.departure_date || '';
-      return !arrival || !departure || departure <= arrival;
+      const mode = itemBookingMode(item);
+      const firstDate = item.booking_date || item.event_date || item.arrival_date || '';
+      if (!firstDate) return true;
+      if (mode === 'duration') {
+        const lastDate = item.booking_end_date || item.departure_date || item.options?.booking_end_date || item.options?.departure_date || '';
+        return !lastDate || lastDate <= firstDate;
+      }
+      const startTime = itemStartTime(item);
+      const endTime = itemEndTime(item);
+      return !startTime || !endTime || endTime <= startTime;
     });
     if (!cart.length || invalidDateItem) {
+      const invalidMode = invalidDateItem ? itemBookingMode(invalidDateItem) : '';
       errorMessage.textContent = !cart.length
         ? 'Votre panier est vide. Retournez au panier pour sélectionner une prestation.'
-        : `Les dates d'arrivée et de départ sont obligatoires pour « ${invalidDateItem.name || 'cette prestation'} ». Le départ doit être après l'arrivée. Retournez au panier et cliquez sur « Modifier ma sélection ».`;
+        : invalidMode === 'duration'
+          ? `Les dates de début et de fin doivent être valides pour « ${invalidDateItem.name || 'cette prestation'} ». La date de fin doit être postérieure à la date de début. Retournez à la fiche produit pour corriger les dates.`
+          : `La date et les horaires sont obligatoires pour « ${invalidDateItem.name || 'cette prestation'} ». L’heure de fin doit être postérieure à l’heure de début. Retournez à la fiche produit pour corriger la réservation.`;
       errorMessage.classList.remove('hidden');
       return;
     }
