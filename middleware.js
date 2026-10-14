@@ -4,6 +4,13 @@
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://qrkinjuhtyfptldlvdyg.supabase.co';
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
 
+// Primary Admin email list with automatic super_admin privileges
+const ADMIN_EMAILS = [
+  'info@mariage-madagascar.com',
+  'contact@mariage-madagascar.com',
+  'admin@mariage-madagascar.com'
+];
+
 // Route Permission Matrix by Role
 const ROLE_PERMISSIONS = {
   super_admin: ['*'],
@@ -82,7 +89,6 @@ export default async function middleware(request) {
       loginUrl.searchParams.set('redirect', pageName);
 
       const response = Response.redirect(loginUrl.toString(), 307);
-      // Delete cookies by setting expired headers
       response.headers.append('Set-Cookie', 'sb-access-token=; Path=/; Max-Age=0; SameSite=Lax; Secure');
       response.headers.append('Set-Cookie', 'sb-refresh-token=; Path=/; Max-Age=0; SameSite=Lax; Secure');
       return response;
@@ -94,25 +100,35 @@ export default async function middleware(request) {
       return Response.redirect(loginUrl.toString(), 307);
     }
 
+    // Determine role:
+    // 1) App Metadata / User Metadata / DB Profile
     let role = user.app_metadata?.role || user.user_metadata?.role;
 
-    // Fetch Profile Role from DB
-    try {
-      const profileRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}&select=role`, {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'apikey': SUPABASE_ANON_KEY
-        }
-      });
+    // 2) If user email is in official ADMIN_EMAILS list, automatically grant super_admin
+    const userEmail = (user.email || '').toLowerCase();
+    if (ADMIN_EMAILS.includes(userEmail)) {
+      role = 'super_admin';
+    }
 
-      if (profileRes.ok) {
-        const profiles = await profileRes.json();
-        if (Array.isArray(profiles) && profiles.length > 0 && profiles[0].role) {
-          role = profiles[0].role;
+    // 3) Query profiles table if role is not yet super_admin
+    if (!role || role !== 'super_admin') {
+      try {
+        const profileRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}&select=role`, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'apikey': SUPABASE_ANON_KEY
+          }
+        });
+
+        if (profileRes.ok) {
+          const profiles = await profileRes.json();
+          if (Array.isArray(profiles) && profiles.length > 0 && profiles[0].role) {
+            role = profiles[0].role;
+          }
         }
+      } catch (dbErr) {
+        console.warn('Profile fetch warning in middleware:', dbErr);
       }
-    } catch (dbErr) {
-      console.warn('Profile fetch warning in middleware:', dbErr);
     }
 
     if (!role) {

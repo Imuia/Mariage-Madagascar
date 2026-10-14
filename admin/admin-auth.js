@@ -2,6 +2,13 @@
 (function () {
   'use strict';
 
+  // Primary Admin email list with automatic super_admin privileges
+  const ADMIN_EMAILS = [
+    'info@mariage-madagascar.com',
+    'contact@mariage-madagascar.com',
+    'admin@mariage-madagascar.com'
+  ];
+
   // Allowed admin roles according to schema.sql profiles table constraint:
   // ('super_admin', 'admin', 'commercial', 'wedding_planner', 'travel_planner', 'accounting', 'support')
   const ALLOWED_ADMIN_ROLES = [
@@ -47,19 +54,35 @@
     return null;
   }
 
-  function setAuthCookie(accessToken, refreshToken) {
-    const maxAge = 60 * 60 * 24 * 7; // 7 days
-    if (accessToken) {
-      document.cookie = `sb-access-token=${accessToken}; path=/; max-age=${maxAge}; SameSite=Lax; Secure`;
-    }
-    if (refreshToken) {
-      document.cookie = `sb-refresh-token=${refreshToken}; path=/; max-age=${maxAge}; SameSite=Lax; Secure`;
-    }
-  }
+  async function syncServerSession(accessToken, refreshToken, isLogout = false) {
+    try {
+      if (isLogout) {
+        await fetch('/api/auth-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'logout' })
+        });
+        document.cookie = 'sb-access-token=; path=/; max-age=0; SameSite=Lax; Secure';
+        document.cookie = 'sb-refresh-token=; path=/; max-age=0; SameSite=Lax; Secure';
+        return;
+      }
 
-  function clearAuthCookie() {
-    document.cookie = 'sb-access-token=; path=/; max-age=0; SameSite=Lax; Secure';
-    document.cookie = 'sb-refresh-token=; path=/; max-age=0; SameSite=Lax; Secure';
+      if (accessToken) {
+        const maxAge = 60 * 60 * 24 * 7;
+        document.cookie = `sb-access-token=${accessToken}; path=/; max-age=${maxAge}; SameSite=Lax; Secure`;
+        if (refreshToken) {
+          document.cookie = `sb-refresh-token=${refreshToken}; path=/; max-age=${maxAge}; SameSite=Lax; Secure`;
+        }
+
+        await fetch('/api/auth-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'set-session', accessToken, refreshToken })
+        });
+      }
+    } catch (e) {
+      console.warn('Session sync warning:', e);
+    }
   }
 
   function getCleanCurrentPath() {
@@ -124,22 +147,26 @@
     const session = sessionData ? sessionData.session : null;
 
     if (sessionErr || !session || !session.user) {
-      clearAuthCookie();
+      await syncServerSession(null, null, true);
       if (!isPublicAuthPage) redirectToLogin();
       return null;
     }
 
-    // Sync cookies with current session tokens
-    setAuthCookie(session.access_token, session.refresh_token);
+    await syncServerSession(session.access_token, session.refresh_token, false);
 
     const user = session.user;
+    const userEmail = (user.email || '').toLowerCase();
     const profile = await getUserProfile(user.id);
 
     const appRole = user.app_metadata && user.app_metadata.role;
     const userRole = user.user_metadata && user.user_metadata.role;
     const profileRole = profile ? profile.role : null;
 
-    const effectiveRole = profileRole || appRole || userRole;
+    let effectiveRole = profileRole || appRole || userRole;
+    if (ADMIN_EMAILS.includes(userEmail)) {
+      effectiveRole = 'super_admin';
+    }
+
     const isAdminAuthorized = ALLOWED_ADMIN_ROLES.includes(effectiveRole);
 
     if (isPublicAuthPage) {
@@ -153,7 +180,7 @@
 
     if (!isAdminAuthorized) {
       alert("Accès refusé : votre compte n'a pas les autorisations d'administrateur.");
-      clearAuthCookie();
+      await syncServerSession(null, null, true);
       await client.auth.signOut();
       redirectToLogin();
       return null;
@@ -177,7 +204,7 @@
       userNameEl.textContent = name || 'Administrateur';
     }
     if (userRoleEl) {
-      userRoleEl.textContent = effectiveRole ? effectiveRole.replace('_', ' ').toUpperCase() : 'ADMIN';
+      userRoleEl.textContent = effectiveRole ? effectiveRole.replace('_', ' ').toUpperCase() : 'SUPER ADMIN';
     }
     if (userAvatarEl && profile && profile.avatar_url) {
       userAvatarEl.src = profile.avatar_url;
@@ -205,17 +232,22 @@
     if (error) throw error;
 
     const user = data.user;
+    const userEmail = (user.email || '').toLowerCase();
     const profile = await getUserProfile(user.id);
-    const effectiveRole = (profile && profile.role) || (user.app_metadata && user.app_metadata.role) || (user.user_metadata && user.user_metadata.role);
+    let effectiveRole = (profile && profile.role) || (user.app_metadata && user.app_metadata.role) || (user.user_metadata && user.user_metadata.role);
+
+    if (ADMIN_EMAILS.includes(userEmail)) {
+      effectiveRole = 'super_admin';
+    }
 
     if (!ALLOWED_ADMIN_ROLES.includes(effectiveRole)) {
-      clearAuthCookie();
+      await syncServerSession(null, null, true);
       await client.auth.signOut();
       throw new Error("Ce compte ne possède pas les privilèges administrateur.");
     }
 
     if (data.session) {
-      setAuthCookie(data.session.access_token, data.session.refresh_token);
+      await syncServerSession(data.session.access_token, data.session.refresh_token, false);
     }
 
     return data;
@@ -223,7 +255,7 @@
 
   async function signOut() {
     const client = getClient();
-    clearAuthCookie();
+    await syncServerSession(null, null, true);
     if (client) {
       try {
         await client.auth.signOut();
