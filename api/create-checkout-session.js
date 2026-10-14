@@ -244,8 +244,12 @@ module.exports = async function handler(req, res) {
     const orderNumber = `MM-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
     // VIREMENT BANCAIRE : créer une commande en attente sans créer de session Stripe.
-    // Aucun champ de schéma supplémentaire n'est requis ; le mode est conservé dans notes.
+    // La devise du virement est enregistrée dans notes, sans changer la devise du panier (EUR).
     if (paymentMethod === 'bank_transfer') {
+      const bankTransferCurrency = String(customer.bank_transfer_currency || 'EUR').trim().toUpperCase();
+      if (!['EUR', 'USD'].includes(bankTransferCurrency)) {
+        return res.status(400).json({ message: 'Devise de virement invalide. Choisissez EUR ou USD.' });
+      }
       const bankTransferOrderRecord = {
         order_number: orderNumber,
         guest_first_name: customer.first_name,
@@ -263,6 +267,7 @@ module.exports = async function handler(req, res) {
         notes: [
           customer.notes || '',
           'Mode de paiement : virement bancaire',
+          `Devise du virement choisie par le client : ${bankTransferCurrency}`,
           ...verifiedOrderItems.map((entry, index) => {
             const details = entry.options_snapshot || {};
             const label = `Prestation ${index + 1} — ${entry.product_name}`;
