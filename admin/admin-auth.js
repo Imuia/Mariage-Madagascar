@@ -14,6 +14,17 @@
     'support'
   ];
 
+  // Role permissions matrix
+  const ROLE_PERMISSIONS = {
+    super_admin: ['*'],
+    admin: ['*'],
+    accounting: ['index.html', 'finance.html', 'paiements.html', 'facturation.html', 'commissions.html', 'rapports.html'],
+    commercial: ['index.html', 'crm.html', 'sejours.html', 'mariages.html'],
+    wedding_planner: ['index.html', 'crm.html', 'mariages.html', 'sejours.html'],
+    travel_planner: ['index.html', 'crm.html', 'sejours.html'],
+    support: ['index.html', 'parametres.html']
+  };
+
   function getSupabaseConfig() {
     if (window.MARIAGE_SUPABASE && window.MARIAGE_SUPABASE.url && window.MARIAGE_SUPABASE.anonKey) {
       return window.MARIAGE_SUPABASE;
@@ -36,6 +47,21 @@
     return null;
   }
 
+  function setAuthCookie(accessToken, refreshToken) {
+    const maxAge = 60 * 60 * 24 * 7; // 7 days
+    if (accessToken) {
+      document.cookie = `sb-access-token=${accessToken}; path=/; max-age=${maxAge}; SameSite=Lax; Secure`;
+    }
+    if (refreshToken) {
+      document.cookie = `sb-refresh-token=${refreshToken}; path=/; max-age=${maxAge}; SameSite=Lax; Secure`;
+    }
+  }
+
+  function clearAuthCookie() {
+    document.cookie = 'sb-access-token=; path=/; max-age=0; SameSite=Lax; Secure';
+    document.cookie = 'sb-refresh-token=; path=/; max-age=0; SameSite=Lax; Secure';
+  }
+
   function getCleanCurrentPath() {
     const path = window.location.pathname.split('/').pop() || 'index.html';
     return path;
@@ -43,7 +69,6 @@
 
   function sanitizeRedirect(target) {
     if (!target) return 'index.html';
-    // Remove query params or hashes for safety check
     const cleanName = target.split('?')[0].split('#')[0].toLowerCase();
     const validPages = [
       'index.html',
@@ -91,10 +116,7 @@
 
     const client = getClient();
     if (!client) {
-      console.warn('Supabase SDK not initialized yet.');
-      if (!isPublicAuthPage) {
-        redirectToLogin();
-      }
+      if (!isPublicAuthPage) redirectToLogin();
       return null;
     }
 
@@ -102,17 +124,17 @@
     const session = sessionData ? sessionData.session : null;
 
     if (sessionErr || !session || !session.user) {
-      if (!isPublicAuthPage) {
-        redirectToLogin();
-      }
+      clearAuthCookie();
+      if (!isPublicAuthPage) redirectToLogin();
       return null;
     }
+
+    // Sync cookies with current session tokens
+    setAuthCookie(session.access_token, session.refresh_token);
 
     const user = session.user;
     const profile = await getUserProfile(user.id);
 
-    // Determine admin privilege
-    // 1) App Metadata or User Metadata role
     const appRole = user.app_metadata && user.app_metadata.role;
     const userRole = user.user_metadata && user.user_metadata.role;
     const profileRole = profile ? profile.role : null;
@@ -131,12 +153,21 @@
 
     if (!isAdminAuthorized) {
       alert("Accès refusé : votre compte n'a pas les autorisations d'administrateur.");
+      clearAuthCookie();
       await client.auth.signOut();
       redirectToLogin();
       return null;
     }
 
-    // Populate sidebar user details if elements exist
+    // Granular role permission check
+    const allowedPages = ROLE_PERMISSIONS[effectiveRole];
+    if (allowedPages && !allowedPages.includes('*') && !allowedPages.includes(page)) {
+      alert(`Accès restreint : le rôle ${effectiveRole} n'a pas accès à la page ${page}.`);
+      window.location.href = 'index.html';
+      return null;
+    }
+
+    // Populate sidebar user details
     const userNameEl = document.getElementById('mm-user-name');
     const userRoleEl = document.getElementById('mm-user-role');
     const userAvatarEl = document.getElementById('mm-user-avatar');
@@ -171,17 +202,20 @@
       password
     });
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     const user = data.user;
     const profile = await getUserProfile(user.id);
     const effectiveRole = (profile && profile.role) || (user.app_metadata && user.app_metadata.role) || (user.user_metadata && user.user_metadata.role);
 
     if (!ALLOWED_ADMIN_ROLES.includes(effectiveRole)) {
+      clearAuthCookie();
       await client.auth.signOut();
       throw new Error("Ce compte ne possède pas les privilèges administrateur.");
+    }
+
+    if (data.session) {
+      setAuthCookie(data.session.access_token, data.session.refresh_token);
     }
 
     return data;
@@ -189,6 +223,7 @@
 
   async function signOut() {
     const client = getClient();
+    clearAuthCookie();
     if (client) {
       try {
         await client.auth.signOut();
