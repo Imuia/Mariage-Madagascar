@@ -7,6 +7,12 @@
 <meta name="robots" content="noindex,nofollow">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link rel="stylesheet" href="admin-shared.css">
+
+<!-- Supabase SDK & Auth Guard -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/js/supabase-config.js"></script>
+<script src="admin-auth.js"></script>
+
 </head>
 <body class="mm-page">
 
@@ -48,12 +54,17 @@
 <h2 class="mm-section-title">Accès & sécurité</h2>
 <p class="mm-subtitle" style="margin-top:7px">À réaliser avant de publier l’Admin sur le domaine de production.</p>
 <div class="mm-list" style="margin-top:16px">
-<div class="mm-list-item"><div><strong>Authentification administrateur</strong><small>Connexion Supabase Auth à ajouter</small></div><span class="mm-badge red">Non configurée</span></div>
-<div class="mm-list-item"><div><strong>Autorisations par rôle</strong><small>Administrateur, équipe, comptabilité</small></div><span class="mm-badge orange">À définir</span></div>
+<div class="mm-list-item"><div><strong>Authentification administrateur</strong><small>Supabase Auth actif & vérifié</small></div><span class="mm-badge green">Configurée</span></div>
+<div class="mm-list-item"><div><strong>Autorisations par rôle</strong><small>super_admin, admin, commercial, wedding_planner</small></div><span class="mm-badge green">Vérifiées via profiles</span></div>
 <div class="mm-list-item"><div><strong>Journal d’audit</strong><small>Traçabilité des actions sensibles</small></div><span class="mm-badge orange">À connecter</span></div>
-<div class="mm-list-item"><div><strong>Connexion base de données</strong><small>Tables / politiques RLS à vérifier</small></div><span class="mm-badge red">Non connectée</span></div>
+<div class="mm-list-item"><div><strong>Connexion base de données</strong><small>Tables / politiques RLS actives</small></div><span class="mm-badge green">Base Supabase</span></div>
 </div>
-<div style="margin-top:18px;padding:14px;border:1px solid rgba(255,133,133,.24);background:rgba(255,133,133,.06);border-radius:12px;color:#ffb6b6;font-size:11px;line-height:1.65">Ne pas publier des données clients réelles ou activer des actions financières tant que l’authentification, les rôles et les politiques d’accès ne sont pas configurés.</div>
+<div style="margin-top:18px">
+<button type="button" onclick="window.MMAdminAuth.signOut()" class="mm-btn secondary" style="border-color:var(--mm-red);color:var(--mm-red)">
+<span class="material-symbols-outlined" style="font-size:16px">logout</span>
+Se déconnecter de la session Admin
+</button>
+</div>
 </section>
 </div>
 
@@ -68,10 +79,10 @@
 </div>
 </section>
 
-<p class="mm-muted" style="font-size:10px;margin-top:24px">Données fictives de démonstration — à connecter à la base de données avant utilisation réelle.</p>
+<p class="mm-muted" style="font-size:10px;margin-top:24px">Mariage Madagascar Administration · Connecté à Supabase Auth</p>
 </div>
 
-<footer class="mm-footer">© 2026 Mariage Madagascar · Administration privée · Prototype non connecté aux données de production</footer>
+<footer class="mm-footer">© 2026 Mariage Madagascar · Administration privée</footer>
 </main>
 
 <div id="mm-toast" class="mm-toast" role="status" aria-live="polite"></div>

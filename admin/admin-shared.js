@@ -29,16 +29,20 @@
 
       <!-- Main Sidebar Container -->
       <aside id="mm-admin-sidebar" class="mm-admin-sidebar" aria-label="Navigation Admin">
-        <!-- Brand Header -->
+        <!-- Brand Header with Official Logo -->
         <div class="mm-sidebar-brand">
-          <div class="mm-brand-logo">
-            <span class="material-symbols-outlined text-primary text-xl">ac_unit</span>
-          </div>
-          <div class="mm-brand-text">
-            <h1 class="text-base font-headline font-semibold text-primary leading-tight">Admin Mariage Madagascar</h1>
-            <p class="text-[10px] text-on-surface-variant font-medium uppercase tracking-wider">Luxury Madagascar</p>
-          </div>
-          <button id="mm-sidebar-close" class="mm-sidebar-close-btn md:hidden" aria-label="Fermer le menu">
+          <a href="index.html" class="mm-brand-link flex items-center gap-3 no-underline group">
+            <div class="mm-brand-logo-wrap p-1 rounded-xl bg-surface-container/60 border border-primary/20 group-hover:border-primary/50 transition-all flex items-center justify-center">
+              <img src="/assets/logo/logo-mariage-madagascar.2.png"
+                   alt="Logo officiel Admin Mariage Madagascar"
+                   class="h-9 w-auto object-contain max-w-[140px]" />
+            </div>
+            <div class="mm-brand-text flex flex-col">
+              <span class="text-xs font-headline font-bold text-primary leading-tight tracking-tight">Admin Mariage</span>
+              <span class="text-[9px] text-on-surface-variant font-medium uppercase tracking-wider">Madagascar</span>
+            </div>
+          </a>
+          <button id="mm-sidebar-close" class="mm-sidebar-close-btn md:hidden ml-auto" aria-label="Fermer le menu">
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
@@ -92,18 +96,28 @@
           </a>
         </nav>
 
-        <!-- Bottom Profile Section -->
+        <!-- Bottom Profile & Logout Section -->
         <div class="mm-sidebar-footer">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full border border-primary/20 overflow-hidden flex-shrink-0 bg-surface-container">
-              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCc_4P6656nhCyCLJokjeiftXvyUf4O5fFzAp9wV8yEIwSSOwNJXy9xjjUtgtq8LTKkkMGKJKBbtt8EymINv4gnLigJaxY3xyvs3TFRObrXDpIakpRpLqhMEVPzbYq7yLZ_mVXw2evKr-g82wDEvWPCVbUfpbGYQtcFlT995a03Vs0XrFzMPQCBLrYoZ-Fy487J8-l86z67b67xTKJXhrLSySS2CHfYu6UDkZ3xgo3cfvURfNBdmgb-iQ"
-                   alt="Admin Profile"
-                   class="w-full h-full object-cover">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-8 h-8 rounded-full border border-primary/20 overflow-hidden flex-shrink-0 bg-surface-container">
+                <img id="mm-user-avatar"
+                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuCc_4P6656nhCyCLJokjeiftXvyUf4O5fFzAp9wV8yEIwSSOwNJXy9xjjUtgtq8LTKkkMGKJKBbtt8EymINv4gnLigJaxY3xyvs3TFRObrXDpIakpRpLqhMEVPzbYq7yLZ_mVXw2evKr-g82wDEvWPCVbUfpbGYQtcFlT995a03Vs0XrFzMPQCBLrYoZ-Fy487J8-l86z67b67xTKJXhrLSySS2CHfYu6UDkZ3xgo3cfvURfNBdmgb-iQ"
+                     alt="Admin Profile"
+                     class="w-full h-full object-cover">
+              </div>
+              <div class="flex flex-col min-w-0">
+                <span id="mm-user-name" class="text-xs font-semibold text-on-surface truncate">Admin Profile</span>
+                <span id="mm-user-role" class="text-[10px] text-on-surface-variant truncate">System Master</span>
+              </div>
             </div>
-            <div class="flex flex-col min-w-0">
-              <span class="text-xs font-semibold text-on-surface truncate">Admin Profile</span>
-              <span class="text-[10px] text-on-surface-variant truncate">System Master</span>
-            </div>
+            <button id="mm-logout-btn"
+                    type="button"
+                    title="Se déconnecter"
+                    class="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors flex-shrink-0"
+                    aria-label="Se déconnecter">
+              <span class="material-symbols-outlined text-lg">logout</span>
+            </button>
           </div>
         </div>
       </aside>
@@ -175,6 +189,19 @@
         }
       });
     });
+
+    // Logout button handler
+    const logoutBtn = document.getElementById('mm-logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (window.MMAdminAuth && typeof window.MMAdminAuth.signOut === 'function') {
+          window.MMAdminAuth.signOut();
+        } else {
+          window.location.href = 'connexion.html';
+        }
+      });
+    }
   }
 
   if (document.readyState === 'loading') {
