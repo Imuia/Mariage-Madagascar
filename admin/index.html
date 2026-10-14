@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html class="dark" data-admin-page="index.html" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tableau de bord — Admin Mariage Madagascar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-high": "#1a2438",
+                        "on-secondary-container": "#c0d8e8",
+                        "on-tertiary-fixed-variant": "#4d2a73",
+                        "surface-bright": "#1a2438",
+                        "surface-container-low": "#111828",
+                        "error": "#ff6b6b",
+                        "error-container": "#3d1414",
+                        "surface": "#0f1524",
+                        "on-surface": "#e0e8f0",
+                        "tertiary-fixed": "#e8d0ff",
+                        "secondary-fixed-dim": "#88b4cc",
+                        "on-primary-fixed": "#001f2e",
+                        "inverse-primary": "#0a4c6e",
+                        "tertiary-fixed-dim": "#c8a0f0",
+                        "outline": "#4a6070",
+                        "surface-variant": "#1a2438",
+                        "on-primary-container": "#c8eaff",
+                        "surface-dim": "#0f1524",
+                        "tertiary-container": "#3d2060",
+                        "on-primary": "#001f2e",
+                        "inverse-on-surface": "#0a0e1a",
+                        "secondary-fixed": "#c0d8e8",
+                        "on-error": "#1a0000",
+                        "on-error-container": "#ffb3b3",
+                        "primary-container": "#0e4d6e",
+                        "on-tertiary-container": "#e8d0ff",
+                        "on-surface-variant": "#a0b4c4",
+                        "inverse-surface": "#e0e8f0",
+                        "surface-container-lowest": "#0a0e1a",
+                        "outline-variant": "#2a3a48",
+                        "secondary-container": "#1a3a4e",
+                        "on-secondary-fixed": "#0d1f2b",
+                        "secondary": "#88b4cc",
+                        "primary-fixed": "#c8eaff",
+                        "on-secondary": "#001f2e",
+                        "on-secondary-fixed-variant": "#2a4a5e",
+                        "tertiary": "#c8a0f0",
+                        "surface-container": "#141c2e",
+                        "primary-fixed-dim": "#7dd3fc",
+                        "on-tertiary": "#1a002e",
+                        "background": "#0a0e1a",
+                        "on-tertiary-fixed": "#1a002e",
+                        "surface-tint": "#7dd3fc",
+                        "on-primary-fixed-variant": "#004d73",
+                        "on-background": "#e0e8f0",
+                        "surface-container-highest": "#202c42",
+                        "primary": "#7dd3fc"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter", "sans-serif"],
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(15, 21, 36, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(125, 211, 252, 0.1);
+        }
+        .glass-panel-elevated {
+            background: rgba(15, 21, 36, 0.75);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(125, 211, 252, 0.15);
+            box-shadow: 0 0 30px rgba(125, 211, 252, 0.05);
+        }
+        .text-glow {
+            text-shadow: 0 0 10px rgba(125, 211, 252, 0.3);
+        }
+    </style>
+<link href="admin-shared.css" rel="stylesheet"/></head>
+<body class="bg-background text-on-surface font-body min-h-screen flex antialiased overflow-x-hidden selection:bg-primary/30 selection:text-primary">
+<!-- Decorative Ambient Light -->
+<div class="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[120px] pointer-events-none z-0"></div>
+<div class="fixed bottom-[-20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-tertiary/5 blur-[100px] pointer-events-none z-0"></div>
+<!-- SideNavBar (Shared Component) -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface/60 backdrop-blur-xl border-r border-primary/10 shadow-[0_0_30px_rgba(125,211,252,0.05)] p-4 gap-4 z-50">
+<!-- Brand Header -->
+<div class="flex items-center gap-4 px-4 py-6 mb-4">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center shadow-[0_0_15px_rgba(125,211,252,0.1)]">
+<span class="material-symbols-outlined text-primary text-xl">ac_unit</span>
+</div>
+<div>
+<h1 class="text-xl font-headline font-semibold tracking-tight text-primary">Admin Mariage Madagascar</h1>
+<p class="text-xs text-on-surface-variant font-medium uppercase tracking-wider">Luxury Madagascar</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-2 font-body text-label-sm font-medium">
+<!-- Active Tab: Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary border border-primary/20 active:scale-95 transition-transform" href="index.html">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                Dashboard
+            </a>
+<!-- Inactive Tabs -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all duration-300 active:scale-95 transition-transform" href="crm.html">
+<span class="material-symbols-outlined">group</span>
+                CRM
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all duration-300 active:scale-95 transition-transform" href="sejours.html">
+<span class="material-symbols-outlined">explore</span>
+                Séjours
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all duration-300 active:scale-95 transition-transform" href="mariages.html">
+<span class="material-symbols-outlined">favorite</span>
+                Mariages
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all duration-300 active:scale-95 transition-transform" href="finance.html">
+<span class="material-symbols-outlined">payments</span>
+                Finance
+            </a>
+</nav>
+<!-- Bottom Profile Snippet (Optional context, keeping to design system) -->
+<div class="mt-auto px-4 py-4 border-t border-primary/5">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover border border-primary/20" data-alt="A macro photography style portrait of an elegant administrative professional in a high-end, dimly lit modern office space. The lighting is cinematic, featuring soft icy blue backlights that rim the silhouette against a deep navy black background, emphasizing a luxurious, premium, and calm aesthetic characteristic of the Mariage Madagascar design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCc_4P6656nhCyCLJokjeiftXvyUf4O5fFzAp9wV8yEIwSSOwNJXy9xjjUtgtq8LTKkkMGKJKBbtt8EymINv4gnLigJaxY3xyvs3TFRObrXDpIakpRpLqhMEVPzbYq7yLZ_mVXw2evKr-g82wDEvWPCVbUfpbGYQtcFlT995a03Vs0XrFzMPQCBLrYoZ-Fy487J8-l86z67b67xTKJXhrLSySS2CHfYu6UDkZ3xgo3cfvURfNBdmgb-iQ"/>
+<div class="flex-col flex">
+<span class="text-sm font-medium text-on-surface">Admin Profile</span>
+<span class="text-xs text-on-surface-variant">System Master</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 relative z-10 flex flex-col min-h-screen">
+<!-- TopAppBar (Shared Component) -->
+<header class="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] h-16 bg-surface/60 backdrop-blur-xl border-b border-primary/10 shadow-[0_0_20px_rgba(125,211,252,0.05)] flex justify-between items-center px-8 z-40">
+<!-- Search Bar (on_left) -->
+<div class="flex-1 max-w-md relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+<input class="w-full bg-surface-container/40 border border-primary/10 rounded-full py-2 pl-10 pr-4 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-body text-body-sm glass-panel" placeholder="Rechercher..." type="text"/>
+</div>
+<!-- Trailing Actions & Profile -->
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-primary/10 rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary shadow-[0_0_5px_#7dd3fc]"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-primary/10 rounded-full transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-px bg-primary/10 mx-2"></div>
+<img alt="Administrator" class="w-8 h-8 rounded-full border border-primary/30 object-cover" data-alt="A small circular avatar portrait of an administrator, softly lit with cool, ethereal blue tones against a dark background, fitting a premium, high-tech administrative dashboard interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDN3wUzKYfjY6XZnz5G52KZGd4UyMRCWsZgKikhEAglj_Hgg8t5B3jIjjL71FGedz-qb89jTcMYbB2SZw9QUNXXwhbojUUZA26qjVn3Mudz-qooeo8Yu15592NwktF84GhI_owuQ9L9J6wtUUL6PDlwRYZwOUuq4-2QpH6LPegoykhJQrotQ59SBMlwW5FAmdn9KklOZePL5Dc8ZYKxua2OTMClkVPAmv8Xr_ynneOXaDgdc1sBefHQqw"/>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="pt-24 p-6 lg:p-10 space-y-8 flex-1">
+<header class="mb-8">
+<h2 class="text-3xl font-headline font-semibold text-on-surface tracking-tight">Tableau de bord — Activité</h2>
+<p class="text-on-surface-variant mt-1 text-sm">Aperçu en temps réel des performances de Mariage Madagascar.</p>
+</header>
+<!-- KPIs Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+<!-- KPI 1: Chiffre d'affaires -->
+<div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:border-primary/30 transition-colors duration-500">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all"></div>
+<div class="flex justify-between items-start mb-4">
+<p class="text-sm font-medium text-on-surface-variant">Chiffre d'affaires total</p>
+<div class="p-2 bg-primary/10 rounded-lg border border-primary/10">
+<span class="material-symbols-outlined text-primary text-sm">euro</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="text-3xl font-headline font-bold text-on-surface text-glow">€1.2M</h3>
+<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">+12.5%</span>
+</div>
+</div>
+<!-- KPI 2: Mariages en cours -->
+<div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:border-primary/30 transition-colors duration-500">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-tertiary/5 rounded-full blur-2xl group-hover:bg-tertiary/10 transition-all"></div>
+<div class="flex justify-between items-start mb-4">
+<p class="text-sm font-medium text-on-surface-variant">Mariages en cours</p>
+<div class="p-2 bg-tertiary/10 rounded-lg border border-tertiary/10">
+<span class="material-symbols-outlined text-tertiary text-sm">favorite</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="text-3xl font-headline font-bold text-on-surface">14</h3>
+<span class="text-xs font-medium text-on-surface-variant">saison 2024</span>
+</div>
+</div>
+<!-- KPI 3: Nouveaux leads -->
+<div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:border-primary/30 transition-colors duration-500">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all"></div>
+<div class="flex justify-between items-start mb-4">
+<p class="text-sm font-medium text-on-surface-variant">Nouveaux leads (CRM)</p>
+<div class="p-2 bg-primary/10 rounded-lg border border-primary/10">
+<span class="material-symbols-outlined text-primary text-sm">group_add</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="text-3xl font-headline font-bold text-on-surface">42</h3>
+<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">+8 cette sem.</span>
+</div>
+</div>
+<!-- KPI 4: Taux de conversion -->
+<div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:border-primary/30 transition-colors duration-500">
+<div class="flex justify-between items-start mb-4">
+<p class="text-sm font-medium text-on-surface-variant">Taux de conversion</p>
+<div class="p-2 bg-surface-container-highest rounded-lg border border-outline-variant">
+<span class="material-symbols-outlined text-secondary text-sm">trending_up</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="text-3xl font-headline font-bold text-on-surface">6.8%</h3>
+<span class="text-xs font-medium text-on-surface-variant">-0.2% vs le mois dernier</span>
+</div>
+</div>
+</div>
+<!-- Middle Section: Chart & Tasks -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+<!-- Activity Chart (Spans 2 columns) -->
+<div class="xl:col-span-2 glass-panel-elevated rounded-2xl p-6 flex flex-col relative overflow-hidden">
+<!-- Subtle chart background grid pattern -->
+<div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(#7dd3fc 1px, transparent 1px); background-size: 20px 20px;"></div>
+<div class="flex justify-between items-center mb-6 relative z-10">
+<div>
+<h3 class="text-lg font-headline font-semibold text-on-surface">Revenus Mensuels</h3>
+<p class="text-xs text-on-surface-variant mt-1">Activité globale de l'année en cours</p>
+</div>
+<select class="bg-surface border border-primary/20 text-on-surface text-sm rounded-lg focus:ring-primary/50 focus:border-primary block p-2 backdrop-blur-md">
+<option>2024</option>
+<option>2023</option>
+</select>
+</div>
+<!-- CSS/SVG Simulated Chart -->
+<div class="flex-1 relative min-h-[250px] w-full flex items-end">
+<!-- Y Axis labels -->
+<div class="absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-on-surface-variant pb-6 pr-2">
+<span>150k</span>
+<span>100k</span>
+<span>50k</span>
+<span>0</span>
+</div>
+<!-- X Axis line -->
+<div class="absolute bottom-6 left-8 right-0 h-px bg-primary/10"></div>
+<!-- SVG Line Chart Simulation -->
+<div class="w-full h-full pl-8 pb-6 relative">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 100 100">
+<!-- Gradient definition for the area under line -->
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#7dd3fc" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#7dd3fc" stop-opacity="0"></stop>
+</lineargradient>
+<!-- Glow filter for the line -->
+<filter height="140%" id="glow" width="140%" x="-20%" y="-20%">
+<fegaussianblur result="blur" stddeviation="2"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
+</filter>
+</defs>
+<!-- Filled area -->
+<path d="M0,80 C20,70 30,90 50,40 C70,-10 80,50 100,20 L100,100 L0,100 Z" fill="url(#chartGradient)"></path>
+<!-- The glowing line -->
+<path d="M0,80 C20,70 30,90 50,40 C70,-10 80,50 100,20" fill="none" filter="url(#glow)" stroke="#7dd3fc" stroke-width="2"></path>
+<!-- Data points (dots) -->
+<circle cx="50" cy="40" fill="#0f1524" r="2" stroke="#7dd3fc" stroke-width="1.5"></circle>
+<circle cx="100" cy="20" fill="#0f1524" r="2" stroke="#7dd3fc" stroke-width="1.5"></circle>
+<!-- Tooltip simulation -->
+<g transform="translate(40, 20)">
+<rect fill="#1a2438" height="20" rx="4" stroke="rgba(125,211,252,0.3)" stroke-width="1" width="40" x="0" y="0"></rect>
+<text fill="#e0e8f0" font-family="Inter" font-size="8" font-weight="600" text-anchor="middle" x="20" y="14">€95k</text>
+</g>
+</svg>
+<!-- X Axis labels -->
+<div class="absolute bottom-0 left-8 right-0 flex justify-between text-[10px] text-on-surface-variant pt-2 px-2">
+<span>Jan</span>
+<span>Mar</span>
+<span>Mai</span>
+<span>Jul</span>
+<span>Sep</span>
+<span>Nov</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Priority Tasks -->
+<div class="glass-panel rounded-2xl p-6 flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-lg font-headline font-semibold text-on-surface">Tâches Prioritaires</h3>
+<button class="text-primary hover:text-primary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+<!-- Task Item 1 -->
+<label class="flex items-start gap-3 p-3 rounded-xl hover:bg-surface-container/50 border border-transparent hover:border-primary/5 transition-all cursor-pointer group">
+<div class="relative flex items-center justify-center mt-0.5">
+<input class="w-4 h-4 rounded border-primary/30 bg-surface/50 text-primary focus:ring-primary/20 focus:ring-offset-0 focus:ring-1 appearance-none checked:bg-primary checked:border-primary transition-colors peer" type="checkbox"/>
+<span class="material-symbols-outlined text-[12px] absolute text-on-primary opacity-0 peer-checked:opacity-100 pointer-events-none">check</span>
+</div>
+<div>
+<p class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">Valider devis Mariage 'Dupont'</p>
+<p class="text-xs text-on-surface-variant mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px] text-error">schedule</span>
+                                    Échéance: Aujourd'hui
+                                </p>
+</div>
+</label>
+<!-- Task Item 2 -->
+<label class="flex items-start gap-3 p-3 rounded-xl hover:bg-surface-container/50 border border-transparent hover:border-primary/5 transition-all cursor-pointer group">
+<div class="relative flex items-center justify-center mt-0.5">
+<input class="w-4 h-4 rounded border-primary/30 bg-surface/50 text-primary focus:ring-primary/20 focus:ring-offset-0 focus:ring-1 appearance-none checked:bg-primary checked:border-primary transition-colors peer" type="checkbox"/>
+<span class="material-symbols-outlined text-[12px] absolute text-on-primary opacity-0 peer-checked:opacity-100 pointer-events-none">check</span>
+</div>
+<div>
+<p class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">Appel de qualification Lead #4092</p>
+<p class="text-xs text-on-surface-variant mt-0.5">Contact: M. Rakoto</p>
+</div>
+</label>
+<!-- Task Item 3 -->
+<label class="flex items-start gap-3 p-3 rounded-xl hover:bg-surface-container/50 border border-transparent hover:border-primary/5 transition-all cursor-pointer group">
+<div class="relative flex items-center justify-center mt-0.5">
+<input checked="" class="w-4 h-4 rounded border-primary/30 bg-surface/50 text-primary focus:ring-primary/20 focus:ring-offset-0 focus:ring-1 appearance-none checked:bg-primary checked:border-primary transition-colors peer" type="checkbox"/>
+<span class="material-symbols-outlined text-[12px] absolute text-on-primary opacity-0 peer-checked:opacity-100 pointer-events-none">check</span>
+</div>
+<div>
+<p class="text-sm font-medium text-on-surface-variant line-through">Revue contrats prestataires Nosy Be</p>
+</div>
+</label>
+<!-- Task Item 4 -->
+<label class="flex items-start gap-3 p-3 rounded-xl hover:bg-surface-container/50 border border-transparent hover:border-primary/5 transition-all cursor-pointer group">
+<div class="relative flex items-center justify-center mt-0.5">
+<input class="w-4 h-4 rounded border-primary/30 bg-surface/50 text-primary focus:ring-primary/20 focus:ring-offset-0 focus:ring-1 appearance-none checked:bg-primary checked:border-primary transition-colors peer" type="checkbox"/>
+<span class="material-symbols-outlined text-[12px] absolute text-on-primary opacity-0 peer-checked:opacity-100 pointer-events-none">check</span>
+</div>
+<div>
+<p class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">Finaliser itinéraire Séjour Luxe S-45</p>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Recent Activity List -->
+<div class="glass-panel rounded-2xl overflow-hidden">
+<div class="p-6 border-b border-primary/5 flex justify-between items-center bg-surface/30">
+<h3 class="text-lg font-headline font-semibold text-on-surface">Activité Récente</h3>
+<a class="text-sm text-primary hover:underline font-medium" href="#">Voir tout</a>
+</div>
+<div class="divide-y divide-primary/5">
+<!-- Activity Item 1 -->
+<div class="p-4 sm:p-6 flex items-center gap-4 hover:bg-primary/[0.02] transition-colors">
+<div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center border border-secondary/20 flex-shrink-0">
+<span class="material-symbols-outlined text-secondary text-lg">hotel_class</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-medium text-on-surface truncate">Nouvelle inscription prestataire : "Villa Tsara"</p>
+<p class="text-xs text-on-surface-variant mt-0.5">Hébergement - Catégorie Luxe (Nosy Be)</p>
+</div>
+<div class="text-right flex-shrink-0">
+<span class="text-xs text-on-surface-variant block">Il y a 10 min</span>
+<span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-secondary/10 text-secondary text-[10px] font-medium border border-secondary/20">À vérifier</span>
+</div>
+</div>
+<!-- Activity Item 2 -->
+<div class="p-4 sm:p-6 flex items-center gap-4 hover:bg-primary/[0.02] transition-colors">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 flex-shrink-0">
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-medium text-on-surface truncate">Réservation confirmée : Séjour "Découverte Baobabs"</p>
+<p class="text-xs text-on-surface-variant mt-0.5">Client: Famille Martin - Montant: €12,500</p>
+</div>
+<div class="text-right flex-shrink-0">
+<span class="text-xs text-on-surface-variant block">Il y a 2 heures</span>
+</div>
+</div>
+<!-- Activity Item 3 -->
+<div class="p-4 sm:p-6 flex items-center gap-4 hover:bg-primary/[0.02] transition-colors">
+<div class="w-10 h-10 rounded-full bg-tertiary/10 flex items-center justify-center border border-tertiary/20 flex-shrink-0">
+<span class="material-symbols-outlined text-tertiary text-lg">mail</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-medium text-on-surface truncate">Nouveau Lead entrant (Formulaire Web)</p>
+<p class="text-xs text-on-surface-variant mt-0.5">Demande d'information - Mariage sur la plage</p>
+</div>
+<div class="text-right flex-shrink-0">
+<span class="text-xs text-on-surface-variant block">Hier, 16:45</span>
+<span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-medium border border-primary/20">Nouveau</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<style>
+        /* Custom scrollbar for task list to match dark theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(125, 211, 252, 0.1);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(125, 211, 252, 0.3);
+        }
+    </style>
+<nav aria-label="Navigation Admin mobile" class="mm-mobile-nav md:hidden">
+<a data-page="index.html" href="index.html"><span class="material-symbols-outlined">dashboard</span><small>Accueil</small></a>
+<a data-page="crm.html" href="crm.html"><span class="material-symbols-outlined">groups</span><small>CRM</small></a>
+<a data-page="sejours.html" href="sejours.html"><span class="material-symbols-outlined">explore</span><small>Séjours</small></a>
+<a data-page="mariages.html" href="mariages.html"><span class="material-symbols-outlined">favorite</span><small>Mariages</small></a>
+<a data-page="finance.html" href="finance.html"><span class="material-symbols-outlined">account_balance_wallet</span><small>Finance</small></a>
+</nav><div aria-live="polite" class="mm-toast" id="mm-toast" role="status"></div><script defer="True" src="admin-demo.js"></script></body></html>
