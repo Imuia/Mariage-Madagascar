@@ -47,6 +47,15 @@ function isValidIsoDate(value) {
   return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
 }
 
+// Les événements ponctuels utilisent des heures au format HH:mm.
+function isValidIsoTime(value) {
+  return typeof value === 'string' && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value);
+}
+
+function getPlainObject(value) {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
 
@@ -96,12 +105,38 @@ module.exports = async function handler(req, res) {
         return res.status(400).json({ message: 'Produit invalide dans le panier.' });
       }
 
-      // Les dates sont obligatoires pour tous les produits, y compris côté serveur.
-      const arrivalDate = item.booking_date || item.arrival_date || '';
-      const departureDate = item.booking_end_date || item.departure_date || '';
-      if (!isValidIsoDate(arrivalDate) || !isValidIsoDate(departureDate) || departureDate <= arrivalDate) {
+      // Validation adaptée au mode choisi sur la fiche produit :
+      // - duration : date de début + date de fin
+      // - event : une date + heure de début + heure de fin
+      // Le mode explicite transmis par le panier est prioritaire ; les anciens
+      // paniers sont compatibles grâce à l'inférence à partir des champs existants.
+      const itemOptions = getPlainObject(item.options || item.options_snapshot);
+      const departureDate = item.booking_end_date || item.departure_date || itemOptions.booking_end_date || itemOptions.departure_date || '';
+      const explicitBookingMode = String(item.booking_mode || itemOptions.booking_mode || '').trim().toLowerCase();
+      const bookingMode = explicitBookingMode === 'duration' || explicitBookingMode === 'event'
+        ? explicitBookingMode
+        : (departureDate ? 'duration' : 'event');
+      const bookingDate = bookingMode === 'event'
+        ? (item.event_date || item.booking_date || item.arrival_date || itemOptions.event_date || itemOptions.booking_date || itemOptions.arrival_date || '')
+        : (item.booking_date || item.arrival_date || itemOptions.arrival_date || itemOptions.booking_date || '');
+      const startTime = item.booking_start_time || item.event_start_time || itemOptions.booking_start_time || itemOptions.event_start_time || '';
+      const endTime = item.booking_end_time || item.event_end_time || itemOptions.booking_end_time || itemOptions.event_end_time || '';
+
+      if (!isValidIsoDate(bookingDate)) {
         return res.status(400).json({
-          message: `Les dates d'arrivée et de départ sont obligatoires et doivent être valides pour « ${item.name || 'cette prestation'} ». Le départ doit être après l'arrivée.`
+          message: `La date de réservation doit être valide pour « ${item.name || 'cette prestation'} ».`
+        });
+      }
+
+      if (bookingMode === 'duration') {
+        if (!isValidIsoDate(departureDate) || departureDate <= bookingDate) {
+          return res.status(400).json({
+            message: `Les dates de début et de fin doivent être valides pour « ${item.name || 'cette prestation'} ». La date de fin doit être postérieure à la date de début.`
+          });
+        }
+      } else if (!isValidIsoTime(startTime) || !isValidIsoTime(endTime) || endTime <= startTime) {
+        return res.status(400).json({
+          message: `La date et les horaires sont obligatoires pour « ${item.name || 'cette prestation'} ». L’heure de fin doit être postérieure à l’heure de début.`
         });
       }
 
@@ -142,14 +177,22 @@ module.exports = async function handler(req, res) {
         quantity: quantity,
         total_price: itemTotal,
         pax: item.pax || null,
-        // booking_date est la colonne existante pour l'arrivée.
-        booking_date: arrivalDate,
-        // Conserver le départ dans le JSONB existant, sans exiger de migration SQL.
+        // La colonne booking_date reçoit la date de début pour un séjour,
+        // ou la date de l'événement pour une prestation ponctuelle.
+        booking_date: bookingDate,
+        // Les informations propres au mode sont stockées dans le JSONB existant :
+        // aucune migration SQL n'est nécessaire.
         options_snapshot: {
-          ...(item.options && typeof item.options === 'object' && !Array.isArray(item.options) ? item.options : {}),
-          arrival_date: arrivalDate,
-          departure_date: departureDate,
-          booking_end_date: departureDate
+          ...itemOptions,
+          booking_mode: bookingMode,
+          arrival_date: bookingMode === 'duration' ? bookingDate : null,
+          departure_date: bookingMode === 'duration' ? departureDate : null,
+          booking_end_date: bookingMode === 'duration' ? departureDate : null,
+          event_date: bookingMode === 'event' ? bookingDate : null,
+          booking_start_time: bookingMode === 'event' ? startTime : null,
+          event_start_time: bookingMode === 'event' ? startTime : null,
+          booking_end_time: bookingMode === 'event' ? endTime : null,
+          event_end_time: bookingMode === 'event' ? endTime : null
         }
       });
 
@@ -220,6 +263,17 @@ module.exports = async function handler(req, res) {
         notes: [
           customer.notes || '',
           'Mode de paiement : virement bancaire',
+          ...verifiedOrderItems.map((entry, index) => {
+            const details = entry.options_snapshot || {};
+            const label = `Prestation ${index + 1} — ${entry.product_name}`;
+            if (details.booking_mode === 'duration') {
+              return `${label} : du ${details.arrival_date} au ${details.departure_date}`;
+            }
+            if (details.booking_mode === 'event') {
+              return `${label} : événement le ${details.event_date}, de ${details.booking_start_time} à ${details.booking_end_time}`;
+            }
+            return '';
+          }),
           customer.transfer_account_holder ? `Titulaire du compte émetteur : ${String(customer.transfer_account_holder).slice(0, 160)}` : '',
           customer.planned_transfer_date ? `Date prévue du virement : ${String(customer.planned_transfer_date).slice(0, 10)}` : ''
         ].filter(Boolean).join('\n'),
@@ -351,7 +405,7 @@ module.exports = async function handler(req, res) {
       promo_code_id: verifiedPromoCodeId,
       stripe_checkout_session_id: session.id,
       notes: customer.notes || '',
-      booking_date: cart[0]?.booking_date || null
+      booking_date: verifiedOrderItems[0]?.booking_date || null
     };
 
     const insertedOrders = await supabaseFetch('orders', {
