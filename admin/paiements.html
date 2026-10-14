@@ -1,12 +1,165 @@
-<!doctype html><html lang="fr" class="dark" data-admin-page="paiements.html"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Paiements — Admin Mariage Madagascar</title><meta name="robots" content="noindex,nofollow"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><link rel="stylesheet" href="admin-shared.css"></head><body class="mm-page"><aside class="mm-sidebar"><div class="mm-brand">Mariage Madagascar<small>Administration & événements de luxe</small></div><nav class="mm-nav"><a href="index.html" class=""><span class="material-symbols-outlined">dashboard</span>Tableau de bord</a><a href="crm.html" class=""><span class="material-symbols-outlined">groups</span>CRM</a><a href="sejours.html" class=""><span class="material-symbols-outlined">travel_explore</span>Séjours</a><a href="mariages.html" class=""><span class="material-symbols-outlined">favorite</span>Mariages</a><a href="finance.html" class=""><span class="material-symbols-outlined">account_balance_wallet</span>Finance</a><a href="facturation.html" class=""><span class="material-symbols-outlined">request_quote</span>Devis & factures</a><a href="paiements.html" class="active"><span class="material-symbols-outlined">payments</span>Paiements</a><a href="commissions.html" class=""><span class="material-symbols-outlined">handshake</span>Commissions</a><a href="rapports.html" class=""><span class="material-symbols-outlined">analytics</span>Rapports</a><a href="parametres.html" class=""><span class="material-symbols-outlined">settings</span>Paramètres</a></nav><div style="margin-top:auto;padding:22px 12px 0;border-top:1px solid rgba(125,211,252,.1);color:var(--mm-muted);font-size:11px;line-height:1.7">Espace de gestion interne<br><span style="color:var(--mm-blue)">Prototype front-end</span></div></aside><main class="mm-main"><header class="mm-topbar"><strong>Mariage Madagascar</strong><span>Administration · Démonstration</span></header><div class="mm-content"><div class="mm-head"><div><div class="mm-eyebrow">Espace administrateur</div><h1 class="mm-title">Paiements</h1><p class="mm-subtitle">Suivez les acomptes, soldes, règlements et rapprochements financiers.</p></div><div class="mm-toolbar"><a class="mm-btn secondary" href="index.html"><span class="material-symbols-outlined" style="font-size:17px">dashboard</span> Tableau de bord</a></div></div><div class="mm-grid"><article class="mm-card mm-card-pad mm-metric"><div class="label">Montants encaissés</div><div class="value" style="color:var(--mm-blue)">48 290 €</div><div class="note">Sur la période sélectionnée</div></article><article class="mm-card mm-card-pad mm-metric"><div class="label">En attente</div><div class="value" style="color:var(--mm-red)">6 420 €</div><div class="note">Factures non soldées</div></article><article class="mm-card mm-card-pad mm-metric"><div class="label">Remboursements</div><div class="value" style="color:var(--mm-purple)">0 €</div><div class="note">Aucun remboursement enregistré</div></article><article class="mm-card mm-card-pad mm-metric"><div class="label">Taux de recouvrement</div><div class="value" style="color:var(--mm-green)">88 %</div><div class="note">État indicatif</div></article></div><section class="mm-card"><div class="mm-card-head"><div><h2 class="mm-section-title">Journal des paiements</h2><p class="mm-muted" style="font-size:11px;margin-top:5px">Historique de démonstration des acomptes, soldes et règlements.</p></div><div class="mm-toolbar"><input class="mm-input" style="width:200px" placeholder="Chercher client ou référence…" data-filter-target="#payments-table"><select class="mm-select" style="width:150px" data-status-filter="#payments-table"><option value="all">Tous les statuts</option><option value="encaissé">Encaissé</option><option value="attente">En attente</option><option value="remboursé">Remboursé</option></select><button class="mm-btn secondary" data-export-table="#payments-table" data-filename="paiements-mariage-madagascar.csv">Exporter CSV</button></div></div><div class="mm-table-wrap"><table id="payments-table" class="mm-table"><thead><tr><th>Référence</th><th>Client</th><th>Objet</th><th>Date</th><th>Montant</th><th>Moyen</th><th>Statut</th><th>Action</th></tr></thead><tbody>
-<tr><td>PAY-DEMO-1042</td><td>Famille Rakoto</td><td>Acompte mariage</td><td>12 oct. 2026</td><td>2 500 €</td><td>Carte</td><td><span class="mm-badge green">Encaissé</span></td><td><button class="mm-btn secondary" data-demo-action>Voir</button></td></tr>
-<tr><td>PAY-DEMO-1041</td><td>Couple Dubois</td><td>Solde séjour</td><td>11 oct. 2026</td><td>4 800 €</td><td>Virement</td><td><span class="mm-badge orange">En attente</span></td><td><button class="mm-btn secondary" data-demo-action>Vérifier</button></td></tr>
-<tr><td>PAY-DEMO-1040</td><td>Couple Bernard</td><td>Acompte lune de miel</td><td>10 oct. 2026</td><td>1 200 €</td><td>Carte</td><td><span class="mm-badge green">Encaissé</span></td><td><button class="mm-btn secondary" data-demo-action>Voir</button></td></tr>
-<tr><td>PAY-DEMO-1039</td><td>Groupe Morel</td><td>Prestations événement</td><td>9 oct. 2026</td><td>6 420 €</td><td>Virement</td><td><span class="mm-badge orange">En attente</span></td><td><button class="mm-btn secondary" data-demo-action>Relancer</button></td></tr>
-</tbody></table></div></section><div class="mm-two-col" style="margin-top:18px"><section class="mm-card mm-card-pad"><h2 class="mm-section-title">Rapprochement bancaire</h2><p class="mm-subtitle" style="margin-top:8px">Cette interface n’est pas encore connectée à un compte bancaire ou à un prestataire de paiement.</p><div class="mm-bar" style="margin:18px 0"><span style="width:88%"></span></div><div class="flex justify-between text-xs"><span class="mm-muted">Rapprochement de démonstration</span><strong>88 %</strong></div><button class="mm-btn" style="margin-top:18px" data-demo-action data-message="Aucun compte bancaire n’est connecté. Le rapprochement réel doit être intégré et sécurisé.">Configurer le rapprochement</button></section><section class="mm-card mm-card-pad"><h2 class="mm-section-title">Actions financières</h2><div class="mm-list"><a href="facturation.html" class="mm-list-item" style="text-decoration:none;color:inherit"><div><strong>Consulter les factures</strong><small>Devis, factures et échéances</small></div><span class="material-symbols-outlined" style="color:var(--mm-blue)">arrow_forward</span></a><a href="commissions.html" class="mm-list-item" style="text-decoration:none;color:inherit"><div><strong>Voir les commissions</strong><small>Règlements des prestataires</small></div><span class="material-symbols-outlined" style="color:var(--mm-blue)">arrow_forward</span></a></div></section></div><p class="mm-muted" style="font-size:10px;margin-top:24px">Données fictives de démonstration — à connecter à la base de données avant utilisation réelle.</p></div><footer class="mm-footer">© 2026 Mariage Madagascar · Administration privée · Prototype non connecté aux données de production</footer></main><nav class="mm-mobile-nav md:hidden" aria-label="Navigation Admin mobile">
-<a href="index.html" data-page="index.html"><span class="material-symbols-outlined">dashboard</span><small>Accueil</small></a>
-<a href="crm.html" data-page="crm.html"><span class="material-symbols-outlined">groups</span><small>CRM</small></a>
-<a href="sejours.html" data-page="sejours.html"><span class="material-symbols-outlined">explore</span><small>Séjours</small></a>
-<a href="mariages.html" data-page="mariages.html"><span class="material-symbols-outlined">favorite</span><small>Mariages</small></a>
-<a href="finance.html" data-page="finance.html"><span class="material-symbols-outlined">account_balance_wallet</span><small>Finance</small></a>
-</nav><div id="mm-toast" class="mm-toast" role="status" aria-live="polite"></div><script src="admin-demo.js" defer></script></body></html>
+<!doctype html>
+<html lang="fr" class="dark" data-admin-page="paiements.html">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paiements — Admin Mariage Madagascar</title>
+<meta name="robots" content="noindex,nofollow">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="admin-shared.css">
+</head>
+<body class="mm-page">
+
+<main class="mm-main">
+<div class="mm-content">
+<div class="mm-head">
+<div>
+<div class="flex items-center gap-3">
+<button class="mm-mobile-burger md:hidden" data-mm-burger="" aria-label="Ouvrir le menu">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="mm-eyebrow">Espace administrateur</div>
+</div>
+<h1 class="mm-title">Paiements</h1>
+<p class="mm-subtitle">Suivez les acomptes, soldes, règlements et rapprochements financiers.</p>
+</div>
+<div class="mm-toolbar">
+<a class="mm-btn secondary" href="index.html"><span class="material-symbols-outlined" style="font-size:17px">dashboard</span> Tableau de bord</a>
+</div>
+</div>
+
+<div class="mm-grid">
+<article class="mm-card mm-card-pad mm-metric">
+<div class="label">Montants encaissés</div>
+<div class="value" style="color:var(--mm-blue)">48 290 €</div>
+<div class="note">Sur la période sélectionnée</div>
+</article>
+<article class="mm-card mm-card-pad mm-metric">
+<div class="label">En attente</div>
+<div class="value" style="color:var(--mm-red)">6 420 €</div>
+<div class="note">Factures non soldées</div>
+</article>
+<article class="mm-card mm-card-pad mm-metric">
+<div class="label">Remboursements</div>
+<div class="value" style="color:var(--mm-purple)">0 €</div>
+<div class="note">Aucun remboursement enregistré</div>
+</article>
+<article class="mm-card mm-card-pad mm-metric">
+<div class="label">Taux de recouvrement</div>
+<div class="value" style="color:var(--mm-green)">88 %</div>
+<div class="note">État indicatif</div>
+</article>
+</div>
+
+<section class="mm-card">
+<div class="mm-card-head">
+<div>
+<h2 class="mm-section-title">Journal des paiements</h2>
+<p class="mm-muted" style="font-size:11px;margin-top:5px">Historique de démonstration des acomptes, soldes et règlements.</p>
+</div>
+<div class="mm-toolbar">
+<input class="mm-input" style="width:200px" placeholder="Chercher client ou référence…" data-filter-target="#payments-table">
+<select class="mm-select" style="width:150px" data-status-filter="#payments-table">
+<option value="all">Tous les statuts</option>
+<option value="encaissé">Encaissé</option>
+<option value="attente">En attente</option>
+<option value="remboursé">Remboursé</option>
+</select>
+<button class="mm-btn secondary" data-export-table="#payments-table" data-filename="paiements-mariage-madagascar.csv">Exporter CSV</button>
+</div>
+</div>
+<div class="mm-table-wrap">
+<table id="payments-table" class="mm-table">
+<thead>
+<tr>
+<th>Référence</th>
+<th>Client</th>
+<th>Objet</th>
+<th>Date</th>
+<th>Montant</th>
+<th>Moyen</th>
+<th>Statut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PAY-DEMO-1042</td>
+<td>Famille Rakoto</td>
+<td>Acompte mariage</td>
+<td>12 oct. 2026</td>
+<td>2 500 €</td>
+<td>Carte</td>
+<td><span class="mm-badge green">Encaissé</span></td>
+<td><button class="mm-btn secondary" data-demo-action>Voir</button></td>
+</tr>
+<tr>
+<td>PAY-DEMO-1041</td>
+<td>Couple Dubois</td>
+<td>Solde séjour</td>
+<td>11 oct. 2026</td>
+<td>4 800 €</td>
+<td>Virement</td>
+<td><span class="mm-badge orange">En attente</span></td>
+<td><button class="mm-btn secondary" data-demo-action>Vérifier</button></td>
+</tr>
+<tr>
+<td>PAY-DEMO-1040</td>
+<td>Couple Bernard</td>
+<td>Acompte lune de miel</td>
+<td>10 oct. 2026</td>
+<td>1 200 €</td>
+<td>Carte</td>
+<td><span class="mm-badge green">Encaissé</span></td>
+<td><button class="mm-btn secondary" data-demo-action>Voir</button></td>
+</tr>
+<tr>
+<td>PAY-DEMO-1039</td>
+<td>Groupe Morel</td>
+<td>Prestations événement</td>
+<td>9 oct. 2026</td>
+<td>6 420 €</td>
+<td>Virement</td>
+<td><span class="mm-badge orange">En attente</span></td>
+<td><button class="mm-btn secondary" data-demo-action>Relancer</button></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<div class="mm-two-col" style="margin-top:18px">
+<section class="mm-card mm-card-pad">
+<h2 class="mm-section-title">Rapprochement bancaire</h2>
+<p class="mm-subtitle" style="margin-top:8px">Cette interface n’est pas encore connectée à un compte bancaire ou à un prestataire de paiement.</p>
+<div class="mm-bar" style="margin:18px 0"><span style="width:88%"></span></div>
+<div class="flex justify-between text-xs"><span class="mm-muted">Rapprochement de démonstration</span><strong>88 %</strong></div>
+<button class="mm-btn" style="margin-top:18px" data-demo-action data-message="Aucun compte bancaire n’est connecté. Le rapprochement réel doit être intégré et sécurisé.">Configurer le rapprochement</button>
+</section>
+
+<section class="mm-card mm-card-pad">
+<h2 class="mm-section-title">Actions financières</h2>
+<div class="mm-list">
+<a href="facturation.html" class="mm-list-item" style="text-decoration:none;color:inherit">
+<div><strong>Consulter les factures</strong><small>Devis, factures et échéances</small></div>
+<span class="material-symbols-outlined" style="color:var(--mm-blue)">arrow_forward</span>
+</a>
+<a href="commissions.html" class="mm-list-item" style="text-decoration:none;color:inherit">
+<div><strong>Voir les commissions</strong><small>Règlements des prestataires</small></div>
+<span class="material-symbols-outlined" style="color:var(--mm-blue)">arrow_forward</span>
+</a>
+</div>
+</section>
+</div>
+
+<p class="mm-muted" style="font-size:10px;margin-top:24px">Données fictives de démonstration — à connecter à la base de données avant utilisation réelle.</p>
+</div>
+
+<footer class="mm-footer">© 2026 Mariage Madagascar · Administration privée · Prototype non connecté aux données de production</footer>
+</main>
+
+<div id="mm-toast" class="mm-toast" role="status" aria-live="polite"></div>
+<script src="admin-shared.js"></script>
+<script src="admin-demo.js" defer></script>
+</body>
+</html>

@@ -7,7 +7,6 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
         tailwind.config = {
           darkMode: "class",
@@ -98,83 +97,24 @@
         .text-glow { text-shadow: 0 0 10px rgba(125, 211, 252, 0.3); }
         .bg-glow { position: fixed; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.15; pointer-events: none; }
     </style>
-<link href="admin-shared.css" rel="stylesheet"/></head>
+<link href="admin-shared.css" rel="stylesheet"/>
+</head>
 <body class="antialiased min-h-screen overflow-x-hidden">
 <!-- Ambient Glows -->
 <div class="bg-glow bg-primary w-[600px] h-[600px] top-[-200px] left-[-200px]"></div>
 <div class="bg-glow bg-tertiary w-[500px] h-[500px] bottom-[-100px] right-[-100px]"></div>
-<!-- SideNavBar -->
-<nav class="h-screen w-64 fixed left-0 top-0 bg-surface/60 backdrop-blur-xl border-r border-primary/10 shadow-[0_0_30_px_rgba(125,211,252,0.05)] flex flex-col h-full py-6 z-40 transition-all duration-300 ease-in-out active:scale-95 hidden md:flex font-body text-on-surface">
-<div class="px-6 mb-8 flex items-center gap-3">
-<div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center border border-primary/30 text-primary">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">diamond</span>
-</div>
-<div>
-<h2 class="text-xl font-semibold tracking-tight text-primary">Admin Mariage Madagascar</h2>
-<p class="text-xs text-on-surface-variant">Mariage &amp; événements de luxe</p>
-</div>
-</div>
-<div class="flex-1 overflow-y-auto px-2 space-y-1">
-<a class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface px-4 py-3 transition-colors hover:bg-primary/10 hover:backdrop-blur-md rounded-lg" href="index.html">
-<span class="material-symbols-outlined">dashboard</span>
-<span>Dashboard</span>
-</a>
-<a class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface px-4 py-3 transition-colors hover:bg-primary/10 hover:backdrop-blur-md rounded-lg" href="crm.html">
-<span class="material-symbols-outlined">group</span>
-<span>CRM</span>
-</a>
-<a class="flex items-center gap-4 bg-primary/20 text-primary border-l-4 border-primary px-4 py-3 rounded-r-lg transition-all" href="mariages.html">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_available</span>
-<span class="font-medium">Mariages</span>
-</a>
-<a class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface px-4 py-3 transition-colors hover:bg-primary/10 hover:backdrop-blur-md rounded-lg" href="finance.html">
-<span class="material-symbols-outlined">payments</span>
-<span>Finance</span>
-</a>
-<a class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface px-4 py-3 transition-colors hover:bg-primary/10 hover:backdrop-blur-md rounded-lg" href="parametres.html">
-<span class="material-symbols-outlined">settings</span>
-<span>Settings</span>
-</a>
-</div>
-<div class="px-6 mt-auto">
-<button class="w-full py-3 px-4 rounded-xl bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 hover:border-primary/40 transition-all duration-300 font-medium flex items-center justify-center gap-2" data-demo-action="">
-<span class="material-symbols-outlined">add</span>
-                Nouveau mariage
-            </button>
-</div>
-</nav>
-<!-- TopNavBar -->
-<header class="fixed top-0 right-0 left-0 md:left-64 h-16 bg-surface/60 backdrop-blur-xl border-b border-primary/10 shadow-sm flex items-center justify-between px-8 w-full z-30 font-body text-on-surface">
-<div class="flex items-center">
-<h1 class="text-lg font-bold text-on-surface tracking-tight text-glow md:hidden">Mariage Madagascar</h1>
-<!-- Search left empty as per spec 'search_bar: on_left' but no explicit input defined in JSON, creating a subtle one -->
-<div class="hidden md:flex items-center bg-surface-container-high/50 border border-outline-variant/30 rounded-full px-4 py-1.5 focus-within:border-primary/50 focus-within:shadow-[0_0_15px_rgba(125,211,252,0.1)] transition-all">
-<span class="material-symbols-outlined text-on-surface-variant text-sm mr-2">search</span>
-<input class="bg-transparent border-none outline-none text-sm text-on-surface placeholder-on-surface-variant w-48 focus:ring-0" placeholder="Search..." type="text"/>
-</div>
-</div>
-<div class="flex items-center gap-6">
-<div class="flex items-center gap-4">
-<button class="text-on-surface-variant hover:text-primary transition-colors active:opacity-80 relative">
-<span class="material-symbols-outlined">notifications</span>
-<span class="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full"></span>
-</button>
-<button class="text-on-surface-variant hover:text-primary transition-colors active:opacity-80">
-<span class="material-symbols-outlined">help</span>
-</button>
-</div>
-<div class="h-8 w-px bg-outline-variant/30"></div>
-<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20 cursor-pointer hover:border-primary/50 transition-colors">
-<img alt="Administrator Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSluHdwCUduoXM3-iekw7vkg_tDQRXtgo0pIgXuHztIp5piQ9NKgZXxkCAEm-VJKYKC3s4QMded46LKAuCu1hKMkDM82SejyOCN-DxJUHSBRaxBnh7twmuJSA0c7pb8Ysv80s8F_iyQEvbsR3tAlQnUz3-3HbWs1TyMGfTB1DufVX2wos6DJnQePE7FA4ZvXXtMkBwP_J3xzmKbyx1iUh2Br6l5u3vMJ4un3vCBBGDKWgfKZPMMFyQpA"/>
-</div>
-</div>
-</header>
+
 <!-- Main Content -->
-<main class="pt-24 pb-12 px-6 md:pl-72 md:pr-10">
+<main class="mm-main p-6 lg:p-10 w-full min-h-screen">
 <!-- Header -->
 <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
 <div>
-<p class="text-primary font-medium mb-1 tracking-wider text-xs uppercase">Dashboard / Mariages</p>
+<div class="flex items-center gap-3 mb-1">
+<button class="mm-mobile-burger md:hidden" data-mm-burger="" aria-label="Ouvrir le menu">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<p class="text-primary font-medium tracking-wider text-xs uppercase">Dashboard / Mariages</p>
+</div>
 <h1 class="text-3xl md:text-4xl font-headline font-bold text-on-surface text-glow">Gestion des mariages</h1>
 </div>
 <button class="glass-panel px-6 py-2.5 rounded-lg text-primary font-medium flex items-center gap-2 hover:bg-primary/10 hover:border-primary/30 transition-all border border-primary/20 shadow-[0_0_15px_rgba(125,211,252,0.1)]" data-demo-action="">
@@ -241,11 +181,11 @@
 <tr><td class="p-4 font-semibold">Famille Rakoto</td><td class="p-4">Morondava</td><td class="p-4">22 nov. 2026</td><td class="p-4 text-primary">8 900 €</td><td class="p-4"><span class="rounded-md px-2 py-1 text-xs bg-emerald-400/10 text-emerald-300">Confirmé</span></td><td class="p-4"><button class="text-primary" data-demo-action="">Ouvrir</button></td></tr>
 </tbody></table></div></div>
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-5"><div class="rounded-2xl border border-outline-variant/70 bg-surface/80 p-5"><h3 class="font-bold text-lg">À préparer cette semaine</h3><div class="space-y-4 mt-4 text-sm"><label class="flex gap-3 items-start"><input class="mt-1 rounded border-outline-variant bg-surface-container text-primary" data-demo-check="" type="checkbox"/><span>Valider le devis du mariage Dubois<small class="block text-on-surface-variant mt-1">Échéance : aujourd’hui</small></span></label><label class="flex gap-3 items-start"><input class="mt-1 rounded border-outline-variant bg-surface-container text-primary" data-demo-check="" type="checkbox"/><span>Confirmer les prestataires de décoration<small class="block text-on-surface-variant mt-1">Échéance : demain</small></span></label><label class="flex gap-3 items-start"><input class="mt-1 rounded border-outline-variant bg-surface-container text-primary" data-demo-check="" type="checkbox"/><span>Finaliser l’itinéraire du séjour Nosy Be<small class="block text-on-surface-variant mt-1">Échéance : vendredi</small></span></label></div></div><div class="rounded-2xl border border-outline-variant/70 bg-surface/80 p-5"><h3 class="font-bold text-lg">Étapes du dossier</h3><div class="space-y-4 mt-4 text-sm"><div class="flex justify-between"><span>Nouvelle demande</span><strong class="text-primary">12</strong></div><div class="h-1.5 rounded-full bg-surface-container"><div class="h-1.5 w-3/4 rounded-full bg-primary"></div></div><div class="flex justify-between"><span>Devis en attente</span><strong class="text-purple-300">8</strong></div><div class="h-1.5 rounded-full bg-surface-container"><div class="h-1.5 w-1/2 rounded-full bg-purple-300"></div></div><div class="flex justify-between"><span>Mariages confirmés</span><strong class="text-emerald-300">22</strong></div><p class="text-xs text-on-surface-variant">Les chiffres affichés sont des exemples à remplacer par les données réelles.</p></div></div></div>
-</section></main>
-<nav aria-label="Navigation Admin mobile" class="mm-mobile-nav md:hidden">
-<a data-page="index.html" href="index.html"><span class="material-symbols-outlined">dashboard</span><small>Accueil</small></a>
-<a data-page="crm.html" href="crm.html"><span class="material-symbols-outlined">groups</span><small>CRM</small></a>
-<a data-page="sejours.html" href="sejours.html"><span class="material-symbols-outlined">explore</span><small>Séjours</small></a>
-<a data-page="mariages.html" href="mariages.html"><span class="material-symbols-outlined">favorite</span><small>Mariages</small></a>
-<a data-page="finance.html" href="finance.html"><span class="material-symbols-outlined">account_balance_wallet</span><small>Finance</small></a>
-</nav><div aria-live="polite" class="mm-toast" id="mm-toast" role="status"></div><script defer="True" src="admin-demo.js"></script></body></html>
+</section>
+</main>
+
+<div aria-live="polite" class="mm-toast" id="mm-toast" role="status"></div>
+<script src="admin-shared.js"></script>
+<script defer="True" src="admin-demo.js"></script>
+</body>
+</html>

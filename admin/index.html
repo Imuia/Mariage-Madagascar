@@ -7,7 +7,6 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -96,86 +95,27 @@
             text-shadow: 0 0 10px rgba(125, 211, 252, 0.3);
         }
     </style>
-<link href="admin-shared.css" rel="stylesheet"/></head>
+<link href="admin-shared.css" rel="stylesheet"/>
+</head>
 <body class="bg-background text-on-surface font-body min-h-screen flex antialiased overflow-x-hidden selection:bg-primary/30 selection:text-primary">
 <!-- Decorative Ambient Light -->
 <div class="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[120px] pointer-events-none z-0"></div>
 <div class="fixed bottom-[-20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-tertiary/5 blur-[100px] pointer-events-none z-0"></div>
-<!-- SideNavBar (Shared Component) -->
-<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface/60 backdrop-blur-xl border-r border-primary/10 shadow-[0_0_30px_rgba(125,211,252,0.05)] p-4 gap-4 z-50">
-<!-- Brand Header -->
-<div class="flex items-center gap-4 px-4 py-6 mb-4">
-<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center shadow-[0_0_15px_rgba(125,211,252,0.1)]">
-<span class="material-symbols-outlined text-primary text-xl">ac_unit</span>
-</div>
-<div>
-<h1 class="text-xl font-headline font-semibold tracking-tight text-primary">Admin Mariage Madagascar</h1>
-<p class="text-xs text-on-surface-variant font-medium uppercase tracking-wider">Luxury Madagascar</p>
-</div>
-</div>
-<!-- Navigation Links -->
-<nav class="flex flex-col gap-2 font-body text-label-sm font-medium">
-<!-- Active Tab: Dashboard -->
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary border border-primary/20 active:scale-95 transition-transform" href="index.html">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
-                Dashboard
-            </a>
-<!-- Inactive Tabs -->
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all duration-300 active:scale-95 transition-transform" href="crm.html">
-<span class="material-symbols-outlined">group</span>
-                CRM
-            </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all duration-300 active:scale-95 transition-transform" href="sejours.html">
-<span class="material-symbols-outlined">explore</span>
-                Séjours
-            </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all duration-300 active:scale-95 transition-transform" href="mariages.html">
-<span class="material-symbols-outlined">favorite</span>
-                Mariages
-            </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all duration-300 active:scale-95 transition-transform" href="finance.html">
-<span class="material-symbols-outlined">payments</span>
-                Finance
-            </a>
-</nav>
-<!-- Bottom Profile Snippet (Optional context, keeping to design system) -->
-<div class="mt-auto px-4 py-4 border-t border-primary/5">
-<div class="flex items-center gap-3">
-<img class="w-8 h-8 rounded-full object-cover border border-primary/20" data-alt="A macro photography style portrait of an elegant administrative professional in a high-end, dimly lit modern office space. The lighting is cinematic, featuring soft icy blue backlights that rim the silhouette against a deep navy black background, emphasizing a luxurious, premium, and calm aesthetic characteristic of the Mariage Madagascar design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCc_4P6656nhCyCLJokjeiftXvyUf4O5fFzAp9wV8yEIwSSOwNJXy9xjjUtgtq8LTKkkMGKJKBbtt8EymINv4gnLigJaxY3xyvs3TFRObrXDpIakpRpLqhMEVPzbYq7yLZ_mVXw2evKr-g82wDEvWPCVbUfpbGYQtcFlT995a03Vs0XrFzMPQCBLrYoZ-Fy487J8-l86z67b67xTKJXhrLSySS2CHfYu6UDkZ3xgo3cfvURfNBdmgb-iQ"/>
-<div class="flex-col flex">
-<span class="text-sm font-medium text-on-surface">Admin Profile</span>
-<span class="text-xs text-on-surface-variant">System Master</span>
-</div>
-</div>
-</div>
-</aside>
+
 <!-- Main Content Area -->
-<main class="flex-1 md:ml-64 relative z-10 flex flex-col min-h-screen">
-<!-- TopAppBar (Shared Component) -->
-<header class="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] h-16 bg-surface/60 backdrop-blur-xl border-b border-primary/10 shadow-[0_0_20px_rgba(125,211,252,0.05)] flex justify-between items-center px-8 z-40">
-<!-- Search Bar (on_left) -->
-<div class="flex-1 max-w-md relative group">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
-<input class="w-full bg-surface-container/40 border border-primary/10 rounded-full py-2 pl-10 pr-4 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-body text-body-sm glass-panel" placeholder="Rechercher..." type="text"/>
-</div>
-<!-- Trailing Actions & Profile -->
-<div class="flex items-center gap-4">
-<button class="p-2 text-on-surface-variant hover:bg-primary/10 rounded-full transition-colors relative">
-<span class="material-symbols-outlined">notifications</span>
-<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary shadow-[0_0_5px_#7dd3fc]"></span>
-</button>
-<button class="p-2 text-on-surface-variant hover:bg-primary/10 rounded-full transition-colors">
-<span class="material-symbols-outlined">settings</span>
-</button>
-<div class="h-8 w-px bg-primary/10 mx-2"></div>
-<img alt="Administrator" class="w-8 h-8 rounded-full border border-primary/30 object-cover" data-alt="A small circular avatar portrait of an administrator, softly lit with cool, ethereal blue tones against a dark background, fitting a premium, high-tech administrative dashboard interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDN3wUzKYfjY6XZnz5G52KZGd4UyMRCWsZgKikhEAglj_Hgg8t5B3jIjjL71FGedz-qb89jTcMYbB2SZw9QUNXXwhbojUUZA26qjVn3Mudz-qooeo8Yu15592NwktF84GhI_owuQ9L9J6wtUUL6PDlwRYZwOUuq4-2QpH6LPegoykhJQrotQ59SBMlwW5FAmdn9KklOZePL5Dc8ZYKxua2OTMClkVPAmv8Xr_ynneOXaDgdc1sBefHQqw"/>
-</div>
-</header>
+<main class="mm-main relative z-10 flex flex-col min-h-screen w-full">
 <!-- Dashboard Content -->
-<div class="pt-24 p-6 lg:p-10 space-y-8 flex-1">
-<header class="mb-8">
+<div class="p-6 lg:p-10 space-y-8 flex-1">
+<header class="mb-8 flex items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-3">
+<button class="mm-mobile-burger md:hidden" data-mm-burger="" aria-label="Ouvrir le menu">
+<span class="material-symbols-outlined">menu</span>
+</button>
 <h2 class="text-3xl font-headline font-semibold text-on-surface tracking-tight">Tableau de bord — Activité</h2>
+</div>
 <p class="text-on-surface-variant mt-1 text-sm">Aperçu en temps réel des performances de Mariage Madagascar.</p>
+</div>
 </header>
 <!-- KPIs Bento Grid -->
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
@@ -411,6 +351,7 @@
 </div>
 </div>
 </main>
+
 <style>
         /* Custom scrollbar for task list to match dark theme */
         .custom-scrollbar::-webkit-scrollbar {
@@ -427,10 +368,9 @@
             background: rgba(125, 211, 252, 0.3);
         }
     </style>
-<nav aria-label="Navigation Admin mobile" class="mm-mobile-nav md:hidden">
-<a data-page="index.html" href="index.html"><span class="material-symbols-outlined">dashboard</span><small>Accueil</small></a>
-<a data-page="crm.html" href="crm.html"><span class="material-symbols-outlined">groups</span><small>CRM</small></a>
-<a data-page="sejours.html" href="sejours.html"><span class="material-symbols-outlined">explore</span><small>Séjours</small></a>
-<a data-page="mariages.html" href="mariages.html"><span class="material-symbols-outlined">favorite</span><small>Mariages</small></a>
-<a data-page="finance.html" href="finance.html"><span class="material-symbols-outlined">account_balance_wallet</span><small>Finance</small></a>
-</nav><div aria-live="polite" class="mm-toast" id="mm-toast" role="status"></div><script defer="True" src="admin-demo.js"></script></body></html>
+
+<div aria-live="polite" class="mm-toast" id="mm-toast" role="status"></div>
+<script src="admin-shared.js"></script>
+<script defer="True" src="admin-demo.js"></script>
+</body>
+</html>
