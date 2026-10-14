@@ -7,7 +7,6 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -83,50 +82,22 @@
         .glass-panel { background: rgba(15, 21, 36, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(125, 211, 252, 0.1); }
         .glass-panel-elevated { background: rgba(15, 21, 36, 0.75); backdrop-filter: blur(24px); border: 1px solid rgba(125, 211, 252, 0.15); box-shadow: 0 0 30px rgba(125, 211, 252, 0.05); }
     </style>
-<link href="admin-shared.css" rel="stylesheet"/></head>
-<body class="font-body min-h-screen flex text-on-surface bg-background">
-<!-- SideNavBar -->
-<nav class="hidden md:flex flex-col h-screen w-64 border-r border-primary/10 bg-surface-container/60 backdrop-blur-xl backdrop-blur-2xl border-r border-outline-variant/20 shadow-[0_0_30px_rgba(125,211,252,0.05)] fixed left-0 top-0 z-50">
-<div class="p-6">
-<h1 class="text-xl font-headline font-bold tracking-tight text-primary">Admin Mariage Madagascar</h1>
-<p class="text-xs text-on-surface-variant mt-1">Mariage &amp; événements de luxe</p>
-</div>
-<div class="px-4 py-2">
-<button class="w-full bg-primary/20 text-primary border border-primary/30 rounded-full py-2 px-4 hover:bg-primary/30 transition-colors flex items-center justify-center gap-2" data-demo-action="">
-<span class="material-symbols-outlined text-sm">add</span> Nouvelle réservation
-            </button>
-</div>
-<div class="flex-1 overflow-y-auto py-4">
-<ul class="space-y-1 font-body text-label-md">
-<li><a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-bright/50 transition-colors duration-300 active:scale-95 transition-transform" href="index.html"><span class="material-symbols-outlined">dashboard</span>Dashboard</a></li>
-<li><a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-bright/50 transition-colors duration-300 active:scale-95 transition-transform" href="crm.html"><span class="material-symbols-outlined">group</span>CRM</a></li>
-<li><a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-bright/50 transition-colors duration-300 active:scale-95 transition-transform" href="mariages.html"><span class="material-symbols-outlined">explore</span>Mariages</a></li>
-<li><a class="flex items-center gap-3 px-4 py-3 text-primary bg-primary-container/30 border-r-2 border-primary hover:bg-surface-bright/50 transition-colors duration-300 active:scale-95 transition-transform" href="finance.html"><span class="material-symbols-outlined">account_balance_wallet</span>Finance</a></li>
-<li><a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-bright/50 transition-colors duration-300 active:scale-95 transition-transform" href="parametres.html"><span class="material-symbols-outlined">settings</span>Settings</a></li>
-</ul>
-</div>
-<div class="p-4 border-t border-outline-variant/20">
-<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-bright/50 transition-colors duration-300 font-body text-label-md" href="parametres.html#support"><span class="material-symbols-outlined">help</span>Support</a>
-</div>
-</nav>
+<link href="admin-shared.css" rel="stylesheet"/>
+</head>
+<body class="font-body min-h-screen flex text-on-surface bg-background antialiased overflow-x-hidden">
+
 <!-- Main Content Area -->
-<main class="flex-1 md:ml-64 relative overflow-hidden flex flex-col">
-<!-- TopAppBar -->
-<header class="flex items-center justify-between px-6 py-4 sticky top-0 z-40 w-full bg-surface/60 backdrop-blur-lg border-b border-primary/10 flat">
-<div class="flex items-center gap-4"><div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-on-primary font-bold text-xl">G</div>
-<h2 class="text-lg font-semibold text-primary font-headline">Mariage Madagascar</h2>
-</div>
-<div class="flex items-center gap-2">
-<button class="text-on-surface-variant hover:bg-surface-variant/40 rounded-full p-2 transition-all focus-within:ring-1 focus-within:ring-primary/50"><span class="material-symbols-outlined">notifications</span></button>
-<button class="text-on-surface-variant hover:bg-surface-variant/40 rounded-full p-2 transition-all focus-within:ring-1 focus-within:ring-primary/50"><span class="material-symbols-outlined">history</span></button>
-<button class="text-on-surface-variant hover:bg-surface-variant/40 rounded-full p-2 transition-all focus-within:ring-1 focus-within:ring-primary/50"><span class="material-symbols-outlined">account_circle</span></button>
-</div>
-</header>
-<div class="p-8 space-y-8 overflow-y-auto">
+<main class="mm-main flex-1 relative flex flex-col min-h-screen w-full">
+<div class="p-6 lg:p-8 space-y-8 overflow-y-auto">
 <!-- Header -->
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
 <div>
+<div class="flex items-center gap-3">
+<button class="mm-mobile-burger md:hidden" data-mm-burger="" aria-label="Ouvrir le menu">
+<span class="material-symbols-outlined">menu</span>
+</button>
 <h1 class="text-3xl font-headline font-bold text-on-surface tracking-tight">Finance &amp; Comptabilité</h1>
+</div>
 <p class="text-on-surface-variant mt-2 text-sm">Aperçu en temps réel des flux financiers et rapprochements.</p>
 </div>
 <div class="flex gap-3">
@@ -261,7 +232,7 @@
 <div class="glass-panel rounded-xl p-6">
 <div class="flex justify-between items-center mb-6">
 <h2 class="text-lg font-semibold font-headline">Factures &amp; Devis</h2>
-<button class="text-primary hover:text-primary-fixed transition-colors text-sm font-medium">Voir tout</button>
+<a href="facturation.html" class="text-primary hover:text-primary-fixed transition-colors text-sm font-medium">Voir tout</a>
 </div>
 <div class="space-y-4">
 <div class="flex items-center justify-between p-3 rounded-lg border border-outline-variant/20 hover:bg-surface-variant/30 transition-colors">
@@ -298,11 +269,10 @@
 </div>
 </div>
 </div>
-<footer class="mt-auto border-t border-outline-variant/20 bg-surface-container/30 p-8"><div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8"><div><h4 class="text-primary font-bold mb-4">Mariage Madagascar</h4><p class="text-xs text-on-surface-variant leading-relaxed">Gestion financière et opérationnelle de luxe pour les événements d'exception à Madagascar.</p></div><div><h4 class="text-sm font-semibold mb-4">Navigation</h4><ul class="text-xs text-on-surface-variant space-y-2"><li><a class="hover:text-primary transition-colors" href="index.html">Tableau de bord</a></li><li><a class="hover:text-primary transition-colors" href="rapports.html">Rapports</a></li><li><a class="hover:text-primary transition-colors" href="facturation.html">Facturation</a></li></ul></div><div><h4 class="text-sm font-semibold mb-4">Support</h4><ul class="text-xs text-on-surface-variant space-y-2"><li><a class="hover:text-primary transition-colors" href="#">Centre d'aide</a></li><li><a class="hover:text-primary transition-colors" href="#">Contact</a></li><li><a class="hover:text-primary transition-colors" href="#">Documentation</a></li></ul></div><div><h4 class="text-sm font-semibold mb-4">Légal</h4><ul class="text-xs text-on-surface-variant space-y-2"><li><a class="hover:text-primary transition-colors" href="#">Confidentialité</a></li><li><a class="hover:text-primary transition-colors" href="#">Conditions d'utilisation</a></li></ul></div></div><div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-outline-variant/10 gap-4"><p class="text-[10px] text-on-surface-variant">© 2023 Mariage Madagascar. Tous droits réservés.</p><div class="flex gap-4"><span class="material-symbols-outlined text-on-surface-variant text-sm">language</span><span class="material-symbols-outlined text-on-surface-variant text-sm">security</span></div></div></footer></main>
-<nav aria-label="Navigation Admin mobile" class="mm-mobile-nav md:hidden">
-<a data-page="index.html" href="index.html"><span class="material-symbols-outlined">dashboard</span><small>Accueil</small></a>
-<a data-page="crm.html" href="crm.html"><span class="material-symbols-outlined">groups</span><small>CRM</small></a>
-<a data-page="sejours.html" href="sejours.html"><span class="material-symbols-outlined">explore</span><small>Séjours</small></a>
-<a data-page="mariages.html" href="mariages.html"><span class="material-symbols-outlined">favorite</span><small>Mariages</small></a>
-<a data-page="finance.html" href="finance.html"><span class="material-symbols-outlined">account_balance_wallet</span><small>Finance</small></a>
-</nav><div aria-live="polite" class="mm-toast" id="mm-toast" role="status"></div><script defer="True" src="admin-demo.js"></script></body></html>
+<footer class="mt-auto border-t border-outline-variant/20 bg-surface-container/30 p-8"><div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8"><div><h4 class="text-primary font-bold mb-4">Mariage Madagascar</h4><p class="text-xs text-on-surface-variant leading-relaxed">Gestion financière et opérationnelle de luxe pour les événements d'exception à Madagascar.</p></div><div><h4 class="text-sm font-semibold mb-4">Navigation</h4><ul class="text-xs text-on-surface-variant space-y-2"><li><a class="hover:text-primary transition-colors" href="index.html">Tableau de bord</a></li><li><a class="hover:text-primary transition-colors" href="rapports.html">Rapports</a></li><li><a class="hover:text-primary transition-colors" href="facturation.html">Facturation</a></li></ul></div><div><h4 class="text-sm font-semibold mb-4">Support</h4><ul class="text-xs text-on-surface-variant space-y-2"><li><a class="hover:text-primary transition-colors" href="parametres.html#support">Centre d'aide</a></li><li><a class="hover:text-primary transition-colors" href="parametres.html#support">Contact</a></li><li><a class="hover:text-primary transition-colors" href="parametres.html#support">Documentation</a></li></ul></div><div><h4 class="text-sm font-semibold mb-4">Légal</h4><ul class="text-xs text-on-surface-variant space-y-2"><li><a class="hover:text-primary transition-colors" href="#">Confidentialité</a></li><li><a class="hover:text-primary transition-colors" href="#">Conditions d'utilisation</a></li></ul></div></div><div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-outline-variant/10 gap-4"><p class="text-[10px] text-on-surface-variant">© 2023 Mariage Madagascar. Tous droits réservés.</p><div class="flex gap-4"><span class="material-symbols-outlined text-on-surface-variant text-sm">language</span><span class="material-symbols-outlined text-on-surface-variant text-sm">security</span></div></div></footer></main>
+
+<div aria-live="polite" class="mm-toast" id="mm-toast" role="status"></div>
+<script src="admin-shared.js"></script>
+<script defer="True" src="admin-demo.js"></script>
+</body>
+</html>
