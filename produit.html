@@ -838,7 +838,7 @@ body.villa-product #mainImageButton{height:100%}
       return;
     }
 
-    const expectedDays = getSelectedDurationDays();
+    const expectedDays = IS_VILLA_PRODUCT ? null : getSelectedDurationDays();
     const nights = getBookingNights();
 
     if (!bookingDate || !bookingEndDate) {
@@ -906,7 +906,9 @@ body.villa-product #mainImageButton{height:100%}
       return false;
     }
 
-    const expectedDays = getSelectedDurationDays();
+    // Pour la villa, la durée d’une option (ex. location bateau 3 jours)
+    // ne doit pas imposer la durée totale de réservation de l’hébergement.
+    const expectedDays = IS_VILLA_PRODUCT ? null : getSelectedDurationDays();
     if (IS_DURATION_PRODUCT && expectedDays && nights !== expectedDays) {
       alert(`Cette formule correspond à ${expectedDays} jour${expectedDays > 1 ? 's' : ''}. Merci de sélectionner une date de début et une date de fin correspondant à cette durée.`);
       document.getElementById('booking-date-end')?.focus();
@@ -1249,6 +1251,12 @@ body.villa-product #mainImageButton{height:100%}
   }
 
   function resolveBookingMode() {
+    // La villa est un hébergement : la réservation se fait avec une date
+    // d’arrivée et une date de départ, même si le titre mentionne une demande
+    // en mariage ou si une ancienne métadonnée indique « event ».
+    // Les options bateau/expérience ne définissent pas la durée totale du séjour.
+    if (IS_VILLA_PRODUCT) return 'duration';
+
     const override = getBookingModeOverride();
     if (override) return override;
 
