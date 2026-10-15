@@ -560,10 +560,48 @@ document.addEventListener("DOMContentLoaded", function() {
     tap: true
   });
 
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Esri Satellite',
-    maxZoom: 18
-  }).addTo(map);
+  // Fond cartographique robuste : satellite Esri en priorité, OpenStreetMap en secours.
+  // Si les tuiles satellite ne répondent pas, on bascule automatiquement vers OSM
+  // afin d'éviter une carte noire tout en conservant les marqueurs et animations.
+  const satelliteLayer = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {
+      attribution: 'Tiles © Esri',
+      maxZoom: 18,
+      crossOrigin: true,
+      keepBuffer: 2
+    }
+  );
+
+  const fallbackLayer = L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19,
+      crossOrigin: true,
+      keepBuffer: 2
+    }
+  );
+
+  let satelliteTileErrors = 0;
+  let usingFallbackMap = false;
+
+  satelliteLayer.on('tileerror', function () {
+    satelliteTileErrors += 1;
+    // Plusieurs erreurs indiquent généralement que le serveur satellite est inaccessible.
+    if (satelliteTileErrors >= 3 && !usingFallbackMap) {
+      usingFallbackMap = true;
+      if (map.hasLayer(satelliteLayer)) map.removeLayer(satelliteLayer);
+      fallbackLayer.addTo(map);
+      console.warn('[Madagascar map] Tuiles satellite indisponibles : fond OpenStreetMap activé.');
+    }
+  });
+
+  satelliteLayer.on('load', function () {
+    satelliteTileErrors = 0;
+  });
+
+  satelliteLayer.addTo(map);
 
   // Cadre géographique élargi pour afficher Madagascar jusqu'à son extrémité sud.
   const allBounds = L.latLngBounds([[-25.8, 43.1], [-11.5, 50.8]]);
