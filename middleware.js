@@ -59,7 +59,7 @@ export default async function middleware(request) {
       path.endsWith('.svg') ||
       path.endsWith('.ico')
     ) {
-      return; // Return void / undefined to continue to static page
+      return fetch(request);
     }
 
     // Extract access token from cookies
@@ -153,8 +153,8 @@ export default async function middleware(request) {
       return Response.redirect(indexUrl.toString(), 307);
     }
 
-    // User authenticated and authorized for this route -> allow request
-    return;
+    // User authenticated and authorized for this route -> fetch request
+    return fetch(request);
   } catch (error) {
     console.error('Middleware Critical Catch Error:', error);
     const loginUrl = new URL('/admin/connexion.html', request.url);
