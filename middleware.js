@@ -1,5 +1,5 @@
-// Vercel Edge Middleware using Standard Web API (Request / Response)
-// No Next.js or 'next/server' dependencies
+// Vercel Edge Middleware using Standard Web API & @vercel/functions
+import { next } from '@vercel/functions';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://qrkinjuhtyfptldlvdyg.supabase.co';
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
@@ -40,6 +40,43 @@ function parseCookies(cookieHeader) {
   return cookies;
 }
 
+/**
+ * Creates a redirection response with mutable headers to avoid "TypeError: immutable at appendHeader"
+ */
+function createRedirectResponse(url, extraHeaders = []) {
+  const headers = new Headers();
+  headers.set('Location', url);
+
+  if (Array.isArray(extraHeaders)) {
+    extraHeaders.forEach(([name, val]) => {
+      headers.append(name, val);
+    });
+  }
+
+  return new Response(null, {
+    status: 307,
+    headers: headers
+  });
+}
+
+function getSafeRedirectPage(path) {
+  const rawPage = path.split('/').pop() || 'index.html';
+  // Allowed admin pages
+  const validPages = [
+    'index.html', 'crm.html', 'sejours.html', 'mariages.html',
+    'finance.html', 'paiements.html', 'facturation.html', 'commissions.html',
+    'rapports.html', 'parametres.html', 'mots-de-passe.html'
+  ];
+  return validPages.includes(rawPage) ? rawPage : 'index.html';
+}
+
+function getClearCookiesHeaders() {
+  return [
+    ['Set-Cookie', 'sb-access-token=; Path=/; Max-Age=0; SameSite=Lax; Secure'],
+    ['Set-Cookie', 'sb-refresh-token=; Path=/; Max-Age=0; SameSite=Lax; Secure']
+  ];
+}
+
 export default async function middleware(request) {
   try {
     const url = new URL(request.url);
@@ -57,54 +94,99 @@ export default async function middleware(request) {
       path.endsWith('.jpg') ||
       path.endsWith('.jpeg') ||
       path.endsWith('.svg') ||
-      path.endsWith('.ico')
+      path.endsWith('.ico') ||
+      path.endsWith('.json') ||
+      path.endsWith('.woff') ||
+      path.endsWith('.woff2')
     ) {
-      return fetch(request);
+      return next();
     }
 
-    // Extract access token from cookies
+    // Extract access & refresh tokens from cookies
     const cookieHeader = request.headers.get('cookie');
     const cookies = parseCookies(cookieHeader);
-    const accessToken = cookies['sb-access-token'] || cookies['sb:token'];
+    let accessToken = cookies['sb-access-token'] || cookies['sb:token'];
+    const refreshToken = cookies['sb-refresh-token'];
+    let newCookieHeaders = [];
 
-    if (!accessToken) {
-      const pageName = path.split('/').pop() || 'index.html';
+    if (!accessToken && !refreshToken) {
+      const pageName = getSafeRedirectPage(path);
       const loginUrl = new URL('/admin/connexion.html', request.url);
       loginUrl.searchParams.set('redirect', pageName);
-      return Response.redirect(loginUrl.toString(), 307);
+      return createRedirectResponse(loginUrl.toString());
     }
 
-    // Validate JWT token with Supabase Auth server
-    const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'apikey': SUPABASE_ANON_KEY
+    // Validate JWT access token with Supabase Auth server
+    let userRes = null;
+    if (accessToken) {
+      try {
+        userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'apikey': SUPABASE_ANON_KEY
+          }
+        });
+      } catch (err) {
+        console.warn('Error validating access token:', err);
       }
-    });
+    }
 
-    if (!userRes.ok) {
-      // Invalid or expired token
-      const pageName = path.split('/').pop() || 'index.html';
+    // If access token expired or missing, attempt refresh if refresh token is available
+    if ((!userRes || !userRes.ok) && refreshToken) {
+      try {
+        const refreshRes = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY
+          },
+          body: JSON.stringify({ refresh_token: refreshToken })
+        });
+
+        if (refreshRes.ok) {
+          const sessionData = await refreshRes.json();
+          if (sessionData && sessionData.access_token) {
+            accessToken = sessionData.access_token;
+            const newRefreshToken = sessionData.refresh_token || refreshToken;
+            const maxAge = sessionData.expires_in || 3600;
+
+            newCookieHeaders.push(['Set-Cookie', `sb-access-token=${accessToken}; Path=/; Max-Age=${maxAge}; SameSite=Lax; Secure`]);
+            newCookieHeaders.push(['Set-Cookie', `sb-refresh-token=${newRefreshToken}; Path=/; Max-Age=604800; SameSite=Lax; Secure`]);
+
+            // Re-verify user with new access token
+            userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+              headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'apikey': SUPABASE_ANON_KEY
+              }
+            });
+          }
+        }
+      } catch (refreshErr) {
+        console.warn('Error refreshing token:', refreshErr);
+      }
+    }
+
+    if (!userRes || !userRes.ok) {
+      // Invalid or expired token, refresh failed
+      const pageName = getSafeRedirectPage(path);
       const loginUrl = new URL('/admin/connexion.html', request.url);
       loginUrl.searchParams.set('redirect', pageName);
 
-      const response = Response.redirect(loginUrl.toString(), 307);
-      response.headers.append('Set-Cookie', 'sb-access-token=; Path=/; Max-Age=0; SameSite=Lax; Secure');
-      response.headers.append('Set-Cookie', 'sb-refresh-token=; Path=/; Max-Age=0; SameSite=Lax; Secure');
-      return response;
+      return createRedirectResponse(loginUrl.toString(), getClearCookiesHeaders());
     }
 
     const user = await userRes.json();
     if (!user || !user.id) {
       const loginUrl = new URL('/admin/connexion.html', request.url);
-      return Response.redirect(loginUrl.toString(), 307);
+      return createRedirectResponse(loginUrl.toString(), getClearCookiesHeaders());
     }
 
     // Determine role:
-    // 1) App Metadata / User Metadata / DB Profile
+    // 1) App Metadata / User Metadata
     let role = user.app_metadata?.role || user.user_metadata?.role;
 
-    // 2) If user email is in official ADMIN_EMAILS list, automatically grant super_admin
+    // 2) Primary admin emails check
     const userEmail = (user.email || '').toLowerCase();
     if (ADMIN_EMAILS.includes(userEmail)) {
       role = 'super_admin';
@@ -134,30 +216,36 @@ export default async function middleware(request) {
     if (!role) {
       const loginUrl = new URL('/admin/connexion.html', request.url);
       loginUrl.searchParams.set('error', 'unauthorized_role');
-      return Response.redirect(loginUrl.toString(), 307);
+      return createRedirectResponse(loginUrl.toString());
     }
 
-    // Check Granular Role Matrix
+    // Check Role Permissions Matrix
     const currentPage = path.split('/').pop() || 'index.html';
     const allowedPages = ROLE_PERMISSIONS[role];
 
     if (!allowedPages) {
       const loginUrl = new URL('/admin/connexion.html', request.url);
       loginUrl.searchParams.set('error', 'forbidden');
-      return Response.redirect(loginUrl.toString(), 307);
+      return createRedirectResponse(loginUrl.toString());
     }
 
     if (!allowedPages.includes('*') && !allowedPages.includes(currentPage)) {
       const indexUrl = new URL('/admin/index.html', request.url);
       indexUrl.searchParams.set('error', 'page_forbidden');
-      return Response.redirect(indexUrl.toString(), 307);
+      return createRedirectResponse(indexUrl.toString());
     }
 
-    // User authenticated and authorized for this route -> fetch request
-    return fetch(request);
+    // User authenticated and authorized
+    const response = next();
+    if (newCookieHeaders.length > 0) {
+      newCookieHeaders.forEach(([name, val]) => {
+        response.headers.append(name, val);
+      });
+    }
+    return response;
   } catch (error) {
     console.error('Middleware Critical Catch Error:', error);
     const loginUrl = new URL('/admin/connexion.html', request.url);
-    return Response.redirect(loginUrl.toString(), 307);
+    return createRedirectResponse(loginUrl.toString());
   }
 }

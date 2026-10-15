@@ -1,0 +1,27 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "middleware.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Imuia/Mariage-Madagascar.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Imuia/Mariage-Madagascar/issues"
+  },
+  "homepage": "https://github.com/Imuia/Mariage-Madagascar#readme",
+  "dependencies": {
+    "@vercel/functions": "^3.10.1"
+  }
+}
