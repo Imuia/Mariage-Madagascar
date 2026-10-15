@@ -23,7 +23,9 @@ const ROLE_PERMISSIONS = {
 };
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: [
+    '/admin/((?!connexion(?:\\.html)?$|reinitialisation(?:\\.html)?$|.*\\.(?:css|js|png|jpg|jpeg|svg|ico|webp|woff2?|map)$).*)',
+  ],
 };
 
 function parseCookies(cookieHeader) {
