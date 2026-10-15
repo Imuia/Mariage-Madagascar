@@ -18,7 +18,7 @@ a{color:inherit;text-decoration:none}.places-main{padding:0 22px 90px}.places-wr
 .places-hero:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(3,10,22,.72),rgba(3,10,22,.28) 48%,rgba(3,10,22,.62)),linear-gradient(0deg,rgba(3,10,22,.72),rgba(3,10,22,.08) 70%)}
 .places-hero:after{content:"";position:absolute;inset:18px;border:1px solid rgba(255,255,255,.25);pointer-events:none}
 .kicker{display:inline-block;color:#a5e8ff;font-size:.82rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;text-shadow:0 2px 18px rgba(0,0,0,.65)}
-h1,h2,h3{font-family:Inter,ui-sans-serif,system-ui,sans-serif!important;font-weight:400}h1{font-size:clamp(3.2rem,7.5vw,6.6rem);line-height:1.02;letter-spacing:-.035em;margin:22px 0 24px;max-width:1100px;text-shadow:0 4px 30px rgba(0,0,0,.45)} .places-hero p{max-width:850px;margin:0 auto;color:#f0f5fa;font-size:clamp(1.05rem,1.7vw,1.3rem);line-height:1.8;text-shadow:0 2px 16px rgba(0,0,0,.8)}
+h1,h2,h3{font-family:Marcellus,Georgia,serif;font-weight:400}h1{font-size:clamp(3.2rem,7.5vw,6.6rem);line-height:1.02;letter-spacing:-.035em;margin:22px 0 24px;max-width:1100px;text-shadow:0 4px 30px rgba(0,0,0,.45)} .places-hero p{max-width:850px;margin:0 auto;color:#f0f5fa;font-size:clamp(1.05rem,1.7vw,1.3rem);line-height:1.8;text-shadow:0 2px 16px rgba(0,0,0,.8)}
 .places-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
 .place-card{min-height:290px;position:relative;display:flex;align-items:end;overflow:hidden;border:1px solid var(--line);border-radius:20px;background:#111a2b;isolation:isolate;transition:transform .25s ease,border-color .25s ease}
 .place-card:hover{transform:translateY(-4px);border-color:rgba(125,211,252,.6)}
@@ -37,13 +37,19 @@ h1,h2,h3{font-family:Inter,ui-sans-serif,system-ui,sans-serif!important;font-wei
 <body>
 <div data-global-header></div>
 <main class="places-main">
-<div class="places-wrap">
 <header class="places-hero">
+<div class="hero-copy"><div class="hero-copy-inner">
 <span class="kicker">Mariage Madagascar · Destinations</span>
-<h1 class="text-5xl sm:text-6xl lg:text-7xl leading-tight text-white mb-7">Nos lieux de mariage<br><span style="color:var(--accent);font-style:italic">à Madagascar</span></h1>
-<p>Îles confidentielles, plages lumineuses, paysages spectaculaires ou élégance urbaine : découvrez les destinations pour imaginer votre mariage, votre lune de miel ou un séjour à deux.</p>
+<h1>Nos lieux de mariage,<br><span>votre histoire.</span></h1>
+<p>Îles confidentielles, lagons turquoise et paysages spectaculaires : découvrez les plus beaux décors de Madagascar pour imaginer votre mariage, votre lune de miel ou un séjour à deux.</p>
+<div class="hero-actions">
+<a class="hero-btn hero-btn-primary" href="#destinations">Explorer les destinations <span aria-hidden="true">&nbsp;↓</span></a>
+<a class="hero-btn hero-btn-secondary" href="/contact-mariage-madagascar-nosy-be.html">Imaginer mon mariage <span aria-hidden="true">&nbsp;→</span></a>
+</div>
+</div></div>
 </header>
-<section class="places-grid" aria-label="Toutes nos destinations">
+<div class="places-wrap">
+<section id="destinations" class="places-grid" aria-label="Toutes nos destinations">
 <a class="place-card" href="/nosy-be.html"><div class="place-image" role="img" aria-label="Vue aérienne des eaux turquoise de Nosy Be" style="background-image:url('https://www.madagascar.it/wp-content/uploads/2020/01/madagascar-eden-lodge-hotel-arcipelago-nosy-be-spiaggia-wadi-destination.jpg')"></div><div class="place-content"><span class="place-label">Île & lagon</span><h2>Nosy Be</h2><p>L’Île aux Parfums, ses plages de sable clair et ses couchers de soleil tropicaux.</p><span class="place-link">Découvrir Nosy Be <span>→</span></span></div></a>
 <a class="place-card" href="/mariage-nosy-saba.html"><div class="place-image" role="img" aria-label="Plage et lagon de Nosy Saba" style="background-image:url('https://assets.zyrosite.com/cdn-cgi/image/format%3Dauto%2Cw%3D1440%2Ch%3D733%2Cfit%3Dcrop/mePOQPkJ0EfGanRM/0z0o2tgtq8hlgvamdxxemxqgnzjq5suly_ifizmwtf4a9mkdzwnsnc_paxiipzpzjwhogzrc7sjxfwt172rpssxbezumb9tzju7vp7girw9trtg6vyq9fpst5-yghlgnlorgubygsjd1zjeikwo1amaidixqavhpg1vuxovvqtiswd4a_gtj4g4rl5i9bjp3-Qw1XlvQdsVVwdZIV.jpg')"></div><div class="place-content"><span class="place-label">Évasion privée</span><h2>Nosy Saba</h2><p>Une parenthèse insulaire intimiste pour célébrer un moment précieux.</p><span class="place-link">Découvrir Nosy Saba <span>→</span></span></div></a>
 <a class="place-card" href="/mariage-a-sainte-marie.html"><div class="place-image" style="background-image:url('https://cdn.audleytravel.com/1600/1142/60/16028354-beach-on-le-saintemarie.jpg')"></div><div class="place-content"><span class="place-label">Océan Indien</span><h2>Sainte-Marie</h2><p>Une île paisible, une nature généreuse et une atmosphère hors du temps.</p><span class="place-link">Découvrir Sainte-Marie <span>→</span></span></div></a>
