@@ -603,6 +603,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
   satelliteLayer.addTo(map);
 
+  // IMPORTANT : Leaflet doit avoir un centre et un zoom avant toute conversion
+  // de coordonnées (latLngToLayerPoint), notamment pendant l'animation de l'avion.
+  // Le cadrage final sera ajusté ensuite par showAllDestinations().
+  map.setView([-18.8, 46.8], 6, { animate: false });
+
   // Cadre géographique élargi pour afficher Madagascar jusqu'à son extrémité sud.
   const allBounds = L.latLngBounds([[-25.8, 43.1], [-11.5, 50.8]]);
   const markerById = {};
@@ -736,7 +741,8 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     requestAnimationFrame(animatePlane);
   }
-  animatePlane();
+  // Démarre l'animation après l'initialisation complète de la carte.
+  map.whenReady(() => requestAnimationFrame(animatePlane));
 
   function showAllDestinations() {
     map.fitBounds(allBounds.pad(0.012), { animate: true, maxZoom: 7 });
