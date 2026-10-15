@@ -9,6 +9,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
+   <script>
+    tailwind.config = {
+      darkMode:'class',
+      theme:{extend:{colors:{primary:'#7dd3fc',tertiary:'#c8a0f0',background:'#0a0e1a',surface:'#0f1524','surface-container':'#141c2e','surface-container-high':'#1a2438','surface-container-highest':'#202c42','on-background':'#e0e8f0','on-surface':'#e0e8f0','on-surface-variant':'#a0b4c4','outline-variant':'#2a3a48'},fontFamily:{headline:['Inter'],body:['Inter']}}}
+    };
+  </script>
   <style>
     :root{--bg:#0a0e1a;--panel:rgba(17,26,43,.78);--panel2:#101a2b;--line:rgba(126,164,205,.18);--text:#e6edf5;--muted:#a2b0c2;--cyan:#72d5f5;--cyan2:#36bde8}
     *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:100px}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.75}
