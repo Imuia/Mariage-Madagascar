@@ -7,11 +7,7 @@ const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIs
 
 // Explicit allowlist for the primary admin accounts.
 // These emails still must authenticate successfully with Supabase Auth.
-const ADMIN_EMAILS = [
-  'info@mariage-madagascar.com',
-  'contact@mariage-madagascar.com',
-  'admin@mariage-madagascar.com',
-];
+const ADMIN_EMAILS = ['info@mariage-madagascar.com'];
 
 const ROLE_PERMISSIONS = {
   super_admin: ['*'],
@@ -24,8 +20,8 @@ const ROLE_PERMISSIONS = {
 };
 
 export const config = {
-  // Match only protected Admin HTML pages. Keep login/reset pages, shared scripts,
-  // styles and assets outside the middleware to prevent continuation loops.
+  // Only protected HTML pages are matched. Login/reset pages and assets bypass
+  // middleware entirely, avoiding a continuation/redirect loop on public routes.
   matcher: [
     '/admin/index.html',
     '/admin/crm.html',
@@ -39,16 +35,6 @@ export const config = {
     '/admin/parametres.html',
   ],
 };
-
-const PUBLIC_ADMIN_PATHS = new Set([
-  '/admin/connexion.html',
-  '/admin/connexion',
-  '/admin/reinitialisation.html',
-  '/admin/reinitialisation',
-]);
-const PUBLIC_ASSET_EXTENSIONS = new Set([
-  '.css', '.js', '.png', '.jpg', '.jpeg', '.svg', '.ico', '.webp', '.woff', '.woff2', '.map',
-]);
 
 function parseCookies(cookieHeader = '') {
   const cookies = {};
@@ -97,24 +83,23 @@ function redirectResponse(request, pathname, query = {}, cookies = []) {
   return new Response(null, { status: 307, headers });
 }
 
-function continueRequest(cookies = []) {
+function continueRequest(request, cookies = []) {
+  // If the session was refreshed, return a same-URL redirect so Set-Cookie is
+  // written to the browser as response cookies. The following request uses
+  // the new access token and proceeds normally through next().
   if (!cookies.length) return next();
+
   const headers = new Headers();
+  headers.set('Location', request.url);
+  headers.set('Cache-Control', 'no-store');
   appendCookies(headers, cookies);
-  return next({ headers });
+  return new Response(null, { status: 307, headers });
 }
 
 function requestedPageName(pathname) {
   const lastSegment = pathname.split('/').filter(Boolean).pop() || 'index.html';
   // Only permit a simple local filename as the return target.
   return /^[a-z0-9][a-z0-9-]*\.html$/i.test(lastSegment) ? lastSegment : 'index.html';
-}
-
-function isPublicAsset(pathname) {
-  const filename = pathname.split('/').pop() || '';
-  const dot = filename.lastIndexOf('.');
-  const extension = dot >= 0 ? filename.slice(dot).toLowerCase() : '';
-  return PUBLIC_ASSET_EXTENSIONS.has(extension);
 }
 
 async function getSupabaseUser(accessToken) {
@@ -160,11 +145,6 @@ export default async function middleware(request) {
   const url = new URL(request.url);
   const path = url.pathname.toLowerCase();
 
-  // Authentication pages and their assets must remain accessible without a session.
-  if (PUBLIC_ADMIN_PATHS.has(path) || isPublicAsset(path)) {
-    return next();
-  }
-
   try {
     const cookies = parseCookies(request.headers.get('cookie') || '');
     let accessToken = cookies['sb-access-token'] || cookies['sb:token'] || '';
@@ -200,35 +180,14 @@ export default async function middleware(request) {
       );
     }
 
-    // Only trust app_metadata for assigned roles; user_metadata is user-editable.
+    // Only trust server-controlled app_metadata for roles. Do not query
+    // public.profiles here: that table does not exist in the current project.
     let role = user.app_metadata?.role || null;
 
-    // An authenticated account on this explicit allowlist is the configured primary admin.
+    // The explicitly configured primary admin must first authenticate through
+    // Supabase Auth. The email allowlist is checked server-side.
     const userEmail = (user.email || '').toLowerCase();
     if (ADMIN_EMAILS.includes(userEmail)) role = 'super_admin';
-
-    // Older/other roles may be stored in profiles. Fail closed if the table is absent/unavailable.
-    if (!role) {
-      try {
-        const profileRes = await fetch(
-          `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(user.id)}&select=role`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              apikey: SUPABASE_ANON_KEY,
-            },
-          },
-        );
-        if (profileRes.ok) {
-          const profiles = await profileRes.json();
-          if (Array.isArray(profiles) && profiles.length && profiles[0]?.role) role = profiles[0].role;
-        } else if (profileRes.status >= 500) {
-          throw new Error(`Supabase profile lookup failed (${profileRes.status})`);
-        }
-      } catch (error) {
-        console.warn('Admin role lookup unavailable:', error);
-      }
-    }
 
     if (!role || !ROLE_PERMISSIONS[role]) {
       return redirectResponse(
@@ -249,7 +208,7 @@ export default async function middleware(request) {
       );
     }
 
-    return continueRequest(renewedCookies);
+    return continueRequest(request, renewedCookies);
   } catch (error) {
     // Fail closed. Avoid turning a temporary auth/backend problem into an unhandled 500.
     console.error('Admin middleware authentication error:', error);
