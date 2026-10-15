@@ -24,7 +24,20 @@ const ROLE_PERMISSIONS = {
 };
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  // Match only protected Admin HTML pages. Keep login/reset pages, shared scripts,
+  // styles and assets outside the middleware to prevent continuation loops.
+  matcher: [
+    '/admin/index.html',
+    '/admin/crm.html',
+    '/admin/sejours.html',
+    '/admin/mariages.html',
+    '/admin/finance.html',
+    '/admin/paiements.html',
+    '/admin/facturation.html',
+    '/admin/commissions.html',
+    '/admin/rapports.html',
+    '/admin/parametres.html',
+  ],
 };
 
 const PUBLIC_ADMIN_PATHS = new Set([
