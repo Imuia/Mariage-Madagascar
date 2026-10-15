@@ -108,12 +108,12 @@
         /* Personnalisation de la Vraie Carte Leaflet */
         #realMadagascarMap {
           width: 100%;
-          height: clamp(420px, 58vw, 680px);
+          height: clamp(560px, 66vw, 820px);
           border-radius: 1rem;
           z-index: 10;
         }
         @media (max-width: 640px) {
-          #realMadagascarMap { height: 500px; }
+          #realMadagascarMap { height: 560px; }
         }
         .map-filter {
           border: 1px solid rgba(125, 211, 252, 0.28);
@@ -164,9 +164,36 @@
           border: 1px solid #cbd5e1;
         }
         .plane-marker-icon {
+          display: block;
+          width: 30px;
+          height: 30px;
           color: #38bdf8;
+          transform-origin: 50% 50%;
+          will-change: transform;
           filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.9));
-          transition: all 0.2s linear;
+        }
+        .plane-marker-icon path {
+          fill: currentColor;
+        }
+        .plane-icon-container, .helicopter-icon-container {
+          background: transparent;
+          border: 0;
+        }
+        .helicopter-marker-icon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 30px;
+          height: 30px;
+          font-size: 21px;
+          border-radius: 50%;
+          background: rgba(10, 14, 26, .82);
+          border: 1px solid rgba(125, 211, 252, .65);
+          box-shadow: 0 0 12px rgba(56, 189, 248, .35);
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .65));
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .plane-marker-icon { transition: none; }
         }
     </style>
 </head>
@@ -499,7 +526,7 @@
       <div id="realMadagascarMap"></div>
 
       <div class="absolute bottom-4 left-4 z-[1000] text-[10px] text-white/90 font-mono hidden sm:block bg-black/70 px-2.5 py-1 rounded-md backdrop-blur-sm border border-white/10">
-        Airbus AS350 • 616 km / trajet
+        Avion charter • Hélicoptères locaux
       </div>
     </div>
   </div>
@@ -537,10 +564,53 @@ document.addEventListener("DOMContentLoaded", function() {
     tap: true
   });
 
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Esri Satellite',
-    maxZoom: 18
-  }).addTo(map);
+  // Fond cartographique robuste : satellite Esri en priorité, OpenStreetMap en secours.
+  // Si les tuiles satellite ne répondent pas, on bascule automatiquement vers OSM
+  // afin d'éviter une carte noire tout en conservant les marqueurs et animations.
+  const satelliteLayer = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {
+      attribution: 'Tiles © Esri',
+      maxZoom: 18,
+      crossOrigin: true,
+      keepBuffer: 2
+    }
+  );
+
+  const fallbackLayer = L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19,
+      crossOrigin: true,
+      keepBuffer: 2
+    }
+  );
+
+  let satelliteTileErrors = 0;
+  let usingFallbackMap = false;
+
+  satelliteLayer.on('tileerror', function () {
+    satelliteTileErrors += 1;
+    // Plusieurs erreurs indiquent généralement que le serveur satellite est inaccessible.
+    if (satelliteTileErrors >= 3 && !usingFallbackMap) {
+      usingFallbackMap = true;
+      if (map.hasLayer(satelliteLayer)) map.removeLayer(satelliteLayer);
+      fallbackLayer.addTo(map);
+      console.warn('[Madagascar map] Tuiles satellite indisponibles : fond OpenStreetMap activé.');
+    }
+  });
+
+  satelliteLayer.on('load', function () {
+    satelliteTileErrors = 0;
+  });
+
+  satelliteLayer.addTo(map);
+
+  // IMPORTANT : Leaflet doit avoir un centre et un zoom avant toute conversion
+  // de coordonnées (latLngToLayerPoint), notamment pendant l'animation de l'avion.
+  // Le cadrage final sera ajusté ensuite par showAllDestinations().
+  map.setView([-18.8, 46.8], 6, { animate: false });
 
   // Cadre géographique élargi pour afficher Madagascar jusqu'à son extrémité sud.
   const allBounds = L.latLngBounds([[-25.8, 43.1], [-11.5, 50.8]]);
@@ -565,45 +635,75 @@ document.addEventListener("DOMContentLoaded", function() {
   // Plusieurs routes aériennes : l’avion parcourt successivement chaque destination
   // depuis Antananarivo, puis revient à la capitale avant de poursuivre son circuit.
   const TNR = destinations.find(d => d.id === 'antananarivo').coords;
+  // Avion de liaison : l’icône pivote selon le sens réel du déplacement.
   const planeIcon = L.divIcon({
     className: 'plane-icon-container',
-    html: '<span class="material-symbols-outlined plane-marker-icon" style="font-size:25px">flight</span>',
-    iconSize: [28, 28], iconAnchor: [14, 14]
+    html: '<svg id="animatedPlaneGlyph" class="plane-marker-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 1.5 20.2 13l10.3 5.1v3.6l-10.3-2.8v7.5l3.7 3.1v1.8L16 29.1 8.1 31.3v-1.8l3.7-3.1v-7.5L1.5 21.7v-3.6L11.8 13 16 1.5Z"/></svg>',
+    iconSize: [32, 32], iconAnchor: [16, 16]
   });
   const planeMarker = L.marker(TNR, { icon: planeIcon, interactive: false, keyboard: false, zIndexOffset: 1200 }).addTo(map);
   const flightDestinations = destinations.filter(destination => destination.id !== 'antananarivo');
   const flightRoutes = flightDestinations.map((destination, routeIndex) => {
     const points = [];
     const bend = (routeIndex % 2 === 0 ? -1 : 1) * 0.65;
-    for (let i = 0; i <= 100; i++) {
-      const t = i / 100;
+    for (let i = 0; i <= 240; i++) {
+      const t = i / 240;
       points.push([
         (1 - t) * TNR[0] + t * destination.coords[0] + Math.sin(t * Math.PI) * bend,
         (1 - t) * TNR[1] + t * destination.coords[1] + Math.sin(t * Math.PI) * bend
       ]);
     }
     L.polyline(points, {
-      color: '#38bdf8',
-      weight: 3.5,
-      opacity: .92,
-      dashArray: '8, 8'
+      color: '#38bdf8', weight: 3, opacity: .72,
+      dashArray: '7, 9', lineCap: 'round'
     }).addTo(map);
     return { destination, points };
   });
+
+  // Hélicoptères en circuits locaux autour des destinations.
+  const helicopterMarkers = flightDestinations.map((destination, index) => {
+    const icon = L.divIcon({
+      className: 'helicopter-icon-container',
+      html: '<span class="helicopter-marker-icon" aria-hidden="true">🚁</span>',
+      iconSize: [30, 30], iconAnchor: [15, 15]
+    });
+    const marker = L.marker(destination.coords, {
+      icon, interactive: false, keyboard: false, zIndexOffset: 900
+    }).addTo(map);
+    return {
+      marker, center: destination.coords,
+      phase: index * (Math.PI * 2 / flightDestinations.length),
+      radiusLat: 0.16 + (index % 3) * 0.035,
+      radiusLng: 0.20 + (index % 2) * 0.04
+    };
+  });
+  let helicopterFrame = 0;
+
+  function updateAircraftHeading(from, to) {
+    if (!map || !map._loaded || !from || !to) return;
+    const a = map.latLngToContainerPoint(from);
+    const b = map.latLngToContainerPoint(to);
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    // Ignore near-zero vectors to prevent heading jitter.
+    if (Math.hypot(dx, dy) < 0.8) return;
+    // This SVG's nose points straight up (12 o'clock).
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+    const glyph = planeMarker.getElement()?.querySelector('#animatedPlaneGlyph');
+    if (glyph) glyph.style.transform = `rotate(${angle}deg)`;
+  }
 
   const introTitle = document.getElementById('mapDestinationTitle');
   const introDescription = document.getElementById('mapDestinationDescription');
   const introEyebrow = document.getElementById('mapDestinationEyebrow');
   const introLink = document.getElementById('mapDestinationLink');
   let activeRouteIndex = 0;
-  let routeStep = 0;
   let routeDirection = 1;
-  let lastIntroDestination = '';
-  let lastPlaneStepAt = 0;
-  const PLANE_STEP_INTERVAL_MS = 45; // vitesse régulière, sans accélération
+  let routeProgress = 0;
+  let lastAnimationAt = 0;
+  const FLIGHT_LEG_DURATION_MS = 8500;
   function updateDestinationIntro(destination, isReturning = false) {
-    if (!destination || lastIntroDestination === destination.id + (isReturning ? '-return' : '-outbound')) return;
-    lastIntroDestination = destination.id + (isReturning ? '-return' : '-outbound');
+    if (!destination) return;
     if (introEyebrow) introEyebrow.textContent = isReturning ? 'VOL RETOUR VERS ANTANANARIVO' : 'DESTINATION À DÉCOUVRIR';
     if (introTitle) introTitle.textContent = isReturning ? destination.name + ' → Antananarivo' : 'Antananarivo → ' + destination.name;
     if (introDescription) introDescription.textContent = (isReturning ? 'Retour depuis ' : 'Découvrez ') + destination.name + ' : ' + destination.description + ' Mariage, lune de miel et séjour sur mesure selon vos envies.';
@@ -614,29 +714,60 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   updateDestinationIntro(flightRoutes[0]?.destination);
 
+  function interpolatePoint(points, progress) {
+    const scaled = Math.max(0, Math.min(1, progress)) * (points.length - 1);
+    const index = Math.min(points.length - 2, Math.floor(scaled));
+    const fraction = scaled - index;
+    const from = points[index];
+    const to = points[index + 1];
+    return [
+      from[0] + (to[0] - from[0]) * fraction,
+      from[1] + (to[1] - from[1]) * fraction
+    ];
+  }
+
   function animatePlane(timestamp) {
     if (!flightRoutes.length) return;
-    if (timestamp - lastPlaneStepAt < PLANE_STEP_INTERVAL_MS) {
-      requestAnimationFrame(animatePlane);
-      return;
-    }
-    lastPlaneStepAt = timestamp;
+    if (!lastAnimationAt) lastAnimationAt = timestamp;
+    const delta = Math.min(timestamp - lastAnimationAt, 34);
+    lastAnimationAt = timestamp;
+    routeProgress = Math.min(1, routeProgress + delta / FLIGHT_LEG_DURATION_MS);
+
     const route = flightRoutes[activeRouteIndex];
-    routeStep += routeDirection;
-    if (routeStep >= route.points.length - 1) {
-      routeStep = route.points.length - 1;
-      routeDirection = -1;
-      updateDestinationIntro(route.destination, true);
-    } else if (routeStep <= 0 && routeDirection === -1) {
-      routeStep = 0;
-      routeDirection = 1;
-      activeRouteIndex = (activeRouteIndex + 1) % flightRoutes.length;
-      updateDestinationIntro(flightRoutes[activeRouteIndex].destination, false);
+    // Smoothstep eases take-off and arrival to avoid abrupt turns.
+    const easedProgress = routeProgress * routeProgress * (3 - 2 * routeProgress);
+    const progress = routeDirection === 1 ? easedProgress : 1 - easedProgress;
+    const currentPoint = interpolatePoint(route.points, progress);
+    const headingProgress = Math.max(0, Math.min(1, progress + (routeDirection * 0.045)));
+    const nextPoint = interpolatePoint(route.points, headingProgress);
+    planeMarker.setLatLng(currentPoint);
+    updateAircraftHeading(currentPoint, nextPoint);
+
+    if (routeProgress >= 1) {
+      routeProgress = 0;
+      if (routeDirection === 1) {
+        routeDirection = -1;
+        updateDestinationIntro(route.destination, true);
+      } else {
+        routeDirection = 1;
+        activeRouteIndex = (activeRouteIndex + 1) % flightRoutes.length;
+        updateDestinationIntro(flightRoutes[activeRouteIndex].destination, false);
+      }
     }
-    planeMarker.setLatLng(route.points[routeStep]);
+
+    // Mouvement indépendant de la fréquence d'affichage : trajectoires locales douces.
+    const elapsedSeconds = timestamp / 1000;
+    helicopterMarkers.forEach(helicopter => {
+      const angle = elapsedSeconds * 0.42 + helicopter.phase;
+      helicopter.marker.setLatLng([
+        helicopter.center[0] + Math.sin(angle) * helicopter.radiusLat,
+        helicopter.center[1] + Math.cos(angle) * helicopter.radiusLng
+      ]);
+    });
     requestAnimationFrame(animatePlane);
   }
-  animatePlane();
+  // Démarre uniquement lorsque Leaflet a initialisé son centre, son zoom et son conteneur.
+  map.whenReady(() => requestAnimationFrame(animatePlane));
 
   function showAllDestinations() {
     map.fitBounds(allBounds.pad(0.012), { animate: true, maxZoom: 7 });
