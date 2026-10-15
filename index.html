@@ -676,15 +676,18 @@ document.addEventListener("DOMContentLoaded", function() {
   let helicopterFrame = 0;
 
   function updateAircraftHeading(from, to) {
-    // Ne calcule l'orientation que lorsque Leaflet possède un centre et un zoom.
     if (!map || !map._loaded || !from || !to) return;
-    const a = map.latLngToLayerPoint(from);
-    const b = map.latLngToLayerPoint(to);
-    // L'icône Material "flight" pointe vers le haut par défaut :
-    // +90° aligne donc le nez avec le déplacement vers la droite.
-    const angle = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI + 90;
-    const glyph = document.getElementById('animatedPlaneGlyph');
-    if (glyph) glyph.style.transform = 'rotate(' + angle + 'deg)';
+    const a = map.latLngToContainerPoint(from);
+    const b = map.latLngToContainerPoint(to);
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    if (Math.abs(dx) + Math.abs(dy) < 0.01) return;
+
+    // L'icône Material "flight" est dessinée en diagonale vers le nord-est.
+    // On corrige son angle de base pour aligner le nez sur la trajectoire écran.
+    const screenAngle = Math.atan2(dy, dx) * 180 / Math.PI;
+    const glyph = planeMarker.getElement()?.querySelector('#animatedPlaneGlyph');
+    if (glyph) glyph.style.transform = 'rotate(' + (screenAngle + 45) + 'deg)';
   }
 
   const introTitle = document.getElementById('mapDestinationTitle');
@@ -692,14 +695,12 @@ document.addEventListener("DOMContentLoaded", function() {
   const introEyebrow = document.getElementById('mapDestinationEyebrow');
   const introLink = document.getElementById('mapDestinationLink');
   let activeRouteIndex = 0;
-  let routeStep = 0;
   let routeDirection = 1;
-  let lastIntroDestination = '';
-  let lastPlaneStepAt = 0;
-  const PLANE_STEP_INTERVAL_MS = 45; // vitesse régulière, sans accélération
+  let routeProgress = 0;
+  let lastAnimationAt = 0;
+  const FLIGHT_LEG_DURATION_MS = 8500;
   function updateDestinationIntro(destination, isReturning = false) {
-    if (!destination || lastIntroDestination === destination.id + (isReturning ? '-return' : '-outbound')) return;
-    lastIntroDestination = destination.id + (isReturning ? '-return' : '-outbound');
+    if (!destination) return;
     if (introEyebrow) introEyebrow.textContent = isReturning ? 'VOL RETOUR VERS ANTANANARIVO' : 'DESTINATION À DÉCOUVRIR';
     if (introTitle) introTitle.textContent = isReturning ? destination.name + ' → Antananarivo' : 'Antananarivo → ' + destination.name;
     if (introDescription) introDescription.textContent = (isReturning ? 'Retour depuis ' : 'Découvrez ') + destination.name + ' : ' + destination.description + ' Mariage, lune de miel et séjour sur mesure selon vos envies.';
@@ -710,34 +711,49 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   updateDestinationIntro(flightRoutes[0]?.destination);
 
+  function interpolatePoint(points, progress) {
+    const scaled = Math.max(0, Math.min(1, progress)) * (points.length - 1);
+    const index = Math.min(points.length - 2, Math.floor(scaled));
+    const fraction = scaled - index;
+    const from = points[index];
+    const to = points[index + 1];
+    return [
+      from[0] + (to[0] - from[0]) * fraction,
+      from[1] + (to[1] - from[1]) * fraction
+    ];
+  }
+
   function animatePlane(timestamp) {
     if (!flightRoutes.length) return;
-    if (timestamp - lastPlaneStepAt < PLANE_STEP_INTERVAL_MS) {
-      requestAnimationFrame(animatePlane);
-      return;
-    }
-    lastPlaneStepAt = timestamp;
-    const route = flightRoutes[activeRouteIndex];
-    routeStep += routeDirection;
-    if (routeStep >= route.points.length - 1) {
-      routeStep = route.points.length - 1;
-      routeDirection = -1;
-      updateDestinationIntro(route.destination, true);
-    } else if (routeStep <= 0 && routeDirection === -1) {
-      routeStep = 0;
-      routeDirection = 1;
-      activeRouteIndex = (activeRouteIndex + 1) % flightRoutes.length;
-      updateDestinationIntro(flightRoutes[activeRouteIndex].destination, false);
-    }
-    const currentPoint = route.points[routeStep];
-    const nextIndex = Math.max(0, Math.min(route.points.length - 1, routeStep + routeDirection));
-    const nextPoint = route.points[nextIndex];
-    planeMarker.setLatLng(currentPoint);
-    if (nextIndex !== routeStep) updateAircraftHeading(currentPoint, nextPoint);
+    if (!lastAnimationAt) lastAnimationAt = timestamp;
+    const delta = Math.min(timestamp - lastAnimationAt, 50);
+    lastAnimationAt = timestamp;
+    routeProgress += delta / FLIGHT_LEG_DURATION_MS;
 
-    helicopterFrame += 0.012;
+    const route = flightRoutes[activeRouteIndex];
+    const progress = routeDirection === 1 ? routeProgress : 1 - routeProgress;
+    const currentPoint = interpolatePoint(route.points, progress);
+    const headingProgress = Math.max(0, Math.min(1, progress + (routeDirection * 0.012)));
+    const nextPoint = interpolatePoint(route.points, headingProgress);
+    planeMarker.setLatLng(currentPoint);
+    updateAircraftHeading(currentPoint, nextPoint);
+
+    if (routeProgress >= 1) {
+      routeProgress = 0;
+      if (routeDirection === 1) {
+        routeDirection = -1;
+        updateDestinationIntro(route.destination, true);
+      } else {
+        routeDirection = 1;
+        activeRouteIndex = (activeRouteIndex + 1) % flightRoutes.length;
+        updateDestinationIntro(flightRoutes[activeRouteIndex].destination, false);
+      }
+    }
+
+    // Mouvement indépendant de la fréquence d'affichage : trajectoires locales douces.
+    const elapsedSeconds = timestamp / 1000;
     helicopterMarkers.forEach(helicopter => {
-      const angle = helicopterFrame + helicopter.phase;
+      const angle = elapsedSeconds * 0.42 + helicopter.phase;
       helicopter.marker.setLatLng([
         helicopter.center[0] + Math.sin(angle) * helicopter.radiusLat,
         helicopter.center[1] + Math.cos(angle) * helicopter.radiusLng
@@ -745,7 +761,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     requestAnimationFrame(animatePlane);
   }
-  // Démarre l'animation après l'initialisation complète de la carte.
+  // Démarre uniquement lorsque Leaflet a initialisé son centre, son zoom et son conteneur.
   map.whenReady(() => requestAnimationFrame(animatePlane));
 
   function showAllDestinations() {
