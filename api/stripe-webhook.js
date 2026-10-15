@@ -159,7 +159,7 @@ async function sendInternalNotificationEmail(order, orderItems, session, invoice
 
   const emailPayload = {
     from: fromAddress,
-    to: ['info@mariage-madagascar.com'],
+    to: ['info@mariage-madagascar.com', 'commercial@mariage-madagascar.com'],
     subject: `🔔 Nouvelle réservation PAYÉE — ${order.order_number} — ${order.total_amount} €`,
     text: `
 Nouvelle réservation confirmée et PAYÉE !
