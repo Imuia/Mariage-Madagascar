@@ -164,9 +164,32 @@
           border: 1px solid #cbd5e1;
         }
         .plane-marker-icon {
+          display: inline-block;
           color: #38bdf8;
+          font-size: 27px;
+          line-height: 1;
+          transform-origin: 50% 50%;
           filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.9));
-          transition: all 0.2s linear;
+        }
+        .plane-icon-container, .helicopter-icon-container {
+          background: transparent;
+          border: 0;
+        }
+        .helicopter-marker-icon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 30px;
+          height: 30px;
+          font-size: 21px;
+          border-radius: 50%;
+          background: rgba(10, 14, 26, .82);
+          border: 1px solid rgba(125, 211, 252, .65);
+          box-shadow: 0 0 12px rgba(56, 189, 248, .35);
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .65));
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .plane-marker-icon { transition: none; }
         }
     </style>
 </head>
@@ -499,7 +522,7 @@
       <div id="realMadagascarMap"></div>
 
       <div class="absolute bottom-4 left-4 z-[1000] text-[10px] text-white/90 font-mono hidden sm:block bg-black/70 px-2.5 py-1 rounded-md backdrop-blur-sm border border-white/10">
-        Airbus AS350 • 616 km / trajet
+        Avion charter • Hélicoptères locaux
       </div>
     </div>
   </div>
@@ -565,10 +588,11 @@ document.addEventListener("DOMContentLoaded", function() {
   // Plusieurs routes aériennes : l’avion parcourt successivement chaque destination
   // depuis Antananarivo, puis revient à la capitale avant de poursuivre son circuit.
   const TNR = destinations.find(d => d.id === 'antananarivo').coords;
+  // Avion de liaison : l’icône pivote selon le sens réel du déplacement.
   const planeIcon = L.divIcon({
     className: 'plane-icon-container',
-    html: '<span class="material-symbols-outlined plane-marker-icon" style="font-size:25px">flight</span>',
-    iconSize: [28, 28], iconAnchor: [14, 14]
+    html: '<span id="animatedPlaneGlyph" class="material-symbols-outlined plane-marker-icon">flight</span>',
+    iconSize: [32, 32], iconAnchor: [16, 16]
   });
   const planeMarker = L.marker(TNR, { icon: planeIcon, interactive: false, keyboard: false, zIndexOffset: 1200 }).addTo(map);
   const flightDestinations = destinations.filter(destination => destination.id !== 'antananarivo');
@@ -583,13 +607,38 @@ document.addEventListener("DOMContentLoaded", function() {
       ]);
     }
     L.polyline(points, {
-      color: '#38bdf8',
-      weight: 3.5,
-      opacity: .92,
-      dashArray: '8, 8'
+      color: '#38bdf8', weight: 3, opacity: .72,
+      dashArray: '7, 9', lineCap: 'round'
     }).addTo(map);
     return { destination, points };
   });
+
+  // Hélicoptères en circuits locaux autour des destinations.
+  const helicopterMarkers = flightDestinations.map((destination, index) => {
+    const icon = L.divIcon({
+      className: 'helicopter-icon-container',
+      html: '<span class="helicopter-marker-icon" aria-hidden="true">🚁</span>',
+      iconSize: [30, 30], iconAnchor: [15, 15]
+    });
+    const marker = L.marker(destination.coords, {
+      icon, interactive: false, keyboard: false, zIndexOffset: 900
+    }).addTo(map);
+    return {
+      marker, center: destination.coords,
+      phase: index * (Math.PI * 2 / flightDestinations.length),
+      radiusLat: 0.10 + (index % 3) * 0.025,
+      radiusLng: 0.13 + (index % 2) * 0.025
+    };
+  });
+  let helicopterFrame = 0;
+
+  function updateAircraftHeading(from, to) {
+    const a = map.latLngToLayerPoint(from);
+    const b = map.latLngToLayerPoint(to);
+    const angle = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI + 90;
+    const glyph = document.getElementById('animatedPlaneGlyph');
+    if (glyph) glyph.style.transform = 'rotate(' + angle + 'deg)';
+  }
 
   const introTitle = document.getElementById('mapDestinationTitle');
   const introDescription = document.getElementById('mapDestinationDescription');
@@ -633,7 +682,20 @@ document.addEventListener("DOMContentLoaded", function() {
       activeRouteIndex = (activeRouteIndex + 1) % flightRoutes.length;
       updateDestinationIntro(flightRoutes[activeRouteIndex].destination, false);
     }
-    planeMarker.setLatLng(route.points[routeStep]);
+    const currentPoint = route.points[routeStep];
+    const nextIndex = Math.max(0, Math.min(route.points.length - 1, routeStep + routeDirection));
+    const nextPoint = route.points[nextIndex];
+    planeMarker.setLatLng(currentPoint);
+    if (nextIndex !== routeStep) updateAircraftHeading(currentPoint, nextPoint);
+
+    helicopterFrame += 0.012;
+    helicopterMarkers.forEach(helicopter => {
+      const angle = helicopterFrame + helicopter.phase;
+      helicopter.marker.setLatLng([
+        helicopter.center[0] + Math.sin(angle) * helicopter.radiusLat,
+        helicopter.center[1] + Math.cos(angle) * helicopter.radiusLng
+      ]);
+    });
     requestAnimationFrame(animatePlane);
   }
   animatePlane();
