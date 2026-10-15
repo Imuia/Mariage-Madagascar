@@ -108,12 +108,12 @@
         /* Personnalisation de la Vraie Carte Leaflet */
         #realMadagascarMap {
           width: 100%;
-          height: clamp(420px, 58vw, 680px);
+          height: clamp(560px, 66vw, 820px);
           border-radius: 1rem;
           z-index: 10;
         }
         @media (max-width: 640px) {
-          #realMadagascarMap { height: 500px; }
+          #realMadagascarMap { height: 560px; }
         }
         .map-filter {
           border: 1px solid rgba(125, 211, 252, 0.28);
@@ -669,15 +669,19 @@ document.addEventListener("DOMContentLoaded", function() {
     return {
       marker, center: destination.coords,
       phase: index * (Math.PI * 2 / flightDestinations.length),
-      radiusLat: 0.10 + (index % 3) * 0.025,
-      radiusLng: 0.13 + (index % 2) * 0.025
+      radiusLat: 0.16 + (index % 3) * 0.035,
+      radiusLng: 0.20 + (index % 2) * 0.04
     };
   });
   let helicopterFrame = 0;
 
   function updateAircraftHeading(from, to) {
+    // Ne calcule l'orientation que lorsque Leaflet possède un centre et un zoom.
+    if (!map || !map._loaded || !from || !to) return;
     const a = map.latLngToLayerPoint(from);
     const b = map.latLngToLayerPoint(to);
+    // L'icône Material "flight" pointe vers le haut par défaut :
+    // +90° aligne donc le nez avec le déplacement vers la droite.
     const angle = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI + 90;
     const glyph = document.getElementById('animatedPlaneGlyph');
     if (glyph) glyph.style.transform = 'rotate(' + angle + 'deg)';
