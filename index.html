@@ -164,12 +164,16 @@
           border: 1px solid #cbd5e1;
         }
         .plane-marker-icon {
-          display: inline-block;
+          display: block;
+          width: 30px;
+          height: 30px;
           color: #38bdf8;
-          font-size: 27px;
-          line-height: 1;
           transform-origin: 50% 50%;
+          will-change: transform;
           filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.9));
+        }
+        .plane-marker-icon path {
+          fill: currentColor;
         }
         .plane-icon-container, .helicopter-icon-container {
           background: transparent;
@@ -634,7 +638,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // Avion de liaison : l’icône pivote selon le sens réel du déplacement.
   const planeIcon = L.divIcon({
     className: 'plane-icon-container',
-    html: '<span id="animatedPlaneGlyph" class="material-symbols-outlined plane-marker-icon">flight</span>',
+    html: '<svg id="animatedPlaneGlyph" class="plane-marker-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M30.6 1.7c-.7-.7-2-.4-2.9.5L18.9 11 5.5 6.4 2.8 9.1l10.1 7.2-6.2 6.2-4.2-1.1-1.8 1.8 6.5 3.7 3.7 6.5 1.8-1.8-1.1-4.2 6.2-6.2 7.2 10.1 2.7-2.7-4.6-13.4 8.8-8.8c.9-.9 1.2-2.2.5-2.9z"/></svg>',
     iconSize: [32, 32], iconAnchor: [16, 16]
   });
   const planeMarker = L.marker(TNR, { icon: planeIcon, interactive: false, keyboard: false, zIndexOffset: 1200 }).addTo(map);
@@ -642,8 +646,8 @@ document.addEventListener("DOMContentLoaded", function() {
   const flightRoutes = flightDestinations.map((destination, routeIndex) => {
     const points = [];
     const bend = (routeIndex % 2 === 0 ? -1 : 1) * 0.65;
-    for (let i = 0; i <= 100; i++) {
-      const t = i / 100;
+    for (let i = 0; i <= 240; i++) {
+      const t = i / 240;
       points.push([
         (1 - t) * TNR[0] + t * destination.coords[0] + Math.sin(t * Math.PI) * bend,
         (1 - t) * TNR[1] + t * destination.coords[1] + Math.sin(t * Math.PI) * bend
@@ -683,11 +687,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const dy = b.y - a.y;
     if (Math.abs(dx) + Math.abs(dy) < 0.01) return;
 
-    // L'icône Material "flight" est dessinée en diagonale vers le nord-est.
-    // On corrige son angle de base pour aligner le nez sur la trajectoire écran.
+    // Le SVG est dessiné nez vers la droite : l'angle écran est donc direct.
     const screenAngle = Math.atan2(dy, dx) * 180 / Math.PI;
     const glyph = planeMarker.getElement()?.querySelector('#animatedPlaneGlyph');
-    if (glyph) glyph.style.transform = 'rotate(' + (screenAngle + 45) + 'deg)';
+    if (glyph) glyph.style.transform = 'rotate(' + screenAngle + 'deg)';
   }
 
   const introTitle = document.getElementById('mapDestinationTitle');
@@ -726,14 +729,14 @@ document.addEventListener("DOMContentLoaded", function() {
   function animatePlane(timestamp) {
     if (!flightRoutes.length) return;
     if (!lastAnimationAt) lastAnimationAt = timestamp;
-    const delta = Math.min(timestamp - lastAnimationAt, 50);
+    const delta = Math.min(timestamp - lastAnimationAt, 34);
     lastAnimationAt = timestamp;
     routeProgress += delta / FLIGHT_LEG_DURATION_MS;
 
     const route = flightRoutes[activeRouteIndex];
     const progress = routeDirection === 1 ? routeProgress : 1 - routeProgress;
     const currentPoint = interpolatePoint(route.points, progress);
-    const headingProgress = Math.max(0, Math.min(1, progress + (routeDirection * 0.012)));
+    const headingProgress = Math.max(0, Math.min(1, progress + (routeDirection * 0.02)));
     const nextPoint = interpolatePoint(route.points, headingProgress);
     planeMarker.setLatLng(currentPoint);
     updateAircraftHeading(currentPoint, nextPoint);
