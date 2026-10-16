@@ -281,34 +281,58 @@ nav.fixed.top-0.left-0.w-full.z-50 .mm-nav-link.is-active::after{
   transform:scaleX(1);
 }
 </style>
+
+
 <script>
-/* Détermine la rubrique active à partir de l'URL de la page. */
-(function(){
-  const normalize = value => {
+(function () {
+  'use strict';
+
+  function normalizePath(value) {
     try {
-      const path = new URL(value, window.location.origin).pathname;
-      return path.replace(/index\\.html$/i, '').replace(/\\/$/, '').toLowerCase() || '/';
-    } catch (_) {
+      var path = new URL(value, window.location.origin).pathname.toLowerCase();
+      path = path.replace(/\/index\.html$/i, '');
+      if (path.length > 1) path = path.replace(/\/+$/, '');
+      return path || '/';
+    } catch (error) {
       return '/';
     }
-  };
-  const currentPath = normalize(window.location.pathname);
-  const routes = [
-    { match: ['/nos-lieux-mariage-madagascar.html', '/destinations.html', '/nosy-be.html', '/morondava.html', '/tulear.html', '/diego-suarez.html', '/antananarivo.html'], section: '/nos-lieux-mariage-madagascar.html' },
-    { match: ['/mariage.html'], section: '/mariage.html' },
-    { match: ['/services.html'], section: '/services.html' },
-    { match: ['/blog-wedding-planner-nosy-be.html', '/inspirations.html'], section: '/blog-wedding-planner-nosy-be.html' },
-    { match: ['/lune-de-miel.html', '/lunes-de-miel.html', '/lune-de-miel-sainte-marie.html'], section: '/lune-de-miel.html' }
-  ];
-  const links = document.querySelectorAll('nav.fixed.top-0.left-0.w-full.z-50 .mm-nav-link');
-  links.forEach(link => {
-    const href = normalize(link.getAttribute('href'));
-    const route = routes.find(item => item.match.includes(currentPath));
-    const active = route ? href === normalize(route.section) : currentPath === href;
-    link.classList.toggle('is-active', active);
-    if (active) link.setAttribute('aria-current', 'page');
-    else link.removeAttribute('aria-current');
-  });
+  }
+
+  function applyActiveMenu() {
+    var nav = document.querySelector('nav.fixed.top-0.left-0.w-full.z-50');
+    if (!nav) return;
+    var current = normalizePath(window.location.pathname);
+    var sections = [
+      { href: '/nos-lieux-mariage-madagascar.html', paths: [
+        '/nos-lieux-mariage-madagascar.html', '/destinations.html',
+        '/nosy-be.html', '/morondava.html', '/tulear.html',
+        '/diego-suarez.html', '/antananarivo.html', '/nosy-saba.html',
+        '/sainte-marie.html'
+      ]},
+      { href: '/mariage.html', paths: ['/mariage.html'] },
+      { href: '/services.html', paths: ['/services.html'] },
+      { href: '/blog-wedding-planner-nosy-be.html', paths: [
+        '/blog-wedding-planner-nosy-be.html', '/inspirations.html'
+      ]},
+      { href: '/lune-de-miel.html', paths: [
+        '/lune-de-miel.html', '/lunes-de-miel.html', '/lune-de-miel-sainte-marie.html'
+      ]}
+    ];
+    var section = sections.find(function (item) {
+      return item.paths.some(function (path) { return normalizePath(path) === current; });
+    });
+
+    nav.querySelectorAll('.mm-nav-link').forEach(function (link) {
+      var href = normalizePath(link.getAttribute('href') || '');
+      var active = section ? href === normalizePath(section.href) : href === current;
+      link.classList.toggle('is-active', active);
+      if (active) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    });
+  }
+
+  applyActiveMenu();
+  window.addEventListener('pageshow', applyActiveMenu);
+  window.addEventListener('popstate', applyActiveMenu);
 })();
 </script>
-
