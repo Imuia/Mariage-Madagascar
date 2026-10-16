@@ -180,18 +180,22 @@
           border: 0;
         }
         .helicopter-marker-icon {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 30px;
-          height: 30px;
-          font-size: 21px;
-          border-radius: 50%;
-          background: rgba(10, 14, 26, .82);
-          border: 1px solid rgba(125, 211, 252, .65);
-          box-shadow: 0 0 12px rgba(56, 189, 248, .35);
-          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .65));
+          display: block;
+          width: 34px;
+          height: 34px;
+          color: #38bdf8;
+          filter: drop-shadow(0 0 8px rgba(56, 189, 248, .85));
+          transform-origin: 50% 50%;
+          will-change: transform;
         }
+        .helicopter-marker-icon path,
+        .helicopter-marker-icon line,
+        .helicopter-marker-icon ellipse {
+          stroke: currentColor;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+        .helicopter-marker-icon .heli-fill { fill: currentColor; stroke: currentColor; }
         @media (prefers-reduced-motion: reduce) {
           .plane-marker-icon { transition: none; }
         }
@@ -526,7 +530,7 @@
       <div id="realMadagascarMap"></div>
 
       <div class="absolute bottom-4 left-4 z-[1000] text-[10px] text-white/90 font-mono hidden sm:block bg-black/70 px-2.5 py-1 rounded-md backdrop-blur-sm border border-white/10">
-        Avion charter • Hélicoptères locaux
+        Avion charter • 1 hélicoptère en mouvement
       </div>
     </div>
   </div>
@@ -660,24 +664,29 @@ document.addEventListener("DOMContentLoaded", function() {
     return { destination, points };
   });
 
-  // Hélicoptères en circuits locaux autour des destinations.
-  const helicopterMarkers = flightDestinations.map((destination, index) => {
-    const icon = L.divIcon({
-      className: 'helicopter-icon-container',
-      html: '<span class="helicopter-marker-icon" aria-hidden="true">🚁</span>',
-      iconSize: [30, 30], iconAnchor: [15, 15]
-    });
-    const marker = L.marker(destination.coords, {
-      icon, interactive: false, keyboard: false, zIndexOffset: 900
-    }).addTo(map);
-    return {
-      marker, center: destination.coords,
-      phase: index * (Math.PI * 2 / flightDestinations.length),
-      radiusLat: 0.16 + (index % 3) * 0.035,
-      radiusLng: 0.20 + (index % 2) * 0.04
-    };
+  // Un seul hélicoptère bleu animé, en déplacement entre les destinations.
+  const helicopterIcon = L.divIcon({
+    className: 'helicopter-icon-container',
+    html: '<svg id="animatedHelicopterGlyph" class="helicopter-marker-icon" viewBox="0 0 40 40" aria-hidden="true">' +
+      '<g fill="none" stroke-width="2.2">' +
+      '<line x1="5" y1="11" x2="35" y2="11"/>' +
+      '<line x1="20" y1="11" x2="20" y2="15"/>' +
+      '<path d="M12 21 Q13 15 21 15 L27 17 Q30 18 30 22 L30 25 L14 25 Q10 25 10 22 Z" class="heli-fill" stroke="none"/>' +
+      '<path d="M14 25 L8 28 L4 28"/>' +
+      '<line x1="18" y1="26" x2="16" y2="30"/><line x1="26" y1="26" x2="28" y2="30"/>' +
+      '<line x1="13" y1="31" x2="31" y2="31"/>' +
+      '<path d="M27 18 L34 16 L37 18 L31 21"/>' +
+      '</g><circle cx="20" cy="11" r="2" class="heli-fill"/>' +
+      '</svg>',
+    iconSize: [40, 40],
+    iconAnchor: [20, 20]
   });
-  let helicopterFrame = 0;
+  const helicopterMarker = L.marker(TNR, {
+    icon: helicopterIcon, interactive: false, keyboard: false, zIndexOffset: 1100
+  }).addTo(map);
+  let helicopterProgress = 0;
+  let helicopterRouteIndex = Math.min(1, Math.max(0, flightRoutes.length - 1));
+  let helicopterDirection = -1;
 
   function updateAircraftHeading(from, to) {
     if (!map || !map._loaded || !from || !to) return;
@@ -755,15 +764,36 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
 
-    // Mouvement indépendant de la fréquence d'affichage : trajectoires locales douces.
-    const elapsedSeconds = timestamp / 1000;
-    helicopterMarkers.forEach(helicopter => {
-      const angle = elapsedSeconds * 0.42 + helicopter.phase;
-      helicopter.marker.setLatLng([
-        helicopter.center[0] + Math.sin(angle) * helicopter.radiusLat,
-        helicopter.center[1] + Math.cos(angle) * helicopter.radiusLng
-      ]);
-    });
+    // Un seul hélicoptère bleu voyage entre les destinations, avec un rythme
+    // différent de l'avion pour une animation légère et lisible.
+    const helicopterRoute = flightRoutes[helicopterRouteIndex];
+    if (helicopterRoute) {
+      helicopterProgress = Math.min(1, helicopterProgress + delta / (FLIGHT_LEG_DURATION_MS * 1.28));
+      const heliEased = helicopterProgress * helicopterProgress * (3 - 2 * helicopterProgress);
+      const heliProgress = helicopterDirection === 1 ? heliEased : 1 - heliEased;
+      const heliPoint = interpolatePoint(helicopterRoute.points, heliProgress);
+      const heliNextProgress = Math.max(0, Math.min(1, heliProgress + helicopterDirection * 0.045));
+      const heliNextPoint = interpolatePoint(helicopterRoute.points, heliNextProgress);
+      helicopterMarker.setLatLng(heliPoint);
+
+      const a = map.latLngToContainerPoint(heliPoint);
+      const b = map.latLngToContainerPoint(heliNextPoint);
+      if (Math.hypot(b.x - a.x, b.y - a.y) > 0.8) {
+        const angle = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
+        const glyph = helicopterMarker.getElement()?.querySelector('#animatedHelicopterGlyph');
+        if (glyph) glyph.style.transform = `rotate(${angle}deg)`;
+      }
+
+      if (helicopterProgress >= 1) {
+        helicopterProgress = 0;
+        if (helicopterDirection === 1) {
+          helicopterDirection = -1;
+        } else {
+          helicopterDirection = 1;
+          helicopterRouteIndex = (helicopterRouteIndex + 1) % flightRoutes.length;
+        }
+      }
+    }
     requestAnimationFrame(animatePlane);
   }
   // Démarre uniquement lorsque Leaflet a initialisé son centre, son zoom et son conteneur.
