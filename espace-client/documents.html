@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr" class="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0e1a">
+<title>Documents | Mariage Madagascar — Espace client</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/client-area.css">
+</head>
+<body>
+
+<aside class="sidebar">
+  <a class="brand" href="index.html"><span class="brand-mark material-symbols-outlined">diamond</span><span><b>Mariage Madagascar</b><small>Votre espace client privé</small></span></a>
+  <nav class="nav" aria-label="Navigation principale"><a class="" href="index.html"><span class="material-symbols-outlined">dashboard</span><span>Tableau de bord</span></a><a class="" href="messages.html"><span class="material-symbols-outlined">chat</span><span>Messages</span></a><a class="" href="planning.html"><span class="material-symbols-outlined">calendar_month</span><span>Planning</span></a><a class="" href="invites.html"><span class="material-symbols-outlined">groups</span><span>Invités</span></a><a class="active" href="documents.html"><span class="material-symbols-outlined">folder_shared</span><span>Documents</span></a><a class="" href="offres.html"><span class="material-symbols-outlined">auto_awesome</span><span>Prestations</span></a></nav>
+  <div class="sidebar-bottom"><a href="messages.html"><span class="material-symbols-outlined">support_agent</span> Besoin d'aide ?</a><a href="../index.html"><span class="material-symbols-outlined">logout</span> Retour au site</a></div>
+</aside>
+<div class="mobile-top"><a class="mobile-brand" href="index.html">MARIAGE MADAGASCAR</a><div class="mobile-menu"><a href="messages.html"><span class="material-symbols-outlined">chat</span></a><a href="documents.html"><span class="material-symbols-outlined">folder_shared</span></a></div></div>
+<nav class="sidebar-mobile-nav" aria-label="Navigation mobile">
+<a class="" href="index.html"><span class="material-symbols-outlined">dashboard</span><span>Tableau de bord</span></a><a class="" href="messages.html"><span class="material-symbols-outlined">chat</span><span>Messages</span></a><a class="" href="planning.html"><span class="material-symbols-outlined">calendar_month</span><span>Planning</span></a><a class="" href="invites.html"><span class="material-symbols-outlined">groups</span><span>Invités</span></a><a class="active" href="documents.html"><span class="material-symbols-outlined">folder_shared</span><span>Documents</span></a>
+</nav>
+
+<main class="workspace">
+
+<header class="page-head"><div><p class="eyebrow">DOSSIER PRIVÉ</p><h1>Documents partagés</h1><p class="muted">Retrouvez vos devis, contrats, inspirations et documents de préparation.</p></div><button class="btn btn-primary" data-toast="Le dépôt sécurisé de fichiers sera connecté dans une prochaine étape."><span class="material-symbols-outlined">upload_file</span> Ajouter un document</button></header>
+<div class="doc-categories"><a class="panel doc-category" href="#documents"><span class="category-icon"><span class="material-symbols-outlined">description</span></span><span><b>Contrats & devis</b><small>Contrats prestataires et budgets</small></span><strong>4</strong></a><a class="panel doc-category" href="#documents"><span class="category-icon purple"><span class="material-symbols-outlined">palette</span></span><span><b>Design & inspirations</b><small>Moodboards, fleurs et ambiance</small></span><strong>5</strong></a><a class="panel doc-category" href="#documents"><span class="category-icon teal"><span class="material-symbols-outlined">flight</span></span><span><b>Voyage & séjour</b><small>Transferts et hébergements</small></span><strong>3</strong></a></div>
+<section class="panel table-panel mt" id="documents"><div class="section-head pad"><div><h2>Fichiers récents</h2><p class="muted">Documents mis à disposition par votre équipe</p></div><input id="doc-search" class="search narrow" placeholder="Rechercher…" aria-label="Rechercher un document"></div><div class="file-list" id="file-list"><div class="file-row"><span class="file-icon material-symbols-outlined">picture_as_pdf</span><span class="file-name"><b>Devis_decoration.pdf</b><small>PDF · Ajouté aujourd'hui</small></span><span class="tag warning">À valider</span><button class="icon-btn" data-toast="Le téléchargement sera activé lorsque le stockage sécurisé sera connecté." aria-label="Télécharger"><span class="material-symbols-outlined">download</span></button></div><div class="file-row"><span class="file-icon purple material-symbols-outlined">image</span><span class="file-name"><b>Moodboard_mariage.pdf</b><small>PDF · Ajouté le 12 octobre</small></span><span class="tag success">Consulté</span><button class="icon-btn" data-toast="Le téléchargement sera activé lorsque le stockage sécurisé sera connecté." aria-label="Télécharger"><span class="material-symbols-outlined">download</span></button></div><div class="file-row"><span class="file-icon teal material-symbols-outlined">description</span><span class="file-name"><b>Planning_mariage_V1.pdf</b><small>PDF · Ajouté le 10 octobre</small></span><span class="tag info">Nouveau</span><button class="icon-btn" data-toast="Le téléchargement sera activé lorsque le stockage sécurisé sera connecté." aria-label="Télécharger"><span class="material-symbols-outlined">download</span></button></div></div></section>
+
+<div class="footer-note">© 2026 Mariage Madagascar · Espace client privé · Vos préparatifs en un seul endroit</div>
+</main>
+<script>
+function showToast(message) {
+  let el = document.querySelector('.toast');
+  if (!el) { el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role','status'); document.body.appendChild(el); }
+  el.textContent = message;
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => el.remove(), 4200);
+}
+document.querySelectorAll('[data-toast]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); showToast(el.dataset.toast); }));
+document.querySelectorAll('[data-demo-form]').forEach(form => form.addEventListener('submit', e => { e.preventDefault(); const input = form.querySelector('input'); if (input && input.value.trim()) { showToast('Message de démonstration prêt : la messagerie sera reliée à Supabase lors de la prochaine étape.'); input.value=''; } }));
+document.querySelectorAll('.todo input').forEach(input => input.addEventListener('change', () => { const label = input.closest('.todo').querySelector('b'); if (label) label.style.textDecoration = input.checked ? 'line-through' : 'none'; }));
+const guestSearch = document.getElementById('guest-search');
+const guestRows = document.getElementById('guest-rows');
+let guestFilter = 'all';
+function filterGuests() {
+ if (!guestRows) return;
+ const q = (guestSearch?.value || '').toLowerCase();
+ guestRows.querySelectorAll('tr').forEach(row => {
+   const text = row.innerText.toLowerCase();
+   const status = row.querySelector('.tag')?.innerText || '';
+   row.style.display = text.includes(q) && (guestFilter === 'all' || status === guestFilter) ? '' : 'none';
+ });
+}
+guestSearch?.addEventListener('input', filterGuests);
+document.querySelectorAll('[data-filter]').forEach(btn => btn.addEventListener('click', () => {
+ document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('selected'));
+ btn.classList.add('selected'); guestFilter = btn.dataset.filter === 'all' ? 'all' : btn.dataset.filter; filterGuests();
+}));
+const docSearch = document.getElementById('doc-search');
+docSearch?.addEventListener('input', () => {
+ const q = docSearch.value.toLowerCase();
+ document.querySelectorAll('#file-list .file-row').forEach(row => row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none');
+});
+document.querySelectorAll('.conversation').forEach(btn => btn.addEventListener('click', () => {
+ document.querySelectorAll('.conversation').forEach(c => c.classList.remove('active')); btn.classList.add('active');
+ showToast('Cette conversation de démonstration sera reliée à la messagerie réelle dans une prochaine étape.');
+}));
+</script>
+</body></html>

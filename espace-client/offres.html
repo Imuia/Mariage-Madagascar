@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="fr" class="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0e1a">
+<title>Prestations | Mariage Madagascar — Espace client</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/client-area.css">
+</head>
+<body>
+
+<aside class="sidebar">
+  <a class="brand" href="index.html"><span class="brand-mark material-symbols-outlined">diamond</span><span><b>Mariage Madagascar</b><small>Votre espace client privé</small></span></a>
+  <nav class="nav" aria-label="Navigation principale"><a class="" href="index.html"><span class="material-symbols-outlined">dashboard</span><span>Tableau de bord</span></a><a class="" href="messages.html"><span class="material-symbols-outlined">chat</span><span>Messages</span></a><a class="" href="planning.html"><span class="material-symbols-outlined">calendar_month</span><span>Planning</span></a><a class="" href="invites.html"><span class="material-symbols-outlined">groups</span><span>Invités</span></a><a class="" href="documents.html"><span class="material-symbols-outlined">folder_shared</span><span>Documents</span></a><a class="active" href="offres.html"><span class="material-symbols-outlined">auto_awesome</span><span>Prestations</span></a></nav>
+  <div class="sidebar-bottom"><a href="messages.html"><span class="material-symbols-outlined">support_agent</span> Besoin d'aide ?</a><a href="../index.html"><span class="material-symbols-outlined">logout</span> Retour au site</a></div>
+</aside>
+<div class="mobile-top"><a class="mobile-brand" href="index.html">MARIAGE MADAGASCAR</a><div class="mobile-menu"><a href="messages.html"><span class="material-symbols-outlined">chat</span></a><a href="documents.html"><span class="material-symbols-outlined">folder_shared</span></a></div></div>
+<nav class="sidebar-mobile-nav" aria-label="Navigation mobile">
+<a class="" href="index.html"><span class="material-symbols-outlined">dashboard</span><span>Tableau de bord</span></a><a class="" href="messages.html"><span class="material-symbols-outlined">chat</span><span>Messages</span></a><a class="" href="planning.html"><span class="material-symbols-outlined">calendar_month</span><span>Planning</span></a><a class="" href="invites.html"><span class="material-symbols-outlined">groups</span><span>Invités</span></a><a class="" href="documents.html"><span class="material-symbols-outlined">folder_shared</span><span>Documents</span></a>
+</nav>
+
+<main class="workspace">
+
+<header class="page-head"><div><p class="eyebrow">EXPÉRIENCES SUR-MESURE</p><h1>Prestations & propositions</h1><p class="muted">Consultez les services proposés pour votre célébration et demandez des précisions à votre équipe.</p></div><a class="btn btn-primary" href="messages.html"><span class="material-symbols-outlined">chat</span> Poser une question</a></header>
+<section class="offer-grid"><article class="panel offer-card"><div class="offer-cover cover-lagon"><span class="tag info">Signature</span></div><div class="offer-body"><div class="section-head"><h2>L'Éclat du Lagon</h2><span class="price">Dès 4 500 €</span></div><p class="muted">Une cérémonie les pieds dans l'eau, sur un banc de sable privé, au cœur des eaux turquoise de Nosy Be.</p><ul class="check-list"><li>Privatisation du banc de sable</li><li>Arche florale sur mesure</li><li>Dîner romantique aux chandelles</li></ul><button class="btn btn-secondary full" data-toast="Votre demande a été préparée. Envoyez un message à votre wedding planner pour confirmer le tarif et les disponibilités.">Demander les détails</button></div></article>
+<article class="panel offer-card"><div class="offer-cover cover-baobab"><span class="tag purple">Aventure</span></div><div class="offer-body"><div class="section-head"><h2>Aventure Royale</h2><span class="price">Dès 6 200 €</span></div><p class="muted">Une célébration spectaculaire au cœur de l'Allée des Baobabs ou des paysages des Tsingy.</p><ul class="check-list"><li>Repérage du lieu</li><li>Coordination locale</li><li>Logistique personnalisée</li></ul><button class="btn btn-secondary full" data-toast="Votre demande a été préparée. Contactez votre équipe pour une proposition personnalisée.">Demander les détails</button></div></article>
+<article class="panel offer-card"><div class="offer-cover cover-island"><span class="tag warning">Sur mesure</span></div><div class="offer-body"><div class="section-head"><h2>Intimité Insulaire</h2><span class="price">Sur demande</span></div><p class="muted">Une île paradisiaque et une organisation confidentielle pour une célébration intimiste.</p><ul class="check-list"><li>Recherche de lieu exclusif</li><li>Hébergement et transferts</li><li>Coordination dédiée</li></ul><button class="btn btn-secondary full" data-toast="Votre demande a été préparée. Envoyez un message à votre wedding planner.">Demander les détails</button></div></article></section>
+
+<div class="footer-note">© 2026 Mariage Madagascar · Espace client privé · Vos préparatifs en un seul endroit</div>
+</main>
+<script>
+function showToast(message) {
+  let el = document.querySelector('.toast');
+  if (!el) { el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role','status'); document.body.appendChild(el); }
+  el.textContent = message;
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => el.remove(), 4200);
+}
+document.querySelectorAll('[data-toast]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); showToast(el.dataset.toast); }));
+document.querySelectorAll('[data-demo-form]').forEach(form => form.addEventListener('submit', e => { e.preventDefault(); const input = form.querySelector('input'); if (input && input.value.trim()) { showToast('Message de démonstration prêt : la messagerie sera reliée à Supabase lors de la prochaine étape.'); input.value=''; } }));
+document.querySelectorAll('.todo input').forEach(input => input.addEventListener('change', () => { const label = input.closest('.todo').querySelector('b'); if (label) label.style.textDecoration = input.checked ? 'line-through' : 'none'; }));
+const guestSearch = document.getElementById('guest-search');
+const guestRows = document.getElementById('guest-rows');
+let guestFilter = 'all';
+function filterGuests() {
+ if (!guestRows) return;
+ const q = (guestSearch?.value || '').toLowerCase();
+ guestRows.querySelectorAll('tr').forEach(row => {
+   const text = row.innerText.toLowerCase();
+   const status = row.querySelector('.tag')?.innerText || '';
+   row.style.display = text.includes(q) && (guestFilter === 'all' || status === guestFilter) ? '' : 'none';
+ });
+}
+guestSearch?.addEventListener('input', filterGuests);
+document.querySelectorAll('[data-filter]').forEach(btn => btn.addEventListener('click', () => {
+ document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('selected'));
+ btn.classList.add('selected'); guestFilter = btn.dataset.filter === 'all' ? 'all' : btn.dataset.filter; filterGuests();
+}));
+const docSearch = document.getElementById('doc-search');
+docSearch?.addEventListener('input', () => {
+ const q = docSearch.value.toLowerCase();
+ document.querySelectorAll('#file-list .file-row').forEach(row => row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none');
+});
+document.querySelectorAll('.conversation').forEach(btn => btn.addEventListener('click', () => {
+ document.querySelectorAll('.conversation').forEach(c => c.classList.remove('active')); btn.classList.add('active');
+ showToast('Cette conversation de démonstration sera reliée à la messagerie réelle dans une prochaine étape.');
+}));
+</script>
+</body></html>
