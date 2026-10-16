@@ -211,15 +211,7 @@
           stroke: #d9f5ff;
           stroke-width: 1.6;
         }
-        .helicopter-marker-icon .heli-rotor {
-          transform-box: fill-box;
-          transform-origin: center;
-          animation: heliRotorSpin .18s linear infinite;
-        }
-        @keyframes heliRotorSpin { to { transform: rotate(360deg); } }
-        @media (prefers-reduced-motion: reduce) {
-          .helicopter-marker-icon .heli-rotor { animation: none; }
-        }
+        /* Rotor statique : animation volontairement supprimée pour un rendu apaisant. */
         @media (prefers-reduced-motion: reduce) {
           .plane-marker-icon { transition: none; }
         }
@@ -554,7 +546,7 @@
       <div id="realMadagascarMap"></div>
 
       <div class="absolute bottom-4 left-4 z-[1000] text-[10px] text-white/90 font-mono hidden sm:block bg-black/70 px-2.5 py-1 rounded-md backdrop-blur-sm border border-white/10">
-        Avion charter • 1 hélicoptère en mouvement
+        Avion charter • hélicoptère côtier en mouvement
       </div>
     </div>
   </div>
@@ -795,36 +787,55 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
 
-    // Trajectoire fluide : accélération douce, arrivée progressive et retour sur le même arc.
-    // L'hélicoptère garde une vitesse régulière sur la portion centrale et pivote selon son cap.
-    const helicopterRoute = flightRoutes[helicopterRouteIndex];
-    if (helicopterRoute) {
-      helicopterProgress = Math.min(1, helicopterProgress + delta / (FLIGHT_LEG_DURATION_MS * 1.55));
-      const heliEased = 0.5 - 0.5 * Math.cos(Math.PI * helicopterProgress);
-      const heliProgress = helicopterDirection === 1 ? heliEased : 1 - heliEased;
-      const heliPoint = interpolatePoint(helicopterRoute.points, heliProgress);
-      const heliNextProgress = Math.max(0, Math.min(1, heliProgress + helicopterDirection * 0.012));
-      const heliNextPoint = interpolatePoint(helicopterRoute.points, heliNextProgress);
-      helicopterMarker.setLatLng(heliPoint);
-
-      const a = map.latLngToContainerPoint(heliPoint);
-      const b = map.latLngToContainerPoint(heliNextPoint);
-      if (Math.hypot(b.x - a.x, b.y - a.y) > 0.5) {
-        // La silhouette est dessinée nez vers le haut : +90° aligne son cap sur la route.
-        const angle = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI + 90;
-        const glyph = helicopterMarker.getElement()?.querySelector('#animatedHelicopterGlyph');
-        if (glyph) glyph.style.transform = `rotate(${angle}deg)`;
-      }
-
-      if (helicopterProgress >= 1) {
-        helicopterProgress = 0;
-        if (helicopterDirection === 1) {
-          helicopterDirection = -1;
-        } else {
-          helicopterDirection = 1;
-          helicopterRouteIndex = (helicopterRouteIndex + 1) % flightRoutes.length;
+    // Hélicoptère : circuit côtier indépendant, lent et régulier, à l'est de Madagascar.
+    // Il ne reprend pas les trajectoires de l'avion, ce qui évite les croisements visuels.
+    // Pas de rotation de rotor ni d'accélérations brusques : priorité au confort visuel.
+    const helicopterCoastalRoute = [
+      [-12.9, 49.85],
+      [-14.5, 50.18],
+      [-16.8, 50.30],
+      [-19.1, 50.12],
+      [-21.3, 49.78],
+      [-22.7, 49.45]
+    ];
+    if (!window.__madagascarHelicopterRouteReady) {
+      window.__madagascarHelicopterRouteReady = true;
+      window.__madagascarHelicopterRoute = [];
+      for (let segment = 0; segment < helicopterCoastalRoute.length - 1; segment++) {
+        const from = helicopterCoastalRoute[segment];
+        const to = helicopterCoastalRoute[segment + 1];
+        for (let step = 0; step < 40; step++) {
+          const t = step / 40;
+          window.__madagascarHelicopterRoute.push([
+            from[0] + (to[0] - from[0]) * t,
+            from[1] + (to[1] - from[1]) * t
+          ]);
         }
       }
+      window.__madagascarHelicopterRoute.push(helicopterCoastalRoute[helicopterCoastalRoute.length - 1]);
+    }
+    const heliPoints = window.__madagascarHelicopterRoute;
+    // Cycle lent d'environ 45 secondes par trajet, avec demi-tour progressif.
+    helicopterProgress = Math.min(1, helicopterProgress + delta / 45000);
+    const heliEased = 0.5 - 0.5 * Math.cos(Math.PI * helicopterProgress);
+    const heliProgress = helicopterDirection === 1 ? heliEased : 1 - heliEased;
+    const heliPoint = interpolatePoint(heliPoints, heliProgress);
+    const heliNextProgress = Math.max(0, Math.min(1, heliProgress + helicopterDirection * 0.006));
+    const heliNextPoint = interpolatePoint(heliPoints, heliNextProgress);
+    helicopterMarker.setLatLng(heliPoint);
+
+    const heliA = map.latLngToContainerPoint(heliPoint);
+    const heliB = map.latLngToContainerPoint(heliNextPoint);
+    if (Math.hypot(heliB.x - heliA.x, heliB.y - heliA.y) > 0.8) {
+      // Le cap suit la courbe côtière sans mouvements brusques.
+      const heliAngle = Math.atan2(heliB.y - heliA.y, heliB.x - heliA.x) * 180 / Math.PI + 90;
+      const heliGlyph = helicopterMarker.getElement()?.querySelector('#animatedHelicopterGlyph');
+      if (heliGlyph) heliGlyph.style.transform = `rotate(${heliAngle}deg)`;
+    }
+
+    if (helicopterProgress >= 1) {
+      helicopterProgress = 0;
+      helicopterDirection *= -1;
     }
     requestAnimationFrame(animatePlane);
   }
