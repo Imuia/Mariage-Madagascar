@@ -14,7 +14,11 @@
 :root{--bg:#0a0e1a;--panel:#111a2b;--line:rgba(125,211,252,.18);--text:#e0e8f0;--muted:#a0b4c4;--accent:#7dd3fc}
 *{box-sizing:border-box}html{scroll-behavior:smooth;overflow-x:clip}body{margin:0;overflow-x:clip;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;line-height:1.65}
 a{color:inherit;text-decoration:none}.places-main{padding:0 22px 90px}.places-wrap{max-width:1200px;margin:0 auto}
+<<<<<<< HEAD
 .places-hero{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;max-width:none;min-height:clamp(500px,66vw,700px);margin:0 0 54px;margin-left:calc((100% - 100vw)/2);padding:90px 24px 82px;overflow:hidden;border:0;border-radius:0;background:#081421 url('https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&fit=crop&w=2400&q=90') center 48%/cover no-repeat}
+=======
+.places-hero{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:clamp(500px,66vw,700px);margin:0 0 54px;margin-left:calc((100% - 100vw)/2);padding:90px 24px 82px;overflow:hidden;border:0;border-radius:0;background:#081421 url('https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&fit=crop&w=2400&q=90') center 48%/cover no-repeat}
+>>>>>>> e1e1a09f351da825f2f2b98f5bca65301afd5f78
 .places-hero:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(3,10,22,.72),rgba(3,10,22,.28) 48%,rgba(3,10,22,.62)),linear-gradient(0deg,rgba(3,10,22,.72),rgba(3,10,22,.08) 70%)}
 .places-hero:after{content:"";position:absolute;inset:18px;border:1px solid rgba(255,255,255,.25);pointer-events:none}
 .kicker{display:inline-block;color:#a5e8ff;font-size:.82rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;text-shadow:0 2px 18px rgba(0,0,0,.65)}
@@ -30,24 +34,40 @@ h1,h2,h3{font-family:Inter,Arial,sans-serif;font-weight:600}h1{font-size:clamp(2
 .place-link{display:inline-flex;align-items:center;gap:8px;color:var(--accent);font-weight:600;font-size:.9rem}.place-link span{transition:transform .2s}.place-card:hover .place-link span{transform:translateX(4px)}
 .places-cta{margin-top:38px;text-align:center;padding:30px 20px;border:1px solid var(--line);border-radius:20px;background:rgba(17,26,43,.65)}.places-cta p{color:var(--muted);margin:5px 0 18px}.cta-link{display:inline-flex;background:var(--accent);color:#001f2e;padding:12px 22px;border-radius:999px;font-weight:700}
 @media(max-width:900px){.places-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.place-card{min-height:270px}.places-hero{min-height:540px;background-position:center}.places-hero:after{inset:12px}}
+<<<<<<< HEAD
 @media(max-width:580px){.places-mainplaces-main{padding:0 14px 58px}.places-hero{min-height:78svh;padding:70px 22px 64px;margin-bottom:34px;background-position:55% center}.places-hero:after{inset:10px}h1{font-size:clamp(2.5rem,10vw,3.8rem);margin:18px 0}.kicker{font-size:.68rem;letter-spacing:.15em}.places-hero p{font-size:1rem;line-height:1.65}.hero-actions{gap:10px;margin-top:24px}.hero-btn{width:100%;max-width:300px;padding:12px 18px}.places-grid{grid-template-columns:1fr;gap:15px}.place-card{min-height:255px}.place-content{padding:22px}}
+=======
+@media(max-width:580px){.places-main{padding:0 14px 58px}.places-hero{min-height:78svh;padding:70px 22px 64px;margin-bottom:34px;background-position:55% center}.places-hero:after{inset:10px}h1{font-size:clamp(2.5rem,10vw,3.8rem);margin:18px 0}.kicker{font-size:.68rem;letter-spacing:.15em}.places-hero p{font-size:1rem;line-height:1.65}.hero-actions{gap:10px;margin-top:24px}.hero-btn{width:100%;max-width:300px;padding:12px 18px}.places-grid{grid-template-columns:1fr;gap:15px}.place-card{min-height:255px}.place-content{padding:22px}}
+>>>>>>> e1e1a09f351da825f2f2b98f5bca65301afd5f78
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div data-global-header></div>
+<<<<<<< HEAD
 <main >
 <header class="places-hero">
 <div class="hero-copy"><div class="hero-copy-inner">
 <span class="kicker">Mariage Madagascar · Destinations</span>
 <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl leading-tight text-white mb-7">Nos lieux de mariage,<br><span>votre histoire.</span></h1>
+=======
+<main>
+<div class="places-hero">
+<div class="hero-copy"><div class="hero-copy-inner">
+<span class="text-[#7dd3fc] uppercase tracking-[.28em] text-xs sm:text-sm mb-5">Mariage Madagascar · Destinations</span>
+<h1 class="text-5xl sm:text-6xl lg:text-7xl leading-tight text-white mb-7">Nos lieux de mariage,<br><span>votre histoire.</span></h1>
+>>>>>>> e1e1a09f351da825f2f2b98f5bca65301afd5f78
 <p>Îles confidentielles, lagons turquoise et paysages spectaculaires : découvrez les plus beaux décors de Madagascar pour imaginer votre mariage, votre lune de miel ou un séjour à deux.</p>
 <div class="hero-actions">
 <a class="hero-btn hero-btn-primary" href="#destinations">Explorer les destinations <span aria-hidden="true">&nbsp;↓</span></a>
 <a class="hero-btn hero-btn-secondary" href="/contact-mariage-madagascar-nosy-be.html">Imaginer mon mariage <span aria-hidden="true">&nbsp;→</span></a>
 </div>
 </div></div>
+<<<<<<< HEAD
 </header>
+=======
+</div>
+>>>>>>> e1e1a09f351da825f2f2b98f5bca65301afd5f78
 <div class="places-wrap">
 <section id="destinations" class="places-grid" aria-label="Toutes nos destinations">
 <a class="place-card" href="/nosy-be.html"><div class="place-image" role="img" aria-label="Vue aérienne des eaux turquoise de Nosy Be" style="background-image:url('https://www.madagascar.it/wp-content/uploads/2020/01/madagascar-eden-lodge-hotel-arcipelago-nosy-be-spiaggia-wadi-destination.jpg')"></div><div class="place-content"><span class="place-label">Île & lagon</span><h2>Nosy Be</h2><p>L’Île aux Parfums, ses plages de sable clair et ses couchers de soleil tropicaux.</p><span class="place-link">Découvrir Nosy Be <span>→</span></span></div></a>

@@ -13,7 +13,7 @@
                bg-primary/10 border border-primary/30 text-primary
                shadow-[0_0_15px_rgba(125,211,252,0.10)] p-1"
         aria-hidden="true">
-    <img src="/assets/logo/logo-mariage-madagascar.png">
+    <img class="mm-header-logo" src="/assets/logo/logo-mariage-madagascar.png" alt="Mariage Madagascar">
 
   </span>
 
@@ -219,4 +219,25 @@
       display: none !important;
     }
   }
+</style>
+
+<style>
+/* Styles autonomes du header : dimensions fiables même si Tailwind n'est pas chargé par une page. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+.mm-header-logo{display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;object-position:center!important}
+nav.fixed.top-0.left-0.w-full.z-50{position:fixed;top:0;left:0;right:0;width:100%;z-index:1000;background:rgba(15,21,36,.88);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid rgba(125,211,252,.12)}
+nav.fixed.top-0.left-0.w-full.z-50>div{height:64px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 clamp(14px,3vw,36px);max-width:1600px;margin:0 auto}
+nav.fixed.top-0.left-0.w-full.z-50 a{box-sizing:border-box;text-decoration:none;font-family:Inter,Arial,sans-serif} nav.fixed.top-0.left-0.w-full.z-50 .flex{display:flex} nav.fixed.top-0.left-0.w-full.z-50 .items-center{align-items:center} nav.fixed.top-0.left-0.w-full.z-50 .justify-between{justify-content:space-between} nav.fixed.top-0.left-0.w-full.z-50 .gap-3{gap:12px} nav.fixed.top-0.left-0.w-full.z-50 .gap-8{gap:24px} nav.fixed.top-0.left-0.w-full.z-50 .gap-4{gap:12px}
+nav.fixed.top-0.left-0.w-full.z-50 img{max-width:100%;max-height:100%}
+nav.fixed.top-0.left-0.w-full.z-50 .h-10.w-10{width:40px;height:40px;min-width:40px;overflow:hidden;box-sizing:border-box}
+nav.fixed.top-0.left-0.w-full.z-50 .text-xl{font-size:16px;line-height:1.25}
+nav.fixed.top-0.left-0.w-full.z-50 .hidden.md\:flex{display:flex;align-items:center}
+nav.fixed.top-0.left-0.w-full.z-50 .mobile-global-button{display:none}
+.mobile-global-panel{font-family:Inter,Arial,sans-serif}
+@media(max-width:767px){
+ nav.fixed.top-0.left-0.w-full.z-50>div{height:64px}
+ nav.fixed.top-0.left-0.w-full.z-50 .hidden.md\:flex{display:none!important}
+ nav.fixed.top-0.left-0.w-full.z-50 .mobile-global-button{display:inline-flex!important}
+ .mobile-global-panel{top:64px}
+}
 </style>
