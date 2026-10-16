@@ -787,44 +787,40 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
 
-    // Hélicoptère : suit les mêmes liaisons, avec une trajectoire continue et régulière.
-    // Il part d'Antananarivo, rejoint une destination, revient au même point,
-    // puis prend la liaison suivante. Le décalage visuel s'annule aux extrémités
-    // pour éviter tout saut quand il change de route.
+    // Hélicoptère : même logique d'animation que l'avion pour un mouvement régulier.
+    // Même durée, même interpolation et mêmes demi-tours ; seule l'icône et la liaison
+    // sélectionnée diffèrent. Un décalage très léger évite la superposition visuelle.
     const helicopterRoute = flightRoutes[helicopterRouteIndex];
     if (helicopterRoute && helicopterRoute.points.length > 2) {
       const routePoints = helicopterRoute.points;
-      const heliLaneOffset = 0.035;
-      const lastPointIndex = routePoints.length - 1;
+      const heliLaneOffset = 0.018;
+      const lastIndex = routePoints.length - 1;
 
       const heliPoints = routePoints.map((point, index) => {
         const previous = routePoints[Math.max(0, index - 1)];
-        const next = routePoints[Math.min(lastPointIndex, index + 1)];
+        const next = routePoints[Math.min(lastIndex, index + 1)];
         const dLat = next[0] - previous[0];
         const dLng = (next[1] - previous[1]) * Math.cos(point[0] * Math.PI / 180);
         const length = Math.hypot(dLat, dLng) || 1;
-        // Décalage doux sur le milieu du trajet, nul à Antananarivo et à destination.
-        const t = index / lastPointIndex;
+        const t = index / lastIndex;
         const lane = Math.sin(Math.PI * t) * heliLaneOffset;
         const latOffset = (-dLng / length) * lane;
         const lngOffset = (dLat / length) * lane / Math.max(0.5, Math.cos(point[0] * Math.PI / 180));
         return [point[0] + latOffset, point[1] + lngOffset];
       });
 
-      // Durée régulière : 22 s par liaison. La courbe ralentit doucement
-      // uniquement aux extrémités, puis repart dans le sens inverse.
-      helicopterProgress = Math.min(1, helicopterProgress + delta / 22000);
-      const smooth = helicopterProgress * helicopterProgress * (3 - 2 * helicopterProgress);
-      const heliProgress = helicopterDirection === 1 ? smooth : 1 - smooth;
+      // Réutilise la durée et le même easing smoothstep que l'avion.
+      helicopterProgress = Math.min(1, helicopterProgress + delta / FLIGHT_LEG_DURATION_MS);
+      const heliEasedProgress = helicopterProgress * helicopterProgress * (3 - 2 * helicopterProgress);
+      const heliProgress = helicopterDirection === 1 ? heliEasedProgress : 1 - heliEasedProgress;
       const heliPoint = interpolatePoint(heliPoints, heliProgress);
-      const headingStep = 0.006 * helicopterDirection;
-      const heliNextProgress = Math.max(0, Math.min(1, heliProgress + headingStep));
-      const heliNextPoint = interpolatePoint(heliPoints, heliNextProgress);
+      const heliHeadingProgress = Math.max(0, Math.min(1, heliProgress + helicopterDirection * 0.045));
+      const heliNextPoint = interpolatePoint(heliPoints, heliHeadingProgress);
       helicopterMarker.setLatLng(heliPoint);
 
       const heliA = map.latLngToContainerPoint(heliPoint);
       const heliB = map.latLngToContainerPoint(heliNextPoint);
-      if (Math.hypot(heliB.x - heliA.x, heliB.y - heliA.y) > 0.5) {
+      if (Math.hypot(heliB.x - heliA.x, heliB.y - heliA.y) > 0.8) {
         const heliAngle = Math.atan2(heliB.y - heliA.y, heliB.x - heliA.x) * 180 / Math.PI + 90;
         const heliGlyph = helicopterMarker.getElement()?.querySelector('#animatedHelicopterGlyph');
         if (heliGlyph) heliGlyph.style.transform = `rotate(${heliAngle}deg)`;
@@ -833,10 +829,8 @@ document.addEventListener("DOMContentLoaded", function() {
       if (helicopterProgress >= 1) {
         helicopterProgress = 0;
         if (helicopterDirection === 1) {
-          // Arrivée à destination : retour par la même liaison.
           helicopterDirection = -1;
         } else {
-          // Retour à Antananarivo : passage fluide à la liaison suivante.
           helicopterDirection = 1;
           helicopterRouteIndex = (helicopterRouteIndex + 1) % flightRoutes.length;
         }
