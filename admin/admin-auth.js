@@ -3,11 +3,15 @@
   'use strict';
 
   // Primary Admin email list with automatic super_admin privileges
+<<<<<<< HEAD
   const ADMIN_EMAILS = [
     'info@mariage-madagascar.com',
     'contact@mariage-madagascar.com',
     'admin@mariage-madagascar.com'
   ];
+=======
+  const ADMIN_EMAILS = ['info@mariage-madagascar.com'];
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
 
   // Allowed admin roles according to schema.sql profiles table constraint:
   // ('super_admin', 'admin', 'commercial', 'wedding_planner', 'travel_planner', 'accounting', 'support')
@@ -55,6 +59,7 @@
   }
 
   async function syncServerSession(accessToken, refreshToken, isLogout = false) {
+<<<<<<< HEAD
     try {
       if (isLogout) {
         await fetch('/api/auth-session', {
@@ -83,6 +88,48 @@
     } catch (e) {
       console.warn('Session sync warning:', e);
     }
+=======
+    const response = await fetch('/api/auth-session', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(isLogout
+        ? { action: 'logout' }
+        : { action: 'set-session', accessToken, refreshToken })
+    });
+
+    let payload = {};
+    try {
+      payload = await response.json();
+    } catch (_) {
+      // A non-JSON response is reported below with its HTTP status.
+    }
+
+    if (!response.ok) {
+      throw new Error(payload.error || `Synchronisation de session impossible (${response.status}).`);
+    }
+
+    // The server rotates/validates the refresh token and writes matching
+    // HttpOnly cookies. Persist the returned pair in Supabase JS as well.
+    if (!isLogout && payload.session && payload.session.access_token && payload.session.refresh_token) {
+      const client = getClient();
+      if (client) {
+        const { error } = await client.auth.setSession({
+          access_token: payload.session.access_token,
+          refresh_token: payload.session.refresh_token
+        });
+        if (error) throw error;
+      }
+    }
+
+    // Clear any older non-HttpOnly cookies left by previous versions.
+    if (isLogout) {
+      document.cookie = 'sb-access-token=; path=/; max-age=0; SameSite=Lax; Secure';
+      document.cookie = 'sb-refresh-token=; path=/; max-age=0; SameSite=Lax; Secure';
+    }
+
+    return payload;
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
   }
 
   function getCleanCurrentPath() {
@@ -111,6 +158,7 @@
     return 'index.html';
   }
 
+<<<<<<< HEAD
   async function getUserProfile(userId) {
     const client = getClient();
     if (!client || !userId) return null;
@@ -132,6 +180,8 @@
       return null;
     }
   }
+=======
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
 
   async function checkAdminAuth() {
     const page = getCleanCurrentPath().toLowerCase();
@@ -147,11 +197,20 @@
     const session = sessionData ? sessionData.session : null;
 
     if (sessionErr || !session || !session.user) {
+<<<<<<< HEAD
       await syncServerSession(null, null, true);
+=======
+      try {
+        await syncServerSession(null, null, true);
+      } catch (error) {
+        console.warn('Session serveur déjà absente ou indisponible:', error.message);
+      }
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
       if (!isPublicAuthPage) redirectToLogin();
       return null;
     }
 
+<<<<<<< HEAD
     await syncServerSession(session.access_token, session.refresh_token, false);
 
     const user = session.user;
@@ -187,6 +246,54 @@
     }
 
     // Granular role permission check
+=======
+    const user = session.user;
+    const userEmail = (user.email || '').toLowerCase();
+
+    // The primary account uses a server-side email allowlist. Avoid querying the
+    // absent public.profiles table for this account.
+    const profile = null; // This project does not currently have public.profiles.
+    let effectiveRole = ADMIN_EMAILS.includes(userEmail)
+      ? 'super_admin'
+      : ((user.app_metadata && user.app_metadata.role) || null);
+
+    const isAdminAuthorized = ALLOWED_ADMIN_ROLES.includes(effectiveRole);
+
+    if (!isAdminAuthorized) {
+      try { await syncServerSession(null, null, true); } catch (_) {}
+      try { await client.auth.signOut(); } catch (e) { console.warn('SignOut error:', e); }
+      if (!isPublicAuthPage) {
+        alert("Accès refusé : votre compte n'a pas les autorisations d'administrateur.");
+        redirectToLogin();
+      }
+      return { user, profile, role: effectiveRole, isAuthorized: false };
+    }
+
+    // Keep server cookies synchronized. If this fails on an already-open
+    // protected page, report it without creating a redirect loop.
+    try {
+      await syncServerSession(session.access_token, session.refresh_token, false);
+    } catch (error) {
+      console.error('Synchronisation de session serveur impossible:', error);
+      if (isPublicAuthPage) {
+        const message = document.getElementById('auth-error') || document.getElementById('login-error');
+        if (message) message.textContent = "Connexion établie, mais la session serveur n'a pas pu être synchronisée. Rechargez la page ou contactez l'administrateur.";
+      }
+    }
+
+    if (page === 'connexion.html') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectParam = sanitizeRedirect(urlParams.get('redirect'));
+      window.location.replace(redirectParam);
+      return { user, profile, role: effectiveRole, isAuthorized: true };
+    }
+
+    // Keep authorized users on the password-reset page so they can set the new password.
+    if (page === 'reinitialisation.html') {
+      return { user, profile, role: effectiveRole, isAuthorized: true };
+    }
+
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     const allowedPages = ROLE_PERMISSIONS[effectiveRole];
     if (allowedPages && !allowedPages.includes('*') && !allowedPages.includes(page)) {
       alert(`Accès restreint : le rôle ${effectiveRole} n'a pas accès à la page ${page}.`);
@@ -194,7 +301,10 @@
       return null;
     }
 
+<<<<<<< HEAD
     // Populate sidebar user details
+=======
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     const userNameEl = document.getElementById('mm-user-name');
     const userRoleEl = document.getElementById('mm-user-role');
     const userAvatarEl = document.getElementById('mm-user-avatar');
@@ -224,15 +334,20 @@
     const client = getClient();
     if (!client) throw new Error('Client Supabase non disponible.');
 
+<<<<<<< HEAD
     const { data, error } = await client.auth.signInWithPassword({
       email,
       password
     });
 
+=======
+    const { data, error } = await client.auth.signInWithPassword({ email, password });
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     if (error) throw error;
 
     const user = data.user;
     const userEmail = (user.email || '').toLowerCase();
+<<<<<<< HEAD
     const profile = await getUserProfile(user.id);
     let effectiveRole = (profile && profile.role) || (user.app_metadata && user.app_metadata.role) || (user.user_metadata && user.user_metadata.role);
 
@@ -248,6 +363,28 @@
 
     if (data.session) {
       await syncServerSession(data.session.access_token, data.session.refresh_token, false);
+=======
+    // Do not query public.profiles: the current Supabase project does not have it.
+    const effectiveRole = ADMIN_EMAILS.includes(userEmail)
+      ? 'super_admin'
+      : ((user.app_metadata && user.app_metadata.role) || null);
+
+    if (!ALLOWED_ADMIN_ROLES.includes(effectiveRole)) {
+      try { await syncServerSession(null, null, true); } catch (_) {}
+      try { await client.auth.signOut(); } catch (_) {}
+      throw new Error("Ce compte ne possède pas les privilèges administrateur.");
+    }
+
+    if (!data.session) {
+      throw new Error("Supabase n'a pas fourni de session de connexion.");
+    }
+
+    try {
+      await syncServerSession(data.session.access_token, data.session.refresh_token, false);
+    } catch (syncError) {
+      try { await client.auth.signOut(); } catch (_) {}
+      throw new Error(`Connexion authentifiée, mais synchronisation serveur échouée : ${syncError.message}`);
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     }
 
     return data;
@@ -255,7 +392,15 @@
 
   async function signOut() {
     const client = getClient();
+<<<<<<< HEAD
     await syncServerSession(null, null, true);
+=======
+    try {
+      await syncServerSession(null, null, true);
+    } catch (e) {
+      console.warn('Server cookie cleanup warning:', e.message);
+    }
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     if (client) {
       try {
         await client.auth.signOut();
