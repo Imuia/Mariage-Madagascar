@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="fr" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0e1a">
+<title>Prestations | Mariage Madagascar — Espace client</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e1a;--surface:#0f1524;--panel:#111828;--panel2:#141c2e;--line:#223247;--text:#e0e8f0;--muted:#9aafc1;--blue:#7dd3fc;--purple:#c8a0f0;--green:#6ee7b7;--amber:#fcd38d}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 60% 0%,rgba(125,211,252,.06),transparent 45%),var(--bg);color:var(--text);font:15px Inter,system-ui,sans-serif;min-height:100vh}a{color:inherit;text-decoration:none}button,input{font:inherit}.material-symbols-outlined{font-size:22px;vertical-align:middle}
+
+/* Sidebar Global */
+.sidebar{position:fixed;inset:0 auto 0 0;width:264px;background:rgba(17,24,40,.92);backdrop-filter:blur(20px);border-right:1px solid var(--line);padding:28px 18px;display:flex;flex-direction:column;z-index:20}
+.brand{display:flex;align-items:center;gap:12px;padding:6px 8px 30px;border-bottom:1px solid var(--line)}
+.brand-mark{width:42px;height:42px;border:1px solid #36536a;border-radius:50%;display:grid;place-items:center;color:var(--blue);background:#152438}
+.brand b{display:block;color:var(--blue);font-size:16px}
+.brand small,.muted,small{color:var(--muted)}
+.nav{display:grid;gap:7px;padding-top:22px}
+.nav a{display:flex;align-items:center;gap:12px;padding:12px 13px;border-radius:12px;color:#a9bbcb;font-size:14px;transition:.2s}
+.nav a:hover{background:#17263a;color:var(--blue)}
+.nav a.active{background:#1a2b40;color:var(--blue);border:1px solid #29465d;box-shadow:inset 3px 0 var(--blue)}
+.sidebar-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:18px}
+.sidebar-bottom a{display:flex;align-items:center;gap:10px;color:var(--muted);padding:10px 12px;font-size:13px}
+
+/* Layout */
+.workspace{margin-left:264px;min-height:100vh;padding:38px clamp(20px,4vw,58px) 46px;max-width:1800px}
+.mobile-top{display:none}
+.page-head{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:0 0 30px}
+.page-head h1{font-size:clamp(27px,3vw,38px);letter-spacing:-.04em;margin:4px 0 10px}
+.page-head p{margin:0;line-height:1.6}
+.eyebrow{font-size:11px;letter-spacing:.18em;font-weight:700;color:var(--blue);margin:0 0 8px!important}
+.muted{font-size:13px;line-height:1.6}
+
+/* Components */
+.panel{background:linear-gradient(135deg,rgba(17,24,40,.88),rgba(15,21,36,.9));border:1px solid var(--line);border-radius:20px;box-shadow:0 15px 50px rgba(0,0,0,.08)}
+.btn{border:1px solid transparent;border-radius:12px;padding:11px 15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.btn-primary{background:var(--blue);color:#062033;box-shadow:0 4px 20px rgba(125,211,252,.12)}
+.btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn-secondary{background:#18283b;color:var(--blue);border-color:#2b4960}
+.btn-secondary:hover{background:#20364b}
+.full{width:100%}
+.tag{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:6px 10px;font-size:11px;border:1px solid #2a4559;color:var(--blue);background:#172b3b;white-space:nowrap}
+
+/* Prestations Grid */
+.offer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.offer-card{overflow:hidden;display:flex;flex-direction:column}
+.offer-cover{height:180px;padding:15px;display:flex;align-items:flex-start;background-size:cover;background-position:center;position:relative}
+.offer-cover:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,11,20,.1),rgba(4,11,20,.65))}
+.offer-cover .tag{position:relative;z-index:1}
+.cover-lagon{background-image:linear-gradient(120deg,#1c6474,#123c55 45%,#101827)}
+.cover-baobab{background-image:linear-gradient(120deg,#76563b,#293d48 55%,#111827)}
+.cover-island{background-image:linear-gradient(120deg,#286d6a,#2d4b65 55%,#12192a)}
+.offer-body{padding:20px;display:flex;flex-direction:column;flex:1}
+.offer-body h2{font-size:17px;margin:0}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+.price{font-size:12px;color:var(--blue);font-weight:700;white-space:nowrap}
+.offer-body>p{min-height:65px}
+.check-list{padding:0;list-style:none;display:grid;gap:10px;margin:12px 0 22px;font-size:12px;color:#b8c8d6}
+.check-list li:before{content:"✓";color:var(--blue);font-weight:700;margin-right:9px}
+
+.toast{position:fixed;right:24px;bottom:24px;max-width:360px;padding:14px 18px;background:#1b3042;border:1px solid #3a6079;border-radius:13px;box-shadow:0 15px 50px #0008;color:var(--text);z-index:100;font-size:13px;line-height:1.5}
+.footer-note{margin-top:30px;text-align:center;color:#61778a;font-size:11px}
+
+@media(max-width:1100px){.offer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){
+  .sidebar{display:none}
+  .mobile-top{display:flex;position:sticky;top:0;height:64px;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(10,14,26,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);z-index:30}
+  .mobile-brand{font-weight:800;color:var(--blue);letter-spacing:.03em}
+  .mobile-menu{display:flex;gap:10px;align-items:center}
+  .mobile-menu a{font-size:11px;color:var(--muted)}
+  .workspace{margin:0;padding:25px 16px 92px}
+  .page-head{align-items:flex-start;flex-direction:column}
+  .page-head .btn{width:100%}
+  .offer-grid{grid-template-columns:1fr}
+  .offer-cover{height:150px}
+  .sidebar-mobile-nav{position:fixed;bottom:0;left:0;right:0;z-index:35;display:flex;justify-content:space-around;padding:9px 3px calc(9px + env(safe-area-inset-bottom));background:rgba(15,21,36,.96);backdrop-filter:blur(20px);border-top:1px solid var(--line)}
+  .sidebar-mobile-nav a{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:9px;min-width:0}
+  .sidebar-mobile-nav a .material-symbols-outlined{font-size:20px}
+  .sidebar-mobile-nav a.active{color:var(--blue)}
+}
+@media(min-width:761px){.sidebar-mobile-nav{display:none}}
+</style>
+<!-- Supabase JS & Session Check -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="/assets/js/client-auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const session = await window.requireClientAuth();
+  if (!session) return;
+
+  const sb = window.clientSupabase;
+  try {
+    const { data: products } = await sb.from('mm_products').select('*').limit(6);
+    const container = document.querySelector('.grid.grid-cols-1');
+    if (!container || !products || products.length === 0) return;
+
+    container.innerHTML = products.map(p => `
+      <div class="panel p-6 flex flex-col justify-between gap-4">
+        <div>
+          <span class="text-xs font-bold text-primary uppercase tracking-wider">${p.category || 'Sur-mesure'}</span>
+          <h3 class="font-headline font-semibold text-lg text-on-surface mt-1">${p.title || p.name || 'Prestation Exclusive'}</h3>
+          <p class="text-xs text-on-surface-variant mt-2 line-clamp-3">${p.short_description || p.description || 'Service personnalisé Mariage Madagascar.'}</p>
+        </div>
+        <div class="flex items-center justify-between pt-4 border-t border-line">
+          <span class="font-bold text-lg text-on-surface">${(Number(p.base_price) || 0).toLocaleString('fr-FR')} €</span>
+          <a href="/espace-client/messages.html" class="btn btn-primary text-xs py-2 px-4">Demander cette offre</a>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    console.warn('Offres fetch error:', e);
+  }
+});
+</script>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="mm-sidebar-brand">
+    <a href="/espace-client/index.html" class="mm-brand-link flex items-center gap-3 no-underline group justify-center">
+      <div style="text-align: center;" class="mm-brand-logo-wrap p-1 rounded-xl bg-surface-container/60 group-hover:border-primary/50 transition-all flex items-center justify-center">
+        <img style="max-width: 140px; height: 93px;" src="/assets/logo/logo-mariage-madagascar.2.png" alt="Logo officiel Admin Mariage Madagascar" class="h-9 w-auto object-contain max-w-[140px]">
+      </div>
+    </a>
+  </div>
+  <nav class="nav" aria-label="Navigation principale">
+    <a class="" href="/espace-client/index.html"><span class="material-symbols-outlined">dashboard</span><span>Tableau de bord</span></a>
+    <a class="" href="/espace-client/commandes.html"><span class="material-symbols-outlined">shopping_bag</span><span>Commandes</span></a>
+    <a class="" href="/espace-client/messages.html"><span class="material-symbols-outlined">chat</span><span>Messages</span></a>
+    <a class="" href="/espace-client/planning.html"><span class="material-symbols-outlined">calendar_month</span><span>Planning</span></a>
+    <a class="" href="/espace-client/invites.html"><span class="material-symbols-outlined">groups</span><span>Invités</span></a>
+    <a class="" href="/espace-client/documents.html"><span class="material-symbols-outlined">folder_shared</span><span>Documents</span></a>
+    <a class="active" href="/espace-client/offres.html"><span class="material-symbols-outlined">auto_awesome</span><span>Prestations</span></a>
+    <a class="" href="/espace-client/finances.html"><span class="material-symbols-outlined">account_balance_wallet</span><span>Finances</span></a>
+  </nav>
+  <div class="sidebar-bottom">
+    <a href="/espace-client/messages.html"><span class="material-symbols-outlined">support_agent</span> Besoin d'aide ?</a>
+    <a href="#" class="client-logout-btn"><span class="material-symbols-outlined">logout</span> Déconnexion</a>
+  </div>
+</aside>
+
+<div class="mobile-top">
+  <a class="mobile-brand" href="/espace-client/index.html">MARIAGE MADAGASCAR</a>
+  <div class="mobile-menu">
+    <a href="/espace-client/messages.html"><span class="material-symbols-outlined">chat</span></a>
+    <a href="/espace-client/documents.html"><span class="material-symbols-outlined">folder_shared</span></a>
+  </div>
+</div>
+
+<nav class="sidebar-mobile-nav" aria-label="Navigation mobile">
+  <a class="" href="/espace-client/index.html"><span class="material-symbols-outlined">dashboard</span><span>Tableau de bord</span></a>
+  <a class="" href="/espace-client/commandes.html"><span class="material-symbols-outlined">shopping_bag</span><span>Commandes</span></a>
+  <a class="" href="/espace-client/messages.html"><span class="material-symbols-outlined">chat</span><span>Messages</span></a>
+  <a class="" href="/espace-client/planning.html"><span class="material-symbols-outlined">calendar_month</span><span>Planning</span></a>
+  <a class="" href="/espace-client/invites.html"><span class="material-symbols-outlined">groups</span><span>Invités</span></a>
+  <a class="" href="/espace-client/documents.html"><span class="material-symbols-outlined">folder_shared</span><span>Documents</span></a>
+  <a class="" href="/espace-client/finances.html"><span class="material-symbols-outlined">account_balance_wallet</span><span>Finances</span></a>
+</nav>
+
+<main class="workspace">
+
+<header class="page-head"><div><p class="eyebrow">EXPÉRIENCES SUR-MESURE</p><h1>Prestations & propositions</h1><p class="muted">Consultez les services proposés pour votre célébration et demandez des précisions à votre équipe.</p></div><a class="btn btn-primary" href="/espace-client/messages.html"><span class="material-symbols-outlined">chat</span> Poser une question</a></header>
+<section class="offer-grid">
+<article class="panel offer-card"><div class="offer-cover cover-lagon"><span class="tag">Signature</span></div><div class="offer-body"><div class="section-head"><h2>L'Éclat du Lagon</h2><span class="price">Dès 4 500 €</span></div><p class="muted">Une cérémonie les pieds dans l'eau, sur un banc de sable privé, au cœur des eaux turquoise de Nosy Be.</p><ul class="check-list"><li>Privatisation du banc de sable</li><li>Arche florale sur mesure</li><li>Dîner romantique aux chandelles</li></ul><button class="btn btn-secondary full" data-toast="Votre demande a été préparée. Envoyez un message à votre wedding planner pour confirmer le tarif et les disponibilités.">Demander les détails</button></div></article>
+<article class="panel offer-card"><div class="offer-cover cover-baobab"><span class="tag">Aventure</span></div><div class="offer-body"><div class="section-head"><h2>Aventure Royale</h2><span class="price">Dès 6 200 €</span></div><p class="muted">Une célébration spectaculaire au cœur de l'Allée des Baobabs ou des paysages des Tsingy.</p><ul class="check-list"><li>Repérage du lieu</li><li>Coordination locale</li><li>Logistique personnalisée</li></ul><button class="btn btn-secondary full" data-toast="Votre demande a été préparée. Contactez votre équipe pour une proposition personnalisée.">Demander les détails</button></div></article>
+<article class="panel offer-card"><div class="offer-cover cover-island"><span class="tag">Sur mesure</span></div><div class="offer-body"><div class="section-head"><h2>Intimité Insulaire</h2><span class="price">Sur demande</span></div><p class="muted">Une île paradisiaque et une organisation confidentielle pour une célébration intimiste.</p><ul class="check-list"><li>Recherche de lieu exclusif</li><li>Hébergement et transferts</li><li>Coordination dédiée</li></ul><button class="btn btn-secondary full" data-toast="Votre demande a été préparée. Envoyez un message à votre wedding planner.">Demander les détails</button></div></article>
+</section>
+
+<div class="footer-note">© 2026 Mariage Madagascar · Espace client privé · Vos préparatifs en un seul endroit</div>
+</main>
+
+<script>
+function showToast(message) {
+  let el = document.querySelector('.toast');
+  if (!el) { el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role','status'); document.body.appendChild(el); }
+  el.textContent = message;
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => el.remove(), 4200);
+}
+document.querySelectorAll('[data-toast]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); showToast(el.dataset.toast); }));
+</script>
+</body>
+</html>
