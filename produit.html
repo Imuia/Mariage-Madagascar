@@ -290,10 +290,14 @@ body.villa-product #mainImageButton{height:100%}
   const params = new URLSearchParams(location.search);
   const parts = location.pathname.split('/').filter(Boolean);
 
+  // Compatibilité avec les anciennes URL /produit/<slug>
+  // et les nouvelles URL produit /<slug> servies par Vercel.
   const pathnameSlug =
     parts[0] === 'produit'
       ? decodeURIComponent(parts.slice(1).join('/'))
-      : '';
+      : (parts.length === 1 && !parts[0].includes('.')
+          ? decodeURIComponent(parts[0])
+          : '');
 
   const PRODUCT_SLUG = (
     params.get('slug') ||
@@ -442,7 +446,8 @@ body.villa-product #mainImageButton{height:100%}
   }
 
   function productUrl(slug) {
-    return '/produit/' + String(slug || '').replace(/^\/+/, '');
+    // Nouvelle URL publique sans le préfixe /produit/.
+    return '/' + String(slug || '').replace(/^\/+/, '');
   }
 
   function contactUrl(pax) {
