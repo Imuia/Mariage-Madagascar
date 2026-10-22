@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mariage Madagascar</title>
+  <meta name="robots" content="noindex,follow">
+  <style>
+    body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0a0e1a;color:#e0e8f0;font:16px Inter,Arial,sans-serif}
+    main{max-width:560px;padding:32px;text-align:center}
+    p{color:#a0b4c4;line-height:1.7}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Mariage Madagascar</h1>
+    <p id="route-status">Chargement de la page…</p>
+  </main>
+  <script src="/assets/js/supabase-config.js"></script>
+  <script>
+  (async function () {
+    'use strict';
+
+    const status = document.getElementById('route-status');
+    const slug = new URLSearchParams(window.location.search).get('slug');
+
+    if (!slug) {
+      status.textContent = 'Cette page est introuvable.';
+      return;
+    }
+
+    const config = window.MARIAGE_SUPABASE;
+    if (!config || !config.url || !config.anonKey) {
+      status.textContent = 'Le service est temporairement indisponible. Veuillez réessayer plus tard.';
+      console.error('Configuration Supabase absente dans supabase-config.js');
+      return;
+    }
+
+    const cleanSlug = String(slug).trim().replace(/-2$/, '');
+    const apiHeaders = {
+      apikey: config.anonKey,
+      Authorization: 'Bearer ' + config.anonKey
+    };
+
+    async function exists(table, query) {
+      const url = new URL('/rest/v1/' + table, config.url);
+      url.search = new URLSearchParams(query).toString();
+      const response = await fetch(url.toString(), { headers: apiHeaders });
+      if (!response.ok) {
+        throw new Error('Vérification Supabase échouée (' + table + ', HTTP ' + response.status + ')');
+      }
+      const rows = await response.json();
+      return Array.isArray(rows) && rows.length > 0;
+    }
+
+    try {
+      // Priorité aux produits : si le slug existe dans mm_products et est publié,
+      // il charge la fiche produit. Les nouveaux produits sont détectés automatiquement.
+      const isProduct = await exists('mm_products', {
+        select: 'slug',
+        slug: 'eq.' + cleanSlug,
+        published: 'eq.true',
+        limit: '1'
+      });
+
+      // Sinon, le slug est recherché dans les articles publiés.
+      const isArticle = isProduct ? false : await exists('blog_posts', {
+        select: 'slug',
+        slug: 'eq.' + cleanSlug,
+        is_published: 'eq.true',
+        limit: '1'
+      });
+
+      if (!isProduct && !isArticle) {
+        status.textContent = 'Cette page est introuvable.';
+        document.title = 'Page introuvable | Mariage Madagascar';
+        return;
+      }
+
+      const destination = isProduct ? '/produit.html' : '/blog-article.html';
+      const target = new URL(destination, window.location.origin);
+      target.searchParams.set('slug', cleanSlug);
+
+      const response = await fetch(target.pathname + target.search, {
+        headers: { 'X-Requested-With': 'same-origin' }
+      });
+
+      if (!response.ok) {
+        throw new Error('Impossible de charger le modèle de page (HTTP ' + response.status + ')');
+      }
+
+      const html = await response.text();
+      // Remplace le document courant par la page choisie sans changer l’URL
+      // publique /<slug> affichée dans la barre d’adresse.
+      document.open();
+      document.write(html);
+      document.close();
+    } catch (error) {
+      console.error('Erreur du routage produit/blog :', error);
+      status.textContent = 'Impossible de charger cette page pour le moment. Veuillez réessayer.';
+    }
+  })();
+  </script>
+</body>
+</html>
