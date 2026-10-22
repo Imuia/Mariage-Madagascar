@@ -22,7 +22,11 @@
     'use strict';
 
     const status = document.getElementById('route-status');
-    const slug = new URLSearchParams(window.location.search).get('slug');
+    // Vercel ne transmet pas toujours le paramètre de réécriture selon la règle utilisée.
+    // On privilégie ?slug=..., puis on récupère le slug directement dans l'URL publique.
+    const querySlug = new URLSearchParams(window.location.search).get('slug');
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const slug = querySlug || (pathParts.length === 1 && !pathParts[0].includes('.') ? decodeURIComponent(pathParts[0]) : null);
 
     if (!slug) {
       status.textContent = 'Cette page est introuvable.';
@@ -72,8 +76,9 @@
       });
 
       if (!isProduct && !isArticle) {
-        status.textContent = 'Cette page est introuvable.';
+        status.textContent = 'Aucun produit publié ni article publié ne correspond au slug « ' + cleanSlug + ' ». Vérifiez le slug et le statut de publication dans Supabase.';
         document.title = 'Page introuvable | Mariage Madagascar';
+        console.warn('Slug non trouvé dans mm_products ou blog_posts :', cleanSlug);
         return;
       }
 
