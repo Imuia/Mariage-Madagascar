@@ -350,26 +350,10 @@
   const SUPABASE_URL = window.MARIAGE_SUPABASE?.url;
   const SUPABASE_ANON_KEY = window.MARIAGE_SUPABASE?.anonKey;
 
-  const PRODUCTS = [
-    {
-      slug: 'diner-romantique-sur-la-plage-de-nosy-komba',
-      fallbackName: 'Dîner romantique sur la plage de Nosy Komba',
-      fallbackDescription: 'Un dîner privé et romantique les pieds dans le sable, dans un cadre exceptionnel à Nosy Komba.',
-      location: 'Nosy Komba, Madagascar'
-    },
-    {
-      slug: 'diner-romantique-anniversaire-de-mariage-sur-un-ponton-prive-a-nosy-komba',
-      fallbackName: 'Dîner romantique sur un ponton privé',
-      fallbackDescription: 'Une expérience d’exception pour célébrer votre anniversaire de mariage dans un cadre privé.',
-      location: 'Nosy Komba, Madagascar'
-    },
-    {
-      slug: 'soiree-de-mariage-inoubliable-a-nosy-be',
-      fallbackName: 'Soirée de mariage inoubliable à Nosy Be',
-      fallbackDescription: 'Une soirée de mariage élégante et inoubliable, imaginée pour célébrer votre amour à Nosy Be.',
-      location: 'Nosy Be, Madagascar'
-    }
-  ];
+  // La section met en avant uniquement les produits de lune de miel / voyage de noces.
+  // Les slugs sont détectés depuis les produits réellement publiés dans Supabase :
+  // aucun produit de dîner ou de soirée de mariage n'est ajouté comme solution de secours.
+  const HONEYMOON_KEYWORDS = /lune[-\s_]?de[-\s_]?miel|voyage[-\s_]?de[-\s_]?noces|honeymoon|noces/i;
 
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({
     '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;'
@@ -395,6 +379,22 @@
     );
     if (!response.ok) throw new Error('Supabase HTTP ' + response.status);
     return response.json();
+  }
+
+  function inferLocation(name = '', slug = '') {
+    const text = (String(name) + ' ' + String(slug)).toLowerCase();
+    const places = [
+      ['nosy saba', 'Nosy Saba, Madagascar'],
+      ['nosy be', 'Nosy Be, Madagascar'],
+      ['nosy komba', 'Nosy Komba, Madagascar'],
+      ['sainte marie', 'Sainte-Marie, Madagascar'],
+      ['morondava', 'Morondava, Madagascar'],
+      ['tulear', 'Tuléar, Madagascar'],
+      ['antananarivo', 'Antananarivo, Madagascar'],
+      ['diego suarez', 'Diego-Suarez, Madagascar']
+    ];
+    const match = places.find(([key]) => text.includes(key));
+    return match ? match[1] : 'Madagascar';
   }
 
   async function loadProduct(config) {
@@ -458,7 +458,28 @@
     if (!grid || !SUPABASE_URL || !SUPABASE_ANON_KEY) return;
 
     try {
-      const products = (await Promise.all(PRODUCTS.map(loadProduct))).filter(Boolean);
+      // Lire les produits publiés, puis retenir seulement les offres lune de miel.
+      const publishedProducts = await api('mm_products', {
+        select: '*',
+        published: 'eq.true',
+        limit: '100'
+      });
+      const honeymoonProducts = (publishedProducts || [])
+        .filter(product => HONEYMOON_KEYWORDS.test(String(product.slug || '') + ' ' + String(product.name || '')))
+        .slice(0, 3);
+
+      const configs = honeymoonProducts.map(product => ({
+        slug: product.slug,
+        fallbackName: product.name || 'Séjour lune de miel à Madagascar',
+        fallbackDescription: product.short_description || 'Un séjour romantique sur mesure à Madagascar pour célébrer votre voyage de noces.',
+        location: product.location || product.destination || inferLocation(product.name, product.slug)
+      }));
+      const products = (await Promise.all(configs.map(loadProduct))).filter(Boolean);
+
+      if (!products.length) {
+        grid.innerHTML = '<p class="md:col-span-3 text-center text-on-surface-variant">Nos offres de lune de miel seront bientôt disponibles.</p>';
+        return;
+      }
 
       grid.innerHTML = products.map(product => `
         <a href="/produit/${encodeURIComponent(product.slug)}"
