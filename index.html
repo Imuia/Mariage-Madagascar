@@ -482,7 +482,7 @@
       }
 
       grid.innerHTML = products.map(product => `
-        <a href="/produit/${encodeURIComponent(product.slug)}"
+        <a href="/${encodeURIComponent(product.slug)}"
            class="glass-elevated rounded-2xl overflow-hidden group hover-border-glow transition-all duration-500 cursor-pointer h-[500px] flex flex-col relative block">
           <div class="absolute inset-0 z-0">
             <div class="bg-cover bg-center w-full h-full opacity-80 group-hover:opacity-95 transition-opacity duration-500 homepage-image"

@@ -422,7 +422,7 @@ void main() {
     style: 'currency', currency: 'EUR', maximumFractionDigits: 0
   }).format(Number(value || 0));
 
-  const productUrl = slug => '/produit/' + String(slug || '').replace(/^\/+/, '');
+  const productUrl = slug => '/' + String(slug || '').replace(/^\/+/, '');
 
   async function api(table, params = {}) {
     const query = new URLSearchParams(params).toString();
