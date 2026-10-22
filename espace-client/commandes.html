@@ -149,12 +149,12 @@
     <a class="" href="/espace-client/planning.html"><span class="material-symbols-outlined">calendar_month</span><span>Planning</span></a>
     <a class="" href="/espace-client/invites.html"><span class="material-symbols-outlined">groups</span><span>Invités</span></a>
     <a class="" href="/espace-client/documents.html"><span class="material-symbols-outlined">folder_shared</span><span>Documents</span></a>
-    <a class="" href="/espace-client/offres.html"><span class="material-symbols-outlined">auto_awesome</span><span>Prestations</span></a>
+    <a class="" href="/espace-client/offres.html"><span class="material-symbols-outlined">auto_awesome</span><span>Prestations</span></a>   
     <a class="" href="/espace-client/finances.html"><span class="material-symbols-outlined">account_balance_wallet</span><span>Finances</span></a>
   </nav>
   <div class="sidebar-bottom">
     <a href="/espace-client/messages.html"><span class="material-symbols-outlined">support_agent</span> Besoin d'aide ?</a>
-    <a href="#" class="client-logout-btn"><span class="material-symbols-outlined">logout</span> Déconnexion</a>
+    <a href="/"><span class="material-symbols-outlined">logout</span> Retour au site</a>
   </div>
 </aside>
 
@@ -366,8 +366,6 @@
   <div class="footer-note">© 2026 Mariage Madagascar · Espace client privé · Vos préparatifs en un seul endroit</div>
 </main>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="/assets/js/client-auth.js"></script>
 <script>
 function showToast(message) {
   let el = document.querySelector('.toast');
@@ -376,67 +374,7 @@ function showToast(message) {
   clearTimeout(window.__toastTimer);
   window.__toastTimer = setTimeout(() => el.remove(), 4200);
 }
-
-document.addEventListener('DOMContentLoaded', async () => {
-  const session = await window.requireClientAuth();
-  if (!session) return;
-
-  const sb = window.clientSupabase;
-  try {
-    const { data: orders, error } = await sb.from('orders').select('*').order('created_at', { ascending: false });
-    if (!error && orders && orders.length > 0) {
-      const tbody = document.getElementById('order-rows');
-      if (tbody) {
-        tbody.innerHTML = orders.map(order => {
-          const dateStr = order.created_at ? new Date(order.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A';
-          const isPaid = order.payment_status === 'paid' || order.status === 'paid' || order.status === 'confirmed';
-          const badgeClass = isPaid ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20';
-          const statusText = isPaid ? 'Confirmée' : (order.status || 'En attente');
-          const totalFormatted = (Number(order.total_amount) || 0).toLocaleString('fr-FR') + ' €';
-
-          return `
-            <tr class="hover:bg-primary/5 transition-colors group">
-              <td class="py-4 px-6">
-                <div class="font-semibold text-primary font-mono">#${order.order_number || order.id.slice(0,8)}</div>
-                <div class="text-xs text-on-surface-variant mt-0.5">${dateStr}</div>
-              </td>
-              <td class="py-4 px-6">
-                <div class="font-semibold text-on-surface">${order.notes || 'Prestation Mariage'}</div>
-                <div class="text-xs text-on-surface-variant mt-0.5">${order.guest_first_name || ''} ${order.guest_last_name || ''}</div>
-              </td>
-              <td class="py-4 px-6 text-on-surface-variant">Mariage Madagascar</td>
-              <td class="py-4 px-6 font-bold text-on-surface">${totalFormatted}</td>
-              <td class="py-4 px-6">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${badgeClass} border">
-                  <span class="w-1.5 h-1.5 rounded-full ${isPaid ? 'bg-green-400' : 'bg-amber-400'}"></span> ${statusText}
-                </span>
-              </td>
-              <td class="py-4 px-6 text-right">
-                <button onclick="showToast('Réf #${order.order_number || order.id.slice(0,8)} : Total ${totalFormatted}')" class="px-3 py-1.5 rounded-xl bg-surface-variant text-primary border border-primary/20 hover:bg-primary/20 text-xs font-medium transition-colors inline-flex items-center gap-1.5">
-                  <span class="material-symbols-outlined text-[16px]">visibility</span> Détails
-                </button>
-              </td>
-            </tr>
-          `;
-        }).join('');
-      }
-
-      // Update stat cards
-      const totalCount = orders.length;
-      const validCount = orders.filter(o => o.payment_status === 'paid' || o.status === 'confirmed').length;
-      const pendingCount = totalCount - validCount;
-      const totalVal = orders.reduce((acc, o) => acc + (Number(o.total_amount) || 0), 0);
-
-      const statCards = document.querySelectorAll('.grid.grid-cols-1 .text-3xl');
-      if (statCards[0]) statCards[0].textContent = `${totalCount} Commande${totalCount > 1 ? 's' : ''}`;
-      if (statCards[1]) statCards[1].textContent = `${validCount} Valide${validCount > 1 ? 's' : ''}`;
-      if (statCards[2]) statCards[2].textContent = `${pendingCount} En attente`;
-      if (statCards[3]) statCards[3].textContent = `${totalVal.toLocaleString('fr-FR')} €`;
-    }
-  } catch (e) {
-    console.warn('Orders fetch error:', e);
-  }
-});
+document.querySelectorAll('[data-toast]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); showToast(el.dataset.toast); }));
 
 const searchInput = document.getElementById('order-search');
 const rows = document.getElementById('order-rows');

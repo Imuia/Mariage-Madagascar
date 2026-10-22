@@ -18,12 +18,19 @@
 </style>
 <!-- Supabase JS & Session Check -->
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="/assets/js/client-auth.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', async () => {
-  const session = await window.requireClientAuth();
-  if (!session) return;
-});
+  const SUPABASE_URL = 'https://qrkinjuhtyfptldlvdyg.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
+  const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+  async function checkSession() {
+    if (!supabaseClient) return;
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+      window.location.href = '/espace-client/login.html';
+    }
+  }
+  checkSession();
 </script>
 </head>
 <body>
@@ -48,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </nav>
   <div class="sidebar-bottom">
     <a href="/espace-client/messages.html"><span class="material-symbols-outlined">support_agent</span> Besoin d'aide ?</a>
-    <a href="#" class="client-logout-btn"><span class="material-symbols-outlined">logout</span> Déconnexion</a>
+    <a href="/"><span class="material-symbols-outlined">logout</span> Retour au site</a>
   </div>
 </aside>
 <div class="mobile-top">

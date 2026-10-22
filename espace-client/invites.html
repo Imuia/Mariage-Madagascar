@@ -130,114 +130,19 @@
 </style>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="/assets/js/client-auth.js"></script>
 <script>
-let currentUserId = null;
+  const SUPABASE_URL = 'https://qrkinjuhtyfptldlvdyg.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
+  const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const session = await window.requireClientAuth();
-  if (!session) return;
-  currentUserId = session.user.id;
-
-  await loadGuests();
-
-  // Search filter
-  document.getElementById('searchInput')?.addEventListener('input', (e) => {
-    const q = e.target.value.toLowerCase();
-    document.querySelectorAll('#guestTableBody tr').forEach(row => {
-      row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
-    });
-  });
-
-  // Add guest trigger
-  document.getElementById('addGuestTrigger')?.addEventListener('click', async () => {
-    const nom = prompt("Nom de famille de l'invité :");
-    if (!nom) return;
-    const prenom = prompt("Prénom de l'invité :");
-    if (!prenom) return;
-    const email = prompt("Adresse email (optionnel) :") || '';
-
-    const sb = window.clientSupabase;
-    const { error } = await sb.from('invites').insert([{
-      user_id: currentUserId,
-      nom: nom.trim(),
-      prenom: prenom.trim(),
-      email: email.trim(),
-      statut_rsvp: 'En attente'
-    }]);
-
-    if (error) {
-      alert("Erreur lors de l'ajout : " + error.message);
-    } else {
-      await loadGuests();
+  async function checkSession() {
+    if (!supabaseClient) return;
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+      window.location.href = '/espace-client/login.html';
     }
-  });
-});
-
-async function loadGuests() {
-  const sb = window.clientSupabase;
-  const { data: guests, error } = await sb.from('invites').select('*').order('created_at', { ascending: false });
-
-  if (error) {
-    console.warn("Erreur invités:", error);
-    return;
   }
-
-  const tbody = document.getElementById('guestTableBody');
-  if (!tbody) return;
-
-  if (!guests || guests.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-secondary">Aucun invité pour le moment. Cliquez sur "Ajouter un invité" pour commencer.</td></tr>`;
-    updateStats(0, 0, 0, 0);
-    return;
-  }
-
-  let confirmed = 0, pending = 0, dietary = 0;
-
-  tbody.innerHTML = guests.map(g => {
-    const initials = ((g.prenom?.[0] || '') + (g.nom?.[0] || '')).toUpperCase() || 'MM';
-    const isConfirmed = (g.statut_rsvp || '').toLowerCase().includes('confirm') || (g.statut_rsvp || '').toLowerCase().includes('oui');
-    if (isConfirmed) confirmed++;
-    else pending++;
-
-    if (g.regime_alimentaire || g.allergies) dietary++;
-
-    const badge = isConfirmed
-      ? `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/15 text-primary border border-primary/30"><span class="size-1.5 rounded-full bg-primary"></span> Confirmé</span>`
-      : `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#fa5f38]/10 text-[#fa5f38] border border-[#fa5f38]/20"><span class="size-1.5 rounded-full bg-[#fa5f38]"></span> En attente</span>`;
-
-    const dietBadge = (g.regime_alimentaire || g.allergies)
-      ? `<span class="inline-flex items-center gap-1 text-xs text-tertiary font-medium bg-tertiary-container/30 px-2.5 py-1 rounded-md border border-tertiary/20"><span class="material-symbols-outlined text-[15px]">spa</span> ${g.regime_alimentaire || g.allergies}</span>`
-      : `<span class="text-xs text-on-surface-variant italic">Aucun</span>`;
-
-    return `
-      <tr class="hover:bg-primary/5 transition-colors group">
-        <td class="py-4 px-6">
-          <div class="flex items-center gap-3">
-            <div class="size-9 rounded-full bg-secondary-container text-primary font-semibold flex items-center justify-center border border-primary/30">${initials}</div>
-            <div>
-              <p class="font-semibold text-on-surface group-hover:text-primary transition-colors">${g.prenom || ''} ${g.nom || ''}</p>
-              <p class="text-xs text-secondary font-mono">${g.email || 'Pas d\'email'}</p>
-            </div>
-          </div>
-        </td>
-        <td class="py-4 px-6">${badge}</td>
-        <td class="py-4 px-6"><span class="px-2.5 py-1 rounded-lg bg-surface-container-high border border-outline-variant text-on-surface text-xs font-mono font-medium">${g.table_assignee || 'Table A'}</span></td>
-        <td class="py-4 px-6">${dietBadge}</td>
-      </tr>
-    `;
-  }).join('');
-
-  updateStats(guests.length, confirmed, pending, dietary);
-}
-
-function updateStats(total, confirmed, pending, dietary) {
-  const statEls = document.querySelectorAll('section .text-3xl');
-  if (statEls[0]) statEls[0].textContent = total;
-  if (statEls[1]) statEls[1].textContent = confirmed;
-  if (statEls[2]) statEls[2].textContent = pending;
-  if (statEls[3]) statEls[3].textContent = dietary;
-}
+  checkSession();
 </script>
 </head>
 <body class="bg-background text-on-surface antialiased overflow-x-hidden min-h-screen">
@@ -264,7 +169,7 @@ function updateStats(total, confirmed, pending, dietary) {
   </nav>
   <div class="sidebar-bottom">
     <a href="/espace-client/messages.html"><span class="material-symbols-outlined">support_agent</span> Besoin d'aide ?</a>
-    <a href="#" class="client-logout-btn"><span class="material-symbols-outlined">logout</span> Déconnexion</a>
+    <a href="/"><span class="material-symbols-outlined">logout</span> Retour au site</a>
   </div>
 </aside>
 
