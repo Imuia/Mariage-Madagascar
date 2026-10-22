@@ -163,7 +163,7 @@
 </button>
 <h2 class="text-2xl font-headline font-semibold text-on-surface tracking-tight flex items-center gap-2">
                     Pipeline commercial
-                    <span class="bg-primary/10 text-primary text-xs font-medium px-2 py-0.5 rounded-full border border-primary/20 shadow-[0_0_10px_rgba(125,211,252,0.1)]">42 Leads</span>
+                    <span id="crm-total-leads-badge" class="bg-primary/10 text-primary text-xs font-medium px-2 py-0.5 rounded-full border border-primary/20 shadow-[0_0_10px_rgba(125,211,252,0.1)]">0 Leads</span>
 </h2>
 </div>
 <p class="text-sm text-on-surface-variant mt-1 font-body">Gérez les demandes, prospects et opportunités de mariage.</p>
@@ -201,219 +201,16 @@
 </div>
 </div>
 <!-- Kanban Board Container -->
-<div class="flex-1 flex overflow-x-auto pb-4 gap-6 items-start min-h-[500px]">
-<!-- Column 1: Nouveau -->
-<div class="w-[320px] min-w-[320px] flex flex-col h-full bg-surface-container-low/40 backdrop-blur-sm rounded-xl border border-primary/5 shadow-[inset_0_0_20px_rgba(0,0,0,0.2)] overflow-hidden">
-<div class="px-4 py-3 border-b border-primary/10 flex justify-between items-center bg-surface-container/40 shrink-0">
-<h3 class="font-semibold text-on-surface flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_#7dd3fc]"></span>
-                        Nouveau
-                    </h3>
-<span class="bg-surface border border-primary/10 text-on-surface-variant text-xs font-medium px-2 py-0.5 rounded-full">3</span>
-</div>
-<div class="flex-1 overflow-y-auto hide-scroll p-3 flex flex-col gap-3">
-<!-- Card 1 -->
-<div class="bg-surface/70 backdrop-blur-md border border-primary/15 rounded-lg p-4 flex flex-col gap-3 shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:border-primary/40 hover:shadow-[0_0_20px_rgba(125,211,252,0.15)] transition-all duration-300 cursor-grab group relative overflow-hidden">
-<div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-<div class="flex justify-between items-start">
-<h4 class="font-semibold text-on-surface text-sm group-hover:text-primary transition-colors">Famille Dubois</h4>
-<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[16px]">more_horiz</span></button>
-</div>
-<div class="flex flex-col gap-1.5 text-xs text-on-surface-variant">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[14px] text-tertiary">location_on</span>
-<span data-location="Nosy Be">Nosy Be, Madagascar</span>
-</div>
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[14px]">calendar_month</span>
-<span>15 Déc 2024 (12 j)</span>
-</div>
-</div>
-<div class="mt-2 flex justify-between items-end border-t border-primary/10 pt-3">
-<div class="flex flex-col">
-<span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Budget Est.</span>
-<span class="text-primary font-medium text-sm">~12,000 €</span>
-</div>
-<div class="w-6 h-6 rounded-full overflow-hidden border border-primary/30" title="Assigné à: Sophie L.">
-<img alt="Planner avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBudyj-sgIzmb7h5NC35y1POWt93vFG72MBkt4Sq_k-zeSK9Mh3v6WpmOw8FKAukWRRwQVpsjlFNkaHd2TCKCLp64LSrhjXasQTr1bvuIImx7ctfdINMON1S4YwO53mqVE8yTzdMwQ4mvAkukXauOeLTpkig4zqEc22pOgwtMWoxXklwTLXc1oNucTPMZEEjvT-1hTnPs1_9wjOjVKXJ6wfVI3Myztal9YjFNmTOHd07vARXgeSc3Jtzw"/>
-</div>
-</div>
-</div>
-<!-- Card 2 -->
-<div class="bg-surface/70 backdrop-blur-md border border-primary/15 rounded-lg p-4 flex flex-col gap-3 shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:border-primary/40 hover:shadow-[0_0_20px_rgba(125,211,252,0.15)] transition-all duration-300 cursor-grab group relative overflow-hidden">
-<div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-<div class="flex justify-between items-start">
-<h4 class="font-semibold text-on-surface text-sm group-hover:text-primary transition-colors">Jean-Marc P.</h4>
-<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[16px]">more_horiz</span></button>
-</div>
-<div class="flex flex-col gap-1.5 text-xs text-on-surface-variant">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[14px] text-tertiary">sailing</span>
-<span data-location="Archipel des Mitsio">Archipel des Mitsio</span>
-</div>
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[14px]">calendar_month</span>
-<span>Flexible (Nov)</span>
-</div>
-</div>
-<div class="mt-2 flex justify-between items-end border-t border-primary/10 pt-3">
-<div class="flex flex-col">
-<span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Budget Est.</span>
-<span class="text-on-surface-variant font-medium text-sm italic">À définir</span>
-</div>
-<div class="w-6 h-6 rounded-full overflow-hidden border border-dashed border-primary/30 flex items-center justify-center bg-surface-container" title="Non assigné">
-<span class="material-symbols-outlined text-[12px] text-on-surface-variant">person_add</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Column 2: Qualification -->
-<div class="w-[320px] min-w-[320px] flex flex-col h-full bg-surface-container-low/40 backdrop-blur-sm rounded-xl border border-primary/5 shadow-[inset_0_0_20px_rgba(0,0,0,0.2)] overflow-hidden">
-<div class="px-4 py-3 border-b border-primary/10 flex justify-between items-center bg-surface-container/40 shrink-0">
-<h3 class="font-semibold text-on-surface flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-secondary"></span>
-                        Qualification
-                    </h3>
-<span class="bg-surface border border-primary/10 text-on-surface-variant text-xs font-medium px-2 py-0.5 rounded-full">2</span>
-</div>
-<div class="flex-1 overflow-y-auto hide-scroll p-3 flex flex-col gap-3">
-<!-- Card 3 -->
-<div class="bg-surface/70 backdrop-blur-md border border-primary/15 rounded-lg p-4 flex flex-col gap-3 shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:border-primary/40 hover:shadow-[0_0_20px_rgba(125,211,252,0.15)] transition-all duration-300 cursor-grab group relative overflow-hidden">
-<div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-<div class="flex justify-between items-start">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[14px] text-error" title="Lead Chaud">local_fire_department</span>
-<h4 class="font-semibold text-on-surface text-sm group-hover:text-primary transition-colors">Couple Lemaire</h4>
-</div>
-<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[16px]">more_horiz</span></button>
-</div>
-<div class="flex flex-col gap-1.5 text-xs text-on-surface-variant">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[14px] text-tertiary">favorite</span>
-<span>Voyage de Noces - Sud</span>
-</div>
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[14px]">calendar_month</span>
-<span>10 Sept 2024 (15 j)</span>
-</div>
-</div>
-<div class="mt-2 flex justify-between items-end border-t border-primary/10 pt-3">
-<div class="flex flex-col">
-<span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Budget Est.</span>
-<span class="text-primary font-medium text-sm">25,000 €</span>
-</div>
-<div class="w-6 h-6 rounded-full overflow-hidden border border-primary/30">
-<img alt="Planner avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcugdcGF3hWYfR5Ssbiw4ObXJ0nN7ef_X-1Igo6wwO1yKA2ZF_9xcMnTNV9JRa3jrybpJd_2UVEqfL0dePGjfF1LeoukFdHv-PUnXZGyYYuTV6tqGRESMgR_f5wrmfNeSISTTrOmCDcMneE4QZnERjp4nSWEsI11a-IZ3bEENnNSAebVKS-gI0Ky0n-s-L811rXj5Mxewn0Kyrg-vKVhbGFhUqLOwDtTnDKZ4qzeyTZSIyXpMq6RP3lA"/>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Column 3: Devis Envoyé -->
-<div class="w-[320px] min-w-[320px] flex flex-col h-full bg-surface-container-low/40 backdrop-blur-sm rounded-xl border border-primary/5 shadow-[inset_0_0_20px_rgba(0,0,0,0.2)] overflow-hidden">
-<div class="px-4 py-3 border-b border-primary/10 flex justify-between items-center bg-surface-container/40 shrink-0">
-<h3 class="font-semibold text-on-surface flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-tertiary"></span>
-                        Devis envoyé
-                    </h3>
-<span class="bg-surface border border-primary/10 text-on-surface-variant text-xs font-medium px-2 py-0.5 rounded-full">1</span>
-</div>
-<div class="flex-1 overflow-y-auto hide-scroll p-3 flex flex-col gap-3">
-<!-- Card 4 -->
-<div class="bg-surface/70 backdrop-blur-md border border-tertiary/30 rounded-lg p-4 flex flex-col gap-3 shadow-[0_4px_15px_rgba(0,0,0,0.3)] hover:border-tertiary/50 hover:shadow-[0_0_20px_rgba(200,160,240,0.15)] transition-all duration-300 cursor-grab group relative overflow-hidden">
-<div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-<div class="flex justify-between items-start">
-<h4 class="font-semibold text-on-surface text-sm group-hover:text-tertiary transition-colors">Groupe Executive</h4>
-<button class="text-on-surface-variant hover:text-tertiary transition-colors"><span class="material-symbols-outlined text-[16px]">more_horiz</span></button>
-</div>
-<div class="flex flex-col gap-1.5 text-xs text-on-surface-variant">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[14px] text-tertiary">groups</span>
-<span>Séminaire - Isalo</span>
-</div>
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[14px]">calendar_month</span>
-<span>05 Août 2024 (4 j)</span>
-</div>
-<div class="flex items-center gap-2 mt-1 bg-surface-container p-1.5 rounded-md border border-primary/5">
-<span class="material-symbols-outlined text-[12px] text-primary">description</span>
-<span class="text-[10px]">Devis v2 - En attente retour</span>
-</div>
-</div>
-<div class="mt-2 flex justify-between items-end border-t border-primary/10 pt-3">
-<div class="flex flex-col">
-<span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Budget Est.</span>
-<span class="text-tertiary font-medium text-sm">45,000 €</span>
-</div>
-<div class="w-6 h-6 rounded-full overflow-hidden border border-tertiary/40">
-<img alt="Planner avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIND8XtUsP1FVAogs7z0G7rFkYIpV--xPXc-ohIU8ND3tY9N9futN11V0pPR7fSj8R64iY4pTIWuJ2ZYnofmqORDcpE1-Ed_G8_12GsAAX48BBVfMsOR6CdZsPPZdksJOlC8rpTb4nfv2dC1STGdl_QbDeMc1GgBa96LZNO6P4--FxwlMmzzsa7V9k8W0m2WyUj20FF0ix0u0ANJW4FGt0NH1mkwJQbKBVhGnWL79hbIIrS08BUchAsA"/>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Column 4: Négociation -->
-<div class="w-[320px] min-w-[320px] flex flex-col h-full bg-surface-container-low/40 backdrop-blur-sm rounded-xl border border-primary/5 shadow-[inset_0_0_20px_rgba(0,0,0,0.2)] overflow-hidden">
-<div class="px-4 py-3 border-b border-primary/10 flex justify-between items-center bg-surface-container/40 shrink-0">
-<h3 class="font-semibold text-on-surface flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-outline"></span>
-                        Négociation
-                    </h3>
-<span class="bg-surface border border-primary/10 text-on-surface-variant text-xs font-medium px-2 py-0.5 rounded-full">0</span>
-</div>
-<div class="flex-1 overflow-y-auto hide-scroll p-3 flex flex-col gap-3 items-center justify-center text-center opacity-50">
-<div class="w-16 h-16 rounded-full bg-surface-container border border-primary/5 flex items-center justify-center mb-2">
-<span class="material-symbols-outlined text-3xl text-on-surface-variant">inbox</span>
-</div>
-<p class="text-xs text-on-surface-variant">Aucun lead dans cette étape pour le moment.</p>
-</div>
-</div>
-<!-- Column 5: Gagné/Perdu -->
-<div class="w-[320px] min-w-[320px] flex flex-col h-full bg-surface-container-low/40 backdrop-blur-sm rounded-xl border border-primary/5 shadow-[inset_0_0_20px_rgba(0,0,0,0.2)] overflow-hidden">
-<div class="px-4 py-3 border-b border-primary/10 flex justify-between items-center bg-surface-container/40 shrink-0">
-<h3 class="font-semibold text-on-surface flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-surface-variant border border-primary/20"></span>
-                        Clôturé
-                    </h3>
-<span class="bg-surface border border-primary/10 text-on-surface-variant text-xs font-medium px-2 py-0.5 rounded-full">2</span>
-</div>
-<div class="flex-1 overflow-y-auto hide-scroll p-3 flex flex-col gap-3">
-<!-- Won Card -->
-<div class="bg-surface/40 backdrop-blur-md border border-primary/20 rounded-lg p-4 flex flex-col gap-2 shadow-[0_4px_15px_rgba(0,0,0,0.1)] relative overflow-hidden opacity-75 hover:opacity-100 transition-opacity">
-<div class="absolute top-0 right-0 w-0 h-0 border-t-[30px] border-l-[30px] border-t-primary/30 border-l-transparent"></div>
-<span class="material-symbols-outlined absolute top-1 right-1 text-[12px] text-primary">check</span>
-<div class="flex justify-between items-start">
-<h4 class="font-semibold text-on-surface text-sm line-through decoration-primary/50">M. Hériot</h4>
-</div>
-<div class="flex justify-between items-end mt-2">
-<span class="text-primary font-medium text-xs">8,500 €</span>
-<span class="text-[10px] text-on-surface-variant bg-surface-container px-2 py-1 rounded">Gagné</span>
-</div>
-</div>
-<!-- Lost Card -->
-<div class="bg-surface/40 backdrop-blur-md border border-error/20 rounded-lg p-4 flex flex-col gap-2 shadow-[0_4px_15px_rgba(0,0,0,0.1)] relative overflow-hidden opacity-50 hover:opacity-75 transition-opacity">
-<div class="absolute top-0 right-0 w-0 h-0 border-t-[30px] border-l-[30px] border-t-error/30 border-l-transparent"></div>
-<span class="material-symbols-outlined absolute top-1 right-1 text-[12px] text-error">close</span>
-<div class="flex justify-between items-start">
-<h4 class="font-semibold text-on-surface-variant text-sm line-through decoration-error/50">Famille Costa</h4>
-</div>
-<div class="flex justify-between items-end mt-2">
-<span class="text-on-surface-variant font-medium text-xs">14,000 €</span>
-<span class="text-[10px] text-error/70 bg-error/10 px-2 py-1 rounded">Perdu (Prix)</span>
-</div>
-</div>
-</div>
-</div>
-<!-- Add Column Button -->
-<button class="w-[50px] min-w-[50px] flex items-center justify-center h-full bg-surface-container-low/20 backdrop-blur-sm rounded-xl border border-dashed border-primary/10 hover:bg-surface-container-low/40 hover:border-primary/30 transition-all group">
-<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">add</span>
-</button>
+<div id="crm-kanban-board" class="flex-1 flex overflow-x-auto pb-4 gap-6 items-start min-h-[500px]">
+  <!-- Dynamic content rendered by admin-crm.js -->
+  <div class="flex items-center justify-center w-full py-12 text-on-surface-variant text-sm">
+    Chargement du pipeline commercial...
+  </div>
 </div>
 </main>
 
 <div aria-live="polite" class="mm-toast" id="mm-toast" role="status"></div>
 <script src="admin-shared.js"></script>
-<script defer="True" src="admin-demo.js"></script>
+<script src="admin-crm.js"></script>
 </body>
 </html>

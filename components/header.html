@@ -24,15 +24,15 @@
 
     <!-- Navigation desktop -->
     <div class="hidden md:flex items-center gap-8">
-      <a class="font-headline text-on-surface uppercase tracking-wider text-sm text-primary border-b-2 border-primary pb-1"
+      <a class="mm-nav-link font-headline text-on-surface uppercase tracking-wider text-sm"
          href="/nos-lieux-mariage-madagascar.html">Destinations</a>
-      <a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg"
+      <a class="mm-nav-link font-headline text-on-surface uppercase tracking-wider text-sm"
          href="/mariage.html">Mariage</a>
-      <a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg"
+      <a class="mm-nav-link font-headline text-on-surface uppercase tracking-wider text-sm"
          href="/services.html">Services</a>
-      <a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg"
+      <a class="mm-nav-link font-headline text-on-surface uppercase tracking-wider text-sm"
          href="/blog-wedding-planner-nosy-be.html">Blog</a>
-      <a class="font-headline text-on-surface uppercase tracking-wider text-sm text-on-surface-variant hover:text-on-surface hover:bg-primary/10 hover:text-primary transition-all duration-300 px-3 py-2 rounded-lg"
+      <a class="mm-nav-link font-headline text-on-surface uppercase tracking-wider text-sm"
          href="/lune-de-miel.html">Lunes de Miel</a>
     </div>
 
@@ -241,3 +241,98 @@ nav.fixed.top-0.left-0.w-full.z-50 .mobile-global-button{display:none}
  .mobile-global-panel{top:64px}
 }
 </style>
+
+
+<style>
+/* Navigation desktop : le trait bleu indique uniquement la rubrique active. */
+nav.fixed.top-0.left-0.w-full.z-50 .mm-nav-link{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  align-self:stretch;
+  padding:0 12px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--mm-on-surface-variant);
+  text-decoration:none;
+  transition:color .2s ease;
+}
+nav.fixed.top-0.left-0.w-full.z-50 .mm-nav-link::after{
+  content:"";
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:0;
+  height:1px;
+  background:var(--mm-primary);
+  transform:scaleX(0);
+  transform-origin:center;
+  transition:transform .2s ease;
+}
+nav.fixed.top-0.left-0.w-full.z-50 .mm-nav-link:hover{
+  color:var(--mm-primary);
+}
+nav.fixed.top-0.left-0.w-full.z-50 .mm-nav-link.is-active{
+  color:var(--mm-on-surface);
+}
+nav.fixed.top-0.left-0.w-full.z-50 .mm-nav-link.is-active::after{
+  transform:scaleX(1);
+}
+</style>
+
+
+<script>
+(function () {
+  'use strict';
+
+  function normalizePath(value) {
+    try {
+      var path = new URL(value, window.location.origin).pathname.toLowerCase();
+      path = path.replace(/\/index\.html$/i, '');
+      if (path.length > 1) path = path.replace(/\/+$/, '');
+      return path || '/';
+    } catch (error) {
+      return '/';
+    }
+  }
+
+  function applyActiveMenu() {
+    var nav = document.querySelector('nav.fixed.top-0.left-0.w-full.z-50');
+    if (!nav) return;
+    var current = normalizePath(window.location.pathname);
+    var sections = [
+      { href: '/nos-lieux-mariage-madagascar.html', paths: [
+        '/nos-lieux-mariage-madagascar.html', '/destinations.html',
+        '/nosy-be.html', '/morondava.html', '/tulear.html',
+        '/diego-suarez.html', '/antananarivo.html', '/nosy-saba.html',
+        '/sainte-marie.html'
+      ]},
+      { href: '/mariage.html', paths: ['/mariage.html'] },
+      { href: '/services.html', paths: ['/services.html'] },
+      { href: '/blog-wedding-planner-nosy-be.html', paths: [
+        '/blog-wedding-planner-nosy-be.html', '/inspirations.html'
+      ]},
+      { href: '/lune-de-miel.html', paths: [
+        '/lune-de-miel.html', '/lunes-de-miel.html', '/lune-de-miel-sainte-marie.html'
+      ]}
+    ];
+    var section = sections.find(function (item) {
+      return item.paths.some(function (path) { return normalizePath(path) === current; });
+    });
+
+    nav.querySelectorAll('.mm-nav-link').forEach(function (link) {
+      var href = normalizePath(link.getAttribute('href') || '');
+      var active = section ? href === normalizePath(section.href) : href === current;
+      link.classList.toggle('is-active', active);
+      if (active) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    });
+  }
+
+  applyActiveMenu();
+  window.addEventListener('pageshow', applyActiveMenu);
+  window.addEventListener('popstate', applyActiveMenu);
+})();
+</script>

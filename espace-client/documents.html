@@ -55,54 +55,19 @@
 </style>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="/assets/js/client-auth.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', async () => {
-  const session = await window.requireClientAuth();
-  if (!session) return;
+  const SUPABASE_URL = 'https://qrkinjuhtyfptldlvdyg.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
+  const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-  const sb = window.clientSupabase;
-  try {
-    const { data: docs, error } = await sb.from('documents').select('*').order('created_at', { ascending: false });
-    const grid = document.querySelector('.grid.grid-cols-1');
-    if (!grid) return;
-
-    if (error || !docs || docs.length === 0) {
-      grid.innerHTML = `
-        <div class="col-span-full panel p-8 text-center text-on-surface-variant">
-          <span class="material-symbols-outlined text-4xl mb-2 text-primary">folder_open</span>
-          <p>Aucun document déposé pour le moment.</p>
-          <p class="text-xs mt-1">Vos devis, contrats et factures apparaîtront ici.</p>
-        </div>
-      `;
-      return;
+  async function checkSession() {
+    if (!supabaseClient) return;
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+      window.location.href = '/espace-client/login.html';
     }
-
-    grid.innerHTML = docs.map(doc => {
-      const icon = doc.document_type === 'passport' ? 'badge' : (doc.document_type === 'flight_ticket' ? 'flight' : 'description');
-      const dateStr = doc.created_at ? new Date(doc.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
-      return `
-        <div class="panel p-5 flex items-center justify-between gap-4 hover:border-primary/40 transition-all">
-          <div class="flex items-center gap-3.5">
-            <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-              <span class="material-symbols-outlined">${icon}</span>
-            </div>
-            <div>
-              <h4 class="font-semibold text-on-surface text-sm">${doc.title || 'Document'}</h4>
-              <p class="text-xs text-on-surface-variant mt-0.5">${doc.document_type || 'Pièce jointe'} · ${dateStr}</p>
-            </div>
-          </div>
-          <a href="${doc.file_url}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-base">download</span>
-            <span>Télécharger</span>
-          </a>
-        </div>
-      `;
-    }).join('');
-  } catch (e) {
-    console.warn('Documents fetch error:', e);
   }
-});
+  checkSession();
 </script>
 </head>
 <body class="bg-background text-on-surface antialiased overflow-x-hidden min-h-screen">
@@ -127,7 +92,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   </nav>
   <div class="sidebar-bottom">
     <a href="/espace-client/messages.html"><span class="material-symbols-outlined">support_agent</span> Besoin d'aide ?</a>
-    <a href="#" class="client-logout-btn"><span class="material-symbols-outlined">logout</span> Déconnexion</a>
+    <a href="/"><span class="material-symbols-outlined">logout</span> Retour au site</a>
   </div>
 </aside>
 

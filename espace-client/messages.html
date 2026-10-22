@@ -54,93 +54,19 @@
 </style>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="/assets/js/client-auth.js"></script>
 <script>
-let currentUserId = null;
+  const SUPABASE_URL = 'https://qrkinjuhtyfptldlvdyg.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
+  const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const session = await window.requireClientAuth();
-  if (!session) return;
-  currentUserId = session.user.id;
-
-  await loadMessages();
-
-  // Handle message sending
-  const form = document.querySelector('form');
-  if (form) {
-    form.onsubmit = async (e) => {
-      e.preventDefault();
-      const input = form.querySelector('input[type="text"]');
-      const content = input ? input.value.trim() : '';
-      if (!content) return;
-
-      input.value = '';
-      const sb = window.clientSupabase;
-
-      // Force est_admin = false for security
-      const { error } = await sb.from('messages').insert([{
-        user_id: currentUserId,
-        expediteur_nom: session.user.email,
-        est_admin: false,
-        contenu: content
-      }]);
-
-      if (error) {
-        alert("Erreur lors de l'envoi : " + error.message);
-      } else {
-        await loadMessages();
-      }
-    };
-  }
-});
-
-async function loadMessages() {
-  const sb = window.clientSupabase;
-  const { data: msgs, error } = await sb.from('messages').select('*').order('created_at', { ascending: true });
-
-  if (error) {
-    console.warn("Erreur chargement messages:", error);
-    return;
-  }
-
-  const container = document.querySelector('.flex-1.overflow-y-auto');
-  if (!container) return;
-
-  if (!msgs || msgs.length === 0) {
-    container.innerHTML = `<div class="p-8 text-center text-on-surface-variant text-sm">Bienvenue ! Envoyez votre premier message à l'équipe Mariage Madagascar ci-dessous.</div>`;
-    return;
-  }
-
-  container.innerHTML = msgs.map(m => {
-    const isMe = !m.est_admin && m.user_id === currentUserId;
-    const timeStr = m.created_at ? new Date(m.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '';
-
-    if (isMe) {
-      return `
-        <div class="flex flex-col items-end gap-1">
-          <div class="bg-primary text-on-primary rounded-2xl rounded-tr-none px-4 py-3 max-w-[80%] text-sm font-medium shadow-sm">
-            ${m.contenu}
-          </div>
-          <span class="text-[10px] text-on-surface-variant/70 font-mono pr-1">${timeStr}</span>
-        </div>
-      `;
-    } else {
-      return `
-        <div class="flex flex-col items-start gap-1">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-semibold text-primary">${m.expediteur_nom || 'Équipe Mariage Madagascar'}</span>
-          </div>
-          <div class="glass-panel text-on-surface rounded-2xl rounded-tl-none px-4 py-3 max-w-[80%] text-sm shadow-sm border border-outline-variant/30">
-            ${m.contenu}
-          </div>
-          <span class="text-[10px] text-on-surface-variant/70 font-mono pl-1">${timeStr}</span>
-        </div>
-      `;
+  async function checkSession() {
+    if (!supabaseClient) return;
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+      window.location.href = '/espace-client/login.html';
     }
-  }).join('');
-
-  container.scrollTop = container.scrollHeight;
-}
+  }
+  checkSession();
 </script>
 </head>
 <body class="bg-background text-on-surface antialiased overflow-x-hidden min-h-screen">
@@ -165,7 +91,7 @@ async function loadMessages() {
   </nav>
   <div class="sidebar-bottom">
     <a href="/espace-client/messages.html"><span class="material-symbols-outlined">support_agent</span> Besoin d'aide ?</a>
-    <a href="#" class="client-logout-btn"><span class="material-symbols-outlined">logout</span> Déconnexion</a>
+    <a href="/"><span class="material-symbols-outlined">logout</span> Retour au site</a>
   </div>
 </aside>
 
