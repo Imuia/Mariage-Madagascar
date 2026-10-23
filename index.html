@@ -654,7 +654,7 @@ document.addEventListener("DOMContentLoaded", function() {
   map.setView([-18.8, 46.8], 6, { animate: false });
 
   // Cadre géographique élargi pour afficher Madagascar jusqu'à son extrémité sud.
-  const allBounds = L.latLngBounds([[-25.8, 43.1], [-11.5, 50.8]]);
+  const allBounds = L.latLngBounds([[-24.2, 43.5], [-11.8, 50.4]]);
   const markerById = {};
 
   destinations.forEach(destination => {
@@ -863,7 +863,7 @@ document.addEventListener("DOMContentLoaded", function() {
   map.whenReady(() => requestAnimationFrame(animatePlane));
 
   function showAllDestinations() {
-    map.fitBounds(allBounds.pad(0.012), { animate: true, maxZoom: 7 });
+    map.fitBounds(allBounds.pad(0.008), { animate: true, maxZoom: 8 });
   }
   function focusDestination(id) {
     if (id === 'all') {
