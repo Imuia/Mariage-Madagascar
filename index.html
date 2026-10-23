@@ -602,6 +602,8 @@ document.addEventListener("DOMContentLoaded", function() {
   const map = L.map(mapElement, {
     zoomControl: true,
     scrollWheelZoom: false,
+    zoomSnap: 0.5,
+    zoomDelta: 0.5,
     tap: true
   });
 
@@ -863,7 +865,10 @@ document.addEventListener("DOMContentLoaded", function() {
   map.whenReady(() => requestAnimationFrame(animatePlane));
 
   function showAllDestinations() {
-    map.fitBounds(allBounds.pad(0.008), { animate: true, maxZoom: 8 });
+    // Cadrage légèrement rapproché : demi-cran supplémentaire, en gardant
+    // le centre de Madagascar et les destinations dans le champ autant que possible.
+    map.fitBounds(allBounds.pad(0.008), { animate: false, maxZoom: 8 });
+    map.setZoom(map.getZoom() + 0.5, { animate: true, duration: 0.6 });
   }
   function focusDestination(id) {
     if (id === 'all') {
