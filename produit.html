@@ -308,6 +308,14 @@ body.villa-product #mainImageButton{height:100%}
   // Ce produit utilise les 4 sélecteurs du séjour officiel.
   // Tous les autres produits conservent exactement le sélecteur pax existant.
   const STAY_PRODUCT_SLUG = 'sejour-romantique-a-nosy-komba-10-jours-de-reve';
+  // Forfaits multi-jours confirmés : formulaire séjour (personnes + durée + dates).
+  // Liste volontairement ciblée pour ne pas modifier les événements ponctuels.
+  const MULTIDAY_STAY_SLUGS = [
+    'lune-de-miel-romance-tropicale-nosy-be-nosy-iranja-sakatia-8-jours-madagascar',
+    'anniversaire-de-mariage-7-jours-pour-2-nosy-be-madagascar',
+    'lune-de-miel-unique-a-tulear-ambatomilo'
+  ];
+  const IS_MULTIDAY_STAY_PRODUCT = MULTIDAY_STAY_SLUGS.includes(PRODUCT_SLUG.replace(/\/$/, ''));
   const IS_STAY_PRODUCT = PRODUCT_SLUG === STAY_PRODUCT_SLUG;
 
   // Traitement ciblé du séjour romantique à Sainte-Marie.
@@ -1258,7 +1266,7 @@ body.villa-product #mainImageButton{height:100%}
           IS_SIMPLE_PRODUCT ||
           !variations.length ||
           IS_DURATION_PRODUCT ||
-          PRODUCT_SLUG.replace(/\/$/, '') === 'lune-de-miel-unique-a-tulear-ambatomilo'
+          IS_MULTIDAY_STAY_PRODUCT
         );
 
       const stayText = [
@@ -1527,6 +1535,9 @@ body.villa-product #mainImageButton{height:100%}
   }
 
   function resolveBookingMode() {
+    // Ces forfaits ont une durée définie : arrivée/départ, pas horaires d'événement.
+    if (IS_MULTIDAY_STAY_PRODUCT) return 'duration';
+
     // La villa est un hébergement : la réservation se fait avec une date
     // d’arrivée et une date de départ, même si le titre mentionne une demande
     // en mariage ou si une ancienne métadonnée indique « event ».
@@ -2159,6 +2170,25 @@ body.villa-product #mainImageButton{height:100%}
 
     if (IS_MORA_MORA_PRODUCT) {
       renderMoraOptions();
+      return;
+    }
+
+    // Pour les forfaits multi-jours listés, le nombre de personnes est demandé
+    // dans le formulaire de séjour ; ne pas afficher un sélecteur pax vide.
+    if (IS_MULTIDAY_STAY_PRODUCT) {
+      if (els.variationLabel) {
+        els.variationLabel.textContent = '';
+        els.variationLabel.style.display = 'none';
+      }
+      els.paxButtons.innerHTML = '';
+      els.paxButtons.style.display = 'none';
+      selectedPax = Number(selectedPax || 2);
+      const initialVariation = variations[0] || null;
+      const basePrice = initialVariation?.regular_price ?? product?.regular_price;
+      if (basePrice != null && Number.isFinite(Number(basePrice))) {
+        els.price.textContent = euro(basePrice);
+      }
+      updateCurrentActionLinks();
       return;
     }
 
