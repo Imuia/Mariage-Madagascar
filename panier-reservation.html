@@ -202,10 +202,64 @@
     }[char]));
   }
 
+
+  const COUPLE_STAY_DURATIONS = {
+    'lune-de-miel-romance-tropicale-nosy-be-nosy-iranja-sakatia-8-jours-madagascar': '8 jours',
+    'anniversaire-de-mariage-7-jours-pour-2-nosy-be-madagascar': '7 jours',
+    'lune-de-miel-unique-a-tulear-ambatomilo': '10 jours / 9 nuits'
+  };
+
+  function isCoupleStay(item) {
+    return Boolean(item && COUPLE_STAY_DURATIONS[String(item.slug || '').toLowerCase()]);
+  }
+
+  function stayDurationLabel(item) {
+    if (!item) return '';
+    const slug = String(item.slug || '').toLowerCase();
+    if (COUPLE_STAY_DURATIONS[slug]) return COUPLE_STAY_DURATIONS[slug];
+    const raw = String(item.stay_duration_label || item.duration_label || item.duration || '');
+    if (raw) return raw;
+    const text = `${item.name || ''} ${item.variation_name || ''}`;
+    const match = text.match(/\b(\d+)\s*jours?(?:\s*\/\s*(\d+)\s*nuits?)?/i);
+    return match ? (match[2] ? `${match[1]} jours / ${match[2]} nuits` : `${match[1]} jours`) : '';
+  }
+
+  function paxCount(item) {
+    return isCoupleStay(item) ? 2 : (Number(item?.pax) || 0);
+  }
+
+  function normalizeCoupleStay(item) {
+    if (!isCoupleStay(item)) return item;
+    const duration = stayDurationLabel(item);
+    const arrival = item.booking_date || item.arrival_date || item.options?.arrival_date || '';
+    const departure = item.booking_end_date || item.departure_date || item.options?.booking_end_date || item.options?.departure_date || '';
+    return {
+      ...item,
+      pax: 2,
+      booking_mode: 'duration',
+      booking_date: arrival,
+      arrival_date: arrival,
+      booking_end_date: departure,
+      departure_date: departure,
+      stay_duration_label: duration,
+      options: {
+        ...(item.options || {}),
+        booking_mode: 'duration',
+        arrival_date: arrival,
+        departure_date: departure,
+        booking_end_date: departure,
+        pax: 2,
+        stay_duration_label: duration
+      }
+    };
+  }
+
   function getCart() {
     try {
-      const cart = JSON.parse(localStorage.getItem('mariage_cart') || '[]');
-      return Array.isArray(cart) ? cart : [];
+      const rawCart = JSON.parse(localStorage.getItem('mariage_cart') || '[]');
+      const cart = Array.isArray(rawCart) ? rawCart.map(normalizeCoupleStay) : [];
+      if (Array.isArray(rawCart)) localStorage.setItem('mariage_cart', JSON.stringify(cart));
+      return cart;
     } catch {
       return [];
     }
@@ -341,7 +395,8 @@
       }
       const editUrl = `/produit/${encodeURIComponent(item.slug || '')}${editParams.toString() ? `?${editParams.toString()}` : ''}`;
 
-      const paxText = item.pax ? `${item.pax} Personnes` : '';
+      const pax = paxCount(item);
+      const paxText = pax ? `${pax} ${pax === 1 ? 'personne' : 'personnes'}` : '';
       const options = item.options || {};
       const bookingMetaKeys = new Set([
         'booking_mode', 'arrival_date', 'departure_date', 'booking_end_date',
@@ -394,6 +449,12 @@
                       <span><strong class="text-[#e0e8f0]">Horaires :</strong> ${esc(startTime || 'À choisir')} – ${esc(endTime || 'À choisir')}</span>
                     </span>
                   `}
+                  ${isCoupleStay(item) && stayDurationLabel(item) ? `
+                    <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
+                      <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">schedule</span>
+                      <span><strong class="text-[#e0e8f0]">Durée du séjour :</strong> ${esc(stayDurationLabel(item))}</span>
+                    </span>
+                  ` : ''}
                   ${paxText ? `
                     <span class="flex items-center gap-1.5 bg-[#141c2e] px-3 py-1 rounded-lg border border-[#2a3a48]">
                       <span class="material-symbols-outlined text-[18px] text-[#7dd3fc]">group</span>

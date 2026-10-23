@@ -155,6 +155,33 @@
     return Number.isNaN(date.getTime()) ? 'À confirmer avec conseiller' : date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
+
+  const COUPLE_STAY_DURATIONS = {
+    'lune-de-miel-romance-tropicale-nosy-be-nosy-iranja-sakatia-8-jours-madagascar': '8 jours',
+    'anniversaire-de-mariage-7-jours-pour-2-nosy-be-madagascar': '7 jours',
+    'lune-de-miel-unique-a-tulear-ambatomilo': '10 jours / 9 nuits'
+  };
+
+  function isCoupleStay(item) {
+    return Boolean(item && COUPLE_STAY_DURATIONS[String(item.slug || '').toLowerCase()]);
+  }
+
+  function stayDurationLabel(item) {
+    if (!item) return '';
+    const slug = String(item.slug || '').toLowerCase();
+    if (COUPLE_STAY_DURATIONS[slug]) return COUPLE_STAY_DURATIONS[slug];
+    const raw = String(item.stay_duration_label || item.duration_label || item.duration || '');
+    if (raw) return raw;
+    const text = `${item.name || item.product_name || ''} ${item.variation_name || ''}`;
+    const match = text.match(/\b(\d+)\s*jours?(?:\s*\/\s*(\d+)\s*nuits?)?/i);
+    return match ? (match[2] ? `${match[1]} jours / ${match[2]} nuits` : `${match[1]} jours`) : '';
+  }
+
+  function paxCount(item, localItem = {}) {
+    if (isCoupleStay(item) || isCoupleStay(localItem)) return 2;
+    return Number(item?.pax ?? localItem?.pax ?? item?.options_snapshot?.pax ?? localItem?.options?.pax) || 0;
+  }
+
   function readLocalCartSnapshot() {
     try {
       const parsed = JSON.parse(localStorage.getItem('mariage_cart') || '[]');
@@ -240,6 +267,8 @@
                 <div class="text-xs text-[#7dd3fc] mt-2">Date de l’événement : ${esc(formatDate(eventDate))}</div>
                 <div class="text-xs text-[#7dd3fc] mt-1">Horaires : ${esc(startTime || '—')} – ${esc(endTime || '—')}</div>
               `}
+              ${paxCount(item, localItem) ? `<div class="text-xs text-[#7dd3fc] mt-1">Nombre de personnes : ${paxCount(item, localItem)} ${paxCount(item, localItem) === 1 ? 'personne' : 'personnes'}</div>` : ''}
+              ${(isCoupleStay(item) || isCoupleStay(localItem)) ? `<div class="text-xs text-[#7dd3fc] mt-1">Durée du séjour : ${esc(stayDurationLabel(localItem) || stayDurationLabel(item))}</div>` : ''}
             </div>
             <div class="font-bold text-[#e0e8f0] text-lg whitespace-nowrap">${euro(item.total_price)}</div>
           </div>
