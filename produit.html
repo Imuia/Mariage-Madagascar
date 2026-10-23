@@ -1290,11 +1290,8 @@ body.villa-product #mainImageButton{height:100%}
           ${showStayDetails ? `
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-sm font-semibold mb-2" for="stay-person-count">Nombre de personnes</label>
-                <select id="stay-person-count"
-                  class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40">
-                  ${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}" ${Number(selectedPax || 2) === n ? 'selected' : ''}>${n} ${n === 1 ? 'personne' : 'personnes'}</option>`).join('')}
-                </select>
+                <label class="block text-sm font-semibold mb-2">Nombre de personnes</label>
+                <div class="w-full min-h-[48px] flex items-center rounded-xl border border-white/10 px-4 py-3 text-sm text-[#7dd3fc] bg-[#0f1524]/80">2 personnes</div>
               </div>
               <div>
                 <label class="block text-sm font-semibold mb-2">Durée du séjour</label>
@@ -1336,11 +1333,8 @@ body.villa-product #mainImageButton{height:100%}
         </div>
       `;
 
-      const personCountInput = els.bookingDateWrap.querySelector('#stay-person-count');
-      personCountInput?.addEventListener('change', event => {
-        selectedPax = Number(event.target.value) || 2;
-        refreshBookingActionLinks();
-      });
+      // Ces forfaits sont vendus pour 2 personnes : valeur fixe transmise au panier.
+      if (showStayDetails) selectedPax = 2;
 
       const startDateInput = els.bookingDateWrap.querySelector('#booking-date');
       const endDateInput = els.bookingDateWrap.querySelector('#booking-date-end');
@@ -1648,7 +1642,7 @@ body.villa-product #mainImageButton{height:100%}
       selectedVariation = variations.find(v => String(v.attribute_value || '').trim() === String(val).trim()) || variations[0];
       if (val) currentOptions[SINGLE_ATTRIBUTE_NAME || 'Option'] = val;
     } else if (!IS_SIMPLE_PRODUCT) {
-      selectedVariation = variations.find(v => Number(v.pax) === Number(selectedPax)) || variations[0];
+      selectedVariation = variations.find(v => Number(v.pax) === Number(IS_MULTIDAY_STAY_PRODUCT ? 2 : selectedPax)) || variations[0];
     } else {
       selectedVariation = variations[0] || null;
     }
@@ -2182,8 +2176,12 @@ body.villa-product #mainImageButton{height:100%}
       }
       els.paxButtons.innerHTML = '';
       els.paxButtons.style.display = 'none';
-      selectedPax = Number(selectedPax || 2);
-      const initialVariation = variations[0] || null;
+      // Les trois forfaits ciblés sont vendus pour 2 personnes.
+      selectedPax = 2;
+      const initialVariation =
+        variations.find(v => Number(v.pax) === 2) ||
+        variations[0] ||
+        null;
       const basePrice = initialVariation?.regular_price ?? product?.regular_price;
       if (basePrice != null && Number.isFinite(Number(basePrice))) {
         els.price.textContent = euro(basePrice);
