@@ -247,7 +247,7 @@ body.villa-product #mainImageButton{height:100%}
 <div>
 <div class="text-xs uppercase tracking-[.24em] text-[#c8a0f0] font-semibold mb-3">Mariage Madagascar</div>
 <h2 id="bottomTitle" class="text-3xl md:text-4xl font-semibold text-glow">Une expérience sur mesure</h2>
-<p class="text-[#a8bbc8] mt-3 max-w-2xl">Sélectionnez le nombre de personnes pour afficher le tarif correspondant et poursuivre votre demande.</p>
+<p class="text-[#a8bbc8] mt-3 max-w-2xl">Choisissez les options de votre expérience et renseignez les dates de votre séjour pour poursuivre votre réservation.</p>
 </div>
 <a class="btn rounded-full px-7 py-3.5 font-semibold whitespace-nowrap text-center" href="/contact.html" id="bottomContactBtn">Demander un devis →</a>
 </div>
@@ -1254,7 +1254,12 @@ body.villa-product #mainImageButton{height:100%}
         && !IS_MORA_MORA_PRODUCT
         && !IS_GUEST_COUNT_PRODUCT
         && !IS_GASTRONOMY_GUEST_COUNT_PRODUCT
-        && (IS_SIMPLE_PRODUCT || !variations.length);
+        && (
+          IS_SIMPLE_PRODUCT ||
+          !variations.length ||
+          IS_DURATION_PRODUCT ||
+          PRODUCT_SLUG.replace(/\/$/, '') === 'lune-de-miel-unique-a-tulear-ambatomilo'
+        );
 
       const stayText = [
         product?.name,
@@ -2456,8 +2461,18 @@ body.villa-product #mainImageButton{height:100%}
         setMain(currentImageIndex);
       }
 
-      renderPax();
+      // Afficher d'abord le formulaire de réservation : si un sélecteur
+      // de variations d'un produit particulier rencontre une erreur, les dates
+      // d'arrivée/départ restent tout de même visibles.
       renderBookingDatePicker();
+      try {
+        renderPax();
+      } catch (paxError) {
+        console.error('Sélecteur de personnes/options indisponible :', paxError);
+        if (els.paxButtons) {
+          els.paxButtons.innerHTML = '<span class="text-sm text-[#8fa3b3]">Options à confirmer</span>';
+        }
+      }
       wireGallery();
 
       // Brancher le bouton "Ajouter au panier" vers la fonction addToCart
