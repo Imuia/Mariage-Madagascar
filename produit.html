@@ -1244,39 +1244,90 @@ body.villa-product #mainImageButton{height:100%}
 
       const endMinDate = addDaysISO(bookingDate || minDate, 1);
 
+      // Ces informations supplémentaires ne s'affichent que pour les forfaits
+      // de séjour simples sur plusieurs jours, pas pour les événements ponctuels
+      // ni pour les produits qui ont déjà leurs propres options de réservation.
+      const showStayDetails = BOOKING_MODE === 'duration'
+        && !IS_VILLA_PRODUCT
+        && !IS_STAY_PRODUCT
+        && !IS_DREAM_SAINTEMARIE_PRODUCT
+        && !IS_MORA_MORA_PRODUCT
+        && !IS_GUEST_COUNT_PRODUCT
+        && !IS_GASTRONOMY_GUEST_COUNT_PRODUCT
+        && (IS_SIMPLE_PRODUCT || !variations.length);
+
+      const stayText = [
+        product?.name,
+        product?.short_description,
+        product?.description_html,
+        product?.description
+      ].filter(Boolean).join(' ').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ');
+      const durationMatch = stayText.match(/\b(\d+)\s*jours?\s*(?:\/|et)?\s*(\d+)\s*nuits?\b/i)
+        || stayText.match(/\b(\d+)\s*jours?\b/i);
+      const stayDurationLabel = durationMatch
+        ? (durationMatch[2]
+            ? `${durationMatch[1]} jours / ${durationMatch[2]} nuits`
+            : `${durationMatch[1]} jours`)
+        : 'Durée indiquée dans la formule';
+
+      if (showStayDetails && (selectedPax == null || selectedPax < 1)) selectedPax = 2;
+
       els.bookingDateWrap.innerHTML = `
         <div class="w-full space-y-4">
-          <div>
-            <label class="block text-sm font-semibold mb-2 cursor-pointer" for="booking-date">
-              Date de début / arrivée <span class="text-[#7dd3fc]">*</span>
-            </label>
-            <input
-              id="booking-date"
-              type="date"
-              min="${minDate}"
-              value="${esc(bookingDate)}"
-              required
-              class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
-              aria-label="Choisir la date de début ou d’arrivée"
-            >
-          </div>
-          <div>
-            <label class="block text-sm font-semibold mb-2 cursor-pointer" for="booking-date-end">
-              Date de fin / départ <span class="text-[#7dd3fc]">*</span>
-            </label>
-            <input
-              id="booking-date-end"
-              type="date"
-              min="${endMinDate}"
-              value="${esc(bookingEndDate)}"
-              required
-              class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
-              aria-label="Choisir la date de fin ou de départ"
-            >
+          ${showStayDetails ? `
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-sm font-semibold mb-2" for="stay-person-count">Nombre de personnes</label>
+                <select id="stay-person-count"
+                  class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40">
+                  ${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}" ${Number(selectedPax || 2) === n ? 'selected' : ''}>${n} ${n === 1 ? 'personne' : 'personnes'}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold mb-2">Durée du séjour</label>
+                <div class="w-full min-h-[48px] flex items-center rounded-xl border border-white/10 px-4 py-3 text-sm text-[#7dd3fc] bg-[#0f1524]/80">${esc(stayDurationLabel)}</div>
+              </div>
+            </div>
+          ` : ''}
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold mb-2 cursor-pointer" for="booking-date">
+                Date de début / arrivée <span class="text-[#7dd3fc]">*</span>
+              </label>
+              <input
+                id="booking-date"
+                type="date"
+                min="${minDate}"
+                value="${esc(bookingDate)}"
+                required
+                class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+                aria-label="Choisir la date de début ou d’arrivée"
+              >
+            </div>
+            <div>
+              <label class="block text-sm font-semibold mb-2 cursor-pointer" for="booking-date-end">
+                Date de fin / départ <span class="text-[#7dd3fc]">*</span>
+              </label>
+              <input
+                id="booking-date-end"
+                type="date"
+                min="${endMinDate}"
+                value="${esc(bookingEndDate)}"
+                required
+                class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-[#0f1524]/80 text-[#c8d6e3] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40"
+                aria-label="Choisir la date de fin ou de départ"
+              >
+            </div>
           </div>
           <div id="bookingDurationHint" class="text-xs text-[#8fa3b3]" aria-live="polite"></div>
         </div>
       `;
+
+      const personCountInput = els.bookingDateWrap.querySelector('#stay-person-count');
+      personCountInput?.addEventListener('change', event => {
+        selectedPax = Number(event.target.value) || 2;
+        refreshBookingActionLinks();
+      });
 
       const startDateInput = els.bookingDateWrap.querySelector('#booking-date');
       const endDateInput = els.bookingDateWrap.querySelector('#booking-date-end');
