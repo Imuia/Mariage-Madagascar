@@ -113,89 +113,195 @@
 <body class="bg-background text-on-surface antialiased overflow-x-hidden min-h-screen">
 
 <div id="client-sidebar-root"></div>
-</div>
 
-<main class="workspace relative z-10 flex-1 flex flex-col min-w-0 p-0 gap-8">
-  <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<style>
+.documents-page{max-width:1500px;margin:0 auto;padding:12px 0 40px}
+.doc-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:38px}
+.eyebrow{display:flex;align-items:center;gap:10px;color:var(--blue);font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-bottom:12px}
+.doc-heading h1{font-size:clamp(32px,4vw,46px);line-height:1.1;font-weight:700;letter-spacing:-.04em;margin:0 0 14px}
+.doc-heading p{max-width:660px;color:var(--muted);font-size:16px;line-height:1.65;margin:0}
+.doc-actions{display:flex;gap:12px;flex-shrink:0}
+.doc-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:1px solid rgba(125,211,252,.22);background:rgba(15,21,36,.6);color:var(--text);border-radius:16px;padding:15px 19px;cursor:pointer;transition:.2s;font-weight:600;font-size:13px}
+.doc-btn:hover{background:rgba(125,211,252,.12);border-color:rgba(125,211,252,.5)}
+.doc-btn.primary{background:rgba(125,211,252,.1);color:var(--blue);border-color:rgba(125,211,252,.35)}
+.doc-layout{display:grid;grid-template-columns:262px minmax(0,1fr);gap:22px}
+.doc-label{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin:0 0 14px 8px}
+.doc-glass{background:rgba(15,21,36,.6);backdrop-filter:blur(16px);border:1px solid rgba(125,211,252,.12);border-radius:22px}
+.doc-folders{padding:8px;display:grid;gap:4px}
+.doc-folder{display:flex;align-items:center;gap:12px;text-align:left;width:100%;border:1px solid transparent;background:transparent;color:var(--text);border-radius:14px;padding:13px 14px;cursor:pointer;line-height:1.35}
+.doc-folder .material-symbols-outlined{color:var(--muted);font-size:23px}
+.doc-folder .count{margin-left:auto;background:#172438;color:#a9bbcb;border-radius:99px;padding:4px 8px;font-size:11px}
+.doc-folder.active{background:#1a2b40;border-color:#29465d;color:var(--blue)}
+.doc-folder.active .material-symbols-outlined{color:var(--blue)}
+.doc-storage{margin-top:14px;padding:20px}
+.doc-storage-head{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;margin-bottom:17px}
+.doc-progress{height:7px;background:#080d17;border-radius:99px;overflow:hidden;margin-bottom:10px}
+.doc-progress span{display:block;width:45%;height:100%;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:99px}
+.doc-small{font-size:11px;color:var(--muted)}
+.doc-main{min-width:0}
+.doc-banner{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 24px;border-left:4px solid var(--purple);margin-bottom:22px}
+.doc-banner-left{display:flex;align-items:center;gap:16px}
+.doc-round{width:48px;height:48px;flex:0 0 48px;border-radius:50%;display:grid;place-items:center;background:rgba(200,160,240,.12);color:var(--purple)}
+.doc-banner h2{font-size:17px;font-weight:650;margin:0 0 6px}
+.doc-banner p{font-size:13px;color:var(--muted);line-height:1.5;margin:0}
+.doc-btn.sign{background:rgba(200,160,240,.18);border-color:rgba(200,160,240,.35);color:var(--purple);white-space:nowrap}
+.doc-table-wrap{overflow:hidden}
+.doc-table{width:100%;border-collapse:collapse;text-align:left}
+.doc-table th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding:16px 20px;background:rgba(26,36,56,.38);border-bottom:1px solid rgba(125,211,252,.1)}
+.doc-table td{padding:18px 20px;border-bottom:1px solid rgba(125,211,252,.07);font-size:13px;vertical-align:middle}
+.doc-table tr:last-child td{border-bottom:0}
+.doc-table tbody tr:hover{background:rgba(125,211,252,.035)}
+.doc-file{display:flex;align-items:center;gap:14px;min-width:250px}
+.doc-file-icon{width:38px;height:38px;flex:0 0 38px;border-radius:13px;display:grid;place-items:center;background:#182438;border:1px solid #2b3d53;color:#a9bbcb}
+.doc-file-icon.purple{color:var(--purple);background:rgba(200,160,240,.09);border-color:rgba(200,160,240,.25)}
+.doc-file-name{font-weight:500;overflow-wrap:anywhere}
+.doc-status{display:flex;align-items:center;gap:6px;color:var(--purple);font-size:11px;margin-top:5px}
+.doc-status:before{content:"";width:7px;height:7px;background:var(--purple);border-radius:50%}
+.doc-category{display:inline-block;padding:5px 10px;border-radius:99px;border:1px solid #2a3a4b;background:#192538;color:#a9bbcb;font-size:11px;white-space:nowrap}
+.doc-date{color:var(--muted);white-space:nowrap}
+.doc-row-actions{display:flex;gap:5px;justify-content:flex-end}
+.doc-icon-btn{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer}
+.doc-icon-btn:hover{color:var(--blue);background:rgba(125,211,252,.1);border-color:rgba(125,211,252,.15)}
+.doc-bottom{display:flex;justify-content:space-between;align-items:center;gap:14px;color:var(--muted);font-size:11px;margin-top:22px}
+.doc-pagination{display:flex;gap:7px;align-items:center}
+.doc-page{height:38px;min-width:38px;padding:0 9px;border-radius:13px;border:1px solid #293b51;background:#172438;color:#c3d1df;cursor:pointer}
+.doc-page.active{color:var(--blue);border-color:#31546a;background:#182a3b}
+.doc-page:disabled{opacity:.4;cursor:not-allowed}
+.doc-footer{margin-top:55px;border-top:1px solid rgba(125,211,252,.1);padding:48px 0 0;display:flex;justify-content:space-between;gap:30px;align-items:flex-end;color:var(--muted)}
+.doc-footer-brand{max-width:270px}
+.doc-footer-brand strong{display:block;color:var(--blue);font-size:16px;margin-bottom:18px}
+.doc-footer-brand p{font-size:13px;line-height:1.6;margin:0}
+.doc-footer-links{display:flex;gap:24px;flex-wrap:wrap;font-size:12px}
+.doc-footer-bottom{border-top:1px solid rgba(125,211,252,.07);margin-top:42px;padding:26px 0;color:var(--muted);font-size:11px}
+.doc-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.doc-modal.open{display:flex}
+.doc-modal-card{width:min(560px,100%);padding:25px;border-radius:20px;background:#111828;border:1px solid #2a3c52}
+.doc-modal-card h2{font-size:20px;margin:0 0 20px}
+.doc-field{display:grid;gap:7px;margin-bottom:15px;font-size:12px;color:var(--muted)}
+.doc-field input,.doc-field select{width:100%;padding:12px;border-radius:10px;background:#0a0e1a;color:var(--text);border:1px solid #2a3c52}
+@media(max-width:1000px){.doc-heading{align-items:flex-start;flex-direction:column}.doc-layout{grid-template-columns:1fr}.doc-side{display:grid;grid-template-columns:1fr 1fr;gap:14px}.doc-label{grid-column:1/-1;margin-bottom:0}.doc-storage{margin-top:0}.doc-footer{align-items:flex-start;flex-direction:column}}
+@media(max-width:650px){.documents-page{padding-top:0}.doc-heading{margin-bottom:25px}.doc-actions{width:100%;flex-wrap:wrap}.doc-btn{flex:1;padding:13px 10px}.doc-side{grid-template-columns:1fr}.doc-banner{align-items:flex-start;flex-direction:column;padding:18px}.doc-table th,.doc-table td{padding:13px 12px}.doc-table th:nth-child(2),.doc-table td:nth-child(2){display:none}.doc-table th:last-child,.doc-table td:last-child{padding-right:8px}.doc-file{min-width:190px;gap:9px}.doc-file-icon{width:32px;height:32px;flex-basis:32px}.doc-date{white-space:normal}.doc-bottom{align-items:flex-start;flex-direction:column}.doc-footer-links{gap:14px}.doc-footer-bottom{margin-top:25px}}
+</style>
+<main class="workspace relative z-10 min-w-0">
+<div class="documents-page">
+  <header class="doc-heading">
     <div>
-      <h1 class="font-headline text-3xl md:text-4xl font-semibold tracking-tight mb-2">Coffre-fort Documents</h1>
-      <p class="text-on-surface-variant text-sm flex items-center gap-2">
-        <span class="material-symbols-outlined text-primary text-sm">verified_user</span>
-        Chiffrement bancaire AES 256 bits sécurisé
-      </p>
+      <div class="eyebrow"><span class="material-symbols-outlined">shield_lock</span> Coffre-fort numérique</div>
+      <h1>Espace Documents</h1>
+      <p>Sécurisé et confidentiel. Retrouvez vos documents officiels, contrats et plannings de mariage dans un espace unique.</p>
+    </div>
+    <div class="doc-actions">
+      <button class="doc-btn" id="filter-toggle"><span class="material-symbols-outlined">filter_list</span> Filtrer</button>
+      <button class="doc-btn primary" id="add-doc"><span class="material-symbols-outlined">upload_file</span> Ajouter un document</button>
     </div>
   </header>
-
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-    <div class="lg:col-span-12 xl:col-span-4 h-64 glass-elevated rounded-2xl border-primary/30 border-dashed flex flex-col items-center justify-center gap-4 hover:border-primary transition-colors cursor-pointer group relative overflow-hidden">
-      <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-500 z-10">
-        <span class="material-symbols-outlined text-3xl">cloud_upload</span>
-      </div>
-      <div class="text-center z-10">
-        <h3 class="font-headline font-semibold text-lg">Déposer un document</h3>
-        <p class="text-on-surface-variant text-sm mt-1">Glissez-déposez ou cliquez pour parcourir</p>
-      </div>
-    </div>
-
-    <div class="lg:col-span-12 xl:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between hover:bg-surface-container/80 transition-colors cursor-pointer group">
-        <div class="flex justify-between items-start mb-4">
-          <div class="p-3 rounded-xl bg-primary/10 text-primary">
-            <span class="material-symbols-outlined">description</span>
-          </div>
-          <span class="text-xs font-medium px-2 py-1 rounded-md bg-surface-variant text-on-surface-variant">12 fichiers</span>
-        </div>
-        <div>
-          <h4 class="font-headline font-medium text-lg group-hover:text-primary transition-colors">Contrats & Devis</h4>
-          <p class="text-on-surface-variant text-sm mt-1">Engagements & conditions prestataires</p>
+  <div class="doc-layout">
+    <aside class="doc-side">
+      <div>
+        <h2 class="doc-label">Dossiers</h2>
+        <div class="doc-glass doc-folders" id="doc-folders">
+          <button class="doc-folder active" data-category="Tous"><span class="material-symbols-outlined">folder_open</span><span>Tous les documents</span><span class="count" data-count="Tous">4</span></button>
+          <button class="doc-folder" data-category="Contrats & Devis"><span class="material-symbols-outlined">folder</span><span>Contrats &amp; Devis</span><span class="count" data-count="Contrats & Devis">1</span></button>
+          <button class="doc-folder" data-category="Identité"><span class="material-symbols-outlined">folder</span><span>Identité &amp; Passeports</span><span class="count" data-count="Identité">1</span></button>
+          <button class="doc-folder" data-category="Réservations"><span class="material-symbols-outlined">folder</span><span>Réservations &amp; Billets</span><span class="count" data-count="Réservations">1</span></button>
+          <button class="doc-folder" data-category="Plannings"><span class="material-symbols-outlined">folder</span><span>Plannings</span><span class="count" data-count="Plannings">1</span></button>
         </div>
       </div>
-
-      <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between hover:bg-surface-container/80 transition-colors cursor-pointer group">
-        <div class="flex justify-between items-start mb-4">
-          <div class="p-3 rounded-xl bg-primary/10 text-primary">
-            <span class="material-symbols-outlined">receipt_long</span>
-          </div>
-          <span class="text-xs font-medium px-2 py-1 rounded-md bg-surface-variant text-on-surface-variant">8 fichiers</span>
+      <div class="doc-glass doc-storage">
+        <div class="doc-storage-head"><span class="material-symbols-outlined" style="color:var(--purple)">cloud</span> Stockage sécurisé</div>
+        <div class="doc-progress"><span></span></div>
+        <p class="doc-small">45% utilisé (4.5 GB / 10 GB)</p>
+      </div>
+    </aside>
+    <section class="doc-main">
+      <div class="doc-glass doc-banner">
+        <div class="doc-banner-left"><div class="doc-round"><span class="material-symbols-outlined">draw</span></div><div><h2>Signature requise</h2><p>Contrat de prestation « Mariage Madagascar » en attente de votre validation.</p></div></div>
+        <button class="doc-btn sign" id="sign-document">Consulter le document</button>
+      </div>
+      <div class="doc-glass" style="overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid rgba(125,211,252,.1)">
+          <strong style="font-size:14px">Mes documents</strong>
+          <input id="doc-search" aria-label="Rechercher un document" placeholder="Rechercher..." style="max-width:220px;width:45%;padding:9px 12px;border-radius:10px;background:#0a0e1a;color:var(--text);border:1px solid #293b51;font-size:12px">
         </div>
-        <div>
-          <h4 class="font-headline font-medium text-lg group-hover:text-primary transition-colors">Factures & Reçus</h4>
-          <p class="text-on-surface-variant text-sm mt-1">Historique des règlements & acomptes</p>
+        <div style="overflow-x:auto">
+          <table class="doc-table">
+            <thead><tr><th>Nom du document</th><th>Catégorie</th><th>Date</th><th style="text-align:right">Actions</th></tr></thead>
+            <tbody id="doc-tbody">
+              <tr data-category="Contrats & Devis" data-name="Contrat_Prestation_Mariage_V2.pdf"><td><div class="doc-file"><div class="doc-file-icon purple"><span class="material-symbols-outlined">contract</span></div><div><div class="doc-file-name">Contrat_Prestation_Mariage_V2.pdf</div><div class="doc-status">Signature requise</div></div></div></td><td><span class="doc-category">Contrats &amp; Devis</span></td><td class="doc-date">12 Nov 2025</td><td><div class="doc-row-actions"><button class="doc-icon-btn" data-action="preview" title="Aperçu" aria-label="Aperçu"><span class="material-symbols-outlined">visibility</span></button><button class="doc-icon-btn" data-action="download" title="Télécharger" aria-label="Télécharger"><span class="material-symbols-outlined">download</span></button></div></td></tr>
+              <tr data-category="Identité" data-name="Copie_Passeport_M_Dupont.jpg"><td><div class="doc-file"><div class="doc-file-icon"><span class="material-symbols-outlined">badge</span></div><div><div class="doc-file-name">Copie_Passeport_M_Dupont.jpg</div><div class="doc-small" style="margin-top:5px">2.4 MB</div></div></div></td><td><span class="doc-category">Identité</span></td><td class="doc-date">05 Nov 2025</td><td><div class="doc-row-actions"><button class="doc-icon-btn" data-action="preview" title="Aperçu" aria-label="Aperçu"><span class="material-symbols-outlined">visibility</span></button><button class="doc-icon-btn" data-action="download" title="Télécharger" aria-label="Télécharger"><span class="material-symbols-outlined">download</span></button></div></td></tr>
+              <tr data-category="Réservations" data-name="Billets_Avion_Paris_Tana.pdf"><td><div class="doc-file"><div class="doc-file-icon"><span class="material-symbols-outlined">flight</span></div><div><div class="doc-file-name">Billets_Avion_Paris_Tana.pdf</div><div class="doc-small" style="margin-top:5px">1.1 MB</div></div></div></td><td><span class="doc-category">Réservations</span></td><td class="doc-date">28 Oct 2025</td><td><div class="doc-row-actions"><button class="doc-icon-btn" data-action="preview" title="Aperçu" aria-label="Aperçu"><span class="material-symbols-outlined">visibility</span></button><button class="doc-icon-btn" data-action="download" title="Télécharger" aria-label="Télécharger"><span class="material-symbols-outlined">download</span></button></div></td></tr>
+              <tr data-category="Plannings" data-name="Planning_Detaille_Semaine_Mariage.pdf"><td><div class="doc-file"><div class="doc-file-icon"><span class="material-symbols-outlined">event</span></div><div><div class="doc-file-name">Planning_Detaille_Semaine_Mariage.pdf</div><div class="doc-small" style="margin-top:5px">4.8 MB</div></div></div></td><td><span class="doc-category">Plannings</span></td><td class="doc-date">15 Oct 2025</td><td><div class="doc-row-actions"><button class="doc-icon-btn" data-action="preview" title="Aperçu" aria-label="Aperçu"><span class="material-symbols-outlined">visibility</span></button><button class="doc-icon-btn" data-action="download" title="Télécharger" aria-label="Télécharger"><span class="material-symbols-outlined">download</span></button></div></td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
-    </div>
-
-    <div class="lg:col-span-12 glass-panel rounded-2xl overflow-hidden mt-4">
-      <div class="p-6 border-b border-primary/10 flex justify-between items-center bg-surface-container/30">
-        <h3 class="font-headline font-semibold text-lg">Fichiers récemment partagés</h3>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="text-on-surface-variant text-sm border-b border-primary/5 bg-surface-container/10">
-              <th class="py-4 px-6 font-medium">Nom du fichier</th>
-              <th class="py-4 px-6 font-medium">Catégorie</th>
-              <th class="py-4 px-6 font-medium">Date d'ajout</th>
-              <th class="py-4 px-6 font-medium">Taille</th>
-            </tr>
-          </thead>
-          <tbody class="text-sm">
-            <tr class="border-b border-primary/5 hover:bg-primary/5 transition-colors group">
-              <td class="py-4 px-6 flex items-center gap-3">
-                <span class="material-symbols-outlined text-primary">picture_as_pdf</span>
-                <span class="font-medium">Devis_decoration_fleurs_final.pdf</span>
-              </td>
-              <td class="py-4 px-6 text-on-surface-variant">Contrat</td>
-              <td class="py-4 px-6 text-on-surface-variant">Aujourd'hui</td>
-              <td class="py-4 px-6 text-on-surface-variant">2.4 MB</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+      <div class="doc-bottom"><span id="doc-result-count">Affichage de 1 à 4 sur 4 documents</span><div class="doc-pagination"><button class="doc-page" id="prev-page" disabled aria-label="Page précédente">‹</button><button class="doc-page active">1</button><button class="doc-page" id="next-page" disabled aria-label="Page suivante">›</button></div></div>
+    </section>
   </div>
-
-  <div class="footer-note">© 2026 Mariage Madagascar · Espace client privé · Vos préparatifs en un seul endroit</div>
+  <footer class="doc-footer"><div class="doc-footer-brand"><strong>MARIAGE MADAGASCAR</strong><p>L'accompagnement et la sérénité pour organiser votre mariage d'exception à Madagascar.</p></div><div class="doc-footer-links"><a href="/confidentialite.html">Confidentialité</a><a href="/conditions-generales.html">Conditions générales</a><a href="/contact.html">Contacter le concierge</a></div></footer>
+  <div class="doc-footer-bottom">© 2026 Mariage Madagascar · Espace client privé · Vos préparatifs en un seul endroit</div>
+</div>
 </main>
+<input type="file" id="doc-file-input" hidden>
+<div class="doc-modal" id="doc-modal" role="dialog" aria-modal="true" aria-labelledby="doc-modal-title">
+  <div class="doc-modal-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h2 id="doc-modal-title">Ajouter un document</h2><button class="doc-icon-btn" id="close-doc-modal" aria-label="Fermer"><span class="material-symbols-outlined">close</span></button></div>
+  <form id="doc-upload-form"><label class="doc-field">Fichier à ajouter<input type="file" id="doc-upload-file" required></label><label class="doc-field">Catégorie<select id="doc-upload-category"><option>Contrats & Devis</option><option>Identité</option><option>Réservations</option><option>Plannings</option><option>Autres</option></select></label><div style="display:flex;justify-content:flex-end;gap:10px"><button type="button" class="doc-btn" id="cancel-doc">Annuler</button><button class="doc-btn primary" type="submit">Ajouter à la liste</button></div><p class="doc-small" style="margin-top:14px">Démo locale : le fichier n'est pas encore envoyé vers un stockage sécurisé.</p></form></div>
+</div>
+<script>
+(() => {
+ const tbody=document.getElementById('doc-tbody');
+ const search=document.getElementById('doc-search');
+ const modal=document.getElementById('doc-modal');
+ let activeCategory='Tous';
+ function filterRows(){
+   const q=(search.value||'').toLocaleLowerCase('fr');
+   let visible=0,total=tbody.querySelectorAll('tr').length;
+   tbody.querySelectorAll('tr').forEach(row=>{
+     const okCategory=activeCategory==='Tous'||row.dataset.category===activeCategory;
+     const okSearch=(row.dataset.name||'').toLocaleLowerCase('fr').includes(q)||row.dataset.category.toLocaleLowerCase('fr').includes(q);
+     row.hidden=!(okCategory&&okSearch); if(!row.hidden) visible++;
+   });
+   document.getElementById('doc-result-count').textContent=visible?`Affichage de 1 à ${visible} sur ${visible} document${visible>1?'s':''}`:'Aucun document trouvé';
+ }
+ document.querySelectorAll('.doc-folder').forEach(btn=>btn.addEventListener('click',()=>{
+   activeCategory=btn.dataset.category;
+   document.querySelectorAll('.doc-folder').forEach(b=>b.classList.toggle('active',b===btn));
+   filterRows();
+ }));
+ search.addEventListener('input',filterRows);
+ document.getElementById('filter-toggle').addEventListener('click',()=>{
+   search.focus(); search.scrollIntoView({behavior:'smooth',block:'center'});
+ });
+ document.getElementById('add-doc').addEventListener('click',()=>modal.classList.add('open'));
+ document.getElementById('close-doc-modal').addEventListener('click',()=>modal.classList.remove('open'));
+ document.getElementById('cancel-doc').addEventListener('click',()=>modal.classList.remove('open'));
+ modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open')});
+ document.getElementById('doc-upload-form').addEventListener('submit',e=>{
+   e.preventDefault();
+   const file=document.getElementById('doc-upload-file').files[0];
+   if(!file)return;
+   const category=document.getElementById('doc-upload-category').value;
+   const tr=document.createElement('tr');tr.dataset.category=category;tr.dataset.name=file.name;
+   const size=file.size<1024*1024?(file.size/1024).toFixed(0)+' KB':(file.size/1024/1024).toFixed(1)+' MB';
+   tr.innerHTML=`<td><div class="doc-file"><div class="doc-file-icon"><span class="material-symbols-outlined">draft</span></div><div><div class="doc-file-name"></div><div class="doc-small" style="margin-top:5px"></div></div></div></td><td><span class="doc-category"></span></td><td class="doc-date"></td><td><div class="doc-row-actions"><button class="doc-icon-btn" data-action="preview" title="Aperçu" aria-label="Aperçu"><span class="material-symbols-outlined">visibility</span></button><button class="doc-icon-btn" data-action="download" title="Télécharger" aria-label="Télécharger"><span class="material-symbols-outlined">download</span></button></div></td>`;
+   tr.querySelector('.doc-file-name').textContent=file.name;tr.querySelector('.doc-small').textContent=size;tr.querySelector('.doc-category').textContent=category;tr.querySelector('.doc-date').textContent=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+   tr._file=file;tbody.prepend(tr);
+   document.querySelectorAll('.doc-folder .count').forEach(c=>{const cat=c.dataset.count;c.textContent=cat==='Tous'?tbody.querySelectorAll('tr').length:[...tbody.querySelectorAll('tr')].filter(r=>r.dataset.category===cat).length});
+   document.getElementById('doc-upload-form').reset();modal.classList.remove('open');filterRows();
+ });
+ tbody.addEventListener('click',e=>{
+   const btn=e.target.closest('button[data-action]');if(!btn)return;
+   const row=btn.closest('tr');const name=row.dataset.name||'document';
+   if(btn.dataset.action==='download'){
+     if(row._file){const a=document.createElement('a');a.href=URL.createObjectURL(row._file);a.download=row._file.name;a.click();URL.revokeObjectURL(a.href)}
+     else alert('Le fichier « '+name+' » est un exemple visuel. Ajoute le document réel pour pouvoir le télécharger.');
+   } else {
+     if(row._file){const url=URL.createObjectURL(row._file);window.open(url,'_blank','noopener');}
+     else alert('Aucun fichier réel n’est associé à « '+name+' » pour le moment.');
+   }
+ });
+ document.getElementById('sign-document').addEventListener('click',()=>alert('Le contrat est indiqué comme nécessitant une signature. Aucun fichier de contrat réel n’est encore relié à cette page.'));
+})();
+</script>
 </body>
 </html>
