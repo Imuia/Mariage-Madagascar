@@ -4,204 +4,148 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0a0e1a">
-<title>Pilotage & Finances | Mariage Madagascar — Espace client</title>
+<title>Planning & Finances | Mariage Madagascar — Espace client</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
 <style>
-:root{--bg:#0a0e1a;--surface:#0f1524;--panel:#111828;--panel2:#141c2e;--line:#223247;--text:#e0e8f0;--muted:#9aafc1;--blue:#7dd3fc;--purple:#c8a0f0;--green:#6ee7b7;--amber:#fcd38d}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 60% 0%,rgba(125,211,252,.06),transparent 45%),var(--bg);color:var(--text);font:15px Inter,system-ui,sans-serif;min-height:100vh}a{color:inherit;text-decoration:none}button,input{font:inherit}.material-symbols-outlined{font-size:22px;vertical-align:middle}
-
-.sidebar{position:fixed;inset:0 auto 0 0;width:264px;background:rgba(17,24,40,.92);backdrop-filter:blur(20px);border-right:1px solid var(--line);padding:28px 18px;display:flex;flex-direction:column;z-index:20}
-.brand{display:flex;align-items:center;gap:12px;padding:6px 8px 30px;border-bottom:1px solid var(--line)}
-.nav{display:grid;gap:7px;padding-top:22px}
-.nav a{display:flex;align-items:center;gap:12px;padding:12px 13px;border-radius:12px;color:#a9bbcb;font-size:14px;transition:.2s}
-.nav a:hover{background:#17263a;color:var(--blue)}
-.nav a.active{background:#1a2b40;color:var(--blue);border:1px solid #29465d;box-shadow:inset 3px 0 var(--blue)}
-.sidebar-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:18px}
-.sidebar-bottom a{display:flex;align-items:center;gap:10px;color:var(--muted);padding:10px 12px;font-size:13px}
-
-.workspace{margin-left:264px;min-height:100vh;padding:38px clamp(20px,4vw,58px) 46px;max-width:1800px}
-.mobile-top{display:none}
-.footer-note{margin-top:30px;text-align:center;color:#61778a;font-size:11px}
-
-.glass-panel {
-    background: rgba(15, 21, 36, 0.6);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(125, 211, 252, 0.1);
-}
-
-@media(max-width:760px){
-  .sidebar{display:none}
-  .mobile-top{display:flex;position:sticky;top:0;height:64px;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(10,14,26,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);z-index:30}
-  .mobile-brand{font-weight:800;color:var(--blue);letter-spacing:.03em}
-  .mobile-menu{display:flex;gap:10px;align-items:center}
-  .mobile-menu a{font-size:11px;color:var(--muted)}
-  .workspace{margin:0;padding:25px 16px 92px}
-  .sidebar-mobile-nav{position:fixed;bottom:0;left:0;right:0;z-index:35;display:flex;justify-content:space-around;padding:9px 3px calc(9px + env(safe-area-inset-bottom));background:rgba(15,21,36,.96);backdrop-filter:blur(20px);border-top:1px solid var(--line)}
-  .sidebar-mobile-nav a{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:9px;min-width:0}
-  .sidebar-mobile-nav a .material-symbols-outlined{font-size:20px}
-  .sidebar-mobile-nav a.active{color:var(--blue)}
-}
-@media(min-width:761px){.sidebar-mobile-nav{display:none}}
+:root{--bg:#0a0e1a;--surface:#0f1524;--panel:#111828;--panel2:#141c2e;--line:#2a3a48;--text:#e0e8f0;--muted:#a0b4c4;--blue:#7dd3fc;--teal:#213d4a}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 60% 0%,rgba(125,211,252,.06),transparent 45%),var(--bg);color:var(--text);font:15px Inter,system-ui,sans-serif;min-height:100vh}a{color:inherit;text-decoration:none}button,select{font:inherit}.material-symbols-outlined{font-size:22px;vertical-align:middle}
+.workspace{margin-left:320px;min-height:100vh;padding:32px clamp(18px,4vw,56px) 44px;max-width:1800px}
+.glass-panel{background:rgba(17,24,40,.78);backdrop-filter:blur(16px);border:1px solid #2a3a48;border-radius:24px;box-shadow:0 18px 45px rgba(0,0,0,.12)}
+.filter-pill{background:#213d4a;color:#fff;border:1px solid transparent;border-radius:999px;padding:9px 16px;font-size:14px;white-space:nowrap}
+.filter-pill:focus,.filter-pill:hover{border-color:#7dd3fc;outline:none}
+.day{height:42px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:12px;color:#d5e0ea;cursor:pointer;border:1px solid transparent;background:transparent}
+.day:hover{background:#202c42}
+.day.muted{color:#52697c;cursor:default}
+.day.event{border-color:#3a5e77;background:#18263a}
+.day.selected{background:#7dd3fc;color:#001f2e;font-weight:800;box-shadow:0 0 16px #7dd3fc35}
+.day .dot{width:6px;height:6px;border-radius:50%;background:#7dd3fc;margin-top:2px}
+.event-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid #26384b;border-radius:15px;background:#172234;font-size:12px}
+.event-row[hidden]{display:none}
+@media(max-width:760px){.workspace{margin:0!important;padding:24px 15px 90px!important}.finance-grid{grid-template-columns:1fr!important}.calendar-days{gap:2px}.day{height:38px;font-size:12px}.event-row{align-items:flex-start;flex-direction:column}.filter-bar{overflow-x:auto;padding-bottom:5px}}
 </style>
-
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'https://qrkinjuhtyfptldlvdyg.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
-  const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-
-  async function checkSession() {
-    if (!supabaseClient) return;
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) {
-      window.location.href = '/espace-client/login.html';
-    }
-  }
-  checkSession();
+const SUPABASE_URL='https://qrkinjuhtyfptldlvdyg.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
+const sb=window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
+async function checkSession(){if(!sb)return;const {data:{session}}=await sb.auth.getSession();if(!session)location.href='/espace-client/login.html'}
+checkSession();
 </script>
-<style id="mm-sidebar-stitch">
-
-/* Mariage Madagascar — sidebar Stitch officielle */
-.sidebar{
-  width:320px!important; padding:28px 14px 24px!important;
-  background:#101827!important; border-right:1px solid #223247!important;
-  backdrop-filter:none!important; -webkit-backdrop-filter:none!important;
-}
-.sidebar .mm-sidebar-brand{width:100%;margin:0 0 32px;padding:0 0 0;border:0;display:flex;justify-content:center}
-.sidebar .mm-brand-link{width:100%;justify-content:center!important}
-.sidebar .mm-brand-logo-wrap{padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
-.sidebar .mm-brand-logo-wrap img{
-  display:block;width:115px!important;height:116px!important;max-width:115px!important;
-  object-fit:contain!important;border:0!important;border-radius:0!important;
-}
-.sidebar .nav{display:grid;gap:8px;padding-top:0!important;width:100%}
-.sidebar .nav a{
-  min-height:60px;padding:14px 14px!important;gap:16px!important;
-  border-radius:16px!important;font-size:18px!important;line-height:1.25;
-  color:#a9bbcb!important;border:1px solid transparent!important;
-  box-shadow:none!important;white-space:normal;
-}
-.sidebar .nav a .material-symbols-outlined{font-size:25px!important;flex:0 0 27px}
-.sidebar .nav a:hover{background:#17263a!important;color:#7dd3fc!important}
-.sidebar .nav a.active{
-  background:#1a2b40!important;color:#7dd3fc!important;
-  border:1px solid #29465d!important;box-shadow:inset 4px 0 #7dd3fc!important;
-}
-.sidebar .sidebar-bottom{margin-top:auto!important;border-top:1px solid #26374b!important;padding-top:22px!important}
-.sidebar .sidebar-bottom a{min-height:52px;padding:12px 14px!important;gap:14px!important;font-size:16px!important;color:#a9bbcb!important}
-.sidebar .sidebar-bottom .material-symbols-outlined{font-size:25px!important}
-.workspace{margin-left:320px!important}
-@media(max-width:760px){
-  .sidebar{display:none!important}
-  .workspace{margin:0!important;padding:25px 16px 92px!important}
-}
-
-</style>
 <link rel="stylesheet" href="/espace-client/sidebar.css">
 <script defer src="/espace-client/sidebar.js"></script>
 </head>
-<body class="bg-background text-on-surface antialiased overflow-x-hidden min-h-screen">
-
+<body>
 <div id="client-sidebar-root"></div>
-</div>
-
 <main class="workspace">
-<header class="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-10">
-<div>
-<p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">PILOTAGE FINANCIER</p>
-<h1 class="font-headline text-3xl md:text-4xl font-semibold tracking-tight mb-2">Budget & Règlements</h1>
-<p class="text-on-surface-variant text-sm flex items-center gap-2">
-<span class="material-symbols-outlined text-primary text-sm">verified_user</span>
-                    Consultez vos échéances, règlements et téléchargez vos justificatifs
-                </p>
-</div>
-</header>
+  <nav class="flex flex-wrap gap-2 text-sm mb-8 text-[#8eb9cc]" aria-label="Fil d’Ariane">
+    <a href="/espace-client/index.html">Accueil</a><span>/</span><a href="/espace-client/index.html">Espace client</a><span>/</span><span class="text-white">Planning &amp; Finances</span>
+  </nav>
+  <header class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-9">
+    <div>
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-white">Planning &amp; Finances</h1>
+      <p class="text-[#8eb9cc] mt-3">Gérez les dates clés et effectuez vos règlements sécurisés</p>
+    </div>
+    <button id="exportSchedule" class="rounded-full px-5 py-2.5 bg-[#213d4a] hover:bg-[#294b5a] text-white text-sm font-medium">Exporter l’échéancier</button>
+  </header>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-<div class="glass-panel rounded-2xl p-6 flex flex-col justify-between">
-<div class="flex justify-between items-center mb-2">
-<span class="text-sm font-medium text-on-surface-variant">Budget Global Validé</span>
-<span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-xl text-xl">account_balance</span>
-</div>
-<div class="text-3xl font-bold tracking-tight text-on-surface my-2">28 500 €</div>
-<span class="text-xs text-on-surface-variant">Contrats & Prestations incluses</span>
-</div>
+  <section aria-labelledby="calendar-title">
+    <h2 id="calendar-title" class="text-2xl font-bold text-white mb-5">Calendrier interactif</h2>
+    <div class="filter-bar flex flex-wrap gap-3 mb-7">
+      <select id="filterType" class="filter-pill"><option value="all">Tous les événements</option><option value="tasting">Rendez-vous dégustation</option><option value="travel">Vols &amp; Hébergement</option><option value="wedding">Date du mariage</option></select>
+    </div>
+    <div class="finance-grid grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <section class="glass-panel lg:col-span-7 p-5 md:p-6" aria-label="Calendrier">
+        <div class="flex items-center justify-between pb-4 border-b border-[#2a3a48] gap-3">
+          <div><h3 id="monthTitle" class="text-xl font-bold text-white">Septembre 2024</h3><p id="monthSubtitle" class="text-[#88b4cc] text-sm mt-1">J-18 avant la cérémonie officielle</p></div>
+          <div class="flex gap-2">
+            <button id="prevMonth" class="h-9 w-9 rounded-full bg-[#1a2438] border border-[#2a3a48] hover:text-[#7dd3fc]" aria-label="Mois précédent">‹</button>
+            <button id="nextMonth" class="h-9 w-9 rounded-full bg-[#1a2438] border border-[#2a3a48] hover:text-[#7dd3fc]" aria-label="Mois suivant">›</button>
+          </div>
+        </div>
+        <div class="mt-4">
+          <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-[#a0b4c4] uppercase tracking-wider mb-2"><span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span></div>
+          <div id="calendarDays" class="calendar-days grid grid-cols-7 gap-1.5 text-sm" aria-label="Jours du mois"></div>
+        </div>
+        <div id="eventList" class="mt-5 pt-4 border-t border-[#2a3a48] flex flex-col gap-2.5">
+          <div class="event-row" data-type="tasting"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#7dd3fc]"></span><span class="font-medium text-white">6 Sept. — Rendez-vous dégustation traiteur</span></div><span class="text-[#88b4cc]">14:30 • Confirmé</span></div>
+          <div class="event-row" data-type="travel"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#7dd3fc]"></span><span class="font-medium text-white">12 Sept. — Check-in domaine &amp; navettes</span></div><span class="text-[#88b4cc]">10:00 • Validé</span></div>
+          <div class="event-row" data-type="wedding"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#7dd3fc]"></span><span class="font-semibold text-[#7dd3fc]">21 Sept. — Célébration de mariage</span></div><span class="text-[#7dd3fc]">16:00 • Château Grand-Chêne</span></div>
+        </div>
+        <p id="noEvents" class="hidden mt-4 text-sm text-[#a0b4c4]">Aucun événement ne correspond à ce filtre pour ce mois.</p>
+      </section>
 
-<div class="glass-panel rounded-2xl p-6 flex flex-col justify-between">
-<div class="flex justify-between items-center mb-2">
-<span class="text-sm font-medium text-on-surface-variant">Montant Réglé</span>
-<span class="material-symbols-outlined text-green-400 bg-green-400/10 p-2 rounded-xl text-xl">check_circle</span>
-</div>
-<div class="text-3xl font-bold tracking-tight text-primary my-2">14 250 €</div>
-<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden my-1">
-<div class="h-full bg-primary rounded-full" style="width: 50%;"></div>
-</div>
-<span class="text-xs text-primary font-medium">50% réglé au total</span>
-</div>
-
-<div class="glass-panel rounded-2xl p-6 flex flex-col justify-between">
-<div class="flex justify-between items-center mb-2">
-<span class="text-sm font-medium text-on-surface-variant">Reste à Payer</span>
-<span class="material-symbols-outlined text-tertiary bg-tertiary/10 p-2 rounded-xl text-xl">pending_actions</span>
-</div>
-<div class="text-3xl font-bold tracking-tight text-on-surface my-2">14 250 €</div>
-<span class="text-xs text-on-surface-variant">Réparti sur 3 échéances</span>
-</div>
-
-<div class="glass-panel rounded-2xl p-6 flex flex-col justify-between">
-<div class="flex justify-between items-center mb-2">
-<span class="text-sm font-medium text-on-surface-variant">Prochaine Échéance</span>
-<span class="material-symbols-outlined text-amber-400 bg-amber-400/10 p-2 rounded-xl text-xl">event_upcoming</span>
-</div>
-<div class="text-3xl font-bold tracking-tight text-amber-400 my-2">4 250 €</div>
-<span class="text-xs text-amber-400 font-medium">15 Juillet 2026 · Acompte Traiteur</span>
-</div>
-</div>
-
-<div class="glass-panel rounded-2xl overflow-hidden">
-<div class="p-6 border-b border-primary/10 flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-surface-container/30">
-<div>
-<h3 class="font-headline font-semibold text-xl">Échéancier des Paiements</h3>
-<p class="text-on-surface-variant text-sm mt-0.5">Suivi détaillé de vos échéances et factures</p>
-</div>
-</div>
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="text-on-surface-variant text-xs uppercase tracking-wider border-b border-primary/10 bg-surface-container/20">
-<th class="py-4 px-6 font-semibold">Prestation / Intitulé</th>
-<th class="py-4 px-6 font-semibold">Prestataire</th>
-<th class="py-4 px-6 font-semibold">Montant</th>
-<th class="py-4 px-6 font-semibold">Échéance</th>
-<th class="py-4 px-6 font-semibold">Statut</th>
-</tr>
-</thead>
-<tbody class="text-sm divide-y divide-primary/5">
-<tr class="hover:bg-primary/5 transition-colors group">
-<td class="py-4 px-6">
-<div class="font-semibold text-on-surface">Acompte Réservation Domaine</div>
-<div class="text-xs text-on-surface-variant mt-0.5">Lagon & Villa Privatisation</div>
-</td>
-<td class="py-4 px-6 text-on-surface-variant">Domaine Edena</td>
-<td class="py-4 px-6 font-bold text-on-surface">5 000 €</td>
-<td class="py-4 px-6 text-on-surface-variant">10 Jan. 2026</td>
-<td class="py-4 px-6">
-<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-500/10 text-green-400 border border-green-500/20">
-<span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> Réglé
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-
-  <div class="footer-note">© 2026 Mariage Madagascar · Espace client privé · Vos préparatifs en un seul endroit</div>
+      <aside class="glass-panel lg:col-span-5 p-6 flex flex-col justify-between min-h-[520px]">
+        <div>
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2 text-[#7dd3fc]"><span class="material-symbols-outlined">account_balance_wallet</span><span class="text-xs uppercase tracking-wider font-semibold">Échéance financière</span></div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#7dd3fc]/10 text-[#7dd3fc] border border-[#7dd3fc]/30"><span class="w-1.5 h-1.5 rounded-full bg-[#7dd3fc]"></span>En attente</span>
+          </div>
+          <div class="mt-6"><p class="text-[#a0b4c4] text-sm">Solde restant dû</p><div class="flex flex-wrap items-baseline gap-2 mt-1"><strong class="text-3xl md:text-4xl text-white">4 250,00 €</strong><span class="text-xs text-[#88b4cc]">/ 12 500,00 €</span></div></div>
+          <div class="mt-5"><div class="flex justify-between text-sm text-[#a0b4c4] mb-2"><span>Progression des règlements</span><strong class="text-[#7dd3fc]">66% acquitté</strong></div><div class="h-2 w-full rounded-full bg-[#202c42] overflow-hidden"><div class="h-full rounded-full bg-gradient-to-r from-[#88b4cc] to-[#7dd3fc]" style="width:66%"></div></div></div>
+          <div class="mt-6 p-4 rounded-2xl bg-[#1a2438] border border-[#2a3a48] flex items-start gap-3"><span class="material-symbols-outlined text-[#7dd3fc] bg-[#213d4a] p-2 rounded-xl">event_upcoming</span><div><p class="text-white text-sm font-semibold">Prochaine échéance : 15 septembre 2024</p><p class="text-[#a0b4c4] text-xs mt-1 leading-relaxed">Acompte final (Traiteur &amp; scénographie florale) de 2 125,00 €.</p></div></div>
+        </div>
+        <div class="mt-8 pt-5 border-t border-[#2a3a48] flex flex-col gap-4">
+          <a href="/espace-client/commandes.html" class="w-full flex items-center justify-center gap-2 py-4 px-4 rounded-full bg-[#7dd3fc] text-[#001f2e] font-bold text-sm tracking-wide hover:brightness-110 transition"><span class="material-symbols-outlined">lock</span><span>Voir mes commandes et règlements</span></a>
+          <div class="flex items-center justify-between gap-3 text-xs text-[#a0b4c4]"><span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[#7dd3fc]">verified_user</span> Paiement sécurisé</span><span class="font-semibold text-white">Stripe · PCI-DSS</span></div>
+          <p class="text-xs text-[#71869a]">Le paiement réel doit être effectué depuis le tunnel de paiement sécurisé du site.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+  <footer class="text-center text-xs text-[#61778a] mt-8">© 2026 Mariage Madagascar · Espace client privé · Vos préparatifs en un seul endroit</footer>
 </main>
+<script>
+(() => {
+  const yearStart=2024, monthStart=8;
+  let view=new Date(yearStart,monthStart,1);
+  const events=[
+    {date:'2024-09-06',type:'tasting',label:'6 Sept. — Rendez-vous dégustation traiteur',time:'14:30 • Confirmé'},
+    {date:'2024-09-12',type:'travel',label:'12 Sept. — Check-in domaine & navettes',time:'10:00 • Validé'},
+    {date:'2024-09-21',type:'wedding',label:'21 Sept. — Célébration de mariage',time:'16:00 • Château Grand-Chêne'}
+  ];
+  const daysEl=document.getElementById('calendarDays'), titleEl=document.getElementById('monthTitle');
+  const subtitle=document.getElementById('monthSubtitle'), filter=document.getElementById('filterType');
+  const eventList=document.getElementById('eventList'), noEvents=document.getElementById('noEvents');
+  const monthNames=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  function dateKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+  function render(){
+    const y=view.getFullYear(),m=view.getMonth(); titleEl.textContent=monthNames[m]+' '+y;
+    subtitle.textContent=(y===2024&&m===8)?'J-18 avant la cérémonie officielle':'Calendrier des événements';
+    daysEl.innerHTML='';
+    const first=new Date(y,m,1), offset=(first.getDay()+6)%7, count=new Date(y,m+1,0).getDate(), prevCount=new Date(y,m,0).getDate();
+    for(let i=0;i<42;i++){
+      const dayNum=i-offset+1; let d, cls='day';
+      if(dayNum<1){d=new Date(y,m-1,prevCount+dayNum);cls+=' muted'} else if(dayNum>count){d=new Date(y,m+1,dayNum-count);cls+=' muted'} else {d=new Date(y,m,dayNum)}
+      const ev=events.find(e=>e.date===dateKey(d));
+      if(ev && d.getMonth()===m) cls+=' event';
+      if(y===2024&&m===8&&d.getDate()===21&&d.getMonth()===m) cls+=' selected';
+      const btn=document.createElement('button');btn.type='button';btn.className=cls;btn.innerHTML=`<span>${d.getDate()}</span>${ev&&d.getMonth()===m?'<span class="dot"></span>':''}`;btn.setAttribute('aria-label',dateKey(d));
+      if(d.getMonth()!==m)btn.disabled=true;
+      btn.addEventListener('click',()=>{const ev=events.find(e=>e.date===dateKey(d));if(ev){document.querySelectorAll('.event-row').forEach(r=>r.classList.toggle('ring-1',r.dataset.type===ev.type));}else{document.querySelectorAll('.event-row').forEach(r=>r.classList.remove('ring-1'));}});
+      daysEl.appendChild(btn);
+    }
+    applyFilter();
+  }
+  function applyFilter(){
+    const selected=filter.value; let visible=0;
+    document.querySelectorAll('.event-row').forEach(row=>{const match=(selected==='all'||row.dataset.type===selected);row.hidden=!match; if(match)visible++});
+    noEvents.classList.toggle('hidden',visible>0);
+  }
+  document.getElementById('prevMonth').addEventListener('click',()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);render()});
+  document.getElementById('nextMonth').addEventListener('click',()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);render()});
+  filter.addEventListener('change',applyFilter);
+  document.getElementById('exportSchedule').addEventListener('click',()=>{
+    const rows=[['Date','Catégorie','Événement','Horaire / statut'],...events.map(e=>[e.date,e.type,e.label,e.time])];
+    const csv=rows.map(row=>row.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(';')).join('\r\n');
+    const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download='echeancier-mariage.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  });
+  render();
+})();
+</script>
 </body>
 </html>
