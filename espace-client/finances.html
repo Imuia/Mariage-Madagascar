@@ -64,50 +64,51 @@
   }
   checkSession();
 </script>
+<style id="mm-sidebar-stitch">
+
+/* Mariage Madagascar — sidebar Stitch officielle */
+.sidebar{
+  width:320px!important; padding:28px 14px 24px!important;
+  background:#101827!important; border-right:1px solid #223247!important;
+  backdrop-filter:none!important; -webkit-backdrop-filter:none!important;
+}
+.sidebar .mm-sidebar-brand{width:100%;margin:0 0 32px;padding:0 0 0;border:0;display:flex;justify-content:center}
+.sidebar .mm-brand-link{width:100%;justify-content:center!important}
+.sidebar .mm-brand-logo-wrap{padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+.sidebar .mm-brand-logo-wrap img{
+  display:block;width:115px!important;height:116px!important;max-width:115px!important;
+  object-fit:contain!important;border:0!important;border-radius:0!important;
+}
+.sidebar .nav{display:grid;gap:8px;padding-top:0!important;width:100%}
+.sidebar .nav a{
+  min-height:60px;padding:14px 14px!important;gap:16px!important;
+  border-radius:16px!important;font-size:18px!important;line-height:1.25;
+  color:#a9bbcb!important;border:1px solid transparent!important;
+  box-shadow:none!important;white-space:normal;
+}
+.sidebar .nav a .material-symbols-outlined{font-size:25px!important;flex:0 0 27px}
+.sidebar .nav a:hover{background:#17263a!important;color:#7dd3fc!important}
+.sidebar .nav a.active{
+  background:#1a2b40!important;color:#7dd3fc!important;
+  border:1px solid #29465d!important;box-shadow:inset 4px 0 #7dd3fc!important;
+}
+.sidebar .sidebar-bottom{margin-top:auto!important;border-top:1px solid #26374b!important;padding-top:22px!important}
+.sidebar .sidebar-bottom a{min-height:52px;padding:12px 14px!important;gap:14px!important;font-size:16px!important;color:#a9bbcb!important}
+.sidebar .sidebar-bottom .material-symbols-outlined{font-size:25px!important}
+.workspace{margin-left:320px!important}
+@media(max-width:760px){
+  .sidebar{display:none!important}
+  .workspace{margin:0!important;padding:25px 16px 92px!important}
+}
+
+</style>
+<link rel="stylesheet" href="/espace-client/sidebar.css">
+<script defer src="/espace-client/sidebar.js"></script>
 </head>
 <body class="bg-background text-on-surface antialiased overflow-x-hidden min-h-screen">
 
-<aside class="sidebar">
-  <div class="mm-sidebar-brand">
-    <a href="/espace-client/index.html" class="mm-brand-link flex items-center gap-3 no-underline group justify-center">
-      <div style="text-align: center;" class="mm-brand-logo-wrap p-1 rounded-xl bg-surface-container/60 group-hover:border-primary/50 transition-all flex items-center justify-center">
-        <img style="max-width: 140px; height: 93px;" src="/assets/logo/logo-mariage-madagascar.2.png" alt="Logo officiel Admin Mariage Madagascar" class="h-9 w-auto object-contain max-w-[140px]">
-      </div>
-    </a>
-  </div>
-  <nav class="nav" aria-label="Navigation principale">
-    <a href="/espace-client/index.html"><span class="material-symbols-outlined">dashboard</span><span>Tableau de bord</span></a>
-    <a href="/espace-client/commandes.html"><span class="material-symbols-outlined">shopping_bag</span><span>Commandes</span></a>
-    <a href="/espace-client/messages.html"><span class="material-symbols-outlined">chat</span><span>Messages</span></a>
-    <a href="/espace-client/planning.html"><span class="material-symbols-outlined">calendar_month</span><span>Planning</span></a>
-    <a href="/espace-client/invites.html"><span class="material-symbols-outlined">groups</span><span>Invités</span></a>
-    <a href="/espace-client/documents.html"><span class="material-symbols-outlined">folder_shared</span><span>Documents</span></a>
-    <a href="/espace-client/offres.html"><span class="material-symbols-outlined">auto_awesome</span><span>Prestations</span></a>
-    <a class="active" href="/espace-client/finances.html"><span class="material-symbols-outlined">account_balance_wallet</span><span>Finances</span></a>
-  </nav>
-  <div class="sidebar-bottom">
-    <a href="/espace-client/messages.html"><span class="material-symbols-outlined">support_agent</span> Besoin d'aide ?</a>
-    <a href="/"><span class="material-symbols-outlined">logout</span> Retour au site</a>
-  </div>
-</aside>
-
-<div class="mobile-top">
-  <a class="mobile-brand" href="/espace-client/index.html">MARIAGE MADAGASCAR</a>
-  <div class="mobile-menu">
-    <a href="/espace-client/messages.html"><span class="material-symbols-outlined">chat</span></a>
-    <a href="/espace-client/documents.html"><span class="material-symbols-outlined">folder_shared</span></a>
-  </div>
+<div id="client-sidebar-root"></div>
 </div>
-
-<nav class="sidebar-mobile-nav" aria-label="Navigation mobile">
-  <a href="/espace-client/index.html"><span class="material-symbols-outlined">dashboard</span><span>Tableau de bord</span></a>
-  <a href="/espace-client/commandes.html"><span class="material-symbols-outlined">shopping_bag</span><span>Commandes</span></a>
-  <a href="/espace-client/messages.html"><span class="material-symbols-outlined">chat</span><span>Messages</span></a>
-  <a href="/espace-client/planning.html"><span class="material-symbols-outlined">calendar_month</span><span>Planning</span></a>
-  <a href="/espace-client/invites.html"><span class="material-symbols-outlined">groups</span><span>Invités</span></a>
-  <a href="/espace-client/documents.html"><span class="material-symbols-outlined">folder_shared</span><span>Documents</span></a>
-  <a class="active" href="/espace-client/finances.html"><span class="material-symbols-outlined">account_balance_wallet</span><span>Finances</span></a>
-</nav>
 
 <main class="workspace">
 <header class="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-10">

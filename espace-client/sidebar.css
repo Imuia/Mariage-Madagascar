@@ -1,0 +1,34 @@
+/* Source de style unique de la sidebar Mariage Madagascar */
+.sidebar{position:fixed!important;inset:0 auto 0 0!important;width:320px!important;background:#101827!important;border-right:1px solid #223247!important;padding:28px 13px 18px!important;display:flex!important;flex-direction:column!important;z-index:50!important;backdrop-filter:none!important}
+.mm-sidebar-logo{height:142px;display:flex;align-items:flex-start;justify-content:center;padding:9px 0 25px;margin:0 0 23px;border-bottom:0;text-decoration:none!important}
+.mm-sidebar-logo img{display:block;width:115px;height:116px;object-fit:contain;background:#f8f8f5}
+.sidebar .nav{display:grid!important;gap:7px!important;padding:0!important}
+.sidebar .nav a{display:flex!important;align-items:center!important;gap:16px!important;min-height:60px;padding:12px 14px!important;border-radius:15px!important;color:#a9bbcb!important;font-size:17px!important;font-weight:500!important;text-decoration:none!important;border:1px solid transparent!important;box-shadow:none!important;transition:background .18s,color .18s,border-color .18s!important}
+.sidebar .nav a .material-symbols-outlined{font-size:25px!important;color:#a9bbcb}
+.sidebar .nav a:hover{background:#17263a!important;color:#7dd3fc!important}
+.sidebar .nav a:hover .material-symbols-outlined{color:#7dd3fc}
+.sidebar .nav a.active{background:#1a2b40!important;color:#7dd3fc!important;border-color:#29465d!important;box-shadow:inset 3px 0 #7dd3fc!important}
+.sidebar .nav a.active .material-symbols-outlined{color:#7dd3fc!important}
+.sidebar .sidebar-bottom{margin-top:auto!important;border-top:1px solid #223247!important;padding-top:22px!important}
+.sidebar .sidebar-bottom a{display:flex!important;align-items:center!important;gap:13px!important;min-height:48px;padding:10px 12px!important;color:#a9bbcb!important;font-size:16px!important;text-decoration:none!important}
+.sidebar .sidebar-bottom a:hover{color:#7dd3fc!important}
+.sidebar .sidebar-bottom .material-symbols-outlined{font-size:24px!important}
+.workspace{margin-left:320px!important;max-width:none!important;width:auto!important;min-width:0}
+.mobile-top{display:none!important}
+.sidebar-mobile-nav{display:none!important}
+.mobile-nav-toggle{display:none}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:760px){
+ .sidebar{display:none!important}
+ .workspace{margin-left:0!important;width:100%!important;padding-top:25px!important;padding-bottom:100px!important}
+ .mobile-top{display:flex!important;position:sticky!important;top:0;height:68px;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(10,14,26,.97);border-bottom:1px solid #223247;z-index:60}
+ .mobile-brand img{display:block;width:46px;height:46px;object-fit:contain;background:#f8f8f5}
+ .mobile-nav-toggle{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border:1px solid #29465d;border-radius:12px;background:#1a2b40;color:#7dd3fc;cursor:pointer}
+ .sidebar-mobile-nav{display:flex!important;position:fixed;bottom:0;left:0;right:0;z-index:70;gap:4px;overflow-x:auto;justify-content:flex-start;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:rgba(15,21,36,.98);border-top:1px solid #223247;scrollbar-width:thin}
+ .sidebar-mobile-nav a{display:flex;flex:0 0 68px;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:48px;color:#9aafc1;font-size:9px;text-decoration:none;white-space:nowrap}
+ .sidebar-mobile-nav a .material-symbols-outlined{font-size:21px}
+ .sidebar-mobile-nav a.active{color:#7dd3fc}
+ .sidebar-mobile-nav a.active .material-symbols-outlined{color:#7dd3fc}
+ .sidebar-mobile-nav.is-expanded{top:68px;bottom:auto;max-height:calc(100vh - 68px);display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));overflow-y:auto;padding:16px;background:#101827}
+ .sidebar-mobile-nav.is-expanded a{flex-direction:row;justify-content:flex-start;gap:10px;min-height:54px;padding:10px 12px;border:1px solid #223247;border-radius:12px;font-size:12px}
+}
