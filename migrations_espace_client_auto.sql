@@ -1,21 +1,39 @@
 -- ============================================================================
--- AUTOMATISATION DU PORTAIL ESPACE CLIENT - MARIAGE MADAGASCAR (VERSION VALIDÉE)
+-- AUTOMATISATION DU PORTAIL ESPACE CLIENT - MARIAGE MADAGASCAR
 -- Fichier : migrations_espace_client_auto.sql
 -- ============================================================================
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 
--- 0. Table documents (créée si absente pour l'espace coffre-fort)
-CREATE TABLE IF NOT EXISTS public.documents (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    client_profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-    title VARCHAR(255) NOT NULL,
-    file_url TEXT NOT NULL,
-    document_type VARCHAR(100) DEFAULT 'other',
-    is_validated BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
+-- 0. Table documents (créée si absente, avec références conditionnelles aux profils)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'documents') THEN
+        IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'profiles') THEN
+            CREATE TABLE public.documents (
+                id UUID PRIMARY KEY DEFAULT public.uuid_generate_v4(),
+                client_profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+                user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+                title VARCHAR(255) NOT NULL,
+                file_url TEXT NOT NULL,
+                document_type VARCHAR(100) DEFAULT 'other',
+                is_validated BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+        ELSE
+            CREATE TABLE public.documents (
+                id UUID PRIMARY KEY DEFAULT public.uuid_generate_v4(),
+                client_profile_id UUID,
+                user_id UUID,
+                title VARCHAR(255) NOT NULL,
+                file_url TEXT NOT NULL,
+                document_type VARCHAR(100) DEFAULT 'other',
+                is_validated BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+        END IF;
+    END IF;
+END $$;
 
 ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
 
@@ -25,22 +43,37 @@ CREATE POLICY select_own_documents ON public.documents
         auth.uid() IS NOT NULL AND (client_profile_id = auth.uid() OR user_id = auth.uid())
     );
 
--- 1. Table client_projects (créée uniquement si absente, avec owner_id)
+-- 1. Table client_projects
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'client_projects') THEN
-        CREATE TABLE public.client_projects (
-            id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-            owner_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-            title VARCHAR(255) NOT NULL DEFAULT 'Mon mariage',
-            event_date DATE,
-            location VARCHAR(255) DEFAULT 'Nosy Be, Madagascar',
-            status VARCHAR(50) DEFAULT 'in_preparation',
-            budget_limit DECIMAL(12,2),
-            notes TEXT,
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-        );
+        IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'profiles') THEN
+            CREATE TABLE public.client_projects (
+                id UUID PRIMARY KEY DEFAULT public.uuid_generate_v4(),
+                owner_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+                title VARCHAR(255) NOT NULL DEFAULT 'Mon mariage',
+                event_date DATE,
+                location VARCHAR(255) DEFAULT 'Nosy Be, Madagascar',
+                status VARCHAR(50) DEFAULT 'in_preparation',
+                budget_limit DECIMAL(12,2),
+                notes TEXT,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+        ELSE
+            CREATE TABLE public.client_projects (
+                id UUID PRIMARY KEY DEFAULT public.uuid_generate_v4(),
+                owner_id UUID,
+                title VARCHAR(255) NOT NULL DEFAULT 'Mon mariage',
+                event_date DATE,
+                location VARCHAR(255) DEFAULT 'Nosy Be, Madagascar',
+                status VARCHAR(50) DEFAULT 'in_preparation',
+                budget_limit DECIMAL(12,2),
+                notes TEXT,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+        END IF;
     END IF;
 END $$;
 
@@ -55,7 +88,7 @@ BEGIN
     END IF;
 END $$;
 
--- Politique RLS sécurisée et dynamique (tolérante à l'absence de profiles.role)
+-- Politique RLS conditionnelle
 DO $$
 DECLARE
     v_col TEXT;
@@ -97,7 +130,7 @@ BEGIN
     END IF;
 END $$;
 
--- 2. Déclencheur d'inscription sur auth.users (SQL pur sans IF dans EXECUTE)
+-- 2. Déclencheur d'inscription sur auth.users (avec qualification public.uuid_generate_v4)
 CREATE OR REPLACE FUNCTION public.handle_new_client_signup()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -127,7 +160,6 @@ BEGIN
             ''
         );
 
-        -- Profiles
         IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'profiles') THEN
             SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='first_name') INTO v_has_fn;
             SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='last_name') INTO v_has_ln;
@@ -148,14 +180,12 @@ BEGIN
             END IF;
         END IF;
 
-        -- Clients
         IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'clients') THEN
             INSERT INTO public.clients (profile_id, created_at)
             VALUES (NEW.id, NOW())
             ON CONFLICT (profile_id) DO NOTHING;
         END IF;
 
-        -- Client projects (sans IF dans EXECUTE)
         SELECT column_name INTO v_owner_col
         FROM information_schema.columns
         WHERE table_schema = 'public' AND table_name = 'client_projects'
@@ -173,11 +203,10 @@ BEGIN
                     INSERT INTO public.client_projects (id, %I, title, status, created_at, updated_at)
                     VALUES ($1, $2, ''Mon mariage'', ''in_preparation'', NOW(), NOW())
                 ', v_owner_col)
-                USING uuid_generate_v4(), NEW.id;
+                USING public.uuid_generate_v4(), NEW.id;
             END IF;
         END IF;
 
-        -- Orders
         SELECT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'orders') INTO v_has_orders;
         IF v_has_orders THEN
             SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='orders' AND column_name='user_id') INTO v_has_order_user_id;
@@ -205,7 +234,7 @@ CREATE TRIGGER trg_on_auth_user_created
     FOR EACH ROW
     EXECUTE FUNCTION public.handle_new_client_signup();
 
--- 3. Fonction RPC d'initialisation Espace Client
+-- 3. Fonction RPC d'initialisation Espace Client (avec qualification public.uuid_generate_v4)
 CREATE OR REPLACE FUNCTION public.ensure_client_profile_and_project()
 RETURNS JSONB AS $$
 DECLARE
@@ -271,7 +300,7 @@ BEGIN
         IF v_project_id IS NULL THEN
             EXECUTE format('INSERT INTO public.client_projects (id, %I, title, status, created_at, updated_at) VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING id, title', v_owner_col)
             INTO v_project_id, v_project_title
-            USING uuid_generate_v4(), v_user_id, 'Mon mariage', 'in_preparation';
+            USING public.uuid_generate_v4(), v_user_id, 'Mon mariage', 'in_preparation';
         END IF;
     END IF;
 
