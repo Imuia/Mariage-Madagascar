@@ -215,7 +215,7 @@
 <span class="text-sm font-medium text-on-surface-variant">Total Commandes</span>
 <span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-xl text-xl">shopping_bag</span>
 </div>
-<div class="text-3xl font-bold tracking-tight text-on-surface my-2">4 Commandes</div>
+<div id="stat-total-orders" class="text-3xl font-bold tracking-tight text-on-surface my-2">0</div>
 <span class="text-xs text-on-surface-variant">Pour votre mariage</span>
 </div>
 
@@ -224,8 +224,8 @@
 <span class="text-sm font-medium text-on-surface-variant">Commandes Confirmées</span>
 <span class="material-symbols-outlined text-green-400 bg-green-400/10 p-2 rounded-xl text-xl">check_circle</span>
 </div>
-<div class="text-3xl font-bold tracking-tight text-green-400 my-2">3 Valides</div>
-<span class="text-xs text-green-400 font-medium">Contrats signés</span>
+<div id="stat-confirmed-orders" class="text-3xl font-bold tracking-tight text-green-400 my-2">0</div>
+<span class="text-xs text-green-400 font-medium">Payées / Confirmées</span>
 </div>
 
 <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between">
@@ -233,8 +233,8 @@
 <span class="text-sm font-medium text-on-surface-variant">En cours de traitement</span>
 <span class="material-symbols-outlined text-amber-400 bg-amber-400/10 p-2 rounded-xl text-xl">hourglass_top</span>
 </div>
-<div class="text-3xl font-bold tracking-tight text-amber-400 my-2">1 En attente</div>
-<span class="text-xs text-amber-400 font-medium">Validation du devis</span>
+<div id="stat-pending-orders" class="text-3xl font-bold tracking-tight text-amber-400 my-2">0</div>
+<span class="text-xs text-amber-400 font-medium">En attente</span>
 </div>
 
 <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between">
@@ -242,8 +242,8 @@
 <span class="text-sm font-medium text-on-surface-variant">Valeur Totale</span>
 <span class="material-symbols-outlined text-tertiary bg-tertiary/10 p-2 rounded-xl text-xl">payments</span>
 </div>
-<div class="text-3xl font-bold tracking-tight text-tertiary my-2">24 750 €</div>
-<span class="text-xs text-on-surface-variant">Options & formules choisies</span>
+<div id="stat-total-value" class="text-3xl font-bold tracking-tight text-tertiary my-2">0 €</div>
+<span class="text-xs text-on-surface-variant">Prestations choisies</span>
 </div>
 </div>
 
@@ -254,7 +254,7 @@
 <h3 class="font-headline font-semibold text-xl">Historique des Commandes</h3>
 <p class="text-on-surface-variant text-sm mt-0.5">Détails des packs, options et prestations réservés</p>
 </div>
-<span class="text-xs font-medium px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 w-fit">4 Références</span>
+<span id="orders-count-badge" class="text-xs font-medium px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 w-fit">0 Références</span>
 </div>
 
 <div class="overflow-x-auto">
@@ -263,106 +263,14 @@
 <tr class="text-on-surface-variant text-xs uppercase tracking-wider border-b border-primary/10 bg-surface-container/20">
 <th class="py-4 px-6 font-semibold">N° Commande & Date</th>
 <th class="py-4 px-6 font-semibold">Prestation / Option</th>
-<th class="py-4 px-6 font-semibold">Prestataire</th>
+<th class="py-4 px-6 font-semibold">Client</th>
 <th class="py-4 px-6 font-semibold">Montant TTC</th>
 <th class="py-4 px-6 font-semibold">Statut</th>
 <th class="py-4 px-6 font-semibold text-right">Actions</th>
 </tr>
 </thead>
 <tbody class="text-sm divide-y divide-primary/5" id="order-rows">
-
-<tr class="hover:bg-primary/5 transition-colors group">
-<td class="py-4 px-6">
-<div class="font-semibold text-primary font-mono">#CMD-2026-089</div>
-<div class="text-xs text-on-surface-variant mt-0.5">15 Janvier 2026</div>
-</td>
-<td class="py-4 px-6">
-<div class="font-semibold text-on-surface">Privatisation Domaine & Villa</div>
-<div class="text-xs text-on-surface-variant mt-0.5">Lieu de réception · 3 jours</div>
-</td>
-<td class="py-4 px-6 text-on-surface-variant">Domaine Edena</td>
-<td class="py-4 px-6 font-bold text-on-surface">10 000 €</td>
-<td class="py-4 px-6">
-<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-500/10 text-green-400 border border-green-500/20">
-<span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> Confirmée
-</span>
-</td>
-<td class="py-4 px-6 text-right">
-<button class="px-3 py-1.5 rounded-xl bg-surface-variant text-primary border border-primary/20 hover:bg-primary/20 text-xs font-medium transition-colors inline-flex items-center gap-1.5" data-toast="Ouverture du bon de commande #CMD-2026-089...">
-<span class="material-symbols-outlined text-[16px]">visibility</span> Détails
-</button>
-</td>
-</tr>
-
-<tr class="hover:bg-primary/5 transition-colors group">
-<td class="py-4 px-6">
-<div class="font-semibold text-primary font-mono">#CMD-2026-064</div>
-<div class="text-xs text-on-surface-variant mt-0.5">02 Février 2026</div>
-</td>
-<td class="py-4 px-6">
-<div class="font-semibold text-on-surface">Organisation Complète Wedding Planner</div>
-<div class="text-xs text-on-surface-variant mt-0.5">Coordination Jour J & Préparatifs</div>
-</td>
-<td class="py-4 px-6 text-on-surface-variant">Mariage Madagascar</td>
-<td class="py-4 px-6 font-bold text-on-surface">5 000 €</td>
-<td class="py-4 px-6">
-<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-500/10 text-green-400 border border-green-500/20">
-<span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> Confirmée
-</span>
-</td>
-<td class="py-4 px-6 text-right">
-<button class="px-3 py-1.5 rounded-xl bg-surface-variant text-primary border border-primary/20 hover:bg-primary/20 text-xs font-medium transition-colors inline-flex items-center gap-1.5" data-toast="Ouverture du contrat #CMD-2026-064...">
-<span class="material-symbols-outlined text-[16px]">visibility</span> Détails
-</button>
-</td>
-</tr>
-
-<tr class="hover:bg-primary/5 transition-colors group">
-<td class="py-4 px-6">
-<div class="font-semibold text-primary font-mono">#CMD-2026-042</div>
-<div class="text-xs text-on-surface-variant mt-0.5">28 Mars 2026</div>
-</td>
-<td class="py-4 px-6">
-<div class="font-semibold text-on-surface">Pack Photo & Vidéo Signature</div>
-<div class="text-xs text-on-surface-variant mt-0.5">Reportage complet + Drone</div>
-</td>
-<td class="py-4 px-6 text-on-surface-variant">Studio Baobab</td>
-<td class="py-4 px-6 font-bold text-on-surface">4 250 €</td>
-<td class="py-4 px-6">
-<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-500/10 text-green-400 border border-green-500/20">
-<span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> Confirmée
-</span>
-</td>
-<td class="py-4 px-6 text-right">
-<button class="px-3 py-1.5 rounded-xl bg-surface-variant text-primary border border-primary/20 hover:bg-primary/20 text-xs font-medium transition-colors inline-flex items-center gap-1.5" data-toast="Ouverture du bon de commande #CMD-2026-042...">
-<span class="material-symbols-outlined text-[16px]">visibility</span> Détails
-</button>
-</td>
-</tr>
-
-<tr class="hover:bg-primary/5 transition-colors group">
-<td class="py-4 px-6">
-<div class="font-semibold text-primary font-mono">#CMD-2026-018</div>
-<div class="text-xs text-on-surface-variant mt-0.5">18 Octobre 2026</div>
-</td>
-<td class="py-4 px-6">
-<div class="font-semibold text-on-surface">Option Ambiance Lumineuse & Son</div>
-<div class="text-xs text-on-surface-variant mt-0.5">Projecteurs LED & DJ Set</div>
-</td>
-<td class="py-4 px-6 text-on-surface-variant">Lumières du Lagon</td>
-<td class="py-4 px-6 font-bold text-amber-400">5 500 €</td>
-<td class="py-4 px-6">
-<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> En étude
-</span>
-</td>
-<td class="py-4 px-6 text-right">
-<button class="px-3 py-1.5 rounded-xl bg-surface-variant text-primary border border-primary/20 hover:bg-primary/20 text-xs font-medium transition-colors inline-flex items-center gap-1.5" data-toast="Validation de l'option en cours avec votre Wedding Planner...">
-<span class="material-symbols-outlined text-[16px]">pending</span> Valider
-</button>
-</td>
-</tr>
-
+<!-- Dynamically populated from Supabase orders table -->
 </tbody>
 </table>
 </div>
@@ -379,16 +287,123 @@ function showToast(message) {
   clearTimeout(window.__toastTimer);
   window.__toastTimer = setTimeout(() => el.remove(), 4200);
 }
-document.querySelectorAll('[data-toast]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); showToast(el.dataset.toast); }));
 
 const searchInput = document.getElementById('order-search');
-const rows = document.getElementById('order-rows');
+const rowsContainer = document.getElementById('order-rows');
+
 searchInput?.addEventListener('input', () => {
   const q = searchInput.value.toLowerCase();
-  rows?.querySelectorAll('tr').forEach(row => {
+  rowsContainer?.querySelectorAll('tr').forEach(row => {
     row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
   });
 });
+
+async function loadRealClientOrders() {
+  const sb = window.clientSupabase || window.mmSupabase;
+  if (!sb) return;
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
+    const user = session.user;
+
+    const { data: orders, error } = await sb
+      .from('orders')
+      .select('id, order_number, created_at, guest_first_name, guest_last_name, total_amount, currency, status, payment_status, order_items(product_name, variation_name, quantity)')
+      .or(`user_id.eq.${user.id},guest_email.eq.${user.email}`)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Erreur chargement commandes:', error);
+      return;
+    }
+
+    const totalOrdersEl = document.getElementById('stat-total-orders');
+    const confirmedOrdersEl = document.getElementById('stat-confirmed-orders');
+    const pendingOrdersEl = document.getElementById('stat-pending-orders');
+    const totalValueEl = document.getElementById('stat-total-value');
+    const badgeEl = document.getElementById('orders-count-badge');
+
+    if (!orders || orders.length === 0) {
+      if (totalOrdersEl) totalOrdersEl.textContent = '0';
+      if (confirmedOrdersEl) confirmedOrdersEl.textContent = '0';
+      if (pendingOrdersEl) pendingOrdersEl.textContent = '0';
+      if (totalValueEl) totalValueEl.textContent = '0 €';
+      if (badgeEl) badgeEl.textContent = '0 Référence';
+
+      rowsContainer.innerHTML = `
+        <tr>
+          <td colspan="6" class="py-12 text-center text-on-surface-variant">
+            <span class="material-symbols-outlined text-4xl block mb-2 text-primary/40">shopping_bag</span>
+            <p class="text-base font-semibold text-on-surface">Aucune commande enregistrée pour le moment.</p>
+            <p class="text-xs text-on-surface-variant mt-1">Vos réservations et choix d'options apparaîtront ici dès leur confirmation.</p>
+            <a href="/espace-client/offres.html" class="inline-flex items-center gap-1.5 mt-4 text-xs text-primary hover:underline font-semibold">
+              Découvrir les prestations & options →
+            </a>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    let confirmedCount = 0;
+    let pendingCount = 0;
+    let totalSum = 0;
+
+    rowsContainer.innerHTML = orders.map(ord => {
+      const isPaid = ord.payment_status === 'paid' || ord.status === 'confirmed';
+      if (isPaid) confirmedCount++; else pendingCount++;
+      totalSum += Number(ord.total_amount || 0);
+
+      const itemsStr = (ord.order_items && ord.order_items.length)
+        ? ord.order_items.map(i => `${i.product_name}${i.variation_name ? ' ('+i.variation_name+')' : ''}`).join(', ')
+        : 'Prestation sur-mesure';
+
+      const dateStr = ord.created_at
+        ? new Date(ord.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })
+        : 'Date non précisée';
+
+      const clientName = `${ord.guest_first_name || ''} ${ord.guest_last_name || ''}`.trim() || user.email;
+
+      const badgeHtml = isPaid
+        ? `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-500/10 text-green-400 border border-green-500/20"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> Confirmée / Payée</span>`
+        : `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> En attente</span>`;
+
+      return `
+        <tr class="hover:bg-primary/5 transition-colors group">
+          <td class="py-4 px-6">
+            <div class="font-semibold text-primary font-mono">${ord.order_number}</div>
+            <div class="text-xs text-on-surface-variant mt-0.5">${dateStr}</div>
+          </td>
+          <td class="py-4 px-6">
+            <div class="font-semibold text-on-surface truncate max-w-xs">${itemsStr}</div>
+            <div class="text-xs text-on-surface-variant mt-0.5">Mariage Madagascar</div>
+          </td>
+          <td class="py-4 px-6 text-on-surface-variant text-xs">${clientName}</td>
+          <td class="py-4 px-6 font-bold text-on-surface">${Number(ord.total_amount).toLocaleString('fr-FR')} ${ord.currency || '€'}</td>
+          <td class="py-4 px-6">${badgeHtml}</td>
+          <td class="py-4 px-6 text-right">
+            <button class="px-3 py-1.5 rounded-xl bg-surface-variant text-primary border border-primary/20 hover:bg-primary/20 text-xs font-medium transition-colors inline-flex items-center gap-1.5" onclick="showToast('Réf: ${ord.order_number} — Montant: ${ord.total_amount} €')">
+              <span class="material-symbols-outlined text-[16px]">visibility</span> Détails
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    if (totalOrdersEl) totalOrdersEl.textContent = `${orders.length} Commande${orders.length > 1 ? 's' : ''}`;
+    if (confirmedOrdersEl) confirmedOrdersEl.textContent = `${confirmedCount} Valide${confirmedCount > 1 ? 's' : ''}`;
+    if (pendingOrdersEl) pendingOrdersEl.textContent = `${pendingCount} En attente`;
+    if (totalValueEl) totalValueEl.textContent = `${totalSum.toLocaleString('fr-FR')} €`;
+    if (badgeEl) badgeEl.textContent = `${orders.length} Référence${orders.length > 1 ? 's' : ''}`;
+
+  } catch (err) {
+    console.error('Erreur affichage commandes client:', err);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadRealClientOrders);
+setTimeout(loadRealClientOrders, 1000);
 </script>
 </body>
 </html>

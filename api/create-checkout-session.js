@@ -393,9 +393,33 @@ module.exports = async function handler(req, res) {
 
     const session = JSON.parse(stripeText);
 
-    // 4. CRÉATION DE LA COMMANDE EN STATUT 'pending' DANS SUPABASE
+    // 4. VÉRIFICATION SÉCURISÉE DU JETON SUPABASE AUTH CÔTÉ SERVEUR (SI CLIENT CONNECTÉ)
+    let authenticatedUserId = null;
+    const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const userToken = authHeader.split(' ')[1];
+      try {
+        const authRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${userToken}`
+          }
+        });
+        if (authRes.ok) {
+          const userData = await authRes.json();
+          if (userData && userData.id) {
+            authenticatedUserId = userData.id;
+          }
+        }
+      } catch (authErr) {
+        console.warn('Vérification du jeton client échouée:', authErr);
+      }
+    }
+
+    // 5. CRÉATION DE LA COMMANDE EN STATUT 'pending' DANS SUPABASE AVEC USER_ID VÉRIFIÉ
     const orderRecord = {
       order_number: orderNumber,
+      user_id: authenticatedUserId,
       guest_first_name: customer.first_name,
       guest_last_name: customer.last_name,
       guest_email: customer.email,

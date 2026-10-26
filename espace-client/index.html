@@ -228,46 +228,46 @@
 <div class="lg:col-span-8 space-y-4">
 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-medium">
 <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                Organisation en bonne voie
+                Votre espace client personnalisé
               </div>
-<h3 class="text-2xl lg:text-3xl font-bold text-on-surface tracking-tight">
-                Votre mariage à Nosy Be prend vie
+<h3 id="hero-project-title" class="text-2xl lg:text-3xl font-bold text-on-surface tracking-tight">
+                Bienvenue dans la préparation de votre mariage
               </h3>
-<p class="text-sm text-on-surface-variant max-w-2xl leading-relaxed">
-                Les étapes administratives locales sont validées. La phase de personnalisation (menu gastronomique malgache et scénographie de plage) est maintenant ouverte.
+<p id="hero-project-desc" class="text-sm text-on-surface-variant max-w-2xl leading-relaxed">
+                Votre projet est ouvert. Suivez vos préparatifs, validez vos prestations et restez en contact direct avec votre équipe dédiée à Madagascar.
               </p>
 <!-- Progress Bar -->
 <div class="pt-2 space-y-2">
 <div class="flex justify-between items-center text-xs font-semibold">
-<span class="text-on-surface">Avancement Global du Projet</span>
-<span class="text-primary font-mono text-sm">68%</span>
+<span class="text-on-surface">Avancement du Projet</span>
+<span id="hero-progress-text" class="text-primary font-mono text-sm">25%</span>
 </div>
 <div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden p-0.5 border border-outline-variant/50">
-<div class="h-full bg-gradient-to-r from-secondary via-primary to-primary-fixed rounded-full transition-all duration-1000 shadow-sm" style="width: 68%"></div>
+<div id="hero-progress-bar" class="h-full bg-gradient-to-r from-secondary via-primary to-primary-fixed rounded-full transition-all duration-1000 shadow-sm" style="width: 25%"></div>
 </div>
 <div class="flex justify-between text-[11px] text-on-surface-variant pt-1 font-medium">
-<span>Inception &amp; Thème</span>
-<span class="text-primary">Logistique &amp; Prestataires (En cours)</span>
-<span>Jour J</span>
+<span>Lancement</span>
+<span class="text-primary">Préparatifs (En cours)</span>
+<span>Célébration</span>
 </div>
 </div>
 </div>
 <!-- Right Quick Stat Box -->
 <div class="lg:col-span-4 grid grid-cols-2 gap-3 bg-surface-container/60 p-4 rounded-xl border border-outline-variant/50">
 <div class="p-3 bg-surface-container-high/60 rounded-lg">
-<span class="text-[11px] text-on-surface-variant uppercase tracking-wider block">Jours Restants</span>
-<span class="text-2xl font-bold text-primary font-mono">142</span>
-<span class="text-[10px] text-on-surface-variant block mt-1">Date: 24/10/2025</span>
+<span class="text-[11px] text-on-surface-variant uppercase tracking-wider block">Commandes</span>
+<span id="dash-orders-count" class="text-2xl font-bold text-primary font-mono">0</span>
+<span class="text-[10px] text-on-surface-variant block mt-1">Réservations actives</span>
 </div>
 <div class="p-3 bg-surface-container-high/60 rounded-lg">
-<span class="text-[11px] text-on-surface-variant uppercase tracking-wider block">Prestataires</span>
-<span class="text-2xl font-bold text-on-surface font-mono">9/12</span>
-<span class="text-[10px] text-primary block mt-1">75% Confirmés</span>
+<span class="text-[11px] text-on-surface-variant uppercase tracking-wider block">Invités</span>
+<span id="dash-guests-count" class="text-2xl font-bold text-on-surface font-mono">0</span>
+<span class="text-[10px] text-primary block mt-1">Confirmations RSVP</span>
 </div>
 <div class="p-3 bg-surface-container-high/60 rounded-lg">
-<span class="text-[11px] text-on-surface-variant uppercase tracking-wider block">Tâches Finies</span>
-<span class="text-2xl font-bold text-on-surface font-mono">28/41</span>
-<span class="text-[10px] text-primary block mt-1">+3 cette semaine</span>
+<span class="text-[11px] text-on-surface-variant uppercase tracking-wider block">Documents</span>
+<span id="dash-docs-count" class="text-2xl font-bold text-on-surface font-mono">0</span>
+<span class="text-[10px] text-primary block mt-1">Fichiers & Contrats</span>
 </div>
 <div class="p-3 bg-surface-container-high/60 rounded-lg">
 <span class="text-[11px] text-on-surface-variant uppercase tracking-wider block">Météo Prévue</span>
@@ -651,20 +651,59 @@ function showToast(message) {
     if(nav){nav.classList.toggle('is-expanded');return}
     toast('Utilisez le menu de navigation en bas de l’écran pour ouvrir les rubriques.');
   });
-  // Affiche le nom de compte si Supabase le fournit, sans remplacer les données de mariage par des valeurs inventées.
-  if(window.supabase && window.supabase.createClient){
-    const url='https://qrkinjuhtyfptldlvdyg.supabase.co';
-    const key='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
-    const client=window.supabase.createClient(url,key);
-    client.auth.getUser().then(({data,error})=>{
-      if(error||!data?.user)return;
-      const meta=data.user.user_metadata||{};
-      const name=meta.couple_name||meta.full_name||meta.name;
-      if(name){const title=document.querySelector('header h2');if(title)title.textContent=name.toLowerCase().includes('espace')?name:'Espace Mariés : '+name;}
-      const initials=(meta.initials||'').trim();
-      if(initials){const avatar=document.querySelector('header .rounded-full.bg-secondary-container');if(avatar)avatar.textContent=initials.slice(0,3).toUpperCase();}
-    }).catch(()=>{});
+  async function loadDashboardRealData() {
+    const sb = window.clientSupabase || window.mmSupabase;
+    if (!sb) return;
+
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) return;
+      const user = session.user;
+
+      // 1. Profil et titre d'en-tête
+      const { data: profile } = await sb.from('profiles').select('first_name, last_name').eq('id', user.id).single();
+      const meta = user.user_metadata || {};
+      const fullName = (profile && profile.first_name)
+        ? `${profile.first_name} ${profile.last_name || ''}`.trim()
+        : (meta.full_name || meta.name || user.email);
+
+      const headerTitle = document.querySelector('header h2');
+      if (headerTitle) headerTitle.textContent = `Espace Mariés : ${fullName}`;
+
+      const avatarEl = document.querySelector('header .rounded-full.bg-secondary-container');
+      if (avatarEl) {
+        const initials = fullName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        avatarEl.textContent = initials || 'EM';
+      }
+
+      // 2. Projet mariage
+      const { data: projects } = await sb.from('client_projects').select('title, wedding_date').eq('user_id', user.id).limit(1);
+      const project = projects && projects.length ? projects[0] : null;
+      const heroTitle = document.getElementById('hero-project-title');
+      if (heroTitle && project) {
+        heroTitle.textContent = `Votre projet : ${project.title}`;
+      }
+
+      // 3. Compteurs réels (orders, guests, docs)
+      const { data: orders } = await sb.from('orders').select('id').or(`user_id.eq.${user.id},guest_email.eq.${user.email}`);
+      const { data: guests } = await sb.from('client_guests').select('id').eq('user_id', user.id);
+      const { data: docs } = await sb.from('documents').select('id').or(`client_profile_id.eq.${user.id},user_id.eq.${user.id}`);
+
+      const ordersCountEl = document.getElementById('dash-orders-count');
+      const guestsCountEl = document.getElementById('dash-guests-count');
+      const docsCountEl = document.getElementById('dash-docs-count');
+
+      if (ordersCountEl) ordersCountEl.textContent = orders ? String(orders.length) : '0';
+      if (guestsCountEl) guestsCountEl.textContent = guests ? String(guests.length) : '0';
+      if (docsCountEl) docsCountEl.textContent = docs ? String(docs.length) : '0';
+
+    } catch (err) {
+      console.error('Erreur chargement tableau de bord:', err);
+    }
   }
+
+  document.addEventListener('DOMContentLoaded', loadDashboardRealData);
+  setTimeout(loadDashboardRealData, 1000);
 })();
 </script>
 
