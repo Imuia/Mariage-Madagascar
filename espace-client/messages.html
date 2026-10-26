@@ -126,54 +126,113 @@
 </span>
 </header>
 
-<div class="glass-panel rounded-2xl overflow-hidden flex-1 flex min-h-[600px] w-full">
-<div class="flex-1 flex overflow-hidden w-full">
-<div class="w-72 shrink-0 border-r border-primary/10 flex flex-col bg-surface-container-lowest/30 backdrop-blur-sm z-10 hidden lg:flex">
-<div class="p-4 border-b border-primary/5 flex justify-between items-center">
-<h3 class="font-headline font-semibold text-on-surface text-sm">Conversations</h3>
-</div>
-<div class="flex-1 overflow-y-auto">
-<div class="p-3.5 border-l-2 border-primary bg-primary/5 cursor-pointer">
-<div class="flex items-start gap-3">
-<img alt="Elena Rostova" class="w-9 h-9 rounded-full object-cover border border-primary/30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNnpH40kBV639SpfeGWo-J1DD3Cej3xQXoipQ2smGfzpcp9I6ZRTB3ZrQowEorOAVYpQ4SXpfmRBZKKnejXluAlwyOFOGIbHKAEcdcZ-Sm0bG9_Yqz1tZreF_i5Gi7moHNMII6REE3AwDL6FopA3J35M_hfv46ae_tGK6irU5D0liA1CexXgaR64N1WwgJRsAP5VfDu4na_BP8mBxUZMLW2WJkjlKU3zIYH9M9o9asPZjQlnTY6ifC3A"/>
-<div class="flex-1 min-w-0">
-<h4 class="text-xs font-medium text-primary truncate">Elena Rostova</h4>
-<p class="text-xs text-on-surface-variant truncate">Les concepts de design sont prêts.</p>
-</div>
-</div>
-</div>
-</div>
-</div>
 
-<div class="flex-1 flex flex-col relative z-20 min-w-0">
-<div class="p-3.5 border-b border-primary/10 glass-panel flex justify-between items-center">
-<div class="flex items-center gap-3">
-<img alt="Elena" class="w-9 h-9 rounded-full object-cover border border-primary/30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnDvKkDkiRy2xpSxbfMHf9ZxG5Ylkx67wdDBpY3kFjIFo1h8uy8PRiVZbUL7WGk-Cw7dxhvJ5KMa5_LG3OgZZ6Qn51cXvTLqGLzSu8dpkywP5YyBtWSN2uSvLPZK434yMFh4JRg6GysPMtUL1HzjZj0XbNxgzLYOfop1bZPT-cgMArAG6AIFnzPEYPdI60B2XtOBhLvKI6B1YXLjoKPID4nJeHer_lGyKwZEfpHQOssDOmdO6IXUOHIg"/>
-<div>
-<h2 class="text-sm font-semibold text-primary">Elena Rostova</h2>
-<p class="text-xs text-on-surface-variant">Lead Designer</p>
+<div class="messenger glass-panel rounded-2xl overflow-hidden flex-1 flex min-h-[650px] w-full">
+  <aside class="conversation-list shrink-0 border-r border-primary/10 flex flex-col">
+    <div class="p-4 border-b border-primary/10 flex items-center justify-between gap-3">
+      <h3 class="font-semibold">Conversations</h3>
+      <span class="material-symbols-outlined text-on-surface-variant">filter_list</span>
+    </div>
+    <div class="p-3 border-b border-primary/5">
+      <input id="conversation-search" class="glass-input w-full rounded-lg px-3 py-2 text-sm" placeholder="Rechercher une conversation..." aria-label="Rechercher une conversation">
+    </div>
+    <div id="conversation-items" class="flex-1 overflow-y-auto">
+      <button class="conversation-item active" data-name="Elena Rostova" data-role="Lead Designer" data-preview="Les maquettes pour la réception sont prêtes." data-avatar="design" type="button">
+        <span class="avatar avatar-photo">ER<span class="online-dot"></span></span>
+        <span class="conversation-copy"><span class="conversation-top"><strong>Elena Rostova</strong><small>10:42</small></span><span class="conversation-preview">Les maquettes pour la réception sont prêtes.</span><span class="tag">Design</span></span>
+      </button>
+      <button class="conversation-item" data-name="Équipe Voyage" data-role="Planification voyage" data-preview="Nouveaux itinéraires pour les Maldives ajoutés." data-avatar="flight" type="button">
+        <span class="avatar avatar-icon"><span class="material-symbols-outlined">flight_takeoff</span><i></i></span>
+        <span class="conversation-copy"><span class="conversation-top"><strong>Équipe Voyage</strong><small>Hier</small></span><span class="conversation-preview">Nouveaux itinéraires pour les Maldives ajoutés.</span><span class="tag">Planification</span></span><span class="unread">2</span>
+      </button>
+      <button class="conversation-item" data-name="Marc Dubois" data-role="Wedding Planner" data-preview="Le traiteur a confirmé le menu dégustation." data-avatar="person" type="button">
+        <span class="avatar avatar-icon"><span class="material-symbols-outlined">person</span></span>
+        <span class="conversation-copy"><span class="conversation-top"><strong>Marc Dubois</strong><small>Lun</small></span><span class="conversation-preview">Le traiteur a confirmé le menu dégustation.</span><span class="tag tag-purple">Logistique</span></span>
+      </button>
+    </div>
+    <button id="new-message" class="new-message"><span class="material-symbols-outlined">edit</span> Nouveau message</button>
+  </aside>
+  <section class="chat-panel flex flex-col min-w-0">
+    <div class="chat-head p-4 border-b border-primary/10 flex justify-between items-center gap-3">
+      <div class="flex items-center gap-3 min-w-0"><span id="chat-avatar" class="avatar avatar-photo">ER</span><div class="min-w-0"><h2 id="chat-name" class="font-semibold text-primary truncate">Elena Rostova</h2><p id="chat-role" class="text-xs text-on-surface-variant">● En ligne · Lead Designer</p></div></div>
+      <button id="toggle-details" class="icon-button" title="Afficher les informations du contact" aria-label="Afficher les informations du contact"><span class="material-symbols-outlined">info</span></button>
+    </div>
+    <div id="chat-messages" class="chat-messages flex-1 overflow-y-auto p-5 flex flex-col gap-5" aria-live="polite">
+      <div class="text-center"><span class="date-pill">Aujourd'hui, 09:30</span></div>
+      <div class="message-row incoming"><span class="mini-avatar">ER</span><div class="message-content"><small>Elena · 09:30</small><div class="bubble glass-panel">Bonjour ! J'espère que vous passez une excellente matinée. J'ai terminé la première itération des concepts de design pour l'espace de réception.</div></div></div>
+      <div class="message-row incoming"><span class="mini-avatar">ER</span><div class="message-content"><div class="bubble glass-panel">J'ai opté pour une approche « Frozen Light » qui s'aligne parfaitement avec l'esthétique Glacier, en insistant sur des tons bleus profonds et de la verrerie translucide.<div class="attachment"><span class="material-symbols-outlined">picture_as_pdf</span><span><strong>Reception_Concept_V1.pdf</strong><small>12,4 MB · Document PDF (exemple)</small></span></div></div><small>09:32</small></div></div>
+      <div class="message-row outgoing"><div class="message-content"><small class="text-right">10:15 · Vous</small><div class="bubble sent">C'est magnifique, Elena. La façon dont vous avez capturé la lumière à travers les éléments en verre est exactement ce que nous cherchions. Pouvons-nous prévoir un point rapide cet après-midi pour discuter des arrangements floraux ?</div><small class="text-right">Lu ✓✓</small></div></div>
+    </div>
+    <form id="message-form" class="composer p-3 border-t border-primary/10 flex items-center gap-2">
+      <button type="button" id="attach-button" class="icon-button" title="Joindre un fichier" aria-label="Joindre un fichier"><span class="material-symbols-outlined">attach_file</span></button>
+      <input id="attachment-input" type="file" hidden>
+      <textarea id="message-input" rows="1" class="glass-input flex-1 rounded-xl px-3 py-3 resize-none" placeholder="Rédiger un message..." aria-label="Rédiger un message"></textarea>
+      <button type="submit" class="send-button" aria-label="Envoyer le message"><span class="material-symbols-outlined">send</span></button>
+    </form>
+    <p id="chat-notice" class="px-4 pb-3 text-xs text-on-surface-variant">Maquette interactive : les messages ne sont pas encore enregistrés dans Supabase.</p>
+  </section>
+  <aside id="contact-details" class="contact-details border-l border-primary/10 flex flex-col">
+    <div class="p-6 text-center border-b border-primary/10"><div class="profile-avatar">ER</div><h3 id="detail-name" class="font-semibold text-lg mt-3">Elena Rostova</h3><p id="detail-role" class="text-sm text-primary">Lead Designer</p><div class="flex justify-center gap-2 mt-4"><span class="detail-chip material-symbols-outlined">mail</span><span class="detail-chip material-symbols-outlined">calendar_month</span></div></div>
+    <div class="p-5"><h4 class="section-label">Projet actuel</h4><div class="glass-panel p-4 rounded-xl project-card"><strong>Gala d'Hiver 2024</strong><p class="text-xs text-on-surface-variant mt-2">Statut : En cours de conception</p><div class="progress"><span></span></div></div></div>
+    <div class="p-5 border-t border-primary/10"><h4 class="section-label">Fichiers partagés</h4><div class="shared-file"><span class="material-symbols-outlined">picture_as_pdf</span><span><strong>Reception_Concept_V1.pdf</strong><small>12,4 MB · Aujourd'hui</small></span></div><div class="shared-file"><span class="material-symbols-outlined">palette</span><span><strong>Color_Palette_Winter.aco</strong><small>2,1 MB · Lun</small></span></div><div class="shared-file"><span class="material-symbols-outlined">folder</span><span><strong>Moodboards_Archives</strong><small>Dossier · 12 éléments</small></span></div></div>
+  </aside>
 </div>
-</div>
-</div>
-
-<div class="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col">
-<div class="flex gap-3 max-w-[85%] self-start">
-<div class="glass-panel p-3 rounded-2xl text-xs sm:text-sm text-on-surface">
-Bonjour ! Les premiers visuels pour la réception sont prêts.
-</div>
-</div>
-</div>
-
-<div class="p-3 border-t border-primary/10 glass-panel">
-<div class="glass-input rounded-xl flex items-center p-1.5 gap-1.5">
-<input type="text" class="flex-1 bg-transparent border-none text-xs sm:text-sm text-on-surface focus:ring-0 py-1.5 outline-none" placeholder="Rédiger un message..."/>
-<button class="p-2 bg-primary text-on-primary rounded-lg text-xs font-bold">Envoyer</button>
-</div>
-</div>
-</div>
-</div>
-</div>
-
+<style>
+.messenger{height:calc(100vh - 190px);min-height:620px;max-height:900px}
+.conversation-list{width:290px;background:rgba(10,14,26,.35)}
+.conversation-item{width:100%;display:flex;align-items:flex-start;gap:12px;padding:16px 12px;text-align:left;border:0;border-bottom:1px solid rgba(125,211,252,.05);background:transparent;color:var(--text);position:relative;cursor:pointer}
+.conversation-item:hover,.conversation-item.active{background:rgba(125,211,252,.07)}
+.conversation-item.active{border-left:2px solid var(--blue);padding-left:10px}
+.conversation-copy{min-width:0;flex:1;display:flex;flex-direction:column;gap:6px}
+.conversation-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.conversation-top strong{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conversation-top small,.conversation-preview{font-size:11px;color:var(--muted)}
+.conversation-preview{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.avatar{width:40px;height:40px;flex:0 0 40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#1a3044;color:var(--blue);border:1px solid #29465d;position:relative;font-size:12px}
+.avatar-icon{border-radius:50%}.online-dot{position:absolute;bottom:0;right:0;width:9px;height:9px;border-radius:50%;background:#6ee7b7;border:2px solid var(--bg)}
+.conversation-item[data-avatar="flight"] .avatar{color:#7dd3fc}.conversation-item[data-avatar="person"] .avatar{color:#c8a0f0}
+.tag{align-self:flex-start;padding:3px 6px;font-size:9px;border-radius:4px;background:rgba(125,211,252,.09);color:var(--blue);border:1px solid rgba(125,211,252,.12)}
+.tag-purple{background:rgba(200,160,240,.1);color:var(--purple)}
+.unread{background:var(--blue);color:#001f2e;border-radius:50%;font-size:10px;font-weight:700;padding:3px 6px}
+.new-message{margin:14px 16px 18px;border:1px solid #29465d;border-radius:12px;background:rgba(125,211,252,.08);color:var(--blue);padding:11px;display:flex;justify-content:center;align-items:center;gap:8px;cursor:pointer}
+.chat-panel{flex:1;min-width:0;background:rgba(10,14,26,.25)}
+.chat-head{min-height:68px;background:rgba(15,21,36,.65)}
+.icon-button,.send-button{display:flex;align-items:center;justify-content:center;flex:0 0 40px;height:40px;border:1px solid rgba(125,211,252,.15);border-radius:50%;background:rgba(125,211,252,.06);color:var(--blue);cursor:pointer}
+.chat-messages{min-height:0}
+.date-pill{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:5px 12px;background:rgba(15,21,36,.5)}
+.message-row{display:flex;gap:10px;max-width:90%}.message-row.outgoing{align-self:flex-end;justify-content:flex-end}
+.mini-avatar{width:30px;height:30px;flex:0 0 30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#1a3044;border:1px solid var(--line);color:var(--blue);font-size:10px;margin-top:auto}
+.message-content{display:flex;flex-direction:column;gap:5px;min-width:0}.message-content>small{font-size:10px;color:var(--muted);padding:0 4px}
+.bubble{padding:12px;border-radius:16px;border-bottom-left-radius:4px;font-size:13px;line-height:1.65;overflow-wrap:anywhere}
+.bubble.sent{background:rgba(125,211,252,.17);border:1px solid rgba(125,211,252,.32);border-bottom-right-radius:4px;color:#d8efff}
+.text-right{text-align:right}
+.attachment{display:flex;align-items:center;gap:10px;padding:10px;margin-top:12px;border-radius:12px;background:rgba(125,211,252,.06);border:1px solid var(--line)}
+.attachment>.material-symbols-outlined{font-size:28px;color:var(--blue)}.attachment span:last-child{display:flex;flex-direction:column;min-width:0}.attachment strong,.shared-file strong{font-size:11px;overflow-wrap:anywhere}.attachment small,.shared-file small{font-size:10px;color:var(--muted);margin-top:3px}
+.composer{background:rgba(15,21,36,.75)}.composer textarea{min-height:44px;max-height:120px;color:var(--text);outline:none}.send-button{border-radius:12px;background:rgba(125,211,252,.13)}
+.contact-details{width:245px;flex:0 0 245px;background:rgba(10,14,26,.25);overflow:auto}
+.profile-avatar{width:76px;height:76px;margin:auto;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--blue);background:#1a3044;border:2px solid #29465d}
+.detail-chip{font-size:19px;border:1px solid var(--line);border-radius:50%;padding:8px;color:var(--muted)}
+.section-label{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.project-card{border-left:2px solid var(--purple)}.project-card strong{font-size:12px}.progress{height:5px;border-radius:9px;background:#202c42;margin-top:14px;overflow:hidden}.progress span{display:block;width:65%;height:100%;background:var(--purple);border-radius:9px}
+.shared-file{display:flex;align-items:center;gap:10px;margin-top:14px;min-width:0}.shared-file>.material-symbols-outlined{padding:8px;border-radius:8px;background:rgba(125,211,252,.1);color:var(--blue);font-size:18px}.shared-file>span:last-child{display:flex;flex-direction:column;min-width:0}.shared-file strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:1100px){.contact-details{display:none}.conversation-list{width:260px}}
+@media(max-width:760px){.messenger{height:calc(100vh - 220px);min-height:540px}.conversation-list{display:none}.contact-details{display:none}.workspace{padding-left:10px!important;padding-right:10px!important}.chat-messages{padding:14px}.message-row{max-width:96%}.composer{padding:8px}.icon-button{flex-basis:34px;height:34px}}
+</style>
+<script>
+(function(){
+ const form=document.getElementById('message-form'), input=document.getElementById('message-input'), list=document.getElementById('conversation-items'), search=document.getElementById('conversation-search'), messages=document.getElementById('chat-messages');
+ function sendMessage(text){const clean=text.trim();if(!clean)return;const row=document.createElement('div');row.className='message-row outgoing';const content=document.createElement('div');content.className='message-content';const meta=document.createElement('small');meta.className='text-right';meta.textContent='À l’instant · Vous';const bubble=document.createElement('div');bubble.className='bubble sent';bubble.textContent=clean;const status=document.createElement('small');status.className='text-right';status.textContent='Envoyé localement';content.append(meta,bubble,status);row.append(content);messages.append(row);messages.scrollTop=messages.scrollHeight;input.value='';input.style.height='44px';}
+ form.addEventListener('submit',e=>{e.preventDefault();sendMessage(input.value)});
+ input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit()}});
+ input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px'});
+ search.addEventListener('input',()=>{list.querySelectorAll('.conversation-item').forEach(item=>item.hidden=!item.innerText.toLowerCase().includes(search.value.toLowerCase()))});
+ list.querySelectorAll('.conversation-item').forEach(item=>item.addEventListener('click',()=>{list.querySelectorAll('.conversation-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');document.getElementById('chat-name').textContent=item.dataset.name;document.getElementById('chat-role').textContent='En ligne · '+item.dataset.role;document.getElementById('detail-name').textContent=item.dataset.name;document.getElementById('detail-role').textContent=item.dataset.role;document.getElementById('chat-avatar').textContent=item.dataset.name.split(' ').map(w=>w[0]).slice(0,2).join('');document.getElementById('chat-avatar').className='avatar';messages.innerHTML='<div class="text-center"><span class="date-pill">Conversation sélectionnée</span></div><div class="message-row incoming"><span class="mini-avatar">'+item.dataset.name.split(' ').map(w=>w[0]).slice(0,2).join('')+'</span><div class="message-content"><small>'+item.dataset.name+'</small><div class="bubble glass-panel">'+item.dataset.preview+'</div></div></div><p class="text-xs text-on-surface-variant text-center">Historique de démonstration non connecté.</p>';}));
+ document.getElementById('attach-button').addEventListener('click',()=>document.getElementById('attachment-input').click());
+ document.getElementById('attachment-input').addEventListener('change',e=>{if(e.target.files[0]){const f=e.target.files[0];const note=document.createElement('p');note.className='text-xs text-primary';note.textContent='Fichier sélectionné : '+f.name+' (pas encore envoyé)';messages.append(note);messages.scrollTop=messages.scrollHeight;}});
+ document.getElementById('toggle-details').addEventListener('click',()=>{const d=document.getElementById('contact-details');d.style.display=d.style.display==='none'?'flex':'none'});
+ document.getElementById('new-message').addEventListener('click',()=>{const name=prompt('Nom du contact (démo) :');if(name&&name.trim()){document.getElementById('chat-name').textContent=name.trim();document.getElementById('chat-role').textContent='Nouvelle conversation';document.getElementById('chat-messages').innerHTML='<p class="text-sm text-on-surface-variant text-center">Nouvelle conversation de démonstration avec '+name.trim().replace(/[<>&"]/g,'')+'.</p>';input.focus();}});
+})();
+</script>
   <div class="footer-note">© 2026 Mariage Madagascar · Espace client privé · Vos préparatifs en un seul endroit</div>
 </main>
 </body>
