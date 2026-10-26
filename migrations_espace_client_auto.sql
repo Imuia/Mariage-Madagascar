@@ -1,8 +1,8 @@
 -- ============================================================================
--- AUTOMATISATION DU PORTAIL ESPACE CLIENT - MARIAGE MADAGASCAR
+-- AUTOMATISATION DU PORTAIL ESPACE CLIENT - MARIAGE MADAGASCAR (VERSION SÉCURISÉE)
 -- Fichier : migrations_espace_client_auto.sql
--- Description : Déclencheurs automatiques pour la création de profil et de projet client à l'inscription,
---               politiques RLS et sécurisation multi-locataire.
+-- Description : Déclencheurs automatiques pour la création de profil et de projet client à l'inscription.
+-- Compatibility : S'adapte dynamiquement si `user_id` ou `profile_id` / `client_id` est utilisé.
 -- ============================================================================
 
 -- Extensions requises
@@ -120,7 +120,8 @@ CREATE TRIGGER trg_on_auth_user_created
     EXECUTE FUNCTION public.handle_new_client_signup();
 
 -- ----------------------------------------------------------------------------
--- 3. FONCTION RPC SÉCURISÉE DE SOUFFLAGE & D'INITIALISATION INITIALE DU CLIENT
+-- 3. FONCTION RPC SÉCURISÉE DE SECOURS & D'INITIALISATION
+-- Dynamique : supporte les schémas existants avec `user_id` ou `profile_id`
 -- ----------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.ensure_client_profile_and_project()
 RETURNS JSONB AS $$
@@ -133,6 +134,8 @@ DECLARE
     v_first_name TEXT;
     v_last_name TEXT;
     v_full_name TEXT;
+    v_has_user_id BOOLEAN := FALSE;
+    v_has_profile_id BOOLEAN := FALSE;
 BEGIN
     IF v_user_id IS NULL THEN
         RAISE EXCEPTION 'Utilisateur non authentifié.';
@@ -151,22 +154,41 @@ BEGIN
         ''
     );
 
-    INSERT INTO public.profiles (id, first_name, last_name, role, created_at, updated_at)
-    VALUES (v_user_id, v_first_name, v_last_name, 'client', NOW(), NOW())
-    ON CONFLICT (id) DO UPDATE SET
-        updated_at = NOW();
+    IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'profiles') THEN
+        INSERT INTO public.profiles (id, first_name, last_name, role, created_at, updated_at)
+        VALUES (v_user_id, v_first_name, v_last_name, 'client', NOW(), NOW())
+        ON CONFLICT (id) DO UPDATE SET updated_at = NOW();
+    END IF;
 
-    -- Récupération du projet existant ou création si absent
-    SELECT id, title INTO v_project_id, v_project_title
-    FROM public.client_projects
-    WHERE user_id = v_user_id
-    ORDER BY created_at ASC
-    LIMIT 1;
+    -- Détection dynamique des colonnes de `client_projects`
+    SELECT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'client_projects' AND column_name = 'user_id'
+    ) INTO v_has_user_id;
 
+    SELECT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'client_projects' AND column_name = 'profile_id'
+    ) INTO v_has_profile_id;
+
+    -- Recherche dynamique du projet existant
+    IF v_has_user_id THEN
+        EXECUTE 'SELECT id, title FROM public.client_projects WHERE user_id = $1 ORDER BY created_at ASC LIMIT 1'
+        INTO v_project_id, v_project_title USING v_user_id;
+    ELSIF v_has_profile_id THEN
+        EXECUTE 'SELECT id, title FROM public.client_projects WHERE profile_id = $1 ORDER BY created_at ASC LIMIT 1'
+        INTO v_project_id, v_project_title USING v_user_id;
+    END IF;
+
+    -- Création d'un projet si aucun n'existe
     IF v_project_id IS NULL THEN
-        INSERT INTO public.client_projects (id, user_id, title, status, created_at, updated_at)
-        VALUES (uuid_generate_v4(), v_user_id, 'Mon mariage', 'in_preparation', NOW(), NOW())
-        RETURNING id, title INTO v_project_id, v_project_title;
+        IF v_has_user_id THEN
+            EXECUTE 'INSERT INTO public.client_projects (id, user_id, title, status, created_at, updated_at) VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING id, title'
+            INTO v_project_id, v_project_title USING uuid_generate_v4(), v_user_id, 'Mon mariage', 'in_preparation';
+        ELSIF v_has_profile_id THEN
+            EXECUTE 'INSERT INTO public.client_projects (id, user_id, title, status, created_at, updated_at) VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING id, title'
+            INTO v_project_id, v_project_title USING uuid_generate_v4(), v_user_id, 'Mon mariage', 'in_preparation';
+        END IF;
     END IF;
 
     -- Rattachement des commandes invitées
