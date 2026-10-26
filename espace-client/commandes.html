@@ -314,16 +314,21 @@ async function loadRealClientOrders() {
       await sb.rpc('claim_guest_orders');
     } catch (e) {}
 
+    console.log('[Espace Client Commandes] Utilisateur connecté:', user.id, user.email);
+
     const { data: orders, error } = await sb
       .from('orders')
       .select('id, order_number, created_at, guest_first_name, guest_last_name, guest_email, total_amount, currency, status, payment_status, order_items(product_name, variation_name, quantity)')
-      .or(`user_id.eq.${user.id},guest_email.ilike.${userEmailNormalized}`)
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Erreur chargement commandes:', error);
+      console.error('[Espace Client Commandes] Erreur Supabase:', error);
+      showToast('Erreur Supabase lors de la récupération de vos commandes : ' + (error.message || 'accès refusé par RLS.'));
       return;
     }
+
+    console.log('[Espace Client Commandes] Commandes chargées par user_id:', orders);
 
     const totalOrdersEl = document.getElementById('stat-total-orders');
     const confirmedOrdersEl = document.getElementById('stat-confirmed-orders');

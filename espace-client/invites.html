@@ -139,11 +139,67 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
  $('addGuestTrigger').addEventListener('click',()=>openModal());$('closeModal').addEventListener('click',closeModal);$('cancelModal').addEventListener('click',closeModal);
  $('guestModal').addEventListener('click',e=>{if(e.target===$('guestModal'))closeModal()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
- $('guestForm').addEventListener('submit',e=>{
-   e.preventDefault();const id=$('guestForm').dataset.editId;const g={first:$('firstName').value.trim(),last:$('lastName').value.trim(),email:$('email').value.trim(),category:$('category').value,status:$('rsvp').value,plus:0,menu:$('menu').value.trim()||'—',diet:'',table:$('tableName').value.trim(),recent:Date.now()};
-   if(id){const idx=guests.findIndex(x=>String(x.id)===id);if(idx>=0)Object.assign(guests[idx],g);toast('Invité modifié dans cette session.')}
-   else{g.id=Math.max(...guests.map(x=>x.id))+1;guests.unshift(g);toast('Invité ajouté dans cette session.');}
-   page=1;closeModal();render();
+ $('guestForm').addEventListener('submit',async e=>{
+   e.preventDefault();
+   const sb = window.clientSupabase || window.mmSupabase;
+   const id = $('guestForm').dataset.editId;
+   const firstName = $('firstName').value.trim();
+   const lastName = $('lastName').value.trim();
+   const email = $('email').value.trim();
+   const categoryVal = $('category').value;
+   const rsvpStatus = $('rsvp').value;
+   const menuChoice = $('menu').value.trim();
+   const tableNameVal = $('tableName').value.trim();
+
+   if (!sb) {
+     toast('Erreur: Connexion Supabase indisponible.');
+     return;
+   }
+
+   try {
+     const { data: { session } } = await sb.auth.getSession();
+     if (!session) {
+       toast('Session expirée, veuillez vous reconnecter.');
+       return;
+     }
+     const user = session.user;
+
+     const payload = {
+       user_id: user.id,
+       first_name: firstName,
+       last_name: lastName,
+       email: email || null,
+       category: categoryVal,
+       status: rsvpStatus,
+       menu_choice: menuChoice || null,
+       table_name: tableNameVal || null,
+       updated_at: new Date().toISOString()
+     };
+
+     if (id && id !== '' && !id.startsWith('temp_')) {
+       const { error } = await sb
+         .from('client_guests')
+         .update(payload)
+         .eq('id', id)
+         .eq('user_id', user.id);
+
+       if (error) throw error;
+       toast('Invité et statut RSVP enregistrés dans Supabase.');
+     } else {
+       const { error } = await sb
+         .from('client_guests')
+         .insert([payload]);
+
+       if (error) throw error;
+       toast('Invité ajouté avec succès dans Supabase.');
+     }
+
+     closeModal();
+     await syncWithSupabase();
+   } catch (err) {
+     console.error('Erreur sauvegarde invité:', err);
+     toast('Erreur lors de la sauvegarde : ' + (err.message || 'accès refusé par RLS.'));
+   }
  });
  $('guestTableBody').addEventListener('click',e=>{const b=e.target.closest('.editGuest');if(!b)return;const g=guests.find(x=>x.id===Number(b.dataset.id));if(g)openModal(g)});
  $('searchInput').addEventListener('input',()=>{page=1;render()});$('statusFilter').addEventListener('change',()=>{page=1;render()});$('sortSelect').addEventListener('change',()=>{page=1;render()});
