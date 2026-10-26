@@ -1,15 +1,11 @@
 -- ============================================================================
--- AUTOMATISATION ET CORRECTION ULTRA-SÉCURISÉE DU PORTAIL ESPACE CLIENT
--- Plateforme : Mariage Madagascar Luxe
+-- AUTOMATISATION DU PORTAIL ESPACE CLIENT - MARIAGE MADAGASCAR (VERSION VALIDÉE)
 -- Fichier : migrations_espace_client_auto.sql
 -- ============================================================================
 
--- Extensions requises
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- ----------------------------------------------------------------------------
--- 1. ADAPTATION DYNAMIQUE ET SÉCURISÉE DE CLIENT_PROJECTS (ET RLS DYNAMIQUE)
--- ----------------------------------------------------------------------------
+-- 1. Table client_projects (créée uniquement si absente, avec owner_id)
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'client_projects') THEN
@@ -30,10 +26,20 @@ END $$;
 
 ALTER TABLE public.client_projects ENABLE ROW LEVEL SECURITY;
 
--- Génération dynamique de la politique RLS sur client_projects sans référence statique
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'client_projects' AND column_name = 'owner_id') THEN
+        CREATE INDEX IF NOT EXISTS idx_client_projects_owner_id ON public.client_projects(owner_id);
+    ELSIF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'client_projects' AND column_name = 'user_id') THEN
+        CREATE INDEX IF NOT EXISTS idx_client_projects_user_id ON public.client_projects(user_id);
+    END IF;
+END $$;
+
+-- Politique RLS sécurisée et dynamique (tolérante à l'absence de profiles.role)
 DO $$
 DECLARE
     v_col TEXT;
+    v_has_role BOOLEAN := FALSE;
 BEGIN
     DROP POLICY IF EXISTS select_own_client_project ON public.client_projects;
 
@@ -44,23 +50,34 @@ BEGIN
     ORDER BY CASE column_name WHEN 'owner_id' THEN 1 WHEN 'user_id' THEN 2 ELSE 3 END
     LIMIT 1;
 
+    SELECT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'role'
+    ) INTO v_has_role;
+
     IF v_col IS NOT NULL THEN
-        EXECUTE format('
-            CREATE POLICY select_own_client_project ON public.client_projects
-            FOR SELECT USING (
-                auth.uid() IS NOT NULL AND (
-                    %I = auth.uid() OR
-                    (SELECT role FROM public.profiles WHERE id = auth.uid()) IN (''super_admin'', ''admin'')
-                )
-            );
-        ', v_col);
+        IF v_has_role THEN
+            EXECUTE format('
+                CREATE POLICY select_own_client_project ON public.client_projects
+                FOR SELECT USING (
+                    auth.uid() IS NOT NULL AND (
+                        %I = auth.uid() OR
+                        (SELECT role FROM public.profiles WHERE id = auth.uid()) IN (''super_admin'', ''admin'')
+                    )
+                );
+            ', v_col);
+        ELSE
+            EXECUTE format('
+                CREATE POLICY select_own_client_project ON public.client_projects
+                FOR SELECT USING (
+                    auth.uid() IS NOT NULL AND %I = auth.uid()
+                );
+            ', v_col);
+        END IF;
     END IF;
 END $$;
 
-
--- ----------------------------------------------------------------------------
--- 2. DÉCLENCHEUR AUTOMATIQUE POST-INSCRIPTION SUR AUTH.USERS (TOTALEMENT DYNAMIQUE)
--- ----------------------------------------------------------------------------
+-- 2. Déclencheur d'inscription sur auth.users (SQL pur sans IF dans EXECUTE)
 CREATE OR REPLACE FUNCTION public.handle_new_client_signup()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -68,7 +85,6 @@ DECLARE
     v_last_name TEXT;
     v_full_name TEXT;
     v_owner_col TEXT;
-    v_has_profiles BOOLEAN := FALSE;
     v_has_fn BOOLEAN := FALSE;
     v_has_ln BOOLEAN := FALSE;
     v_has_phone BOOLEAN := FALSE;
@@ -76,6 +92,7 @@ DECLARE
     v_has_orders BOOLEAN := FALSE;
     v_has_order_user_id BOOLEAN := FALSE;
     v_has_order_guest_email BOOLEAN := FALSE;
+    v_project_exists BOOLEAN := FALSE;
 BEGIN
     BEGIN
         v_full_name := COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', '');
@@ -90,7 +107,7 @@ BEGIN
             ''
         );
 
-        -- A. Insertion / Mise à jour dans public.profiles selon les colonnes réellement existantes
+        -- Profiles
         IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'profiles') THEN
             SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='first_name') INTO v_has_fn;
             SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='last_name') INTO v_has_ln;
@@ -111,14 +128,14 @@ BEGIN
             END IF;
         END IF;
 
-        -- B. Insertion dans public.clients (si la table existe)
+        -- Clients
         IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'clients') THEN
             INSERT INTO public.clients (profile_id, created_at)
             VALUES (NEW.id, NOW())
             ON CONFLICT (profile_id) DO NOTHING;
         END IF;
 
-        -- C. Création dynamique d'un projet "Mon mariage" (owner_id / user_id / profile_id)
+        -- Client projects (sans IF dans EXECUTE)
         SELECT column_name INTO v_owner_col
         FROM information_schema.columns
         WHERE table_schema = 'public' AND table_name = 'client_projects'
@@ -127,16 +144,20 @@ BEGIN
         LIMIT 1;
 
         IF v_owner_col IS NOT NULL THEN
-            EXECUTE format('
-                IF NOT EXISTS (SELECT 1 FROM public.client_projects WHERE %I = $1) THEN
+            EXECUTE format('SELECT EXISTS (SELECT 1 FROM public.client_projects WHERE %I = $1)', v_owner_col)
+            INTO v_project_exists
+            USING NEW.id;
+
+            IF NOT v_project_exists THEN
+                EXECUTE format('
                     INSERT INTO public.client_projects (id, %I, title, status, created_at, updated_at)
-                    VALUES ($2, $1, ''Mon mariage'', ''in_preparation'', NOW(), NOW());
-                END IF;
-            ', v_owner_col, v_owner_col)
-            USING NEW.id, uuid_generate_v4();
+                    VALUES ($1, $2, ''Mon mariage'', ''in_preparation'', NOW(), NOW())
+                ', v_owner_col)
+                USING uuid_generate_v4(), NEW.id;
+            END IF;
         END IF;
 
-        -- D. Rattachement automatique des commandes invitées si `orders`, `user_id` et `guest_email` existent
+        -- Orders
         SELECT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'orders') INTO v_has_orders;
         IF v_has_orders THEN
             SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='orders' AND column_name='user_id') INTO v_has_order_user_id;
@@ -151,8 +172,7 @@ BEGIN
         END IF;
 
     EXCEPTION WHEN OTHERS THEN
-        -- Le déclencheur ne bloque JAMAIS la création de compte
-        RAISE WARNING 'handle_new_client_signup a rencontré un avertissement non bloquant: %', SQLERRM;
+        RAISE WARNING 'handle_new_client_signup warning: %', SQLERRM;
     END;
 
     RETURN NEW;
@@ -165,10 +185,7 @@ CREATE TRIGGER trg_on_auth_user_created
     FOR EACH ROW
     EXECUTE FUNCTION public.handle_new_client_signup();
 
-
--- ----------------------------------------------------------------------------
--- 3. FONCTION RPC SÉCURISÉE DE SECOURS ET D'INITIALISATION
--- ----------------------------------------------------------------------------
+-- 3. Fonction RPC d'initialisation Espace Client
 CREATE OR REPLACE FUNCTION public.ensure_client_profile_and_project()
 RETURNS JSONB AS $$
 DECLARE
@@ -219,7 +236,6 @@ BEGIN
         END IF;
     END IF;
 
-    -- Détection dynamique de la colonne propriétaire
     SELECT column_name INTO v_owner_col
     FROM information_schema.columns
     WHERE table_schema = 'public' AND table_name = 'client_projects'
@@ -228,12 +244,10 @@ BEGIN
     LIMIT 1;
 
     IF v_owner_col IS NOT NULL THEN
-        -- Recherche sécurisée du projet existant
         EXECUTE format('SELECT id, title FROM public.client_projects WHERE %I = $1 ORDER BY created_at ASC LIMIT 1', v_owner_col)
         INTO v_project_id, v_project_title
         USING v_user_id;
 
-        -- Création unique si aucun projet n'existe
         IF v_project_id IS NULL THEN
             EXECUTE format('INSERT INTO public.client_projects (id, %I, title, status, created_at, updated_at) VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING id, title', v_owner_col)
             INTO v_project_id, v_project_title
@@ -241,7 +255,6 @@ BEGIN
         END IF;
     END IF;
 
-    -- Rattachement des commandes
     SELECT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'orders') INTO v_has_orders;
     IF v_has_orders THEN
         SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='orders' AND column_name='user_id') INTO v_has_order_user_id;
