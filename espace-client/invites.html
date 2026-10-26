@@ -1,329 +1,161 @@
 <!doctype html>
 <html lang="fr" class="dark">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0a0e1a">
-<title>Invités | Mariage Madagascar — Espace client</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0a0e1a">
+<title>Invités & RSVP | Mariage Madagascar — Espace client</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          "colors": {
-            "on-secondary-container": "#c0d8e8",
-            "primary": "#7dd3fc",
-            "error": "#ff6b6b",
-            "on-tertiary-fixed": "#1a002e",
-            "primary-fixed-dim": "#7dd3fc",
-            "surface-container-lowest": "#0a0e1a",
-            "secondary-fixed-dim": "#88b4cc",
-            "on-primary-container": "#c8eaff",
-            "on-surface": "#e0e8f0",
-            "tertiary-fixed-dim": "#c8a0f0",
-            "secondary": "#88b4cc",
-            "surface-container": "#141c2e",
-            "inverse-on-surface": "#0a0e1a",
-            "surface-bright": "#1a2438",
-            "surface-dim": "#0f1524",
-            "on-error": "#1a0000",
-            "outline-variant": "#2a3a48",
-            "on-secondary": "#001f2e",
-            "tertiary": "#c8a0f0",
-            "secondary-container": "#1a3a4e",
-            "secondary-fixed": "#c0d8e8",
-            "surface-container-high": "#1a2438",
-            "on-primary-fixed": "#001f2e",
-            "on-tertiary": "#1a002e",
-            "outline": "#4a6070",
-            "on-tertiary-container": "#e8d0ff",
-            "inverse-primary": "#0a4c6e",
-            "inverse-surface": "#e0e8f0",
-            "surface": "#0f1524",
-            "on-primary": "#001f2e",
-            "surface-variant": "#1a2438",
-            "on-error-container": "#ffb3b3",
-            "primary-container": "#0e4d6e",
-            "surface-tint": "#7dd3fc",
-            "on-surface-variant": "#a0b4c4",
-            "background": "#0a0e1a",
-            "surface-container-highest": "#202c42",
-            "primary-fixed": "#c8eaff",
-            "tertiary-fixed": "#e8d0ff",
-            "on-tertiary-fixed-variant": "#4d2a73",
-            "tertiary-container": "#3d2060",
-            "on-secondary-fixed": "#0d1f2b",
-            "on-secondary-fixed-variant": "#2a4a5e",
-            "surface-container-low": "#111828",
-            "on-background": "#e0e8f0",
-            "error-container": "#3d1414",
-            "on-primary-fixed-variant": "#004d73"
-          },
-          "borderRadius": {
-            "DEFAULT": "0.5rem",
-            "lg": "1rem",
-            "xl": "1.5rem",
-            "full": "9999px"
-          },
-          "fontFamily": {
-            "headline": ["Inter", "sans-serif"],
-            "display": ["Inter", "sans-serif"],
-            "body": ["Inter", "sans-serif"],
-            "label": ["Inter", "sans-serif"]
-          }
-        }
-      }
-    }
-  </script>
 <style>
-:root{--bg:#0a0e1a;--surface:#0f1524;--panel:#111828;--panel2:#141c2e;--line:#223247;--text:#e0e8f0;--muted:#9aafc1;--blue:#7dd3fc;--purple:#c8a0f0;--green:#6ee7b7;--amber:#fcd38d}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 60% 0%,rgba(125,211,252,.06),transparent 45%),var(--bg);color:var(--text);font:15px Inter,system-ui,sans-serif;min-height:100vh}a{color:inherit;text-decoration:none}button,input{font:inherit}.material-symbols-outlined{font-size:22px;vertical-align:middle}
-
-.sidebar{position:fixed;inset:0 auto 0 0;width:264px;background:rgba(17,24,40,.92);backdrop-filter:blur(20px);border-right:1px solid var(--line);padding:28px 18px;display:flex;flex-direction:column;z-index:20}
-.brand{display:flex;align-items:center;gap:12px;padding:6px 8px 30px;border-bottom:1px solid var(--line)}
-.brand-mark{width:42px;height:42px;border:1px solid #36536a;border-radius:50%;display:grid;place-items:center;color:var(--blue);background:#152438}
-.brand b{display:block;color:var(--blue);font-size:16px}
-.brand small,.muted,small{color:var(--muted)}
-.nav{display:grid;gap:7px;padding-top:22px}
-.nav a{display:flex;align-items:center;gap:12px;padding:12px 13px;border-radius:12px;color:#a9bbcb;font-size:14px;transition:.2s}
-.nav a:hover{background:#17263a;color:var(--blue)}
-.nav a.active{background:#1a2b40;color:var(--blue);border:1px solid #29465d;box-shadow:inset 3px 0 var(--blue)}
-.sidebar-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:18px}
-.sidebar-bottom a{display:flex;align-items:center;gap:10px;color:var(--muted);padding:10px 12px;font-size:13px}
-
-.workspace{margin-left:264px;min-height:100vh;padding:38px clamp(20px,4vw,58px) 46px;max-width:1800px}
-.mobile-top{display:none}
-.footer-note{margin-top:30px;text-align:center;color:#61778a;font-size:11px}
-
-.glacier-card {
-  background: rgba(20, 28, 46, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(125, 211, 252, 0.12);
-}
-.glacier-card-hover:hover {
-  border-color: rgba(125, 211, 252, 0.35);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(125, 211, 252, 0.08);
-}
-.glacier-glow {
-  background: radial-gradient(circle at 50% 0%, rgba(125, 211, 252, 0.15) 0%, rgba(10, 14, 26, 0) 70%);
-}
-
-@media(max-width:760px){
-  .sidebar{display:none}
-  .mobile-top{display:flex;position:sticky;top:0;height:64px;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(10,14,26,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);z-index:30}
-  .mobile-brand{font-weight:800;color:var(--blue);letter-spacing:.03em}
-  .mobile-menu{display:flex;gap:10px;align-items:center}
-  .mobile-menu a{font-size:11px;color:var(--muted)}
-  .workspace{margin:0;padding:25px 16px 92px}
-  .sidebar-mobile-nav{position:fixed;bottom:0;left:0;right:0;z-index:35;display:flex;justify-content:space-around;padding:9px 3px calc(9px + env(safe-area-inset-bottom));background:rgba(15,21,36,.96);backdrop-filter:blur(20px);border-top:1px solid var(--line)}
-  .sidebar-mobile-nav a{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:9px;min-width:0}
-  .sidebar-mobile-nav a .material-symbols-outlined{font-size:20px}
-  .sidebar-mobile-nav a.active{color:var(--blue)}
-}
-@media(min-width:761px){.sidebar-mobile-nav{display:none}}
+:root{--bg:#0a0e1a;--surface:#0f1524;--panel:#111828;--panel2:#141c2e;--line:#2a3a48;--text:#e0e8f0;--muted:#a0b4c4;--blue:#7dd3fc;--teal:#213d4a;--green:#34d399;--amber:#fbbf24;--red:#fb7185}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 60% 0%,rgba(125,211,252,.06),transparent 45%),var(--bg);color:var(--text);font:14px Inter,system-ui,sans-serif;min-height:100vh}a{color:inherit;text-decoration:none}button,input,select{font:inherit}.material-symbols-outlined{font-size:21px;vertical-align:middle}
+.workspace{margin-left:320px;min-height:100vh;padding:30px clamp(18px,3vw,46px) 44px;max-width:1800px}
+.glass{background:rgba(17,24,40,.8);border:1px solid #2a3a48;border-radius:22px;box-shadow:0 16px 38px #0002}
+.stat{border:1px solid #2f576a;border-radius:22px;padding:22px;background:rgba(16,29,35,.45)}
+.pill{border-radius:999px;padding:7px 13px;font-size:11px;font-weight:600;background:#141c2e;color:#c5d4e1;border:1px solid transparent;white-space:nowrap}
+.pill.active{background:#7dd3fc;color:#10232c}
+.pill:hover{border-color:#7dd3fc}
+.field{background:#213d4a;border:1px solid transparent;border-radius:14px;color:#fff;outline:none}
+.field:focus{border-color:#7dd3fc;box-shadow:0 0 0 2px #7dd3fc22}
+table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13px;border-bottom:1px solid #2a3a485e;text-align:left;vertical-align:middle}th{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:#a0b4c4;background:#141c2e}tbody tr:hover{background:#7dd3fc08}
+.status{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:700;white-space:nowrap}
+.status.confirmed{color:#34d399;background:#064e3b33;border:1px solid #05966955}.status.pending{color:#fbbf24;background:#78350f33;border:1px solid #d9770655}.status.declined{color:#fb7185;background:#88133733;border:1px solid #e11d4855}
+.modal-backdrop{position:fixed;inset:0;background:#000b;backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:18px;z-index:100}
+.modal-backdrop.hidden{display:none}
+.modal{width:min(560px,100%);max-height:90vh;overflow:auto;background:#141c2e;border:1px solid #2a3a48;border-radius:22px;padding:24px;box-shadow:0 24px 80px #0008}
+.form-label{display:block;color:#a0b4c4;font-size:12px;font-weight:600;margin-bottom:6px}
+.form-field{width:100%;padding:10px 12px;border-radius:10px;background:#0f1524;border:1px solid #2a3a48;color:#fff;outline:none}
+.form-field:focus{border-color:#7dd3fc}
+@media(max-width:760px){.workspace{margin:0!important;padding:22px 14px 88px!important}.stat{padding:16px}th,td{padding:12px 10px}.filterline{overflow-x:auto;flex-wrap:nowrap;padding-bottom:5px}.page-header{align-items:stretch}.page-header .actions{display:flex;flex-wrap:wrap}.summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.bottom-cards{grid-template-columns:1fr!important}}
 </style>
-
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'https://qrkinjuhtyfptldlvdyg.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
-  const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-
-  async function checkSession() {
-    if (!supabaseClient) return;
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) {
-      window.location.href = '/espace-client/login.html';
-    }
-  }
-  checkSession();
+const SUPABASE_URL='https://qrkinjuhtyfptldlvdyg.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdWIiLCJyZWYiOiJxcmtpbmp1aHR5ZnB0bGRsdmR5ZyIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzkwODM2Nzc1LCJleHAiOjIxMDY0MTI3NzV9.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
+const supabaseClient=window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
+async function checkSession(){if(!supabaseClient)return;const {data:{session}}=await supabaseClient.auth.getSession();if(!session)window.location.href='/espace-client/login.html'}checkSession();
 </script>
-<style id="mm-sidebar-stitch">
-
-/* Mariage Madagascar — sidebar Stitch officielle */
-.sidebar{
-  width:320px!important; padding:28px 14px 24px!important;
-  background:#101827!important; border-right:1px solid #223247!important;
-  backdrop-filter:none!important; -webkit-backdrop-filter:none!important;
-}
-.sidebar .mm-sidebar-brand{width:100%;margin:0 0 32px;padding:0 0 0;border:0;display:flex;justify-content:center}
-.sidebar .mm-brand-link{width:100%;justify-content:center!important}
-.sidebar .mm-brand-logo-wrap{padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
-.sidebar .mm-brand-logo-wrap img{
-  display:block;width:115px!important;height:116px!important;max-width:115px!important;
-  object-fit:contain!important;border:0!important;border-radius:0!important;
-}
-.sidebar .nav{display:grid;gap:8px;padding-top:0!important;width:100%}
-.sidebar .nav a{
-  min-height:60px;padding:14px 14px!important;gap:16px!important;
-  border-radius:16px!important;font-size:18px!important;line-height:1.25;
-  color:#a9bbcb!important;border:1px solid transparent!important;
-  box-shadow:none!important;white-space:normal;
-}
-.sidebar .nav a .material-symbols-outlined{font-size:25px!important;flex:0 0 27px}
-.sidebar .nav a:hover{background:#17263a!important;color:#7dd3fc!important}
-.sidebar .nav a.active{
-  background:#1a2b40!important;color:#7dd3fc!important;
-  border:1px solid #29465d!important;box-shadow:inset 4px 0 #7dd3fc!important;
-}
-.sidebar .sidebar-bottom{margin-top:auto!important;border-top:1px solid #26374b!important;padding-top:22px!important}
-.sidebar .sidebar-bottom a{min-height:52px;padding:12px 14px!important;gap:14px!important;font-size:16px!important;color:#a9bbcb!important}
-.sidebar .sidebar-bottom .material-symbols-outlined{font-size:25px!important}
-.workspace{margin-left:320px!important}
-@media(max-width:760px){
-  .sidebar{display:none!important}
-  .workspace{margin:0!important;padding:25px 16px 92px!important}
-}
-
-</style>
-<link rel="stylesheet" href="/espace-client/sidebar.css">
-<script defer src="/espace-client/sidebar.js"></script>
+<link rel="stylesheet" href="/espace-client/sidebar.css"><script defer src="/espace-client/sidebar.js"></script>
 </head>
-<body class="bg-background text-on-surface antialiased overflow-x-hidden min-h-screen">
-
-<div class="fixed top-0 left-0 right-0 h-[480px] glacier-glow pointer-events-none z-0"></div>
-
+<body>
 <div id="client-sidebar-root"></div>
-</div>
-
 <main class="workspace">
-
-<section class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-outline-variant/40">
-<div>
-<div class="flex items-center gap-2 mb-1.5">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary-container/60 text-primary border border-primary/20">
-<span class="size-1.5 rounded-full bg-primary animate-pulse"></span>
-              Suivi RSVP en direct
-            </span>
-<span class="text-xs text-on-surface-variant font-mono">Mariage Madagascar 2026</span>
-</div>
-<h1 class="text-3xl lg:text-4xl font-black text-on-surface tracking-tight">Gestion des Invités & RSVPs</h1>
-<p class="text-secondary text-sm lg:text-base mt-1">Gérez vos invités, surveillez la répartition des tables et traitez les régimes alimentaires.</p>
-</div>
-<div class="flex items-center gap-3">
-<button class="flex items-center gap-2 rounded-xl h-11 px-4 bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-sm font-semibold border border-outline-variant transition-all active:scale-95 shadow-sm" id="exportBtn">
-<span class="material-symbols-outlined text-[20px] text-primary">download</span>
-<span>Exporter la liste</span>
-</button>
-<button class="flex items-center gap-2 rounded-xl h-11 px-5 bg-primary text-on-primary text-sm font-bold tracking-wide hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(125,211,252,0.3)]" id="addGuestTrigger">
-<span class="material-symbols-outlined text-[20px]">person_add</span>
-<span>Ajouter un invité</span>
-</button>
-</div>
-</section>
-
-<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-<div class="glacier-card glacier-card-hover rounded-xl p-5 flex flex-col justify-between relative overflow-hidden transition-all duration-300">
-<div class="flex justify-between items-start">
-<span class="text-sm font-medium text-secondary">Total Invités</span>
-<span class="material-symbols-outlined text-primary/80 bg-primary-container/40 p-2 rounded-lg text-[20px]">group</span>
-</div>
-<div class="mt-4 flex items-baseline justify-between">
-<span class="text-3xl font-extrabold text-on-surface tracking-tight">248</span>
-</div>
-<p class="text-xs text-on-surface-variant mt-1.5">Capacité maximale : 300 places</p>
-</div>
-
-<div class="glacier-card glacier-card-hover rounded-xl p-5 flex flex-col justify-between relative overflow-hidden transition-all duration-300">
-<div class="flex justify-between items-start">
-<span class="text-sm font-medium text-secondary">Confirmés</span>
-<span class="material-symbols-outlined text-primary bg-primary/15 p-2 rounded-lg text-[20px]">check_circle</span>
-</div>
-<div class="mt-4 flex items-baseline justify-between">
-<span class="text-3xl font-extrabold text-primary tracking-tight">182</span>
-</div>
-<p class="text-xs text-on-surface-variant mt-1.5">Taux de confirmation : 73.4%</p>
-</div>
-
-<div class="glacier-card glacier-card-hover rounded-xl p-5 flex flex-col justify-between relative overflow-hidden transition-all duration-300">
-<div class="flex justify-between items-start">
-<span class="text-sm font-medium text-secondary">En attente</span>
-<span class="material-symbols-outlined text-[#fa5f38] bg-[#fa5f38]/10 p-2 rounded-lg text-[20px]">schedule</span>
-</div>
-<div class="mt-4 flex items-baseline justify-between">
-<span class="text-3xl font-extrabold text-on-surface tracking-tight">42</span>
-</div>
-<p class="text-xs text-on-surface-variant mt-1.5">Relances à venir</p>
-</div>
-
-<div class="glacier-card glacier-card-hover rounded-xl p-5 flex flex-col justify-between relative overflow-hidden transition-all duration-300">
-<div class="flex justify-between items-start">
-<span class="text-sm font-medium text-secondary">Besoins Alimentaires</span>
-<span class="material-symbols-outlined text-tertiary bg-tertiary-container/50 p-2 rounded-lg text-[20px]">restaurant</span>
-</div>
-<div class="mt-4 flex items-baseline justify-between">
-<span class="text-3xl font-extrabold text-tertiary tracking-tight">36</span>
-</div>
-<p class="text-xs text-on-surface-variant mt-1.5">Équipe traiteur informée</p>
-</div>
-</section>
-
-<section class="glacier-card rounded-2xl overflow-hidden flex flex-col shadow-xl mt-6">
-<div class="p-5 lg:p-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 border-b border-outline-variant/40 bg-surface-container/50">
-<div class="relative flex-1 max-w-md">
-<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary text-[20px]">search</span>
-<input class="w-full bg-surface-container-low/90 text-on-surface placeholder:text-secondary text-sm rounded-xl pl-10 pr-4 py-2.5 border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" id="searchInput" placeholder="Rechercher par nom ou email…" type="text"/>
-</div>
-</div>
-<div class="overflow-x-auto">
-<table class="w-full text-left text-sm text-on-surface">
-<thead class="text-xs uppercase tracking-wider text-secondary bg-surface-container-high/60 border-b border-outline-variant/40">
-<tr>
-<th class="py-4 px-6 font-semibold">Nom de l'invité</th>
-<th class="py-4 px-6 font-semibold">Statut RSVP</th>
-<th class="py-4 px-6 font-semibold">Table</th>
-<th class="py-4 px-6 font-semibold">Régime / Besoins</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-outline-variant/20" id="guestTableBody">
-<tr class="hover:bg-primary/5 transition-colors group">
-<td class="py-4 px-6">
-<div class="flex items-center gap-3">
-<div class="size-9 rounded-full bg-secondary-container text-primary font-semibold flex items-center justify-center border border-primary/30">EL</div>
-<div>
-<p class="font-semibold text-on-surface group-hover:text-primary transition-colors">Elena Rostova</p>
-<p class="text-xs text-secondary font-mono">elena.rostova@example.com</p>
-</div>
-</div>
-</td>
-<td class="py-4 px-6">
-<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/15 text-primary border border-primary/30 shadow-[0_0_10px_rgba(125,211,252,0.15)]">
-<span class="size-1.5 rounded-full bg-primary"></span> Confirmé
-</span>
-</td>
-<td class="py-4 px-6"><span class="px-2.5 py-1 rounded-lg bg-surface-container-high border border-outline-variant text-on-surface text-xs font-mono font-medium">Table 04</span></td>
-<td class="py-4 px-6"><span class="inline-flex items-center gap-1 text-xs text-tertiary font-medium bg-tertiary-container/30 px-2.5 py-1 rounded-md border border-tertiary/20"><span class="material-symbols-outlined text-[15px]">spa</span> Végétarien</span></td>
-</tr>
-<tr class="hover:bg-primary/5 transition-colors group">
-<td class="py-4 px-6">
-<div class="flex items-center gap-3">
-<div class="size-9 rounded-full bg-secondary-container text-primary font-semibold flex items-center justify-center border border-primary/30">JS</div>
-<div>
-<p class="font-semibold text-on-surface group-hover:text-primary transition-colors">Jonathan Steele</p>
-<p class="text-xs text-secondary font-mono">jonathan@example.com</p>
-</div>
-</div>
-</td>
-<td class="py-4 px-6">
-<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/15 text-primary border border-primary/30 shadow-[0_0_10px_rgba(125,211,252,0.15)]">
-<span class="size-1.5 rounded-full bg-primary"></span> Confirmé
-</span>
-</td>
-<td class="py-4 px-6"><span class="px-2.5 py-1 rounded-lg bg-surface-container-high border border-outline-variant text-on-surface text-xs font-mono font-medium">Table 01</span></td>
-<td class="py-4 px-6"><span class="text-xs text-on-surface-variant italic">Aucun</span></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-
-<div class="footer-note">© 2026 Mariage Madagascar · Espace client privé · Vos préparatifs en un seul endroit</div>
+  <div class="flex flex-wrap items-center gap-2 text-sm text-[#8eb9cc] mb-5"><a href="/espace-client/index.html">Accueil</a><span>/</span><a href="/espace-client/index.html">Espace client</a><span>/</span><span class="text-white">Invités & RSVP</span></div>
+  <header class="page-header flex flex-col lg:flex-row lg:items-end justify-between gap-5 pb-5 border-b border-[#2a3a48]">
+    <div><div class="inline-flex items-center gap-2 text-xs text-[#7dd3fc] bg-[#1a3a4e]/60 border border-[#7dd3fc]/20 rounded-full px-3 py-1 mb-3"><span class="w-1.5 h-1.5 rounded-full bg-[#7dd3fc]"></span> Suivi des réponses</div><h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white">Gestion des Invités &amp; RSVP</h1><p class="text-[#8eb9cc] mt-2 max-w-3xl">Suivez les confirmations de présence, les préférences de menu et les régimes spécifiques.</p></div>
+    <div class="actions flex gap-3"><button id="exportBtn" class="rounded-full px-4 py-3 bg-[#213d4a] hover:bg-[#294b5a] text-white text-xs font-bold flex items-center gap-2"><span class="material-symbols-outlined text-lg">download</span>Exporter la liste (.csv)</button><button id="addGuestTrigger" class="rounded-full px-5 py-3 bg-[#7dd3fc] hover:brightness-110 text-[#10232c] text-xs font-extrabold flex items-center gap-2"><span class="material-symbols-outlined text-lg">person_add</span>Ajouter un invité</button></div>
+  </header>
+  <section class="summary-grid grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-6">
+    <div class="stat"><div class="text-sm text-white font-medium">Total invités</div><div id="totalCount" class="text-3xl font-extrabold text-white mt-3">148</div><p class="text-xs text-[#8eb9cc] mt-2">Invités enregistrés</p></div>
+    <div class="stat"><div class="text-sm text-white font-medium">Confirmés</div><div id="confirmedCount" class="text-3xl font-extrabold text-[#7dd3fc] mt-3">112</div><p class="text-xs text-[#8eb9cc] mt-2">Présences confirmées</p></div>
+    <div class="stat"><div class="text-sm text-white font-medium">En attente</div><div id="pendingCount" class="text-3xl font-extrabold text-white mt-3">24</div><p class="text-xs text-[#8eb9cc] mt-2">Réponses à relancer</p></div>
+    <div class="stat"><div class="text-sm text-white font-medium">Restrictions alimentaires</div><div id="dietCount" class="text-3xl font-extrabold text-[#c8a0f0] mt-3">19</div><p class="text-xs text-[#8eb9cc] mt-2">Besoins signalés</p></div>
+  </section>
+  <section class="mt-6 px-1">
+    <div class="flex items-center justify-between gap-3 text-sm mb-3"><span class="text-white font-semibold">Taux de confirmation global (<span id="confirmedSummary">112</span> sur <span id="totalSummary">148</span> invités)</span><strong id="confirmationRate" class="text-white">76%</strong></div>
+    <div class="h-2 rounded-full bg-[#2f576a] overflow-hidden"><div id="confirmationBar" class="h-full rounded-full bg-[#7dd3fc]" style="width:75.7%"></div></div>
+    <p class="text-xs text-[#8eb9cc] mt-3">Date limite de réponse : à définir pour votre événement</p>
+  </section>
+  <section class="mt-6">
+    <label class="field flex items-center gap-3 rounded-full px-4 py-3.5"><span class="material-symbols-outlined text-[#8eb9cc]">search</span><input id="searchInput" class="bg-transparent border-0 outline-none ring-0 focus:ring-0 text-sm w-full p-0 placeholder:text-[#8eb9cc]" placeholder="Rechercher un invité par nom, table, email ou groupe…" type="search"></label>
+    <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 mt-4">
+      <div class="flex items-center gap-2 filterline"><span class="text-[10px] uppercase tracking-widest text-[#a0b4c4] font-bold mr-1">Catégorie</span><button class="pill active" data-category="all">Tous</button><button class="pill" data-category="Famille">Famille</button><button class="pill" data-category="Amis d'Enfance">Amis d'Enfance</button><button class="pill" data-category="Collègues">Collègues</button><button class="pill" data-category="VIP & Témoins">VIP &amp; Témoins</button><button class="pill" data-category="Enfants">Enfants</button></div>
+      <div class="flex items-center gap-2 text-xs text-[#a0b4c4]"><label for="statusFilter">Statut :</label><select id="statusFilter" class="field px-3 py-2 text-xs"><option value="all">Tous</option><option value="Confirmé">Confirmé</option><option value="En attente">En attente</option><option value="Décliné">Décliné</option></select><label for="sortSelect" class="ml-2">Trier :</label><select id="sortSelect" class="field px-3 py-2 text-xs"><option value="recent">Dernière réponse</option><option value="name">Nom A–Z</option><option value="table">Table</option><option value="status">Statut RSVP</option></select></div>
+    </div>
+  </section>
+  <section class="glass mt-4 overflow-hidden">
+    <div class="overflow-x-auto"><table><thead><tr><th>Invité</th><th>Cercle / rôle</th><th>Statut RSVP</th><th>Menu &amp; régime</th><th>Table</th><th>Actions</th></tr></thead><tbody id="guestTableBody"></tbody></table></div>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 text-xs text-[#a0b4c4]"><span id="paginationInfo">Affichage de 1 à 6 sur 148 invités</span><div class="flex items-center gap-2"><button id="prevPage" class="pill" disabled>Précédent</button><span id="pageNumber" class="rounded-lg bg-[#7dd3fc] text-[#10232c] px-3 py-2 font-bold">1</span><button id="nextPage" class="pill">Suivant</button></div></div>
+  </section>
+  <section class="bottom-cards grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+    <article class="stat"><div class="flex items-center justify-between gap-2"><h2 class="font-bold text-white text-sm">Régimes spécifiques</h2><span class="rounded-full bg-[#0e4d6e] text-[#c8eaff] px-3 py-1 text-xs">19 cas</span></div><div class="space-y-2 text-xs mt-4 text-[#a0b4c4]"><p class="flex justify-between"><span>Végétarien / Végétalien</span><strong class="text-white">11</strong></p><p class="flex justify-between"><span>Sans gluten</span><strong class="text-white">4</strong></p><p class="flex justify-between"><span>Sans arachides / noix</span><strong class="text-white">3</strong></p><p class="flex justify-between"><span>Sans lactose</span><strong class="text-white">1</strong></p></div><p class="text-[11px] text-[#8eb9cc] border-t border-[#2a3a48] mt-4 pt-3">À transmettre au traiteur après validation.</p></article>
+    <article class="stat"><div class="flex items-center justify-between gap-2"><h2 class="font-bold text-white text-sm">Navettes &amp; transports</h2><span class="rounded-full bg-[#213d4a] text-[#c0d8e8] px-3 py-1 text-xs">64 inscrits</span></div><div class="space-y-2 text-xs mt-4 text-[#a0b4c4]"><p class="flex justify-between gap-3"><span>Gare → Domaine</span><strong class="text-white">38</strong></p><p class="flex justify-between gap-3"><span>Hôtel → Domaine</span><strong class="text-white">26</strong></p><p class="flex justify-between gap-3"><span>Navettes retour de nuit</span><strong class="text-white">52</strong></p></div><p class="text-[11px] text-[#8eb9cc] border-t border-[#2a3a48] mt-4 pt-3">Suivi des besoins de transport.</p></article>
+    <article class="stat"><div class="flex items-center justify-between gap-2"><h2 class="font-bold text-white text-sm">Hébergement partenaire</h2><span class="rounded-full bg-[#3d2060] text-[#e8d0ff] px-3 py-1 text-xs">28 chambres</span></div><p class="text-xs text-[#a0b4c4] leading-relaxed mt-4">Suivez les chambres réservées pour la famille et les témoins ainsi que les disponibilités restantes.</p><div class="flex items-center justify-between border-t border-[#2a3a48] mt-4 pt-3 text-[11px]"><span class="text-[#8eb9cc]">Taux de remplissage indicatif</span><strong class="text-[#7dd3fc]">87%</strong></div></article>
+  </section>
+  <footer class="text-center text-xs text-[#61778a] mt-8">© 2026 Mariage Madagascar · Espace client privé · Vos préparatifs en un seul endroit</footer>
 </main>
-</body>
-</html>
+<div id="guestModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal">
+  <div class="flex items-center justify-between gap-3 border-b border-[#2a3a48] pb-4"><div><p class="text-xs uppercase tracking-widest text-[#7dd3fc]">Liste des invités</p><h2 id="modalTitle" class="text-xl font-bold text-white mt-1">Ajouter un invité</h2></div><button id="closeModal" class="text-[#a0b4c4] hover:text-white" aria-label="Fermer"><span class="material-symbols-outlined">close</span></button></div>
+  <form id="guestForm" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-5">
+    <div><label class="form-label" for="firstName">Prénom *</label><input class="form-field" id="firstName" required maxlength="80" placeholder="Prénom"></div>
+    <div><label class="form-label" for="lastName">Nom *</label><input class="form-field" id="lastName" required maxlength="80" placeholder="Nom"></div>
+    <div class="sm:col-span-2"><label class="form-label" for="email">Adresse e-mail</label><input class="form-field" id="email" type="email" placeholder="nom@exemple.com"></div>
+    <div><label class="form-label" for="category">Groupe / cercle</label><select class="form-field" id="category"><option>Famille</option><option>Amis d'Enfance</option><option>Collègues</option><option>VIP & Témoins</option><option>Enfants</option></select></div>
+    <div><label class="form-label" for="rsvp">Statut RSVP</label><select class="form-field" id="rsvp"><option>En attente</option><option>Confirmé</option><option>Décliné</option></select></div>
+    <div><label class="form-label" for="menu">Menu / régime alimentaire</label><input class="form-field" id="menu" placeholder="Ex. Végétarien, sans gluten"></div>
+    <div><label class="form-label" for="tableName">Table assignée</label><input class="form-field" id="tableName" placeholder="Ex. Table Camélia"></div>
+    <div class="sm:col-span-2 flex justify-end gap-3 border-t border-[#2a3a48] pt-4"><button id="cancelModal" type="button" class="pill">Annuler</button><button type="submit" class="rounded-full px-5 py-2.5 bg-[#7dd3fc] text-[#10232c] font-bold text-xs">Enregistrer l’invité</button></div>
+  </form><p class="text-[11px] text-[#8eb9cc] mt-4">Cette version conserve les ajouts dans la page en cours. La synchronisation Supabase reste à connecter.</p>
+</div></div>
+<div id="toast" class="fixed bottom-5 right-5 z-[120] hidden max-w-sm rounded-xl border border-[#2a3a48] bg-[#141c2e] px-4 py-3 text-sm text-white shadow-xl" role="status"></div>
+<script>
+(() => {
+ const guests=[
+ {id:1,first:'Éléonore',last:'Laurent',email:'eleonore.laurent@paris.fr',category:"Amis d'Enfance",role:'Témoin',status:'Confirmé',plus:1,menu:'Menu Gastronomique',diet:'Sans Gluten',table:"Table d’Honneur",recent:6},
+ {id:2,first:'Marc & Sophie',last:'Bertrand',email:'mbertrand@outlook.com',category:'Famille',role:'',status:'Confirmé',plus:0,menu:'Duo Terre & Mer',diet:'Aucune restriction',table:'Table Camélia (4)',recent:5},
+ {id:3,first:'Thibault',last:'Girard',email:'thibault.g@techcorp.io',category:'Collègues',role:'',status:'En attente',plus:0,menu:'En attente de choix',diet:'',table:'',recent:4},
+ {id:4,first:'Camille & Arthur',last:'Dupont',email:'camilletdupont@gmail.com',category:'Famille',role:'',status:'Confirmé',plus:2,menu:'2× Végétarien + 2× Enfant',diet:'Allergie Arachides',table:'Table Magnolia (2)',recent:3},
+ {id:5,first:'Alexandre',last:'Lefèvre',email:'alex.lefevre@club-voyage.fr',category:"Amis d'Enfance",role:'',status:'Décliné',plus:0,menu:'—',diet:'',table:'',recent:2},
+ {id:6,first:'Hélène',last:'de Montmirail',email:'helene.dmm@chateau.fr',category:'VIP & Témoins',role:'',status:'Confirmé',plus:0,menu:'Végétalien Prestige',diet:'Intolérance Lactose',table:"Table d’Honneur",recent:1}
+ ];
+ let category='all',page=1;const perPage=6;
+ const $=id=>document.getElementById(id);
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function toast(msg){const t=$('toast');t.textContent=msg;t.classList.remove('hidden');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.add('hidden'),2800)}
+ function initials(g){return (g.first.split(/\s+/)[0][0]+g.last[0]).toUpperCase()}
+ function filtered(){
+   const q=$('searchInput').value.trim().toLocaleLowerCase('fr'),st=$('statusFilter').value,sort=$('sortSelect').value;
+   let list=guests.filter(g=>(category==='all'||g.category===category)&&(st==='all'||g.status===st)&&[g.first,g.last,g.email,g.category,g.table,g.menu,g.diet].join(' ').toLocaleLowerCase('fr').includes(q));
+   if(sort==='name')list.sort((a,b)=>(a.last+a.first).localeCompare(b.last+b.first,'fr'));
+   if(sort==='table')list.sort((a,b)=>(a.table||'ZZZ').localeCompare(b.table||'ZZZ','fr'));
+   if(sort==='status')list.sort((a,b)=>a.status.localeCompare(b.status,'fr'));
+   if(sort==='recent')list.sort((a,b)=>b.recent-a.recent);
+   return list;
+ }
+ function render(){
+   const list=filtered(),pages=Math.max(1,Math.ceil(list.length/perPage));if(page>pages)page=pages;
+   const shown=list.slice((page-1)*perPage,page*perPage);
+   $('guestTableBody').innerHTML=shown.length?shown.map(g=>`<tr>
+    <td><div class="flex items-center gap-3"><div class="w-9 h-9 shrink-0 rounded-full bg-[#213d4a] border border-[#7dd3fc]/30 flex items-center justify-center text-[#7dd3fc] text-[10px] font-bold">${esc(initials(g))}</div><div><div class="font-semibold text-white">${esc(g.first)} ${esc(g.last)} ${g.role?`<span class="ml-1 rounded-full bg-[#3d2060] text-[#e8d0ff] px-2 py-1 text-[9px]">${esc(g.role)}</span>`:''}</div><div class="text-[11px] text-[#a0b4c4] mt-1">${esc(g.email||'E-mail non renseigné')}</div></div></div></td>
+    <td class="text-xs">${esc(g.category)}</td><td><span class="status ${g.status==='Confirmé'?'confirmed':g.status==='En attente'?'pending':'declined'}">● ${esc(g.status)}${g.status==='Confirmé'&&g.plus?` (+${g.plus})`:''}</span></td>
+    <td><div class="text-xs text-white">${esc(g.menu||'—')}</div>${g.diet&&g.diet!=='Aucune restriction'?`<div class="mt-1 inline-block rounded-md border border-amber-500/30 bg-amber-950/40 px-2 py-1 text-[10px] text-amber-300">${esc(g.diet)}</div>`:''}</td>
+    <td class="text-xs ${g.table?'text-white':'text-[#a0b4c4] italic'}">${esc(g.table||'Non assignée')}</td><td><button class="editGuest p-2 text-[#a0b4c4] hover:text-[#7dd3fc]" data-id="${g.id}" title="Modifier cet invité" aria-label="Modifier ${esc(g.first)}"><span class="material-symbols-outlined">edit</span></button></td></tr>`).join(''):`<tr><td colspan="6" class="text-center py-10 text-[#a0b4c4]">Aucun invité ne correspond à la recherche.</td></tr>`;
+   $('paginationInfo').textContent=list.length?`Affichage de ${(page-1)*perPage+1} à ${Math.min(page*perPage,list.length)} sur ${list.length} résultat(s)`:'Aucun résultat';
+   $('pageNumber').textContent=page;$('prevPage').disabled=page<=1;$('nextPage').disabled=page>=pages;
+   // Sample totals reflect the mock dashboard, plus guests added during this session.
+   const added=Math.max(0,guests.length-6);$('totalCount').textContent=148+added;$('totalSummary').textContent=148+added;
+   $('confirmedCount').textContent=112+guests.filter(g=>g.id>6&&g.status==='Confirmé').length;
+   $('pendingCount').textContent=24+guests.filter(g=>g.id>6&&g.status==='En attente').length;
+   $('confirmedSummary').textContent=$('confirmedCount').textContent;
+   const rate=Math.round(Number($('confirmedCount').textContent)/Number($('totalCount').textContent)*100);$('confirmationRate').textContent=rate+'%';$('confirmationBar').style.width=rate+'%';
+   $('dietCount').textContent=19+guests.filter(g=>g.id>6&&g.diet).length;
+ }
+ function openModal(g=null){
+   $('guestForm').reset();$('modalTitle').textContent=g?'Modifier un invité':'Ajouter un invité';
+   $('firstName').value=g?.first||'';$('lastName').value=g?.last||'';$('email').value=g?.email||'';$('category').value=g?.category||'Famille';$('rsvp').value=g?.status||'En attente';$('menu').value=g?.menu==='—'?'':g?.menu||'';$('tableName').value=g?.table||'';
+   $('guestForm').dataset.editId=g?String(g.id):'';$('guestModal').classList.remove('hidden');$('firstName').focus();
+ }
+ function closeModal(){$('guestModal').classList.add('hidden')}
+ $('addGuestTrigger').addEventListener('click',()=>openModal());$('closeModal').addEventListener('click',closeModal);$('cancelModal').addEventListener('click',closeModal);
+ $('guestModal').addEventListener('click',e=>{if(e.target===$('guestModal'))closeModal()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+ $('guestForm').addEventListener('submit',e=>{
+   e.preventDefault();const id=$('guestForm').dataset.editId;const g={first:$('firstName').value.trim(),last:$('lastName').value.trim(),email:$('email').value.trim(),category:$('category').value,status:$('rsvp').value,plus:0,menu:$('menu').value.trim()||'—',diet:'',table:$('tableName').value.trim(),recent:Date.now()};
+   if(id){const idx=guests.findIndex(x=>String(x.id)===id);if(idx>=0)Object.assign(guests[idx],g);toast('Invité modifié dans cette session.')}
+   else{g.id=Math.max(...guests.map(x=>x.id))+1;guests.unshift(g);toast('Invité ajouté dans cette session.');}
+   page=1;closeModal();render();
+ });
+ $('guestTableBody').addEventListener('click',e=>{const b=e.target.closest('.editGuest');if(!b)return;const g=guests.find(x=>x.id===Number(b.dataset.id));if(g)openModal(g)});
+ $('searchInput').addEventListener('input',()=>{page=1;render()});$('statusFilter').addEventListener('change',()=>{page=1;render()});$('sortSelect').addEventListener('change',()=>{page=1;render()});
+ document.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('click',()=>{category=b.dataset.category;page=1;document.querySelectorAll('[data-category]').forEach(x=>x.classList.toggle('active',x===b));render()}));
+ $('prevPage').addEventListener('click',()=>{if(page>1){page--;render()}});$('nextPage').addEventListener('click',()=>{page++;render()});
+ $('exportBtn').addEventListener('click',()=>{
+   const rows=[['Prénom','Nom','E-mail','Groupe','Statut RSVP','Menu','Régime','Table'],...filtered().map(g=>[g.first,g.last,g.email,g.category,g.status,g.menu,g.diet,g.table])];
+   const csv=rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
+   const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='liste-invites-rsvp.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);toast('Export CSV téléchargé.');
+ });
+ render();
+})();
+</script>
+</body></html>
