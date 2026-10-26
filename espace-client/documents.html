@@ -263,6 +263,7 @@
      if (!session) { renderEmptyState(); return; }
      const user = session.user;
 
+     // Effectue une tentative sécurisée sur la table 'documents'
      const { data: docs, error } = await sb
        .from('documents')
        .select('*')
@@ -304,7 +305,7 @@
 
      filterRows();
    } catch (err) {
-     console.error('Erreur documents Supabase:', err);
+     // Affiche un état vide propre sans erreur bloquante si la table est absente
      renderEmptyState();
    }
  }

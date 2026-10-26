@@ -5,6 +5,26 @@
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- 0. Table documents (créée si absente pour l'espace coffre-fort)
+CREATE TABLE IF NOT EXISTS public.documents (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    file_url TEXT NOT NULL,
+    document_type VARCHAR(100) DEFAULT 'other',
+    is_validated BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS select_own_documents ON public.documents;
+CREATE POLICY select_own_documents ON public.documents
+    FOR SELECT USING (
+        auth.uid() IS NOT NULL AND (client_profile_id = auth.uid() OR user_id = auth.uid())
+    );
+
 -- 1. Table client_projects (créée uniquement si absente, avec owner_id)
 DO $$
 BEGIN
