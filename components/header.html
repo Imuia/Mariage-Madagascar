@@ -223,7 +223,7 @@
     display: inline-block;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 1101px) {
     .mobile-global-toggle,
     .mobile-global-button,
     .mobile-global-panel,
@@ -247,7 +247,7 @@ nav.fixed.top-0.left-0.w-full.z-50 .text-xl{font-size:16px;line-height:1.25}
 nav.fixed.top-0.left-0.w-full.z-50 .hidden.md\:flex{display:flex;align-items:center}
 nav.fixed.top-0.left-0.w-full.z-50 .mobile-global-button{display:none}
 .mobile-global-panel{font-family:Inter,Arial,sans-serif}
-@media(max-width:767px){
+@media(max-width:1100px){
  nav.fixed.top-0.left-0.w-full.z-50>div{height:64px}
  nav.fixed.top-0.left-0.w-full.z-50 .hidden.md\:flex{display:none!important}
  nav.fixed.top-0.left-0.w-full.z-50 .mobile-global-button{display:inline-flex!important}
@@ -455,3 +455,68 @@ nav.fixed.top-0.left-0.w-full.z-50 .mm-account-link .material-symbols-outlined {
   initAccountLinks();
 })();
 </script>
+
+
+<style>
+/* Correctif de mise en page du header : empêche les libellés de se casser sur plusieurs lignes. */
+@media (min-width: 1101px) {
+  nav.fixed.top-0.left-0.w-full.z-50 > div {
+    flex-wrap: nowrap !important;
+    gap: clamp(14px, 1.4vw, 26px) !important;
+  }
+  nav.fixed.top-0.left-0.w-full.z-50 > div > a:first-child {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+  }
+  nav.fixed.top-0.left-0.w-full.z-50 > div > div:nth-of-type(1) {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    gap: clamp(6px, 1vw, 18px) !important;
+  }
+  nav.fixed.top-0.left-0.w-full.z-50 .mm-nav-link {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    padding-left: clamp(4px, .55vw, 10px) !important;
+    padding-right: clamp(4px, .55vw, 10px) !important;
+    font-size: clamp(11px, .75vw, 14px) !important;
+    letter-spacing: .055em !important;
+  }
+  nav.fixed.top-0.left-0.w-full.z-50 > div > div:nth-of-type(2) {
+    flex: 0 0 auto !important;
+    flex-wrap: nowrap !important;
+    gap: clamp(8px, .8vw, 14px) !important;
+  }
+  nav.fixed.top-0.left-0.w-full.z-50 > div > div:nth-of-type(2) > div,
+  nav.fixed.top-0.left-0.w-full.z-50 > div > div:nth-of-type(2) > a {
+    flex: 0 0 auto !important;
+  }
+  nav.fixed.top-0.left-0.w-full.z-50 > div > div:nth-of-type(2) > a[href="/contact-mariage-madagascar-nosy-be.html"] {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    min-width: max-content !important;
+    padding-left: clamp(14px, 1.25vw, 24px) !important;
+    padding-right: clamp(14px, 1.25vw, 24px) !important;
+  }
+}
+
+/* Sur mobile et tablette, bascule vers le menu hamburger avant que le header soit comprimé. */
+@media (max-width: 1100px) {
+  nav.fixed.top-0.left-0.w-full.z-50 > div {
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+  }
+  nav.fixed.top-0.left-0.w-full.z-50 > div > a:first-child {
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+  }
+  nav.fixed.top-0.left-0.w-full.z-50 > div > a:first-child > span:last-child {
+    white-space: nowrap !important;
+  }
+  .mobile-global-panel .mobile-global-link {
+    white-space: normal;
+  }
+}
+</style>
