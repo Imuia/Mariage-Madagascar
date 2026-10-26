@@ -58,6 +58,7 @@
   const SUPABASE_URL = 'https://qrkinjuhtyfptldlvdyg.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
   const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+  if (supabaseClient) window.mmSupabase = supabaseClient;
 
   async function checkSession() {
     if (!supabaseClient) return;
@@ -169,7 +170,7 @@
       <textarea id="message-input" rows="1" class="glass-input flex-1 rounded-xl px-3 py-3 resize-none" placeholder="Rédiger un message..." aria-label="Rédiger un message"></textarea>
       <button type="submit" class="send-button" aria-label="Envoyer le message"><span class="material-symbols-outlined">send</span></button>
     </form>
-    <p id="chat-notice" class="px-4 pb-3 text-xs text-on-surface-variant">Maquette interactive : les messages ne sont pas encore enregistrés dans Supabase.</p>
+    <p id="chat-notice" class="px-4 pb-3 text-xs text-on-surface-variant">Messagerie sécurisée connectée à Supabase.</p>
   </section>
   <aside id="contact-details" class="contact-details border-l border-primary/10 flex flex-col">
     <div class="p-6 text-center border-b border-primary/10"><div class="profile-avatar">ER</div><h3 id="detail-name" class="font-semibold text-lg mt-3">Elena Rostova</h3><p id="detail-role" class="text-sm text-primary">Lead Designer</p><div class="flex justify-center gap-2 mt-4"><span class="detail-chip material-symbols-outlined">mail</span><span class="detail-chip material-symbols-outlined">calendar_month</span></div></div>
@@ -219,18 +220,90 @@
 @media(max-width:760px){.messenger{height:calc(100vh - 220px);min-height:540px}.conversation-list{display:none}.contact-details{display:none}.workspace{padding-left:10px!important;padding-right:10px!important}.chat-messages{padding:14px}.message-row{max-width:96%}.composer{padding:8px}.icon-button{flex-basis:34px;height:34px}}
 </style>
 <script>
-(function(){
- const form=document.getElementById('message-form'), input=document.getElementById('message-input'), list=document.getElementById('conversation-items'), search=document.getElementById('conversation-search'), messages=document.getElementById('chat-messages');
- function sendMessage(text){const clean=text.trim();if(!clean)return;const row=document.createElement('div');row.className='message-row outgoing';const content=document.createElement('div');content.className='message-content';const meta=document.createElement('small');meta.className='text-right';meta.textContent='À l’instant · Vous';const bubble=document.createElement('div');bubble.className='bubble sent';bubble.textContent=clean;const status=document.createElement('small');status.className='text-right';status.textContent='Envoyé localement';content.append(meta,bubble,status);row.append(content);messages.append(row);messages.scrollTop=messages.scrollHeight;input.value='';input.style.height='44px';}
- form.addEventListener('submit',e=>{e.preventDefault();sendMessage(input.value)});
- input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit()}});
- input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px'});
- search.addEventListener('input',()=>{list.querySelectorAll('.conversation-item').forEach(item=>item.hidden=!item.innerText.toLowerCase().includes(search.value.toLowerCase()))});
- list.querySelectorAll('.conversation-item').forEach(item=>item.addEventListener('click',()=>{list.querySelectorAll('.conversation-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');document.getElementById('chat-name').textContent=item.dataset.name;document.getElementById('chat-role').textContent='En ligne · '+item.dataset.role;document.getElementById('detail-name').textContent=item.dataset.name;document.getElementById('detail-role').textContent=item.dataset.role;document.getElementById('chat-avatar').textContent=item.dataset.name.split(' ').map(w=>w[0]).slice(0,2).join('');document.getElementById('chat-avatar').className='avatar';messages.innerHTML='<div class="text-center"><span class="date-pill">Conversation sélectionnée</span></div><div class="message-row incoming"><span class="mini-avatar">'+item.dataset.name.split(' ').map(w=>w[0]).slice(0,2).join('')+'</span><div class="message-content"><small>'+item.dataset.name+'</small><div class="bubble glass-panel">'+item.dataset.preview+'</div></div></div><p class="text-xs text-on-surface-variant text-center">Historique de démonstration non connecté.</p>';}));
- document.getElementById('attach-button').addEventListener('click',()=>document.getElementById('attachment-input').click());
- document.getElementById('attachment-input').addEventListener('change',e=>{if(e.target.files[0]){const f=e.target.files[0];const note=document.createElement('p');note.className='text-xs text-primary';note.textContent='Fichier sélectionné : '+f.name+' (pas encore envoyé)';messages.append(note);messages.scrollTop=messages.scrollHeight;}});
- document.getElementById('toggle-details').addEventListener('click',()=>{const d=document.getElementById('contact-details');d.style.display=d.style.display==='none'?'flex':'none'});
- document.getElementById('new-message').addEventListener('click',()=>{const name=prompt('Nom du contact (démo) :');if(name&&name.trim()){document.getElementById('chat-name').textContent=name.trim();document.getElementById('chat-role').textContent='Nouvelle conversation';document.getElementById('chat-messages').innerHTML='<p class="text-sm text-on-surface-variant text-center">Nouvelle conversation de démonstration avec '+name.trim().replace(/[<>&"]/g,'')+'.</p>';input.focus();}});
+(async function(){
+ const sb=window.supabaseClient || window.mmSupabase || (window.supabase ? window.supabase.createClient('https://qrkinjuhtyfptldlvdyg.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdWIiLCJyZWYiOiJxcmtpbmp1aHR5cHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I') : null);
+ const form=document.getElementById('message-form'), input=document.getElementById('message-input');
+ const list=document.getElementById('conversation-items'), search=document.getElementById('conversation-search');
+ const messages=document.getElementById('chat-messages'), notice=document.getElementById('chat-notice');
+ const attach=document.getElementById('attach-button'), fileInput=document.getElementById('attachment-input');
+ let currentConversation=null, channel=null, currentUser=null, pendingFile=null;
+ function showNotice(text,isError=false){if(!notice)return;notice.textContent=text;notice.classList.remove('hidden');notice.style.color=isError?'#ff9b9b':'#7dd3fc';}
+ function clearNotice(){if(notice)notice.classList.add('hidden');}
+ function initials(name='Client'){return name.split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase();}
+ function escapeText(value){return String(value??'');}
+ function renderMessage(msg){
+   const outgoing=msg.sender_id===currentUser.id;
+   const row=document.createElement('div');row.className='message-row '+(outgoing?'outgoing':'incoming');
+   if(!outgoing){const av=document.createElement('span');av.className='mini-avatar';av.textContent=initials(msg.sender_name||'Équipe');row.append(av);}
+   const content=document.createElement('div');content.className='message-content';
+   const meta=document.createElement('small');meta.textContent=(outgoing?'Vous':(msg.sender_name||'Équipe'))+' · '+new Date(msg.created_at).toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'});
+   const bubble=document.createElement('div');bubble.className='bubble '+(outgoing?'sent':'glass-panel');bubble.textContent=msg.body;
+   content.append(meta,bubble);
+   if(msg.attachment_path){const link=document.createElement('a');link.className='attachment';link.textContent='Télécharger la pièce jointe';link.href='#';link.addEventListener('click',async e=>{e.preventDefault();const {data,error}=await sb.storage.from('client-message-files').createSignedUrl(msg.attachment_path,60);if(error)showNotice('Impossible de générer le lien du fichier.',true);else window.open(data.signedUrl,'_blank','noopener');});content.append(link);}
+   row.append(content);messages.append(row);
+ }
+ async function loadMessages(conversationId){
+   currentConversation=conversationId;messages.innerHTML='';clearNotice();
+   const {data,error}=await sb.from('client_messages').select('id,conversation_id,sender_id,body,attachment_path,created_at').eq('conversation_id',conversationId).order('created_at',{ascending:true}).limit(300);
+   if(error){showNotice('Impossible de charger les messages : '+error.message,true);return;}
+   for(const msg of (data||[]))renderMessage(msg);
+   if(!data?.length)showNotice('Cette conversation est prête. Envoyez votre premier message.');
+   messages.scrollTop=messages.scrollHeight;
+   if(channel)await sb.removeChannel(channel);
+   channel=sb.channel('client-messages-'+conversationId).on('postgres_changes',{event:'INSERT',schema:'public',table:'client_messages',filter:'conversation_id=eq.'+conversationId},payload=>{
+     if(payload.new.sender_id!==currentUser.id){renderMessage(payload.new);messages.scrollTop=messages.scrollHeight;}
+   }).subscribe();
+ }
+ async function loadConversations(){
+   list.innerHTML='';
+   const {data:members,error}=await sb.from('client_conversation_members').select('conversation_id,role,client_conversations(id,subject,project_id,created_at)').eq('user_id',currentUser.id);
+   if(error){showNotice('Les conversations ne sont pas accessibles. Vérifiez les tables et les règles RLS Supabase.',true);return;}
+   const rows=(members||[]).filter(x=>x.client_conversations).map(x=>({id:x.conversation_id,subject:x.client_conversations.subject,role:x.role,created_at:x.client_conversations.created_at}));
+   if(!rows.length){const empty=document.createElement('p');empty.className='p-4 text-sm text-on-surface-variant';empty.textContent='Aucune conversation pour le moment. L’équipe pourra ouvrir une conversation liée à votre projet.';list.append(empty);messages.innerHTML='';showNotice('Votre messagerie est connectée. Aucune conversation ne vous a encore été attribuée.');return;}
+   rows.forEach((row,index)=>{
+     const btn=document.createElement('button');btn.type='button';btn.className='conversation-item'+(index===0?' active':'');btn.dataset.id=row.id;btn.dataset.name=row.subject;btn.dataset.role=row.role;
+     const av=document.createElement('span');av.className='avatar avatar-icon';av.textContent='✦';
+     const copy=document.createElement('span');copy.className='conversation-copy';
+     const top=document.createElement('span');top.className='conversation-top';const title=document.createElement('strong');title.textContent=row.subject;const time=document.createElement('small');time.textContent=new Date(row.created_at).toLocaleDateString('fr-FR');top.append(title,time);
+     const preview=document.createElement('span');preview.className='conversation-preview';preview.textContent='Conversation sécurisée';
+     copy.append(top,preview);btn.append(av,copy);list.append(btn);
+     btn.addEventListener('click',()=>{list.querySelectorAll('.conversation-item').forEach(i=>i.classList.remove('active'));btn.classList.add('active');document.getElementById('chat-name').textContent=row.subject;document.getElementById('chat-role').textContent='Conversation privée';document.getElementById('detail-name').textContent=row.subject;document.getElementById('detail-role').textContent='Conversation privée';loadMessages(row.id);});
+   });
+   const first=rows[0];document.getElementById('chat-name').textContent=first.subject;document.getElementById('chat-role').textContent='Conversation privée';document.getElementById('detail-name').textContent=first.subject;document.getElementById('detail-role').textContent='Conversation privée';await loadMessages(first.id);
+ }
+ form.addEventListener('submit',async e=>{
+   e.preventDefault();const body=input.value.trim();if(!body&&!pendingFile)return;
+   if(!currentConversation){showNotice('Aucune conversation active. Contactez l’équipe pour en ouvrir une.',true);return;}
+   const submit=form.querySelector('button[type="submit"],button:not([type])');if(submit)submit.disabled=true;
+   try{
+     let attachmentPath=null;
+     if(pendingFile){
+       if(pendingFile.size>10*1024*1024)throw new Error('Le fichier dépasse la limite de 10 Mo.');
+       const safeName=pendingFile.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+       const path=currentUser.id+'/'+currentConversation+'/'+crypto.randomUUID()+'-'+safeName;
+       const {error:uploadError}=await sb.storage.from('client-message-files').upload(path,pendingFile,{upsert:false});
+       if(uploadError)throw uploadError;attachmentPath=path;
+     }
+     const {data,error}=await sb.from('client_messages').insert({conversation_id:currentConversation,sender_id:currentUser.id,body:body||('Pièce jointe : '+pendingFile.name),attachment_path:attachmentPath}).select().single();
+     if(error)throw error;
+     renderMessage(data);messages.scrollTop=messages.scrollHeight;input.value='';input.style.height='44px';pendingFile=null;fileInput.value='';clearNotice();
+   }catch(err){showNotice('Envoi impossible : '+(err.message||'erreur Supabase'),true);}
+   finally{if(submit)submit.disabled=false;}
+ });
+ input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
+ input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px';});
+ search.addEventListener('input',()=>list.querySelectorAll('.conversation-item').forEach(item=>item.hidden=!item.innerText.toLowerCase().includes(search.value.toLowerCase())));
+ attach.addEventListener('click',()=>fileInput.click());
+ fileInput.addEventListener('change',e=>{pendingFile=e.target.files[0]||null;if(pendingFile)showNotice('Pièce jointe prête : '+pendingFile.name+' — envoyez votre message pour la transmettre.');});
+ document.getElementById('new-message').addEventListener('click',()=>showNotice('Pour votre sécurité, les conversations sont créées par l’équipe et attribuées à votre projet.'));
+ try{
+   if(!sb)throw new Error('Le client Supabase ne s’est pas chargé.');
+   const {data:{session},error}=await sb.auth.getSession();if(error)throw error;
+   if(!session){location.href='/espace-client/login.html';return;}
+   currentUser=session.user;
+   await loadConversations();
+ }catch(err){showNotice(err.message||'Erreur de connexion Supabase.',true);}
+ window.addEventListener('beforeunload',()=>{if(channel)sb.removeChannel(channel);});
 })();
 </script>
   <div class="footer-note">© 2026 Mariage Madagascar · Espace client privé · Vos préparatifs en un seul endroit</div>
