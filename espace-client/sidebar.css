@@ -32,6 +32,9 @@
  .sidebar-mobile-nav.is-expanded{top:68px;bottom:auto;max-height:calc(100vh - 68px);display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));overflow-y:auto;padding:16px;background:#101827}
  .sidebar-mobile-nav.is-expanded a{flex-direction:row;justify-content:flex-start;gap:10px;min-height:54px;padding:10px 12px;border:1px solid #223247;border-radius:12px;font-size:12px}
 }
+.mt-6 {
+    margin-top: 1.5rem;
+}
 
 /* Visibilité de la déconnexion sur les écrans bas */
 @media (min-width:761px) and (max-height:760px){
