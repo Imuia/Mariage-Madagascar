@@ -197,7 +197,7 @@
 <!-- Top Navigation Bar -->
 <header class="h-20 border-b border-outline-variant/60 bg-surface-container-lowest/80 backdrop-blur-md px-6 lg:px-10 flex items-center justify-between sticky top-0 z-30">
 <div class="flex items-center gap-4">
-<button class="md:hidden p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container">
+<button id="dashboard-mobile-menu" type="button" aria-label="Ouvrir la navigation" class="md:hidden p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container">
 <span class="material-symbols-outlined">menu</span>
 </button>
 <div>
@@ -215,7 +215,7 @@
 </div>
 </div>
 <div class="flex items-center gap-3">
-<button class="w-10 h-10 rounded-lg glass-panel flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors relative">
+<button id="dashboard-notifications" type="button" aria-label="Notifications" class="w-10 h-10 rounded-lg glass-panel flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors relative">
 <span class="material-symbols-outlined text-xl">notifications</span>
 <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary"></span>
 </button>
@@ -325,7 +325,7 @@
 </div>
 <div class="flex items-center justify-between pt-2 border-t border-outline-variant/40">
 <span class="text-xs text-on-surface-variant">Délai limite réponse : 30 Juin 2025</span>
-<a class="text-xs font-semibold text-primary hover:text-on-primary-container inline-flex items-center gap-1 group" href="#">
+<a class="text-xs font-semibold text-primary hover:text-on-primary-container inline-flex items-center gap-1 group" href="/espace-client/invites.html">
                 Gérer les listes
                 <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">arrow_forward</span>
 </a>
@@ -366,7 +366,7 @@
 </div>
 <div class="flex items-center justify-between pt-2 border-t border-outline-variant/40">
 <span class="text-xs text-on-surface-variant">Dernière mise à jour hier à 16:42</span>
-<a class="text-xs font-semibold text-primary hover:text-on-primary-container inline-flex items-center gap-1 group" href="#">
+<a class="text-xs font-semibold text-primary hover:text-on-primary-container inline-flex items-center gap-1 group" href="/espace-client/documents.html">
                 Consulter tous les fichiers
                 <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">arrow_forward</span>
 </a>
@@ -385,7 +385,7 @@
                 </h3>
 <p class="text-xs text-on-surface-variant">Actions requises de votre part et suivi de l'équipe locale</p>
 </div>
-<button class="text-xs text-primary hover:underline font-medium">Tout afficher</button>
+<a href="/espace-client/planning.html" class="text-xs text-primary hover:underline font-medium">Tout afficher</a>
 </div>
 <div class="space-y-3">
 <!-- Task Item 1: Important/Urgent -->
@@ -404,7 +404,7 @@
                     Sélectionner la grille tarifaire négociée avec Air Madagascar pour bloquer les 30 sièges invités.
                   </p>
 <div class="mt-3 flex items-center gap-4 text-xs">
-<button class="px-3 py-1.5 rounded bg-primary text-on-primary font-medium hover:bg-primary-fixed-dim transition-colors text-xs flex items-center gap-1.5">
+<button type="button" data-go="/espace-client/commandes.html" data-message="Ouvrez Commandes pour consulter et confirmer les options de votre réservation." class="px-3 py-1.5 rounded bg-primary text-on-primary font-medium hover:bg-primary-fixed-dim transition-colors text-xs flex items-center gap-1.5">
 <span>Valider l'option vol</span>
 <span class="material-symbols-outlined text-xs">arrow_forward</span>
 </button>
@@ -431,7 +431,7 @@
                     Arômes vanille bourbon, langoustes grillées ou zébu façon romazava royal. Définir les options végétariennes.
                   </p>
 <div class="mt-3 flex items-center gap-4 text-xs">
-<button class="px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-medium border border-outline-variant transition-colors text-xs">
+<button type="button" data-go="/espace-client/messages.html" data-message="Contactez votre wedding planner dans Messages pour obtenir les propositions du chef." class="px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-medium border border-outline-variant transition-colors text-xs">
                       Consulter les 3 propositions du chef
                     </button>
 <span class="text-on-surface-variant text-[11px] flex items-center gap-1">
@@ -457,7 +457,7 @@
                     Validation du moodboard floral : arche en bois flotté, fleurs endémiques et lanternes de verre flottantes.
                   </p>
 <div class="mt-3 flex items-center gap-4 text-xs">
-<button class="text-xs text-primary hover:underline font-medium flex items-center gap-1">
+<button type="button" data-go="/espace-client/messages.html" data-message="Le moodboard peut être demandé à votre wedding planner depuis Messages." class="text-xs text-primary hover:underline font-medium flex items-center gap-1">
                       Voir le moodboard 3D
                       <span class="material-symbols-outlined text-xs">open_in_new</span>
 </button>
@@ -489,7 +489,7 @@
                 </h3>
 <p class="text-xs text-on-surface-variant">Devise active : Euro (€) &amp; Ariary (MGA)</p>
 </div>
-<a class="text-xs text-primary hover:underline font-medium" href="#">Détails</a>
+<a class="text-xs text-primary hover:underline font-medium" href="/espace-client/finances.html">Détails</a>
 </div>
 <!-- Budget Container Card -->
 <div class="glass-panel rounded-xl p-5 border border-outline-variant space-y-5">
@@ -572,7 +572,7 @@
 <span class="text-[10px] text-on-surface-variant">Échéance 28 Juin • 3 200 € (Traiteur solde)</span>
 </div>
 </div>
-<button class="px-2.5 py-1 rounded bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary text-xs font-medium transition-colors">
+<button type="button" data-go="/espace-client/finances.html" data-message="Consultez Finances pour vérifier le montant et les modalités avant tout paiement." class="px-2.5 py-1 rounded bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary text-xs font-medium transition-colors">
                   Payer
                 </button>
 </div>
@@ -595,11 +595,11 @@
 </div>
 </div>
 <div class="flex items-center gap-3 shrink-0 w-full md:w-auto">
-<button class="flex-1 md:flex-initial px-4 py-2 rounded-lg bg-surface-container-highest hover:bg-surface-bright text-on-surface text-xs font-semibold border border-outline-variant transition-colors flex items-center justify-center gap-2">
+<button type="button" data-share-booklet class="flex-1 md:flex-initial px-4 py-2 rounded-lg bg-surface-container-highest hover:bg-surface-bright text-on-surface text-xs font-semibold border border-outline-variant transition-colors flex items-center justify-center gap-2">
 <span class="material-symbols-outlined text-sm">share</span>
               Partager le livret
             </button>
-<button class="flex-1 md:flex-initial px-4 py-2 rounded-lg bg-primary hover:bg-primary-fixed-dim text-on-primary text-xs font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm">
+<button type="button" data-go="/espace-client/documents.html" data-message="Ouvrez Documents pour consulter le livret et les fichiers disponibles." class="flex-1 md:flex-initial px-4 py-2 rounded-lg bg-primary hover:bg-primary-fixed-dim text-on-primary text-xs font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm">
 <span class="material-symbols-outlined text-sm">visibility</span>
               Aperçu Invité
             </button>
@@ -617,5 +617,66 @@ function showToast(message) {
   window.__toastTimer = setTimeout(() => el.remove(), 4200);
 }
 </script>
+
+<style>
+#dashboard-toast{position:fixed;right:22px;bottom:22px;z-index:1000;max-width:min(420px,calc(100vw - 32px));padding:14px 18px;border:1px solid rgba(125,211,252,.35);border-radius:14px;background:#141c2e;color:#e0e8f0;box-shadow:0 12px 40px #0008;font-size:14px;line-height:1.5}
+#dashboard-notice-panel{position:absolute;right:20px;top:74px;width:min(340px,calc(100vw - 32px));z-index:50;padding:16px;border:1px solid #2a3a48;border-radius:16px;background:#111828;box-shadow:0 16px 40px #0008}
+#dashboard-notice-panel[hidden]{display:none}
+@media(max-width:760px){.stitch-dashboard > header{position:sticky;top:0}.stitch-dashboard .p-6.lg\:p-10{padding:18px 14px 90px}}
+</style>
+<script>
+(function(){
+  const toast=(message)=>{
+    let el=document.getElementById('dashboard-toast');
+    if(!el){el=document.createElement('div');el.id='dashboard-toast';el.setAttribute('role','status');el.setAttribute('aria-live','polite');document.body.appendChild(el)}
+    el.textContent=message;clearTimeout(window.__dashboardToastTimer);window.__dashboardToastTimer=setTimeout(()=>el.remove(),4500);
+  };
+  document.querySelectorAll('[data-go]').forEach(button=>button.addEventListener('click',()=>{
+    const message=button.dataset.message;
+    if(message) toast(message);
+    const url=button.dataset.go;
+    if(url) setTimeout(()=>{window.location.href=url},message?700:0);
+  }));
+  document.querySelector('[data-share-booklet]')?.addEventListener('click',async()=>{
+    const url=new URL('/espace-client/documents.html',window.location.origin).href;
+    try{
+      if(navigator.share){await navigator.share({title:'Livret de mariage — Mariage Madagascar',text:'Consultez les documents et informations de votre mariage.',url});}
+      else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(url);toast('Lien vers les documents copié. Vous pouvez le partager.');}
+      else {window.prompt('Copiez ce lien pour le partager :',url)}
+    }catch(error){if(error?.name!=='AbortError')toast('Le partage n’a pas abouti. Vous pouvez consulter le livret dans Documents.');}
+  });
+  const notif=document.getElementById('dashboard-notifications');
+  if(notif){
+    const panel=document.createElement('div');panel.id='dashboard-notice-panel';panel.hidden=true;
+    panel.innerHTML='<strong style="display:block;margin-bottom:8px;color:#7dd3fc">Notifications</strong><p style="margin:0;color:#a0b4c4;font-size:13px;line-height:1.5">Consultez vos messages, les échéances et les documents dans les rubriques correspondantes.</p><a href="/espace-client/messages.html" style="display:inline-block;margin-top:12px;color:#7dd3fc;font-size:13px">Ouvrir les messages →</a>';
+    notif.parentElement.style.position='relative';notif.parentElement.appendChild(panel);
+    notif.addEventListener('click',()=>{panel.hidden=!panel.hidden;notif.setAttribute('aria-expanded',String(!panel.hidden));});
+    document.addEventListener('click',e=>{if(!panel.contains(e.target)&&!notif.contains(e.target))panel.hidden=true});
+  }
+  const mobileMenu=document.getElementById('dashboard-mobile-menu');
+  mobileMenu?.addEventListener('click',()=>{
+    const toggle=document.querySelector('#client-sidebar-root .mobile-nav-toggle');
+    if(toggle){toggle.click();return}
+    const nav=document.querySelector('#client-sidebar-root .sidebar-mobile-nav');
+    if(nav){nav.classList.toggle('is-expanded');return}
+    toast('Utilisez le menu de navigation en bas de l’écran pour ouvrir les rubriques.');
+  });
+  // Affiche le nom de compte si Supabase le fournit, sans remplacer les données de mariage par des valeurs inventées.
+  if(window.supabase && window.supabase.createClient){
+    const url='https://qrkinjuhtyfptldlvdyg.supabase.co';
+    const key='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I';
+    const client=window.supabase.createClient(url,key);
+    client.auth.getUser().then(({data,error})=>{
+      if(error||!data?.user)return;
+      const meta=data.user.user_metadata||{};
+      const name=meta.couple_name||meta.full_name||meta.name;
+      if(name){const title=document.querySelector('header h2');if(title)title.textContent=name.toLowerCase().includes('espace')?name:'Espace Mariés : '+name;}
+      const initials=(meta.initials||'').trim();
+      if(initials){const avatar=document.querySelector('header .rounded-full.bg-secondary-container');if(avatar)avatar.textContent=initials.slice(0,3).toUpperCase();}
+    }).catch(()=>{});
+  }
+})();
+</script>
+
 </body>
 </html>
