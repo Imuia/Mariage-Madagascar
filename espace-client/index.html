@@ -676,14 +676,19 @@ function showToast(message) {
         avatarEl.textContent = initials || 'EM';
       }
 
-      // 2. Projet mariage (supporte owner_id et user_id)
+      // 2. Projet mariage (supporte owner_id, user_id et profile_id)
       let projects = null;
       const { data: pByOwner } = await sb.from('client_projects').select('title, wedding_date, event_date').eq('owner_id', user.id).limit(1);
       if (pByOwner && pByOwner.length) {
         projects = pByOwner;
       } else {
         const { data: pByUser } = await sb.from('client_projects').select('title, wedding_date, event_date').eq('user_id', user.id).limit(1);
-        if (pByUser && pByUser.length) projects = pByUser;
+        if (pByUser && pByUser.length) {
+          projects = pByUser;
+        } else {
+          const { data: pByProf } = await sb.from('client_projects').select('title, wedding_date, event_date').eq('profile_id', user.id).limit(1);
+          if (pByProf && pByProf.length) projects = pByProf;
+        }
       }
 
       const project = projects && projects.length ? projects[0] : null;
