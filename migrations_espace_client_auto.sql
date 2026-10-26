@@ -1,212 +1,146 @@
 -- ============================================================================
 -- AUTOMATISATION DU PORTAIL ESPACE CLIENT - MARIAGE MADAGASCAR
 -- Fichier : migrations_espace_client_auto.sql
+-- Description : Compatible avec public.client_profiles et public.client_projects(owner_id)
 -- ============================================================================
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 
--- 0. Table documents (créée si absente, avec références conditionnelles aux profils)
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'documents') THEN
-        IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'profiles') THEN
-            CREATE TABLE public.documents (
-                id UUID PRIMARY KEY DEFAULT public.uuid_generate_v4(),
-                client_profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-                user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-                title VARCHAR(255) NOT NULL,
-                file_url TEXT NOT NULL,
-                document_type VARCHAR(100) DEFAULT 'other',
-                is_validated BOOLEAN DEFAULT FALSE,
-                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-            );
-        ELSE
-            CREATE TABLE public.documents (
-                id UUID PRIMARY KEY DEFAULT public.uuid_generate_v4(),
-                client_profile_id UUID,
-                user_id UUID,
-                title VARCHAR(255) NOT NULL,
-                file_url TEXT NOT NULL,
-                document_type VARCHAR(100) DEFAULT 'other',
-                is_validated BOOLEAN DEFAULT FALSE,
-                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-            );
-        END IF;
-    END IF;
-END $$;
+-- ----------------------------------------------------------------------------
+-- 0. TABLE PUBLIC.CLIENT_PROFILES (si non existante)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.client_profiles (
+    id UUID PRIMARY KEY,
+    email VARCHAR(255),
+    full_name VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE public.client_profiles ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS select_own_client_profile ON public.client_profiles;
+CREATE POLICY select_own_client_profile ON public.client_profiles
+    FOR SELECT USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS update_own_client_profile ON public.client_profiles;
+CREATE POLICY update_own_client_profile ON public.client_profiles
+    FOR UPDATE USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
+
+
+-- ----------------------------------------------------------------------------
+-- 1. TABLE PUBLIC.DOCUMENTS (Liée à Supabase Auth / client_profiles)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.documents (
+    id UUID PRIMARY KEY DEFAULT public.uuid_generate_v4(),
+    client_profile_id UUID REFERENCES public.client_profiles(id) ON DELETE CASCADE,
+    user_id UUID,
+    title VARCHAR(255) NOT NULL,
+    file_url TEXT NOT NULL,
+    document_type VARCHAR(100) DEFAULT 'other',
+    is_validated BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
 
 ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS select_own_documents ON public.documents;
 CREATE POLICY select_own_documents ON public.documents
     FOR SELECT USING (
-        auth.uid() IS NOT NULL AND (client_profile_id = auth.uid() OR user_id = auth.uid())
+        auth.uid() IS NOT NULL AND (
+            client_profile_id = auth.uid() OR user_id = auth.uid()
+        )
     );
 
--- 1. Table client_projects
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'client_projects') THEN
-        IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'profiles') THEN
-            CREATE TABLE public.client_projects (
-                id UUID PRIMARY KEY DEFAULT public.uuid_generate_v4(),
-                owner_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-                title VARCHAR(255) NOT NULL DEFAULT 'Mon mariage',
-                event_date DATE,
-                location VARCHAR(255) DEFAULT 'Nosy Be, Madagascar',
-                status VARCHAR(50) DEFAULT 'in_preparation',
-                budget_limit DECIMAL(12,2),
-                notes TEXT,
-                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-            );
-        ELSE
-            CREATE TABLE public.client_projects (
-                id UUID PRIMARY KEY DEFAULT public.uuid_generate_v4(),
-                owner_id UUID,
-                title VARCHAR(255) NOT NULL DEFAULT 'Mon mariage',
-                event_date DATE,
-                location VARCHAR(255) DEFAULT 'Nosy Be, Madagascar',
-                status VARCHAR(50) DEFAULT 'in_preparation',
-                budget_limit DECIMAL(12,2),
-                notes TEXT,
-                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-            );
-        END IF;
-    END IF;
-END $$;
+DROP POLICY IF EXISTS insert_own_documents ON public.documents;
+CREATE POLICY insert_own_documents ON public.documents
+    FOR INSERT WITH CHECK (
+        auth.uid() IS NOT NULL AND (
+            client_profile_id = auth.uid() OR user_id = auth.uid()
+        )
+    );
+
+
+-- ----------------------------------------------------------------------------
+-- 2. TABLE PUBLIC.CLIENT_PROJECTS (owner_id, title, event_date, status)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.client_projects (
+    id UUID PRIMARY KEY DEFAULT public.uuid_generate_v4(),
+    owner_id UUID REFERENCES public.client_profiles(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL DEFAULT 'Mon mariage',
+    event_date DATE,
+    location VARCHAR(255) DEFAULT 'Nosy Be, Madagascar',
+    status VARCHAR(50) DEFAULT 'in_preparation',
+    budget_limit DECIMAL(12,2),
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
 
 ALTER TABLE public.client_projects ENABLE ROW LEVEL SECURITY;
 
-DO $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'client_projects' AND column_name = 'owner_id') THEN
-        CREATE INDEX IF NOT EXISTS idx_client_projects_owner_id ON public.client_projects(owner_id);
-    ELSIF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'client_projects' AND column_name = 'user_id') THEN
-        CREATE INDEX IF NOT EXISTS idx_client_projects_user_id ON public.client_projects(user_id);
-    END IF;
-END $$;
+CREATE INDEX IF NOT EXISTS idx_client_projects_owner_id ON public.client_projects(owner_id);
 
--- Politique RLS conditionnelle
-DO $$
-DECLARE
-    v_col TEXT;
-    v_has_role BOOLEAN := FALSE;
-BEGIN
-    DROP POLICY IF EXISTS select_own_client_project ON public.client_projects;
+-- Politique RLS sécurisée sur client_projects
+DROP POLICY IF EXISTS select_own_client_project ON public.client_projects;
+CREATE POLICY select_own_client_project ON public.client_projects
+    FOR SELECT USING (
+        auth.uid() IS NOT NULL AND owner_id = auth.uid()
+    );
 
-    SELECT column_name INTO v_col
-    FROM information_schema.columns
-    WHERE table_schema = 'public' AND table_name = 'client_projects'
-      AND column_name IN ('owner_id', 'user_id', 'profile_id')
-    ORDER BY CASE column_name WHEN 'owner_id' THEN 1 WHEN 'user_id' THEN 2 ELSE 3 END
-    LIMIT 1;
+DROP POLICY IF EXISTS update_own_client_project ON public.client_projects;
+CREATE POLICY update_own_client_project ON public.client_projects
+    FOR UPDATE USING (auth.uid() = owner_id) WITH CHECK (auth.uid() = owner_id);
 
-    SELECT EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'role'
-    ) INTO v_has_role;
+DROP POLICY IF EXISTS insert_own_client_project ON public.client_projects;
+CREATE POLICY insert_own_client_project ON public.client_projects
+    FOR INSERT WITH CHECK (auth.uid() = owner_id);
 
-    IF v_col IS NOT NULL THEN
-        IF v_has_role THEN
-            EXECUTE format('
-                CREATE POLICY select_own_client_project ON public.client_projects
-                FOR SELECT USING (
-                    auth.uid() IS NOT NULL AND (
-                        %I = auth.uid() OR
-                        (SELECT role FROM public.profiles WHERE id = auth.uid()) IN (''super_admin'', ''admin'')
-                    )
-                );
-            ', v_col);
-        ELSE
-            EXECUTE format('
-                CREATE POLICY select_own_client_project ON public.client_projects
-                FOR SELECT USING (
-                    auth.uid() IS NOT NULL AND %I = auth.uid()
-                );
-            ', v_col);
-        END IF;
-    END IF;
-END $$;
 
--- 2. Déclencheur d'inscription sur auth.users (avec qualification public.uuid_generate_v4)
+-- ----------------------------------------------------------------------------
+-- 3. DÉCLENCHEUR AUTOMATIQUE POST-INSCRIPTION SUR AUTH.USERS
+-- ----------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.handle_new_client_signup()
 RETURNS TRIGGER AS $$
 DECLARE
-    v_first_name TEXT;
-    v_last_name TEXT;
     v_full_name TEXT;
-    v_owner_col TEXT;
-    v_has_fn BOOLEAN := FALSE;
-    v_has_ln BOOLEAN := FALSE;
-    v_has_phone BOOLEAN := FALSE;
-    v_has_role BOOLEAN := FALSE;
+    v_project_exists BOOLEAN := FALSE;
     v_has_orders BOOLEAN := FALSE;
     v_has_order_user_id BOOLEAN := FALSE;
     v_has_order_guest_email BOOLEAN := FALSE;
-    v_project_exists BOOLEAN := FALSE;
 BEGIN
     BEGIN
-        v_full_name := COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', '');
-        v_first_name := COALESCE(
-            NEW.raw_user_meta_data->>'first_name',
-            NULLIF(SPLIT_PART(v_full_name, ' ', 1), ''),
-            'Client'
-        );
-        v_last_name := COALESCE(
-            NEW.raw_user_meta_data->>'last_name',
-            NULLIF(SUBSTRING(v_full_name FROM POSITION(' ' IN v_full_name) + 1), ''),
-            ''
+        v_full_name := COALESCE(
+            NEW.raw_user_meta_data->>'full_name',
+            NEW.raw_user_meta_data->>'name',
+            SPLIT_PART(NEW.email, '@', 1)
         );
 
+        -- 1. Profil client dans public.client_profiles
+        INSERT INTO public.client_profiles (id, email, full_name, created_at, updated_at)
+        VALUES (NEW.id, NEW.email, v_full_name, NOW(), NOW())
+        ON CONFLICT (id) DO UPDATE SET
+            email = EXCLUDED.email,
+            full_name = EXCLUDED.full_name,
+            updated_at = NOW();
+
+        -- 2. Entrée optionnelle dans public.profiles (si la table existe)
         IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'profiles') THEN
-            SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='first_name') INTO v_has_fn;
-            SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='last_name') INTO v_has_ln;
-            SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='phone') INTO v_has_phone;
-            SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='role') INTO v_has_role;
-
-            IF v_has_fn AND v_has_ln AND v_has_phone AND v_has_role THEN
-                INSERT INTO public.profiles (id, first_name, last_name, phone, role, created_at, updated_at)
-                VALUES (NEW.id, v_first_name, v_last_name, NEW.raw_user_meta_data->>'phone', 'client', NOW(), NOW())
-                ON CONFLICT (id) DO UPDATE SET updated_at = NOW();
-            ELSIF v_has_fn AND v_has_ln THEN
-                INSERT INTO public.profiles (id, first_name, last_name, created_at, updated_at)
-                VALUES (NEW.id, v_first_name, v_last_name, NOW(), NOW())
-                ON CONFLICT (id) DO UPDATE SET updated_at = NOW();
-            ELSE
-                INSERT INTO public.profiles (id) VALUES (NEW.id)
-                ON CONFLICT (id) DO NOTHING;
-            END IF;
+            INSERT INTO public.profiles (id) VALUES (NEW.id)
+            ON CONFLICT (id) DO NOTHING;
         END IF;
 
-        IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'clients') THEN
-            INSERT INTO public.clients (profile_id, created_at)
-            VALUES (NEW.id, NOW())
-            ON CONFLICT (profile_id) DO NOTHING;
+        -- 3. Projet "Mon mariage" (owner_id) sans créer de doublon
+        SELECT EXISTS (
+            SELECT 1 FROM public.client_projects WHERE owner_id = NEW.id
+        ) INTO v_project_exists;
+
+        IF NOT v_project_exists THEN
+            INSERT INTO public.client_projects (id, owner_id, title, status, created_at, updated_at)
+            VALUES (public.uuid_generate_v4(), NEW.id, 'Mon mariage', 'in_preparation', NOW(), NOW());
         END IF;
 
-        SELECT column_name INTO v_owner_col
-        FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = 'client_projects'
-          AND column_name IN ('owner_id', 'user_id', 'profile_id')
-        ORDER BY CASE column_name WHEN 'owner_id' THEN 1 WHEN 'user_id' THEN 2 ELSE 3 END
-        LIMIT 1;
-
-        IF v_owner_col IS NOT NULL THEN
-            EXECUTE format('SELECT EXISTS (SELECT 1 FROM public.client_projects WHERE %I = $1)', v_owner_col)
-            INTO v_project_exists
-            USING NEW.id;
-
-            IF NOT v_project_exists THEN
-                EXECUTE format('
-                    INSERT INTO public.client_projects (id, %I, title, status, created_at, updated_at)
-                    VALUES ($1, $2, ''Mon mariage'', ''in_preparation'', NOW(), NOW())
-                ', v_owner_col)
-                USING public.uuid_generate_v4(), NEW.id;
-            END IF;
-        END IF;
-
+        -- 4. Rattachement des commandes invitées si la table orders existe
         SELECT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'orders') INTO v_has_orders;
         IF v_has_orders THEN
             SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='orders' AND column_name='user_id') INTO v_has_order_user_id;
@@ -234,7 +168,10 @@ CREATE TRIGGER trg_on_auth_user_created
     FOR EACH ROW
     EXECUTE FUNCTION public.handle_new_client_signup();
 
--- 3. Fonction RPC d'initialisation Espace Client (avec qualification public.uuid_generate_v4)
+
+-- ----------------------------------------------------------------------------
+-- 4. FONCTION RPC SÉCURISÉE DE SECOURS ET D'INITIALISATION
+-- ----------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.ensure_client_profile_and_project()
 RETURNS JSONB AS $$
 DECLARE
@@ -243,13 +180,7 @@ DECLARE
     v_user_meta JSONB := COALESCE((auth.jwt()->'user_metadata')::jsonb, '{}'::jsonb);
     v_project_id UUID;
     v_project_title TEXT;
-    v_first_name TEXT;
-    v_last_name TEXT;
     v_full_name TEXT;
-    v_owner_col TEXT;
-    v_has_fn BOOLEAN := FALSE;
-    v_has_ln BOOLEAN := FALSE;
-    v_has_role BOOLEAN := FALSE;
     v_has_orders BOOLEAN := FALSE;
     v_has_order_user_id BOOLEAN := FALSE;
     v_has_order_guest_email BOOLEAN := FALSE;
@@ -258,52 +189,31 @@ BEGIN
         RAISE EXCEPTION 'Utilisateur non authentifié.';
     END IF;
 
-    v_full_name := COALESCE(v_user_meta->>'full_name', v_user_meta->>'name', '');
-    v_first_name := COALESCE(
-        v_user_meta->>'first_name',
-        NULLIF(SPLIT_PART(v_full_name, ' ', 1), ''),
-        'Client'
-    );
-    v_last_name := COALESCE(
-        v_user_meta->>'last_name',
-        NULLIF(SUBSTRING(v_full_name FROM POSITION(' ' IN v_full_name) + 1), ''),
-        ''
+    v_full_name := COALESCE(
+        v_user_meta->>'full_name',
+        v_user_meta->>'name',
+        SPLIT_PART(v_user_email, '@', 1)
     );
 
-    IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'profiles') THEN
-        SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='first_name') INTO v_has_fn;
-        SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='last_name') INTO v_has_ln;
-        SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='role') INTO v_has_role;
+    -- client_profiles
+    INSERT INTO public.client_profiles (id, email, full_name, created_at, updated_at)
+    VALUES (v_user_id, v_user_email, v_full_name, NOW(), NOW())
+    ON CONFLICT (id) DO UPDATE SET updated_at = NOW();
 
-        IF v_has_fn AND v_has_ln AND v_has_role THEN
-            INSERT INTO public.profiles (id, first_name, last_name, role, created_at, updated_at)
-            VALUES (v_user_id, v_first_name, v_last_name, 'client', NOW(), NOW())
-            ON CONFLICT (id) DO UPDATE SET updated_at = NOW();
-        ELSE
-            INSERT INTO public.profiles (id) VALUES (v_user_id)
-            ON CONFLICT (id) DO NOTHING;
-        END IF;
-    END IF;
-
-    SELECT column_name INTO v_owner_col
-    FROM information_schema.columns
-    WHERE table_schema = 'public' AND table_name = 'client_projects'
-      AND column_name IN ('owner_id', 'user_id', 'profile_id')
-    ORDER BY CASE column_name WHEN 'owner_id' THEN 1 WHEN 'user_id' THEN 2 ELSE 3 END
+    -- client_projects
+    SELECT id, title INTO v_project_id, v_project_title
+    FROM public.client_projects
+    WHERE owner_id = v_user_id
+    ORDER BY created_at ASC
     LIMIT 1;
 
-    IF v_owner_col IS NOT NULL THEN
-        EXECUTE format('SELECT id, title FROM public.client_projects WHERE %I = $1 ORDER BY created_at ASC LIMIT 1', v_owner_col)
-        INTO v_project_id, v_project_title
-        USING v_user_id;
-
-        IF v_project_id IS NULL THEN
-            EXECUTE format('INSERT INTO public.client_projects (id, %I, title, status, created_at, updated_at) VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING id, title', v_owner_col)
-            INTO v_project_id, v_project_title
-            USING public.uuid_generate_v4(), v_user_id, 'Mon mariage', 'in_preparation';
-        END IF;
+    IF v_project_id IS NULL THEN
+        INSERT INTO public.client_projects (id, owner_id, title, status, created_at, updated_at)
+        VALUES (public.uuid_generate_v4(), v_user_id, 'Mon mariage', 'in_preparation', NOW(), NOW())
+        RETURNING id, title INTO v_project_id, v_project_title;
     END IF;
 
+    -- Rattachement des commandes
     SELECT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'orders') INTO v_has_orders;
     IF v_has_orders THEN
         SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='orders' AND column_name='user_id') INTO v_has_order_user_id;

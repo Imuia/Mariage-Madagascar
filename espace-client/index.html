@@ -660,12 +660,15 @@ function showToast(message) {
       if (!session) return;
       const user = session.user;
 
-      // 1. Profil et titre d'en-tête
-      const { data: profile } = await sb.from('profiles').select('first_name, last_name').eq('id', user.id).single();
-      const meta = user.user_metadata || {};
-      const fullName = (profile && profile.first_name)
-        ? `${profile.first_name} ${profile.last_name || ''}`.trim()
-        : (meta.full_name || meta.name || user.email);
+      // 1. Profil et titre d'en-tête (check client_profiles then profiles)
+      let fullName = '';
+      const { data: clientProf } = await sb.from('client_profiles').select('full_name, email').eq('id', user.id).single();
+      if (clientProf && clientProf.full_name) {
+        fullName = clientProf.full_name;
+      } else {
+        const meta = user.user_metadata || {};
+        fullName = meta.full_name || meta.name || user.email;
+      }
 
       const headerTitle = document.querySelector('header h2');
       if (headerTitle) headerTitle.textContent = `Espace Mariés : ${fullName}`;
