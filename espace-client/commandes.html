@@ -307,10 +307,17 @@ async function loadRealClientOrders() {
     if (!session) return;
     const user = session.user;
 
+    const userEmailNormalized = (user.email || '').trim().toLowerCase();
+
+    // Auto-claim guest orders to ensure user_id is updated in Supabase if missing
+    try {
+      await sb.rpc('claim_guest_orders');
+    } catch (e) {}
+
     const { data: orders, error } = await sb
       .from('orders')
-      .select('id, order_number, created_at, guest_first_name, guest_last_name, total_amount, currency, status, payment_status, order_items(product_name, variation_name, quantity)')
-      .or(`user_id.eq.${user.id},guest_email.eq.${user.email}`)
+      .select('id, order_number, created_at, guest_first_name, guest_last_name, guest_email, total_amount, currency, status, payment_status, order_items(product_name, variation_name, quantity)')
+      .or(`user_id.eq.${user.id},guest_email.ilike.${userEmailNormalized}`)
       .order('created_at', { ascending: false });
 
     if (error) {
