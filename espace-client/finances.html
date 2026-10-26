@@ -78,12 +78,12 @@
       <aside class="glass-panel lg:col-span-5 p-6 flex flex-col justify-between min-h-[520px]">
         <div>
           <div class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-2 text-[#7dd3fc]"><span class="material-symbols-outlined">account_balance_wallet</span><span class="text-xs uppercase tracking-wider font-semibold">Échéance financière</span></div>
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#7dd3fc]/10 text-[#7dd3fc] border border-[#7dd3fc]/30"><span class="w-1.5 h-1.5 rounded-full bg-[#7dd3fc]"></span>En attente</span>
+            <div class="flex items-center gap-2 text-[#7dd3fc]"><span class="material-symbols-outlined">account_balance_wallet</span><span class="text-xs uppercase tracking-wider font-semibold">Synthèse financière</span></div>
+            <span id="finances-status-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#7dd3fc]/10 text-[#7dd3fc] border border-[#7dd3fc]/30"><span class="w-1.5 h-1.5 rounded-full bg-[#7dd3fc]"></span>À jour</span>
           </div>
-          <div class="mt-6"><p class="text-[#a0b4c4] text-sm">Solde restant dû</p><div class="flex flex-wrap items-baseline gap-2 mt-1"><strong class="text-3xl md:text-4xl text-white">4 250,00 €</strong><span class="text-xs text-[#88b4cc]">/ 12 500,00 €</span></div></div>
-          <div class="mt-5"><div class="flex justify-between text-sm text-[#a0b4c4] mb-2"><span>Progression des règlements</span><strong class="text-[#7dd3fc]">66% acquitté</strong></div><div class="h-2 w-full rounded-full bg-[#202c42] overflow-hidden"><div class="h-full rounded-full bg-gradient-to-r from-[#88b4cc] to-[#7dd3fc]" style="width:66%"></div></div></div>
-          <div class="mt-6 p-4 rounded-2xl bg-[#1a2438] border border-[#2a3a48] flex items-start gap-3"><span class="material-symbols-outlined text-[#7dd3fc] bg-[#213d4a] p-2 rounded-xl">event_upcoming</span><div><p class="text-white text-sm font-semibold">Prochaine échéance : 15 septembre 2024</p><p class="text-[#a0b4c4] text-xs mt-1 leading-relaxed">Acompte final (Traiteur &amp; scénographie florale) de 2 125,00 €.</p></div></div>
+          <div class="mt-6"><p class="text-[#a0b4c4] text-sm">Montant Total des Commandes</p><div class="flex flex-wrap items-baseline gap-2 mt-1"><strong id="finances-total-paid" class="text-3xl md:text-4xl text-white">0,00 €</strong><span id="finances-total-all" class="text-xs text-[#88b4cc]">/ 0,00 € engagés</span></div></div>
+          <div class="mt-5"><div class="flex justify-between text-sm text-[#a0b4c4] mb-2"><span>Progression des règlements</span><strong id="finances-percent-text" class="text-[#7dd3fc]">100% acquitté</strong></div><div class="h-2 w-full rounded-full bg-[#202c42] overflow-hidden"><div id="finances-progress-bar" class="h-full rounded-full bg-gradient-to-r from-[#88b4cc] to-[#7dd3fc]" style="width:100%"></div></div></div>
+          <div class="mt-6 p-4 rounded-2xl bg-[#1a2438] border border-[#2a3a48] flex items-start gap-3"><span class="material-symbols-outlined text-[#7dd3fc] bg-[#213d4a] p-2 rounded-xl">event_upcoming</span><div><p id="finances-next-notice-title" class="text-white text-sm font-semibold">Aucune échéance en attente</p><p id="finances-next-notice-desc" class="text-[#a0b4c4] text-xs mt-1 leading-relaxed">Vos factures et paiements validés apparaissent automatiquement dans votre espace.</p></div></div>
         </div>
         <div class="mt-8 pt-5 border-t border-[#2a3a48] flex flex-col gap-4">
           <a href="/espace-client/commandes.html" class="w-full flex items-center justify-center gap-2 py-4 px-4 rounded-full bg-[#7dd3fc] text-[#001f2e] font-bold text-sm tracking-wide hover:brightness-110 transition"><span class="material-symbols-outlined">lock</span><span>Voir mes commandes et règlements</span></a>
@@ -97,41 +97,116 @@
 </main>
 <script>
 (() => {
-  const yearStart=2024, monthStart=8;
-  let view=new Date(yearStart,monthStart,1);
-  const events=[
-    {date:'2024-09-06',type:'tasting',label:'6 Sept. — Rendez-vous dégustation traiteur',time:'14:30 • Confirmé'},
-    {date:'2024-09-12',type:'travel',label:'12 Sept. — Check-in domaine & navettes',time:'10:00 • Validé'},
-    {date:'2024-09-21',type:'wedding',label:'21 Sept. — Célébration de mariage',time:'16:00 • Château Grand-Chêne'}
-  ];
-  const daysEl=document.getElementById('calendarDays'), titleEl=document.getElementById('monthTitle');
-  const subtitle=document.getElementById('monthSubtitle'), filter=document.getElementById('filterType');
-  const eventList=document.getElementById('eventList'), noEvents=document.getElementById('noEvents');
-  const monthNames=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const now = new Date();
+  let view = new Date(now.getFullYear(), now.getMonth(), 1);
+  let events = [];
+
+  const daysEl = document.getElementById('calendarDays');
+  const titleEl = document.getElementById('monthTitle');
+  const subtitle = document.getElementById('monthSubtitle');
+  const filter = document.getElementById('filterType');
+  const eventList = document.getElementById('eventList');
+  const noEvents = document.getElementById('noEvents');
+  const monthNames = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
   function dateKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+
+  async function loadFinancialsAndCalendar() {
+    const sb = window.clientSupabase || window.mmSupabase;
+    if (!sb) { render(); return; }
+
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { render(); return; }
+      const user = session.user;
+
+      const { data: orders } = await sb
+        .from('orders')
+        .select('id, order_number, total_amount, payment_status, status, created_at, booking_date, order_items(product_name)')
+        .or(`user_id.eq.${user.id},guest_email.eq.${user.email}`);
+
+      let totalSum = 0;
+      let paidSum = 0;
+      events = [];
+
+      if (orders && orders.length) {
+        orders.forEach(ord => {
+          const amt = Number(ord.total_amount || 0);
+          totalSum += amt;
+          const isPaid = ord.payment_status === 'paid' || ord.status === 'confirmed';
+          if (isPaid) paidSum += amt;
+
+          if (ord.booking_date) {
+            const itemTitle = (ord.order_items && ord.order_items[0]) ? ord.order_items[0].product_name : 'Réservation';
+            events.push({
+              date: ord.booking_date,
+              type: 'wedding',
+              label: `${itemTitle} (${ord.order_number})`,
+              time: `${amt} € • ${isPaid ? 'Payé' : 'En attente'}`
+            });
+          }
+        });
+      }
+
+      const totalPaidEl = document.getElementById('finances-total-paid');
+      const totalAllEl = document.getElementById('finances-total-all');
+      const percentEl = document.getElementById('finances-percent-text');
+      const progressBar = document.getElementById('finances-progress-bar');
+
+      if (totalPaidEl) totalPaidEl.textContent = `${paidSum.toLocaleString('fr-FR')} €`;
+      if (totalAllEl) totalAllEl.textContent = `/ ${totalSum.toLocaleString('fr-FR')} € engagés`;
+
+      const pct = totalSum > 0 ? Math.round((paidSum / totalSum) * 100) : 100;
+      if (percentEl) percentEl.textContent = `${pct}% acquitté`;
+      if (progressBar) progressBar.style.width = `${pct}%`;
+
+    } catch (err) {
+      console.error('Erreur chargement finances & calendrier:', err);
+    } finally {
+      render();
+    }
+  }
+
   function render(){
     const y=view.getFullYear(),m=view.getMonth(); titleEl.textContent=monthNames[m]+' '+y;
-    subtitle.textContent=(y===2024&&m===8)?'J-18 avant la cérémonie officielle':'Calendrier des événements';
+    subtitle.textContent = 'Calendrier des réservations & événements';
     daysEl.innerHTML='';
     const first=new Date(y,m,1), offset=(first.getDay()+6)%7, count=new Date(y,m+1,0).getDate(), prevCount=new Date(y,m,0).getDate();
+
     for(let i=0;i<42;i++){
       const dayNum=i-offset+1; let d, cls='day';
       if(dayNum<1){d=new Date(y,m-1,prevCount+dayNum);cls+=' muted'} else if(dayNum>count){d=new Date(y,m+1,dayNum-count);cls+=' muted'} else {d=new Date(y,m,dayNum)}
       const ev=events.find(e=>e.date===dateKey(d));
       if(ev && d.getMonth()===m) cls+=' event';
-      if(y===2024&&m===8&&d.getDate()===21&&d.getMonth()===m) cls+=' selected';
+
       const btn=document.createElement('button');btn.type='button';btn.className=cls;btn.innerHTML=`<span>${d.getDate()}</span>${ev&&d.getMonth()===m?'<span class="dot"></span>':''}`;btn.setAttribute('aria-label',dateKey(d));
       if(d.getMonth()!==m)btn.disabled=true;
-      btn.addEventListener('click',()=>{const ev=events.find(e=>e.date===dateKey(d));if(ev){document.querySelectorAll('.event-row').forEach(r=>r.classList.toggle('ring-1',r.dataset.type===ev.type));}else{document.querySelectorAll('.event-row').forEach(r=>r.classList.remove('ring-1'));}});
       daysEl.appendChild(btn);
     }
+
+    if (events.length > 0) {
+      eventList.innerHTML = events.map(ev => `
+        <div class="event-row" data-type="${ev.type}">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#7dd3fc]"></span>
+            <span class="font-medium text-white">${ev.label}</span>
+          </div>
+          <span class="text-[#88b4cc]">${ev.time}</span>
+        </div>
+      `).join('');
+    } else {
+      eventList.innerHTML = `<p class="text-xs text-[#a0b4c4] py-3">Aucun événement planifié pour ce mois.</p>`;
+    }
+
     applyFilter();
   }
+
   function applyFilter(){
     const selected=filter.value; let visible=0;
     document.querySelectorAll('.event-row').forEach(row=>{const match=(selected==='all'||row.dataset.type===selected);row.hidden=!match; if(match)visible++});
-    noEvents.classList.toggle('hidden',visible>0);
+    if (noEvents) noEvents.classList.toggle('hidden', visible > 0);
   }
+
   document.getElementById('prevMonth').addEventListener('click',()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);render()});
   document.getElementById('nextMonth').addEventListener('click',()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);render()});
   filter.addEventListener('change',applyFilter);
@@ -141,7 +216,8 @@
     const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
     a.href=url;a.download='echeancier-mariage.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
   });
-  render();
+
+  loadFinancialsAndCalendar();
 })();
 </script>
 </body>

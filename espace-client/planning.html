@@ -73,10 +73,10 @@
 <header class="page-head"><div><p class="eyebrow">ORGANISATION</p><h1>Planning du mariage</h1><p class="muted">Visualisez les étapes et les rendez-vous de votre célébration.</p></div><button class="btn btn-primary" data-toast="La demande de rendez-vous sera disponible après connexion au système de réservation."><span class="material-symbols-outlined">add</span> Demander un rendez-vous</button></header>
 <section class="panel pad"><div class="section-head"><div><h2>Votre parcours de préparation</h2><p class="muted">Octobre – décembre 2026</p></div><span class="status-pill">65% terminé</span></div><div class="progress large"><i style="width:65%"></i></div><div class="phase-labels"><span class="done">Concept</span><span class="done">Prestataires</span><span class="current">Logistique</span><span>Jour J</span></div></section>
 <section class="panel pad mt"><div class="section-head"><div><h2>Prochaines échéances</h2><p class="muted">Dates et actions importantes</p></div><div class="filter-pills"><button class="selected">Tous</button><button data-toast="Filtre « À faire » sélectionné.">À faire</button><button data-toast="Filtre « Terminés » sélectionné.">Terminés</button></div></div>
-<div class="schedule-row"><div class="date-box"><b>20</b><small>OCT.</small></div><div class="schedule-content"><b>Valider le concept décoratif</b><p class="muted">Moodboard, fleurs et ambiance lumineuse</p></div><span class="tag warning">À valider</span></div>
-<div class="schedule-row"><div class="date-box"><b>24</b><small>OCT.</small></div><div class="schedule-content"><b>Rendez-vous avec le traiteur</b><p class="muted">Menu, allergies et boissons</p></div><span class="tag info">Rendez-vous</span></div>
-<div class="schedule-row"><div class="date-box"><b>02</b><small>NOV.</small></div><div class="schedule-content"><b>Confirmer les transferts des invités</b><p class="muted">Arrivées, départs et navettes</p></div><span class="tag neutral">À préparer</span></div>
-<div class="schedule-row"><div class="date-box"><b>12</b><small>DÉC.</small></div><div class="schedule-content"><b>Votre célébration</b><p class="muted">Nosy Be · Madagascar</p></div><span class="tag success">Jour J</span></div></section>
+<div id="planning-schedule-rows">
+  <!-- Dynamically populated from Supabase orders / tasks -->
+</div>
+</section>
 
 <div class="footer-note">© 2026 Mariage Madagascar · Espace client privé · Vos préparatifs en un seul endroit</div>
 </main>
@@ -89,6 +89,72 @@ function showToast(message) {
   window.__toastTimer = setTimeout(() => el.remove(), 4200);
 }
 document.querySelectorAll('[data-toast]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); showToast(el.dataset.toast); }));
+
+async function loadRealPlanningData() {
+  const sb = window.clientSupabase || window.mmSupabase;
+  const container = document.getElementById('planning-schedule-rows');
+  if (!container) return;
+
+  if (!sb) {
+    container.innerHTML = `<p class="muted pad" style="padding: 20px 0;">Aucune échéance planifiée pour le moment.</p>`;
+    return;
+  }
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+      container.innerHTML = `<p class="muted pad" style="padding: 20px 0;">Aucune échéance planifiée pour le moment.</p>`;
+      return;
+    }
+    const user = session.user;
+
+    const { data: orders } = await sb
+      .from('orders')
+      .select('id, order_number, booking_date, status, payment_status, order_items(product_name)')
+      .or(`user_id.eq.${user.id},guest_email.eq.${user.email}`)
+      .not('booking_date', 'is', null)
+      .order('booking_date', { ascending: true });
+
+    if (!orders || orders.length === 0) {
+      container.innerHTML = `
+        <div style="padding: 30px 10px; text-align: center;">
+          <span class="material-symbols-outlined" style="font-size: 36px; color: var(--muted); display: block; margin-bottom: 8px;">event_busy</span>
+          <b style="display: block; font-size: 15px;">Aucune échéance planifiée pour le moment.</b>
+          <p class="muted" style="margin-top: 4px; font-size: 13px;">Vos réservations et dates de séjour apparaîtront ici dès leur confirmation.</p>
+        </div>
+      `;
+      return;
+    }
+
+    const monthShorts = ['JAN.', 'FÉV.', 'MARS', 'AVR.', 'MAI', 'JUIN', 'JUIL.', 'AOÛT', 'SEPT.', 'OCT.', 'NOV.', 'DÉC.'];
+
+    container.innerHTML = orders.map(ord => {
+      const d = new Date(ord.booking_date);
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = monthShorts[d.getMonth()] || '';
+      const title = (ord.order_items && ord.order_items[0]) ? ord.order_items[0].product_name : 'Réservation';
+      const isPaid = ord.payment_status === 'paid' || ord.status === 'confirmed';
+
+      return `
+        <div class="schedule-row">
+          <div class="date-box"><b>${day}</b><small>${month}</small></div>
+          <div class="schedule-content">
+            <b>${title}</b>
+            <p class="muted">Réf: ${ord.order_number}</p>
+          </div>
+          <span class="tag ${isPaid ? 'success' : 'warning'}">${isPaid ? 'Confirmé' : 'En attente'}</span>
+        </div>
+      `;
+    }).join('');
+
+  } catch (err) {
+    console.error('Erreur chargement planning:', err);
+    container.innerHTML = `<p class="muted pad" style="padding: 20px 0;">Aucune échéance planifiée pour le moment.</p>`;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadRealPlanningData);
+setTimeout(loadRealPlanningData, 1000);
 document.querySelectorAll('[data-demo-form]').forEach(form => form.addEventListener('submit', e => { e.preventDefault(); const input = form.querySelector('input'); if (input && input.value.trim()) { showToast('Message de démonstration prêt : la messagerie sera reliée à Supabase lors de la prochaine étape.'); input.value=''; } }));
 document.querySelectorAll('.todo input').forEach(input => input.addEventListener('change', () => { const label = input.closest('.todo').querySelector('b'); if (label) label.style.textDecoration = input.checked ? 'line-through' : 'none'; }));
 const guestSearch = document.getElementById('guest-search');

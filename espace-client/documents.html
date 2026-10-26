@@ -217,10 +217,7 @@
           <table class="doc-table">
             <thead><tr><th>Nom du document</th><th>Catégorie</th><th>Date</th><th style="text-align:right">Actions</th></tr></thead>
             <tbody id="doc-tbody">
-              <tr data-category="Contrats & Devis" data-name="Contrat_Prestation_Mariage_V2.pdf"><td><div class="doc-file"><div class="doc-file-icon purple"><span class="material-symbols-outlined">contract</span></div><div><div class="doc-file-name">Contrat_Prestation_Mariage_V2.pdf</div><div class="doc-status">Signature requise</div></div></div></td><td><span class="doc-category">Contrats &amp; Devis</span></td><td class="doc-date">12 Nov 2025</td><td><div class="doc-row-actions"><button class="doc-icon-btn" data-action="preview" title="Aperçu" aria-label="Aperçu"><span class="material-symbols-outlined">visibility</span></button><button class="doc-icon-btn" data-action="download" title="Télécharger" aria-label="Télécharger"><span class="material-symbols-outlined">download</span></button></div></td></tr>
-              <tr data-category="Identité" data-name="Copie_Passeport_M_Dupont.jpg"><td><div class="doc-file"><div class="doc-file-icon"><span class="material-symbols-outlined">badge</span></div><div><div class="doc-file-name">Copie_Passeport_M_Dupont.jpg</div><div class="doc-small" style="margin-top:5px">2.4 MB</div></div></div></td><td><span class="doc-category">Identité</span></td><td class="doc-date">05 Nov 2025</td><td><div class="doc-row-actions"><button class="doc-icon-btn" data-action="preview" title="Aperçu" aria-label="Aperçu"><span class="material-symbols-outlined">visibility</span></button><button class="doc-icon-btn" data-action="download" title="Télécharger" aria-label="Télécharger"><span class="material-symbols-outlined">download</span></button></div></td></tr>
-              <tr data-category="Réservations" data-name="Billets_Avion_Paris_Tana.pdf"><td><div class="doc-file"><div class="doc-file-icon"><span class="material-symbols-outlined">flight</span></div><div><div class="doc-file-name">Billets_Avion_Paris_Tana.pdf</div><div class="doc-small" style="margin-top:5px">1.1 MB</div></div></div></td><td><span class="doc-category">Réservations</span></td><td class="doc-date">28 Oct 2025</td><td><div class="doc-row-actions"><button class="doc-icon-btn" data-action="preview" title="Aperçu" aria-label="Aperçu"><span class="material-symbols-outlined">visibility</span></button><button class="doc-icon-btn" data-action="download" title="Télécharger" aria-label="Télécharger"><span class="material-symbols-outlined">download</span></button></div></td></tr>
-              <tr data-category="Plannings" data-name="Planning_Detaille_Semaine_Mariage.pdf"><td><div class="doc-file"><div class="doc-file-icon"><span class="material-symbols-outlined">event</span></div><div><div class="doc-file-name">Planning_Detaille_Semaine_Mariage.pdf</div><div class="doc-small" style="margin-top:5px">4.8 MB</div></div></div></td><td><span class="doc-category">Plannings</span></td><td class="doc-date">15 Oct 2025</td><td><div class="doc-row-actions"><button class="doc-icon-btn" data-action="preview" title="Aperçu" aria-label="Aperçu"><span class="material-symbols-outlined">visibility</span></button><button class="doc-icon-btn" data-action="download" title="Télécharger" aria-label="Télécharger"><span class="material-symbols-outlined">download</span></button></div></td></tr>
+              <!-- Dynamically populated from Supabase documents -->
             </tbody>
           </table>
         </div>
@@ -243,16 +240,89 @@
  const search=document.getElementById('doc-search');
  const modal=document.getElementById('doc-modal');
  let activeCategory='Tous';
+
+ function renderEmptyState() {
+   tbody.innerHTML = `
+     <tr>
+       <td colspan="4" class="py-12 text-center text-on-surface-variant">
+         <span class="material-symbols-outlined text-4xl block mb-2 text-primary/40">folder_off</span>
+         <p class="text-base font-semibold text-on-surface">Aucun document disponible pour le moment.</p>
+         <p class="text-xs text-on-surface-variant mt-1">Vos contrats, factures et plannings déposés par votre équipe apparaîtront ici.</p>
+       </td>
+     </tr>
+   `;
+   document.getElementById('doc-result-count').textContent = 'Aucun document disponible';
+ }
+
+ async function loadSupabaseDocuments() {
+   const sb = window.clientSupabase || window.mmSupabase;
+   if (!sb) { renderEmptyState(); return; }
+
+   try {
+     const { data: { session } } = await sb.auth.getSession();
+     if (!session) { renderEmptyState(); return; }
+     const user = session.user;
+
+     const { data: docs, error } = await sb
+       .from('documents')
+       .select('*')
+       .or(`client_profile_id.eq.${user.id},user_id.eq.${user.id}`)
+       .order('created_at', { ascending: false });
+
+     if (error || !docs || docs.length === 0) {
+       renderEmptyState();
+       return;
+     }
+
+     tbody.innerHTML = docs.map(doc => {
+       const title = doc.title || doc.file_name || 'Document';
+       const category = doc.document_type || doc.category || 'Autres';
+       const dateStr = doc.created_at ? new Date(doc.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+       const fileUrl = doc.file_url || '#';
+
+       return `
+         <tr data-category="${category}" data-name="${title}">
+           <td>
+             <div class="doc-file">
+               <div class="doc-file-icon"><span class="material-symbols-outlined">description</span></div>
+               <div>
+                 <div class="doc-file-name">${title}</div>
+                 <div class="doc-small" style="margin-top:5px">${doc.is_validated ? 'Validé' : 'En ligne'}</div>
+               </div>
+             </div>
+           </td>
+           <td><span class="doc-category">${category}</span></td>
+           <td class="doc-date">${dateStr}</td>
+           <td>
+             <div class="doc-row-actions">
+               <a href="${fileUrl}" target="_blank" rel="noopener" class="doc-icon-btn" title="Consulter" aria-label="Consulter"><span class="material-symbols-outlined">visibility</span></a>
+             </div>
+           </td>
+         </tr>
+       `;
+     }).join('');
+
+     filterRows();
+   } catch (err) {
+     console.error('Erreur documents Supabase:', err);
+     renderEmptyState();
+   }
+ }
+
  function filterRows(){
    const q=(search.value||'').toLocaleLowerCase('fr');
-   let visible=0,total=tbody.querySelectorAll('tr').length;
-   tbody.querySelectorAll('tr').forEach(row=>{
+   let visible=0;
+   const rows = tbody.querySelectorAll('tr[data-category]');
+   if (!rows.length) return;
+   rows.forEach(row=>{
      const okCategory=activeCategory==='Tous'||row.dataset.category===activeCategory;
      const okSearch=(row.dataset.name||'').toLocaleLowerCase('fr').includes(q)||row.dataset.category.toLocaleLowerCase('fr').includes(q);
      row.hidden=!(okCategory&&okSearch); if(!row.hidden) visible++;
    });
    document.getElementById('doc-result-count').textContent=visible?`Affichage de 1 à ${visible} sur ${visible} document${visible>1?'s':''}`:'Aucun document trouvé';
  }
+
+ loadSupabaseDocuments();
  document.querySelectorAll('.doc-folder').forEach(btn=>btn.addEventListener('click',()=>{
    activeCategory=btn.dataset.category;
    document.querySelectorAll('.doc-folder').forEach(b=>b.classList.toggle('active',b===btn));

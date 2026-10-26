@@ -89,14 +89,7 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
 <div id="toast" class="fixed bottom-5 right-5 z-[120] hidden max-w-sm rounded-xl border border-[#2a3a48] bg-[#141c2e] px-4 py-3 text-sm text-white shadow-xl" role="status"></div>
 <script>
 (() => {
- const guests=[
- {id:1,first:'Éléonore',last:'Laurent',email:'eleonore.laurent@paris.fr',category:"Amis d'Enfance",role:'Témoin',status:'Confirmé',plus:1,menu:'Menu Gastronomique',diet:'Sans Gluten',table:"Table d’Honneur",recent:6},
- {id:2,first:'Marc & Sophie',last:'Bertrand',email:'mbertrand@outlook.com',category:'Famille',role:'',status:'Confirmé',plus:0,menu:'Duo Terre & Mer',diet:'Aucune restriction',table:'Table Camélia (4)',recent:5},
- {id:3,first:'Thibault',last:'Girard',email:'thibault.g@techcorp.io',category:'Collègues',role:'',status:'En attente',plus:0,menu:'En attente de choix',diet:'',table:'',recent:4},
- {id:4,first:'Camille & Arthur',last:'Dupont',email:'camilletdupont@gmail.com',category:'Famille',role:'',status:'Confirmé',plus:2,menu:'2× Végétarien + 2× Enfant',diet:'Allergie Arachides',table:'Table Magnolia (2)',recent:3},
- {id:5,first:'Alexandre',last:'Lefèvre',email:'alex.lefevre@club-voyage.fr',category:"Amis d'Enfance",role:'',status:'Décliné',plus:0,menu:'—',diet:'',table:'',recent:2},
- {id:6,first:'Hélène',last:'de Montmirail',email:'helene.dmm@chateau.fr',category:'VIP & Témoins',role:'',status:'Confirmé',plus:0,menu:'Végétalien Prestige',diet:'Intolérance Lactose',table:"Table d’Honneur",recent:1}
- ];
+ let guests=[];
  let category='all',page=1;const perPage=6;
  const $=id=>document.getElementById(id);
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -121,13 +114,21 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
     <td class="text-xs ${g.table?'text-white':'text-[#a0b4c4] italic'}">${esc(g.table||'Non assignée')}</td><td><button class="editGuest p-2 text-[#a0b4c4] hover:text-[#7dd3fc]" data-id="${g.id}" title="Modifier cet invité" aria-label="Modifier ${esc(g.first)}"><span class="material-symbols-outlined">edit</span></button></td></tr>`).join(''):`<tr><td colspan="6" class="text-center py-10 text-[#a0b4c4]">Aucun invité ne correspond à la recherche.</td></tr>`;
    $('paginationInfo').textContent=list.length?`Affichage de ${(page-1)*perPage+1} à ${Math.min(page*perPage,list.length)} sur ${list.length} résultat(s)`:'Aucun résultat';
    $('pageNumber').textContent=page;$('prevPage').disabled=page<=1;$('nextPage').disabled=page>=pages;
-   // Sample totals reflect the mock dashboard, plus guests added during this session.
-   const added=Math.max(0,guests.length-6);$('totalCount').textContent=148+added;$('totalSummary').textContent=148+added;
-   $('confirmedCount').textContent=112+guests.filter(g=>g.id>6&&g.status==='Confirmé').length;
-   $('pendingCount').textContent=24+guests.filter(g=>g.id>6&&g.status==='En attente').length;
-   $('confirmedSummary').textContent=$('confirmedCount').textContent;
-   const rate=Math.round(Number($('confirmedCount').textContent)/Number($('totalCount').textContent)*100);$('confirmationRate').textContent=rate+'%';$('confirmationBar').style.width=rate+'%';
-   $('dietCount').textContent=19+guests.filter(g=>g.id>6&&g.diet).length;
+   const total = guests.length;
+   const confirmed = guests.filter(g=>g.status==='Confirmé').length;
+   const pending = guests.filter(g=>g.status==='En attente').length;
+   const diet = guests.filter(g=>g.diet && g.diet !== 'Aucune restriction' && g.diet !== '—').length;
+
+   $('totalCount').textContent = total;
+   $('totalSummary').textContent = total;
+   $('confirmedCount').textContent = confirmed;
+   $('pendingCount').textContent = pending;
+   $('confirmedSummary').textContent = confirmed;
+
+   const rate = total > 0 ? Math.round((confirmed / total) * 100) : 0;
+   $('confirmationRate').textContent = rate + '%';
+   $('confirmationBar').style.width = rate + '%';
+   $('dietCount').textContent = diet;
  }
  function openModal(g=null){
    $('guestForm').reset();$('modalTitle').textContent=g?'Modifier un invité':'Ajouter un invité';
@@ -153,6 +154,43 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
    const csv=rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
    const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='liste-invites-rsvp.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);toast('Export CSV téléchargé.');
  });
+ async function syncWithSupabase() {
+   const sb = window.clientSupabase || window.mmSupabase;
+   if (!sb) return;
+   try {
+     const { data: { session } } = await sb.auth.getSession();
+     if (!session) return;
+     const user = session.user;
+
+     const { data: dbGuests, error } = await sb
+       .from('client_guests')
+       .select('*')
+       .eq('user_id', user.id)
+       .order('created_at', { ascending: false });
+
+     if (!error && dbGuests) {
+       guests = dbGuests.map(g => ({
+         id: g.id,
+         first: g.first_name || '',
+         last: g.last_name || '',
+         email: g.email || '',
+         category: g.category || 'Famille',
+         role: g.role || '',
+         status: g.status || 'En attente',
+         plus: g.plus_one_count || 0,
+         menu: g.menu_choice || '—',
+         diet: g.dietary_notes || '',
+         table: g.table_name || '',
+         recent: new Date(g.created_at || Date.now()).getTime()
+       }));
+       render();
+     }
+   } catch (err) {
+     console.error('Erreur chargement invités:', err);
+   }
+ }
+
+ syncWithSupabase();
  render();
 })();
 </script>

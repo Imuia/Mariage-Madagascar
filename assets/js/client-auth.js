@@ -20,11 +20,15 @@
       return null;
     }
 
-    // Call claim_guest_orders to auto-link any guest orders to this user
+    // Ensure profile and project exist, and auto-link guest orders
     try {
-      await supabaseClient.rpc('claim_guest_orders');
+      await supabaseClient.rpc('ensure_client_profile_and_project');
     } catch (e) {
-      // Ignored if RPC is not yet registered
+      try {
+        await supabaseClient.rpc('claim_guest_orders');
+      } catch (err) {
+        // Ignored if RPC is not yet registered
+      }
     }
 
     // Render user profile info if elements exist
