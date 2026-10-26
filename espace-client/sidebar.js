@@ -21,7 +21,7 @@
         const original = link.innerHTML;
         link.setAttribute('aria-busy','true');
         try {
-          const client = window.mmSupabase;
+          const client = window.mmSupabase || window.supabaseClient || window.supabase;
           if(!client) throw new Error('Service d’authentification indisponible.');
           const { error } = await client.auth.signOut({ scope: 'local' });
           if(error) throw error;

@@ -1,5 +1,5 @@
 /* Source de style unique de la sidebar Mariage Madagascar */
-.sidebar{position:fixed!important;inset:0 auto 0 0!important;width:320px!important;background:#101827!important;border-right:1px solid #223247!important;padding:28px 13px 18px!important;display:flex!important;flex-direction:column!important;z-index:50!important;backdrop-filter:none!important}
+.sidebar{position:fixed!important;inset:0 auto 0 0!important;width:320px!important;height:100vh!important;height:100dvh!important;overflow-y:auto!important;overflow-x:hidden!important;background:#101827!important;border-right:1px solid #223247!important;padding:28px 13px 18px!important;display:flex!important;flex-direction:column!important;z-index:50!important;backdrop-filter:none!important}
 .mm-sidebar-logo{height:142px;display:flex;align-items:flex-start;justify-content:center;padding:9px 0 25px;margin:0 0 23px;border-bottom:0;text-decoration:none!important}
 .mm-sidebar-logo img{display:block;width:115px;height:116px;object-fit:contain;background:#f8f8f5}
 .sidebar .nav{display:grid!important;gap:7px!important;padding:0!important}
@@ -9,7 +9,7 @@
 .sidebar .nav a:hover .material-symbols-outlined{color:#7dd3fc}
 .sidebar .nav a.active{background:#1a2b40!important;color:#7dd3fc!important;border-color:#29465d!important;box-shadow:inset 3px 0 #7dd3fc!important}
 .sidebar .nav a.active .material-symbols-outlined{color:#7dd3fc!important}
-.sidebar .sidebar-bottom{margin-top:auto!important;border-top:1px solid #223247!important;padding-top:22px!important}
+.sidebar .sidebar-bottom{margin-top:auto!important;flex:0 0 auto!important;border-top:1px solid #223247!important;padding-top:22px!important;padding-bottom:4px!important}
 .sidebar .sidebar-bottom a{display:flex!important;align-items:center!important;gap:13px!important;min-height:48px;padding:10px 12px!important;color:#a9bbcb!important;font-size:16px!important;text-decoration:none!important}
 .sidebar .sidebar-bottom a:hover{color:#7dd3fc!important}
 .sidebar .sidebar-bottom .material-symbols-outlined{font-size:24px!important}
@@ -31,4 +31,14 @@
  .sidebar-mobile-nav a.active .material-symbols-outlined{color:#7dd3fc}
  .sidebar-mobile-nav.is-expanded{top:68px;bottom:auto;max-height:calc(100vh - 68px);display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));overflow-y:auto;padding:16px;background:#101827}
  .sidebar-mobile-nav.is-expanded a{flex-direction:row;justify-content:flex-start;gap:10px;min-height:54px;padding:10px 12px;border:1px solid #223247;border-radius:12px;font-size:12px}
+}
+
+/* Visibilité de la déconnexion sur les écrans bas */
+@media (min-width:761px) and (max-height:760px){
+  .sidebar{padding-top:16px!important;padding-bottom:12px!important}
+  .mm-sidebar-logo{height:112px!important;margin-bottom:12px!important;padding-bottom:12px!important}
+  .sidebar .nav{gap:2px!important}
+  .sidebar .nav a{min-height:48px!important;padding-top:8px!important;padding-bottom:8px!important}
+  .sidebar .sidebar-bottom{padding-top:10px!important}
+  .sidebar .sidebar-bottom a{min-height:40px!important}
 }
