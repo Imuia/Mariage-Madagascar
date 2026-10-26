@@ -12,6 +12,30 @@
       link.classList.toggle('active',active);
       if(active) link.setAttribute('aria-current','page'); else link.removeAttribute('aria-current');
     });
+    // Déconnexion réelle Supabase depuis la sidebar desktop ou mobile.
+    root.querySelectorAll('[data-client-logout]').forEach(link=>{
+      link.addEventListener('click', async event=>{
+        event.preventDefault();
+        if(link.dataset.busy === 'true') return;
+        link.dataset.busy = 'true';
+        const original = link.innerHTML;
+        link.setAttribute('aria-busy','true');
+        try {
+          const client = window.mmSupabase;
+          if(!client) throw new Error('Service d’authentification indisponible.');
+          const { error } = await client.auth.signOut({ scope: 'local' });
+          if(error) throw error;
+          window.location.replace('/espace-client/login.html?reason=logout');
+        } catch(error) {
+          console.error('[Espace client] Déconnexion impossible:', error);
+          link.dataset.busy = 'false';
+          link.removeAttribute('aria-busy');
+          link.innerHTML = original;
+          alert('La déconnexion a échoué. Vérifiez votre connexion puis réessayez.');
+        }
+      });
+    });
+
     const toggle=root.querySelector('.mobile-nav-toggle');
     const mobileNav=root.querySelector('.sidebar-mobile-nav');
     if(toggle&&mobileNav){
