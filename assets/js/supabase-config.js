@@ -1,4 +1,9 @@
+/* Mariage Madagascar — configuration publique Supabase.
+   IMPORTANT : utiliser uniquement une clé publishable (sb_publishable_...) ou anon legacy.
+   NE JAMAIS mettre une clé service_role / secret dans le navigateur. */
 window.MARIAGE_SUPABASE = {
   url: 'https://qrkinjuhtyfptldlvdyg.supabase.co',
-  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFya2luanVodHlmcHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I'
+  // Remplacez cette valeur par la clé Publishable actuelle affichée dans Supabase > Settings > API Keys.
+  // La clé anon legacy précédemment communiquée est refusée par l'API en production.
+  anonKey: 'sb_publishable_MT2uo1JdbfVSZAjwXqW7gg_NITLziCF'
 };
