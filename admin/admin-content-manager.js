@@ -158,6 +158,7 @@
     $('#cancel-variation')?.addEventListener('click', (event) => { event.preventDefault(); resetVariationForm(); });
     $('#variation-form')?.addEventListener('submit', saveVariation);
     $('#product-image-form')?.addEventListener('submit', saveProductImage);
+    $('#product-images')?.addEventListener('click', handleProductImageAction);
     $('#product-rows')?.addEventListener('click', handleProductTableAction);
     $('#variation-rows')?.addEventListener('click', handleVariationAction);
   }
@@ -194,8 +195,9 @@
     const query = ($('#cms-search')?.value || '').toLocaleLowerCase('fr').trim();
     const filter = $('#cms-filter')?.value || 'all';
     const rows = currentRows.filter((row) => {
+      const catsString = Array.isArray(row.categories) ? row.categories.join(' ') : String(row.categories || '');
       const text = isProducts
-        ? [row.name, row.slug, row.sku, row.categories, row.product_type].join(' ').toLocaleLowerCase('fr')
+        ? [row.name, row.slug, row.sku, catsString, row.product_type].join(' ').toLocaleLowerCase('fr')
         : [row.title, row.slug, row.summary, row.seo_title].join(' ').toLocaleLowerCase('fr');
       if (query && !text.includes(query)) return false;
       if (filter === 'published' && !(isProducts ? row.published : row.is_published)) return false;
@@ -213,18 +215,21 @@
       return;
     }
     if (isProducts) {
-      tbody.innerHTML = rows.map((row) => `
+      tbody.innerHTML = rows.map((row) => {
+        const catDisp = Array.isArray(row.categories) ? row.categories.join(', ') : (row.categories || '—');
+        return `
         <tr>
           <td><div class="flex items-center gap-3">${row.featured_image_url ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(row.featured_image_url)}" alt="">` : '<div class="cms-thumb"></div>'}<div><strong>${escapeHTML(row.name || 'Sans nom')}</strong><div class="cms-subtext">${escapeHTML(row.sku || row.slug || '')}</div></div></div></td>
-          <td>${escapeHTML(row.categories || '—')}</td><td>${escapeHTML(row.product_type || '—')}</td><td>${money(row._minPrice)}</td>
+          <td>${escapeHTML(catDisp)}</td><td>${escapeHTML(row.product_type || '—')}</td><td>${money(row._minPrice)}</td>
           <td><span class="mm-badge ${row.published ? 'green' : 'orange'}">${row.published ? 'Publié' : 'Brouillon'}</span><div class="cms-subtext">${row.in_stock ? 'En stock' : 'Hors stock'}</div></td>
-          <td><div class="cms-actions"><button class="cms-small-btn" data-product-edit="${escapeHTML(row.id)}">Modifier</button><button class="cms-small-btn" data-product-toggle="${escapeHTML(row.id)}">${row.published ? 'Dépublier' : 'Publier'}</button>${row.slug ? `<a class="cms-small-btn" href="/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener">Voir</a>` : ''}</div></td>
-        </tr>`).join('');
+          <td><div class="cms-actions"><button class="cms-small-btn" data-product-edit="${escapeHTML(row.id)}">Modifier</button><button class="cms-small-btn" data-product-toggle="${escapeHTML(row.id)}">${row.published ? 'Dépublier' : 'Publier'}</button>${row.published && row.slug ? `<a class="cms-small-btn" href="/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener">Voir la fiche publique</a>` : ''}</div></td>
+        </tr>`;
+      }).join('');
     } else {
       tbody.innerHTML = rows.map((row) => `
         <tr><td><div class="flex items-center gap-3">${row.featured_image_url ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(row.featured_image_url)}" alt="">` : '<div class="cms-thumb"></div>'}<div><strong>${escapeHTML(row.title || 'Sans titre')}</strong><div class="cms-subtext">${escapeHTML(row.summary || '').slice(0, 150)}</div></div></div></td>
         <td><code>${escapeHTML(row.slug || '')}</code></td><td><span class="mm-badge ${row.is_published ? 'green' : 'orange'}">${row.is_published ? 'Publié' : 'Brouillon'}</span></td><td>${dateText(row.updated_at || row.published_at || row.created_at)}</td>
-        <td><div class="cms-actions"><button class="cms-small-btn" data-blog-edit="${escapeHTML(row.id)}">Modifier le HTML</button><button class="cms-small-btn" data-blog-toggle="${escapeHTML(row.id)}">${row.is_published ? 'Dépublier' : 'Publier'}</button>${row.slug ? `<a class="cms-small-btn" href="/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener">Voir</a>` : ''}</div></td></tr>`).join('');
+        <td><div class="cms-actions"><button class="cms-small-btn" data-blog-edit="${escapeHTML(row.id)}">Modifier le HTML</button><button class="cms-small-btn" data-blog-toggle="${escapeHTML(row.id)}">${row.is_published ? 'Dépublier' : 'Publier'}</button>${row.is_published && row.slug ? `<a class="cms-small-btn" href="/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener">Voir l'article public</a>` : ''}</div></td></tr>`).join('');
     }
   }
 
@@ -236,7 +241,7 @@
     $('#p-name').value = row?.name || '';
     $('#p-slug').value = row?.slug || '';
     $('#p-sku').value = row?.sku || '';
-    $('#p-categories').value = row?.categories || '';
+    $('#p-categories').value = Array.isArray(row?.categories) ? row.categories.join(', ') : (row?.categories || '');
     $('#p-type').value = row?.product_type || 'simple';
     $('#p-short').value = row?.short_description || '';
     $('#p-description').value = row?.description_html || '';
@@ -265,13 +270,18 @@
     const name = $('#p-name').value.trim();
     const slug = ($('#p-slug').value.trim() || slugify(name)).replace(/^\/+|\/+$/g, '');
     if (!name || !slug) { setFormError('product-form-error', 'Le nom et le slug sont obligatoires.'); return; }
+
+    const rawCat = ($('#p-categories').value || '').trim();
+    const categoriesArray = rawCat
+      ? rawCat.split(',').map((c) => c.trim()).filter(Boolean)
+      : ['Non classé'];
+    if (categoriesArray.length === 0) categoriesArray.push('Non classé');
+
     const payload = {
       name,
       slug,
       sku: blankToNull($('#p-sku').value),
-      // La colonne public.mm_products.categories est NOT NULL dans la base actuelle.
-      // En l'absence de catégorie saisie, enregistrer explicitement une valeur neutre.
-      categories: ($('#p-categories').value || '').trim() || 'Non classé',
+      categories: categoriesArray,
       product_type: blankToNull($('#p-type').value) || 'simple',
       short_description: blankToNull($('#p-short').value),
       description_html: $('#p-description').value || '',
@@ -421,7 +431,19 @@
     if (error) throw error;
     productImages = data || [];
     if (!productImages.length) { container.innerHTML = '<div class="cms-subtext">Aucune image supplémentaire enregistrée.</div>'; return; }
-    container.innerHTML = productImages.map((img) => `<div class="mm-list-item"><div class="flex items-center gap-3">${img.source_url ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(img.local_path || img.source_url)}" alt="">` : ''}<div><strong>${escapeHTML(img.alt_text || 'Image produit')}</strong><small>${escapeHTML(img.local_path || img.source_url || '')}</small></div></div><span class="mm-badge">Ordre ${Number(img.sort_order) || 0}${img.is_featured ? ' · vedette' : ''}</span></div>`).join('');
+    container.innerHTML = productImages.map((img) => `<div class="mm-list-item"><div class="flex items-center gap-3">${img.source_url || img.local_path ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(img.local_path || img.source_url)}" alt="">` : ''}<div><strong>${escapeHTML(img.alt_text || 'Image produit')}</strong><small>${escapeHTML(img.local_path || img.source_url || '')}</small></div></div><div class="cms-actions"><span class="mm-badge">Ordre ${Number(img.sort_order) || 0}${img.is_featured ? ' · vedette' : ''}</span><button type="button" class="cms-small-btn danger" data-product-image-remove="${escapeHTML(img.id)}">Retirer</button></div></div>`).join('');
+  }
+
+  async function handleProductImageAction(event) {
+    const button = event.target.closest('[data-product-image-remove]');
+    if (!button || !currentProduct?.id) return;
+    if (!window.confirm('Retirer cette image de la galerie ?')) return;
+    try {
+      const { error } = await client.from('mm_product_images').delete().eq('id', button.dataset.productImageRemove).eq('product_id', currentProduct.id);
+      if (error) throw error;
+      await loadProductImages(currentProduct.id);
+      toast('Image retirée de la galerie.');
+    } catch (error) { toast(errorMessage(error), true); }
   }
 
   async function saveProductImage(event) {
