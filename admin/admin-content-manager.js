@@ -184,10 +184,13 @@
     $('#product-rows')?.addEventListener('click', handleProductTableAction);
     $('#variation-rows')?.addEventListener('click', handleVariationAction);
 
-    // WYSIWYG Editor Bindings
+    // WYSIWYG Editors Bindings
     document.querySelectorAll('[data-wysiwyg]').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
+        const targetId = btn.dataset.target || 'p-description-editor';
+        const targetEditor = document.getElementById(targetId);
+        if (targetEditor) targetEditor.focus();
         const command = btn.dataset.wysiwyg;
         const val = btn.dataset.value || null;
         if (command === 'createLink') {
@@ -198,22 +201,29 @@
         } else {
           document.execCommand(command, false, val);
         }
-        syncDescriptionEditor();
+        syncEditors();
       });
     });
 
-    const editorEl = $('#p-description-editor');
-    if (editorEl) {
-      editorEl.addEventListener('input', syncDescriptionEditor);
-      editorEl.addEventListener('blur', syncDescriptionEditor);
-    }
+    ['p-short-editor', 'p-description-editor'].forEach((id) => {
+      const editorEl = document.getElementById(id);
+      if (editorEl) {
+        editorEl.addEventListener('input', syncEditors);
+        editorEl.addEventListener('blur', syncEditors);
+      }
+    });
   }
 
-  function syncDescriptionEditor() {
-    const editor = $('#p-description-editor');
-    const textarea = $('#p-description');
-    if (editor && textarea) {
-      textarea.value = editor.innerHTML;
+  function syncEditors() {
+    const shortEditor = $('#p-short-editor');
+    const shortTextarea = $('#p-short');
+    if (shortEditor && shortTextarea) {
+      shortTextarea.value = shortEditor.innerHTML;
+    }
+    const descEditor = $('#p-description-editor');
+    const descTextarea = $('#p-description');
+    if (descEditor && descTextarea) {
+      descTextarea.value = descEditor.innerHTML;
     }
   }
 
@@ -303,7 +313,9 @@
     $('#p-type').value = row?.product_type || 'simple';
     toggleProductTypeFields();
     if ($('#p-simple-price')) $('#p-simple-price').value = row?._minPrice ?? '';
-    $('#p-short').value = row?.short_description || '';
+    const shortHtml = row?.short_description || '';
+    $('#p-short').value = shortHtml;
+    if ($('#p-short-editor')) $('#p-short-editor').innerHTML = shortHtml;
     const descHtml = row?.description_html || '';
     $('#p-description').value = descHtml;
     if ($('#p-description-editor')) $('#p-description-editor').innerHTML = descHtml;
@@ -364,8 +376,10 @@
       }
     }
 
-    syncDescriptionEditor();
+    syncEditors();
+    const shortDescription = $('#p-short-editor')?.innerHTML || $('#p-short')?.value || '';
     const descriptionHtml = $('#p-description-editor')?.innerHTML || $('#p-description')?.value || '';
+    $('#p-short').value = shortDescription;
     $('#p-description').value = descriptionHtml;
 
     const payload = {
@@ -375,7 +389,7 @@
       sku: blankToNull($('#p-sku').value),
       categories: parseCommaList($('#p-categories').value),
       product_type: blankToNull($('#p-type').value) || 'simple',
-      short_description: blankToNull($('#p-short').value),
+      short_description: blankToNull(shortDescription),
       description_html: descriptionHtml,
       featured_image_url: featuredImageUrl,
       source_url: blankToNull($('#p-source').value),
@@ -927,8 +941,12 @@
   }
 
   function imageDisplayUrl(localPath, sourceUrl) {
-    if (localPath && String(localPath).startsWith('/')) return localPath;
-    return sourceUrl || '';
+    const candidate = sourceUrl || localPath || '';
+    if (!candidate) return '';
+    if (candidate.startsWith('http://') || candidate.startsWith('https://') || candidate.startsWith('/')) {
+      return candidate;
+    }
+    return `https://qrkinjuhtyfptldlvdyg.supabase.co/storage/v1/object/public/${STORAGE_BUCKET}/${candidate.replace(/^\/+/, '')}`;
   }
 
   function isManagedStoragePath(path) {
