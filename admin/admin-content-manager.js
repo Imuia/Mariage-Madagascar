@@ -161,6 +161,62 @@
     $('#product-images')?.addEventListener('click', handleProductImageAction);
     $('#product-rows')?.addEventListener('click', handleProductTableAction);
     $('#variation-rows')?.addEventListener('click', handleVariationAction);
+
+    // File pickers and previews for products
+    bindFileInputHandler('#p-image-file', '#p-image', '#p-image-preview', '#p-image-preview-wrap', '#p-image-preview-name');
+    bindFileInputHandler('#pi-file', '#pi-source', '#pi-preview', '#pi-preview-wrap', '#pi-preview-name');
+  }
+
+  function bindFileInputHandler(fileInputSel, urlInputSel, previewImgSel, previewWrapSel, previewNameSel) {
+    const fileInput = $(fileInputSel);
+    if (!fileInput) return;
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      // 1. Show immediate local preview
+      const previewImg = $(previewImgSel);
+      const previewWrap = $(previewWrapSel);
+      const previewName = $(previewNameSel);
+      if (previewImg && previewWrap) {
+        const objectUrl = URL.createObjectURL(file);
+        previewImg.src = objectUrl;
+        if (previewName) previewName.textContent = `${file.name} (envoi en cours…)`;
+        previewWrap.classList.remove('hidden');
+      }
+
+      // 2. Direct upload to Supabase Storage bucket 'mm-content-images'
+      try {
+        const publicUrl = await uploadToStorage(file);
+        const urlInput = $(urlInputSel);
+        if (urlInput) urlInput.value = publicUrl;
+        if (previewName) previewName.textContent = `${file.name} (téléversé ✅)`;
+        toast('Image téléversée dans Storage Supabase.');
+      } catch (err) {
+        console.error('Storage upload error:', err);
+        if (previewName) previewName.textContent = `${file.name} (échec du téléversement ❌)`;
+        toast(`Téléversement échoué : ${errorMessage(err)}`, true);
+      }
+    });
+  }
+
+  async function uploadToStorage(file) {
+    if (!client) throw new Error('Client Supabase non initialisé.');
+    const ext = file.name.split('.').pop() || 'png';
+    const cleanFileName = slugify(file.name.replace(/\.[^/.]+$/, '')) || 'image';
+    const filePath = `cms/${Date.now()}-${cleanFileName}.${ext}`;
+
+    const { data, error } = await client.storage
+      .from('mm-content-images')
+      .upload(filePath, file, { cacheControl: '3600', upsert: true });
+
+    if (error) throw error;
+
+    const { data: urlData } = client.storage
+      .from('mm-content-images')
+      .getPublicUrl(data.path);
+
+    return urlData.publicUrl;
   }
 
   async function loadProducts() {
@@ -482,6 +538,10 @@
     $('#blog-rows')?.addEventListener('click', handleBlogTableAction);
     $('#blog-image-form')?.addEventListener('submit', saveBlogImage);
     $('#blog-images')?.addEventListener('click', handleBlogImageAction);
+
+    // File pickers and previews for blog
+    bindFileInputHandler('#b-image-file', '#b-image', '#b-image-preview', '#b-image-preview-wrap', '#b-image-preview-name');
+    bindFileInputHandler('#bi-file', '#bi-url', '#bi-preview', '#bi-preview-wrap', '#bi-preview-name');
   }
 
   async function loadBlogs() {

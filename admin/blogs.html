@@ -30,7 +30,17 @@
     <div class="cms-modal-body"><div class="cms-form-grid">
       <label class="cms-field full">Titre *<input id="b-title" class="mm-input" required maxlength="500"></label>
       <label class="cms-field">Slug *<input id="b-slug" class="mm-input" required maxlength="200"><span class="cms-subtext">URL publique : /{slug}</span></label>
-      <label class="cms-field">Image principale URL<input id="b-image" class="mm-input" placeholder="/assets/img/blog/…"></label>
+      <label class="cms-field">Image principale — Fichier local / URL
+        <div class="flex gap-2 items-center">
+          <input id="b-image-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" class="hidden">
+          <button type="button" class="cms-small-btn" onclick="document.getElementById('b-image-file').click()">📁 Choisir fichier</button>
+          <input id="b-image" class="mm-input flex-1" placeholder="https://… ou /assets/img/blog/…">
+        </div>
+        <div id="b-image-preview-wrap" class="mt-2 hidden flex items-center gap-2">
+          <img id="b-image-preview" class="cms-thumb" src="" alt="Aperçu">
+          <span id="b-image-preview-name" class="cms-subtext"></span>
+        </div>
+      </label>
       <label class="cms-field full">Résumé / extrait<textarea id="b-summary" class="mm-textarea" rows="3"></textarea></label>
       <label class="cms-field full">Contenu HTML *<textarea id="b-content" class="mm-textarea cms-content" rows="14" required spellcheck="false" placeholder="<h2>Introduction</h2><p>Votre article…</p>"></textarea></label>
       <label class="cms-field">Titre SEO<input id="b-seo-title" class="mm-input" maxlength="500"></label>

@@ -72,7 +72,17 @@
           <label class="cms-field">Type de produit<input id="p-type" class="mm-input" placeholder="simple / variable / service"></label>
           <label class="cms-field full">Description courte<textarea id="p-short" class="mm-textarea" rows="2"></textarea></label>
           <label class="cms-field full">Description HTML<textarea id="p-description" class="mm-textarea cms-content" rows="9" spellcheck="false" placeholder="<p>Description du produit…</p>"></textarea></label>
-          <label class="cms-field">Image principale — URL ou chemin local<input id="p-image" class="mm-input" placeholder="/assets/img/products/…"></label>
+          <label class="cms-field">Image principale — Fichier local / URL
+            <div class="flex gap-2 items-center">
+              <input id="p-image-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" class="hidden">
+              <button type="button" class="cms-small-btn" onclick="document.getElementById('p-image-file').click()">📁 Choisir fichier</button>
+              <input id="p-image" class="mm-input flex-1" placeholder="https://… ou /assets/img/products/…">
+            </div>
+            <div id="p-image-preview-wrap" class="mt-2 hidden flex items-center gap-2">
+              <img id="p-image-preview" class="cms-thumb" src="" alt="Aperçu">
+              <span id="p-image-preview-name" class="cms-subtext"></span>
+            </div>
+          </label>
           <label class="cms-field">URL source (facultatif)<input id="p-source" class="mm-input" placeholder="https://…"></label>
           <label class="cms-field">Visibilité catalogue<select id="p-visibility" class="mm-select"><option value="visible">Visible</option><option value="catalog">Catalogue uniquement</option><option value="search">Recherche uniquement</option><option value="hidden">Masqué</option></select></label>
           <label class="cms-field">Statut fiscal<input id="p-tax" class="mm-input" value="taxable"></label>
