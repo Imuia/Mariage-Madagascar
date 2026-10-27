@@ -290,17 +290,40 @@
     const name = $('#p-name').value.trim();
     const slug = ($('#p-slug').value.trim() || slugify(name)).replace(/^\/+|\/+$/g, '');
     if (!name || !slug) { setFormError('product-form-error', 'Le nom et le slug sont obligatoires.'); return; }
+
+    const productId = currentProduct?.id || (window.crypto && typeof window.crypto.randomUUID === 'function' ? window.crypto.randomUUID() : `prod-${Date.now()}`);
+    let newlyUploadedPath = null;
+    let featuredImageUrl = blankToNull($('#p-image').value);
+
+    $('#save-product').disabled = true;
+    $('#save-product').textContent = 'Enregistrement…';
+    setFormError('product-form-error', '');
+
+    const featuredFile = $('#p-image-file')?.files?.[0];
+    if (featuredFile) {
+      try {
+        const uploaded = await uploadImageFile(featuredFile, `products/${productId}/featured`);
+        newlyUploadedPath = uploaded.path;
+        featuredImageUrl = uploaded.publicUrl;
+      } catch (uploadError) {
+        console.error('Upload image error:', uploadError);
+        setFormError('product-form-error', `Échec du téléversement de l'image principale : ${errorMessage(uploadError)}`);
+        $('#save-product').disabled = false;
+        $('#save-product').textContent = 'Enregistrer le produit';
+        return;
+      }
+    }
+
     const payload = {
+      id: productId,
       name,
       slug,
       sku: blankToNull($('#p-sku').value),
-      // La colonne public.mm_products.categories est NOT NULL dans la base actuelle.
-      // En l'absence de catégorie saisie, enregistrer explicitement une valeur neutre.
       categories: parseCommaList($('#p-categories').value),
       product_type: blankToNull($('#p-type').value) || 'simple',
       short_description: blankToNull($('#p-short').value),
       description_html: $('#p-description').value || '',
-      featured_image_url: blankToNull($('#p-image').value),
+      featured_image_url: featuredImageUrl,
       source_url: blankToNull($('#p-source').value),
       catalog_visibility: $('#p-visibility').value,
       tax_status: blankToNull($('#p-tax').value) || 'taxable',
@@ -311,8 +334,7 @@
       in_stock: $('#p-stock').checked,
       updated_at: new Date().toISOString()
     };
-    $('#save-product').disabled = true;
-    $('#save-product').textContent = 'Enregistrement…';
+
     try {
       let result;
       if (currentProduct?.id) {
@@ -322,37 +344,27 @@
       }
       if (result.error) throw result.error;
       currentProduct = result.data;
+
+      if (featuredFile && featuredImageUrl) {
+        $('#p-image').value = featuredImageUrl;
+        $('#p-image-file').value = '';
+        $('#p-image-file').dataset.currentUrl = featuredImageUrl;
+        setImagePreview('p-image-preview', featuredImageUrl);
+      }
+
       $('#product-modal-title').textContent = 'Modifier le produit';
       $('#product-subpanels').hidden = false;
       $('#p-slug').value = currentProduct.slug;
 
-      const featuredFile = $('#p-image-file')?.files?.[0];
-      if (featuredFile) {
-        try {
-          const uploaded = await uploadImageFile(featuredFile, `products/${currentProduct.id}/featured`);
-          const imageUpdate = await client.from('mm_products')
-            .update({ featured_image_url: uploaded.publicUrl, updated_at: new Date().toISOString() })
-            .eq('id', currentProduct.id).select('*').single();
-          if (imageUpdate.error) throw imageUpdate.error;
-          currentProduct = imageUpdate.data;
-          $('#p-image').value = uploaded.publicUrl;
-          $('#p-image-file').value = '';
-          $('#p-image-file').dataset.currentUrl = uploaded.publicUrl;
-          setImagePreview('p-image-preview', uploaded.publicUrl);
-        } catch (uploadError) {
-          await loadProducts();
-          await Promise.all([loadVariations(currentProduct.id), loadProductImages(currentProduct.id)]);
-          setFormError('product-form-error', `Le produit est enregistré, mais l’image principale n’a pas été téléversée : ${errorMessage(uploadError)}`);
-          return;
-        }
-      }
-
       setFormError('product-form-error', '');
       await loadProducts();
       await Promise.all([loadVariations(currentProduct.id), loadProductImages(currentProduct.id)]);
-      toast(featuredFile ? 'Produit et image principale enregistrés dans Supabase.' : 'Produit enregistré dans Supabase.');
+      toast(featuredFile ? 'Produit et image principale enregistrés avec succès.' : 'Produit enregistré avec succès.');
     } catch (error) {
       console.error('Save product error:', error);
+      if (newlyUploadedPath) {
+        try { await client.storage.from(STORAGE_BUCKET).remove([newlyUploadedPath]); } catch (_) {}
+      }
       setFormError('product-form-error', errorMessage(error));
     } finally {
       $('#save-product').disabled = false;
@@ -505,6 +517,28 @@
     finally { if (submitButton) { submitButton.disabled = false; submitButton.textContent = 'Téléverser et ajouter l’image'; } }
   }
 
+  async function isStoragePathInUse(path) {
+    if (!path || !client) return false;
+    try {
+      const publicMarker = `${STORAGE_BUCKET}/${path}`;
+      const [prodRes, prodImgRes, blogRes, blogImgRes] = await Promise.all([
+        client.from('mm_products').select('id').or(`featured_image_url.ilike.%${path}%,source_url.ilike.%${path}%`).limit(1),
+        client.from('mm_product_images').select('id').or(`local_path.eq.${path},source_url.ilike.%${path}%`).limit(1),
+        client.from('blog_posts').select('id').or(`featured_image_url.ilike.%${path}%`).limit(1),
+        client.from('blog_post_images').select('id').or(`image_url.ilike.%${path}%`).limit(1)
+      ]);
+      if ((prodRes.data && prodRes.data.length > 0) ||
+          (prodImgRes.data && prodImgRes.data.length > 0) ||
+          (blogRes.data && blogRes.data.length > 0) ||
+          (blogImgRes.data && blogImgRes.data.length > 0)) {
+        return true;
+      }
+    } catch (_) {
+      return true;
+    }
+    return false;
+  }
+
   async function handleProductImageAction(event) {
     const button = event.target.closest('[data-product-image-remove]');
     if (!button || !currentProduct?.id) return;
@@ -514,8 +548,11 @@
       const { error } = await client.from('mm_product_images').delete().eq('id', image.id).eq('product_id', currentProduct.id);
       if (error) throw error;
       if (isManagedStoragePath(image.local_path)) {
-        const { error: storageError } = await client.storage.from(STORAGE_BUCKET).remove([image.local_path]);
-        if (storageError) console.warn('Référence supprimée mais fichier Storage conservé :', storageError.message);
+        const inUse = await isStoragePathInUse(image.local_path);
+        if (!inUse) {
+          const { error: storageError } = await client.storage.from(STORAGE_BUCKET).remove([image.local_path]);
+          if (storageError) console.warn('Référence supprimée mais fichier Storage conservé :', storageError.message);
+        }
       }
       await loadProductImages(currentProduct.id);
       toast('Image retirée de la galerie.');
@@ -577,57 +614,74 @@
     const slug = ($('#b-slug').value.trim() || slugify(title)).replace(/^\/+|\/+$/g, '');
     const content = $('#b-content').value;
     if (!title || !slug || !content.trim()) { setFormError('blog-form-error', 'Le titre, le slug et le contenu HTML sont obligatoires.'); return; }
+
+    const blogId = currentBlog?.id || (window.crypto && typeof window.crypto.randomUUID === 'function' ? window.crypto.randomUUID() : `blog-${Date.now()}`);
+    let newlyUploadedPath = null;
+    let featuredImageUrl = blankToNull($('#b-image').value);
+
+    $('#save-blog').disabled = true;
+    $('#save-blog').textContent = 'Enregistrement…';
+    setFormError('blog-form-error', '');
+
+    const featuredFile = $('#b-image-file')?.files?.[0];
+    if (featuredFile) {
+      try {
+        const uploaded = await uploadImageFile(featuredFile, `blogs/${blogId}/featured`);
+        newlyUploadedPath = uploaded.path;
+        featuredImageUrl = uploaded.publicUrl;
+      } catch (uploadError) {
+        console.error('Upload blog image error:', uploadError);
+        setFormError('blog-form-error', `Échec du téléversement de l'image principale : ${errorMessage(uploadError)}`);
+        $('#save-blog').disabled = false;
+        $('#save-blog').textContent = 'Enregistrer l’article';
+        return;
+      }
+    }
+
     const published = $('#b-published').checked;
     let publishedAt = $('#b-published-at').value ? new Date($('#b-published-at').value).toISOString() : null;
     if (published && !publishedAt) publishedAt = new Date().toISOString();
+
     const payload = {
+      id: blogId,
       title,
       slug,
       summary: blankToNull($('#b-summary').value),
       content,
-      featured_image_url: blankToNull($('#b-image').value),
+      featured_image_url: featuredImageUrl,
       seo_title: blankToNull($('#b-seo-title').value),
       seo_description: blankToNull($('#b-seo-description').value),
       is_published: published,
       published_at: publishedAt,
       updated_at: new Date().toISOString()
     };
-    $('#save-blog').disabled = true;
-    $('#save-blog').textContent = 'Enregistrement…';
+
     try {
       let result;
       if (currentBlog?.id) result = await client.from('blog_posts').update(payload).eq('id', currentBlog.id).select('*').single();
       else result = await client.from('blog_posts').insert(payload).select('*').single();
       if (result.error) throw result.error;
       currentBlog = result.data;
-      const featuredFile = $('#b-image-file')?.files?.[0];
-      if (featuredFile) {
-        try {
-          const uploaded = await uploadImageFile(featuredFile, `blogs/${currentBlog.id}/featured`);
-          const imageUpdate = await client.from('blog_posts')
-            .update({ featured_image_url: uploaded.publicUrl, updated_at: new Date().toISOString() })
-            .eq('id', currentBlog.id).select('*').single();
-          if (imageUpdate.error) throw imageUpdate.error;
-          currentBlog = imageUpdate.data;
-          $('#b-image').value = uploaded.publicUrl;
-          $('#b-image-file').value = '';
-          $('#b-image-file').dataset.currentUrl = uploaded.publicUrl;
-          setImagePreview('b-image-preview', uploaded.publicUrl);
-        } catch (uploadError) {
-          await loadBlogs();
-          setFormError('blog-form-error', `L’article est enregistré, mais l’image principale n’a pas été téléversée : ${errorMessage(uploadError)}`);
-          return;
-        }
+
+      if (featuredFile && featuredImageUrl) {
+        $('#b-image').value = featuredImageUrl;
+        $('#b-image-file').value = '';
+        $('#b-image-file').dataset.currentUrl = featuredImageUrl;
+        setImagePreview('b-image-preview', featuredImageUrl);
       }
+
       $('#blog-modal-title').textContent = 'Modifier l’article';
       $('#blog-images-panel').hidden = false;
       $('#b-slug').value = currentBlog.slug;
       setFormError('blog-form-error', '');
       await loadBlogs();
       await loadBlogImages(currentBlog.id);
-      toast(featuredFile ? 'Article et image principale enregistrés dans Supabase.' : 'Article enregistré dans Supabase.');
+      toast(featuredFile ? 'Article et image principale enregistrés avec succès.' : 'Article enregistré avec succès.');
     } catch (error) {
       console.error('Save blog error:', error);
+      if (newlyUploadedPath) {
+        try { await client.storage.from(STORAGE_BUCKET).remove([newlyUploadedPath]); } catch (_) {}
+      }
       setFormError('blog-form-error', errorMessage(error));
     } finally {
       $('#save-blog').disabled = false;
@@ -709,8 +763,11 @@
       if (image?.image_url) {
         const path = storagePathFromPublicUrl(image.image_url);
         if (isManagedStoragePath(path)) {
-          const { error: storageError } = await client.storage.from(STORAGE_BUCKET).remove([path]);
-          if (storageError) console.warn('Référence supprimée mais fichier Storage conservé :', storageError.message);
+          const inUse = await isStoragePathInUse(path);
+          if (!inUse) {
+            const { error: storageError } = await client.storage.from(STORAGE_BUCKET).remove([path]);
+            if (storageError) console.warn('Référence supprimée mais fichier Storage conservé :', storageError.message);
+          }
         }
       }
       await loadBlogImages(currentBlog.id);
