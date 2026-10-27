@@ -8,6 +8,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="/assets/js/supabase-config.js"></script><script src="admin-auth.js"></script>
   <style>
     [hidden]{display:none!important}
+    .cms-rich-editor{display:block;width:100%;min-height:170px;padding:12px;color:#e0e8f0;white-space:normal;overflow-wrap:anywhere;cursor:text;line-height:1.65;outline:none}
+    .cms-rich-editor-short{min-height:90px}
+    .cms-rich-editor-content{min-height:300px}
+    .cms-rich-editor:empty::before{content:attr(data-placeholder);display:block;color:#718096;pointer-events:none}
+    .cms-rich-editor h2{font-size:1.4rem;font-weight:700;margin:.8em 0 .35em}
+    .cms-rich-editor h3{font-size:1.18rem;font-weight:700;margin:.7em 0 .3em}
+    .cms-rich-editor p{margin:.35em 0}
+    .cms-rich-editor ul{list-style:disc;padding-left:1.5rem}
+    .cms-rich-editor ol{list-style:decimal;padding-left:1.5rem}
+    .cms-rich-editor a{color:#7dd3fc;text-decoration:underline}
+    [hidden]{display:none!important}
     .cms-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}.cms-toolbar .mm-input{max-width:360px}
     .cms-modal{width:min(1050px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:auto;padding:0;border:1px solid #2a3a48;border-radius:18px;background:#0f1524;color:#e0e8f0;box-shadow:0 24px 80px #0009}.cms-modal::backdrop{background:rgba(3,7,15,.78);backdrop-filter:blur(5px)}
     .cms-modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:20px 24px;border-bottom:1px solid #223247;position:sticky;top:0;background:#0f1524;z-index:2}.cms-modal-body{padding:22px 24px;display:grid;gap:20px}
@@ -34,8 +45,40 @@
       <label class="cms-field full">Titre *<input id="b-title" class="mm-input" required maxlength="500"></label>
       <label class="cms-field">Slug *<input id="b-slug" class="mm-input" required maxlength="200"><span class="cms-subtext">URL publique : /{slug}</span></label>
       <label class="cms-field">Image principale — téléverser un fichier<input id="b-image-file" data-image-preview="b-image-preview" class="mm-input cms-file-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif"><span class="cms-subtext">JPG, PNG, WebP, GIF ou AVIF · 10 Mo maximum. L’image actuelle est conservée si vous ne choisissez pas de nouveau fichier.</span><img id="b-image-preview" class="cms-upload-preview" alt="Aperçu de l’image principale" hidden><input id="b-image" type="hidden"></label>
-      <label class="cms-field full">Résumé / extrait<textarea id="b-summary" class="mm-textarea" rows="3"></textarea></label>
-      <label class="cms-field full">Contenu HTML *<textarea id="b-content" class="mm-textarea cms-content" rows="14" required spellcheck="false" placeholder="<h2>Introduction</h2><p>Votre article…</p>"></textarea></label>
+      <div class="cms-field full">
+        <label class="block mb-1 text-xs text-[#a0b4c4]" for="b-summary-editor">Résumé / extrait</label>
+        <div class="cms-editor-container border border-[#223247] rounded-xl overflow-hidden bg-[#0b1220]">
+          <div class="cms-editor-toolbar flex flex-wrap gap-1 p-2 bg-[#141c2e] border-b border-[#223247]" role="toolbar" aria-label="Mise en forme du résumé">
+            <button type="button" class="cms-small-btn" data-wysiwyg="bold" data-target="b-summary-editor" title="Gras"><b>B</b></button>
+            <button type="button" class="cms-small-btn" data-wysiwyg="italic" data-target="b-summary-editor" title="Italique"><i>I</i></button>
+            <button type="button" class="cms-small-btn" data-wysiwyg="formatBlock" data-value="p" data-target="b-summary-editor" title="Paragraphe">P</button>
+            <button type="button" class="cms-small-btn" data-wysiwyg="insertUnorderedList" data-target="b-summary-editor" title="Liste à puces">• Liste</button>
+            <button type="button" class="cms-small-btn" data-wysiwyg="createLink" data-target="b-summary-editor" title="Insérer un lien">🔗 Lien</button>
+            <button type="button" class="cms-small-btn" data-wysiwyg="removeFormat" data-target="b-summary-editor" title="Effacer la mise en forme">Effacer format</button>
+          </div>
+          <div id="b-summary-editor" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Résumé de l’article" class="cms-rich-editor cms-rich-editor-short" data-placeholder="Rédigez le résumé de l’article…"></div>
+          <textarea id="b-summary" hidden aria-hidden="true"></textarea>
+        </div>
+      </div>
+      <div class="cms-field full">
+        <label class="block mb-1 text-xs text-[#a0b4c4]" for="b-content-editor">Contenu de l’article *</label>
+        <div class="cms-editor-container border border-[#223247] rounded-xl overflow-hidden bg-[#0b1220]">
+          <div class="cms-editor-toolbar flex flex-wrap gap-1 p-2 bg-[#141c2e] border-b border-[#223247]" role="toolbar" aria-label="Mise en forme du contenu de l’article">
+            <button type="button" class="cms-small-btn" data-wysiwyg="bold" data-target="b-content-editor" title="Gras"><b>B</b></button>
+            <button type="button" class="cms-small-btn" data-wysiwyg="italic" data-target="b-content-editor" title="Italique"><i>I</i></button>
+            <button type="button" class="cms-small-btn" data-wysiwyg="formatBlock" data-value="h2" data-target="b-content-editor" title="Titre 2">H2</button>
+            <button type="button" class="cms-small-btn" data-wysiwyg="formatBlock" data-value="h3" data-target="b-content-editor" title="Titre 3">H3</button>
+            <button type="button" class="cms-small-btn" data-wysiwyg="formatBlock" data-value="p" data-target="b-content-editor" title="Paragraphe">P</button>
+            <button type="button" class="cms-small-btn" data-wysiwyg="insertUnorderedList" data-target="b-content-editor" title="Liste à puces">• Liste</button>
+            <button type="button" class="cms-small-btn" data-wysiwyg="insertOrderedList" data-target="b-content-editor" title="Liste numérotée">1. Liste</button>
+            <button type="button" class="cms-small-btn" data-wysiwyg="createLink" data-target="b-content-editor" title="Insérer un lien">🔗 Lien</button>
+            <button type="button" class="cms-small-btn" data-wysiwyg="unlink" data-target="b-content-editor" title="Supprimer le lien">Suppr. lien</button>
+            <button type="button" class="cms-small-btn" data-wysiwyg="removeFormat" data-target="b-content-editor" title="Effacer la mise en forme">Effacer format</button>
+          </div>
+          <div id="b-content-editor" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Contenu HTML de l’article" class="cms-rich-editor cms-rich-editor-content" data-placeholder="Rédigez le contenu de l’article…"></div>
+          <textarea id="b-content" hidden aria-hidden="true"></textarea>
+        </div>
+      </div>
       <label class="cms-field">Titre SEO<input id="b-seo-title" class="mm-input" maxlength="500"></label>
       <label class="cms-field">Description SEO<textarea id="b-seo-description" class="mm-textarea" rows="2" maxlength="1000"></textarea></label>
       <label class="cms-field">Date de publication<input id="b-published-at" class="mm-input" type="datetime-local"></label>
@@ -45,6 +88,6 @@
     <div id="blog-form-error" class="cms-status error" hidden></div><div class="flex justify-end gap-2 flex-wrap"><button type="button" class="mm-btn secondary" data-close-modal>Annuler</button><button type="button" class="mm-btn" id="save-blog">Enregistrer l'article</button></div></div>
   </div></dialog>
   <div id="mm-toast" class="mm-toast" role="status" aria-live="polite"></div>
-  <script src="admin-shared.js"></script><script src="admin-content-manager.js?v=20261027-cmsfix2"></script>
+  <script src="admin-shared.js"></script><script src="admin-content-manager.js?v=20261027-cmsfix3"></script>
 </body>
 </html>

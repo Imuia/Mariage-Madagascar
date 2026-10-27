@@ -98,7 +98,9 @@
 
   function errorMessage(error) {
     if (!error) return 'Erreur inconnue.';
-    const text = error.message || error.details || error.hint || String(error);
+    const parts = [error.message, error.details, error.hint, error.code ? `Code : ${error.code}` : null]
+      .filter((part, index, all) => part && all.indexOf(part) === index);
+    const text = parts.join(' — ') || String(error);
     if (/row-level security|rls|permission denied|not allowed/i.test(text)) {
       return `Permission Supabase refusée. Vérifie la migration RLS et le rôle admin. Détail : ${text}`;
     }
@@ -187,49 +189,7 @@
     $('#product-rows')?.addEventListener('click', handleProductTableAction);
     $('#variation-rows')?.addEventListener('click', handleVariationAction);
 
-    // WYSIWYG editors: preserve the text selection when toolbar controls are used.
-    const editorIds = ['p-short-editor', 'p-description-editor'];
-    editorIds.forEach((id) => {
-      const editor = document.getElementById(id);
-      if (!editor) return;
-      const rememberSelection = () => saveEditorSelection(editor);
-      editor.addEventListener('keyup', rememberSelection);
-      editor.addEventListener('mouseup', rememberSelection);
-      editor.addEventListener('focus', rememberSelection);
-      editor.addEventListener('input', () => { syncEditors(); rememberSelection(); });
-      editor.addEventListener('blur', syncEditors);
-    });
-
-    document.querySelectorAll('[data-wysiwyg]').forEach((btn) => {
-      // Prevent the toolbar button from taking focus and discarding the editor selection.
-      btn.addEventListener('mousedown', (event) => {
-        if (event.button === 0) event.preventDefault();
-      });
-      btn.addEventListener('click', (event) => {
-        event.preventDefault();
-        const targetId = btn.dataset.target || 'p-description-editor';
-        const editor = document.getElementById(targetId);
-        if (!editor) return;
-        restoreEditorSelection(editor);
-
-        const command = btn.dataset.wysiwyg;
-        const value = btn.dataset.value || null;
-        if (command === 'createLink') {
-          const url = window.prompt('Entrez l’URL du lien :', 'https://');
-          if (url && url.trim()) {
-            restoreEditorSelection(editor);
-            document.execCommand('createLink', false, url.trim());
-          }
-        } else if (command === 'formatBlock') {
-          // Chromium accepts the block tag with angle brackets for formatBlock.
-          document.execCommand('formatBlock', false, `<${value || 'p'}>`);
-        } else {
-          document.execCommand(command, false, value);
-        }
-        syncEditors();
-        saveEditorSelection(editor);
-      });
-    });
+    bindWysiwygEditors(['p-short-editor', 'p-description-editor']);
   }
 
   function saveEditorSelection(editor) {
@@ -275,12 +235,57 @@
   }
 
   function syncEditors() {
-    const shortEditor = $('#p-short-editor');
-    const shortTextarea = $('#p-short');
-    if (shortEditor && shortTextarea) shortTextarea.value = normalizedEditorHTML(shortEditor.innerHTML);
-    const descEditor = $('#p-description-editor');
-    const descTextarea = $('#p-description');
-    if (descEditor && descTextarea) descTextarea.value = normalizedEditorHTML(descEditor.innerHTML);
+    // Each visible contenteditable editor maps to a hidden textarea whose id is
+    // the same without the final "-editor" suffix. These values are the exact
+    // HTML fields persisted to Supabase for products and blog posts.
+    ['p-short-editor', 'p-description-editor', 'b-summary-editor', 'b-content-editor'].forEach((editorId) => {
+      const editor = document.getElementById(editorId);
+      const textarea = document.getElementById(editorId.replace(/-editor$/, ''));
+      if (editor && textarea) textarea.value = normalizedEditorHTML(editor.innerHTML);
+    });
+  }
+
+  function bindWysiwygEditors(editorIds) {
+    const allowedIds = new Set(editorIds);
+    editorIds.forEach((id) => {
+      const editor = document.getElementById(id);
+      if (!editor) return;
+      const rememberSelection = () => saveEditorSelection(editor);
+      editor.addEventListener('keyup', rememberSelection);
+      editor.addEventListener('mouseup', rememberSelection);
+      editor.addEventListener('focus', rememberSelection);
+      editor.addEventListener('input', () => { syncEditors(); rememberSelection(); });
+      editor.addEventListener('blur', syncEditors);
+      editor.addEventListener('paste', () => window.setTimeout(() => { syncEditors(); rememberSelection(); }, 0));
+    });
+
+    document.querySelectorAll('[data-wysiwyg]').forEach((btn) => {
+      if (!allowedIds.has(btn.dataset.target)) return;
+      // Keep focus/selection inside the editor when a toolbar button is clicked.
+      btn.addEventListener('mousedown', (event) => {
+        if (event.button === 0) event.preventDefault();
+      });
+      btn.addEventListener('click', (event) => {
+        event.preventDefault();
+        const editor = document.getElementById(btn.dataset.target);
+        if (!editor) return;
+        restoreEditorSelection(editor);
+        const command = btn.dataset.wysiwyg;
+        const value = btn.dataset.value || null;
+        if (command === 'createLink') {
+          const url = window.prompt('Entrez l’URL du lien :', 'https://');
+          if (!url || !url.trim()) { restoreEditorSelection(editor); return; }
+          restoreEditorSelection(editor);
+          document.execCommand('createLink', false, url.trim());
+        } else if (command === 'formatBlock') {
+          document.execCommand('formatBlock', false, `<${value || 'p'}>`);
+        } else {
+          document.execCommand(command, false, value);
+        }
+        syncEditors();
+        saveEditorSelection(editor);
+      });
+    });
   }
 
   function toggleProductTypeFields() {
@@ -609,32 +614,88 @@
 
   async function saveVariation(event) {
     event.preventDefault();
-    if (!currentProduct?.id) return;
-    const price = Number($('#v-price').value);
-    if (!Number.isFinite(price) || price < 0) { toast('Saisissez un prix valide.', true); return; }
-    const paxVal = $('#v-pax').value ? Number($('#v-pax').value) : null;
+    if (!currentProduct?.id) {
+      toast('Enregistrez le produit avant d’ajouter une variation.', true);
+      return;
+    }
+    const priceText = String($('#v-price')?.value ?? '').trim();
+    const price = priceText === '' ? NaN : Number(priceText);
+    if (!Number.isFinite(price) || price < 0) {
+      toast('Saisissez un prix valide supérieur ou égal à 0 €.', true);
+      $('#v-price')?.focus();
+      return;
+    }
+    const paxText = String($('#v-pax')?.value ?? '').trim();
+    const paxVal = paxText === '' ? null : Number(paxText);
+    if (paxVal !== null && (!Number.isInteger(paxVal) || paxVal < 1)) {
+      toast('Le nombre de personnes doit être un entier supérieur ou égal à 1.', true);
+      $('#v-pax')?.focus();
+      return;
+    }
+
+    const existingVariation = currentVariationId
+      ? variations.find((row) => String(row.id) === String(currentVariationId))
+      : null;
+    const enteredName = blankToNull($('#v-name')?.value);
+    const variationName = enteredName || `${currentProduct.name || 'Produit'} — ${paxVal !== null ? `${paxVal} personne(s)` : 'Option'}`;
+    const attributeName = blankToNull(currentProduct.attribute_name) || (paxVal !== null ? 'Nombre de personnes (pax)' : 'Option');
+    const attributeValue = paxVal !== null ? String(paxVal) : (enteredName || 'Standard');
+    const enteredSku = blankToNull($('#v-sku')?.value);
+    const baseSku = slugify(currentProduct.sku || currentProduct.slug || currentProduct.name || 'PRODUIT')
+      .replace(/-/g, '').toUpperCase().slice(0, 70) || 'PRODUIT';
+    // Some existing schema constraints require a non-empty variation SKU.
+    // Preserve an existing SKU on edit; generate one only for a new blank SKU.
+    const variationSku = enteredSku || existingVariation?.sku ||
+      `${baseSku}-VAR-${paxVal !== null ? paxVal : 'STD'}-${Date.now()}`;
+    const now = new Date().toISOString();
+    const rawExport = {
+      ...(existingVariation?.raw_export && typeof existingVariation.raw_export === 'object' ? existingVariation.raw_export : {}),
+      SKU: variationSku,
+      Name: variationName,
+      Type: 'variation',
+      'Regular price': price,
+      Currency: 'EUR',
+      'Attribute 1 name': attributeName,
+      'Attribute 1 value': attributeValue,
+      Published: $('#v-published').checked ? 1 : 0,
+      'In stock?': $('#v-stock').checked ? 1 : 0
+    };
     const payload = {
       product_id: currentProduct.id,
-      name: blankToNull($('#v-name').value),
-      sku: blankToNull($('#v-sku').value),
+      name: variationName,
+      sku: variationSku,
       pax: paxVal,
       regular_price: price,
       currency: 'EUR',
-      attribute_name: currentProduct.attribute_name || (paxVal ? 'Nombre de personnes (pax)' : null),
-      attribute_value: paxVal ? String(paxVal) : null,
+      attribute_name: attributeName,
+      attribute_value: attributeValue,
       published: $('#v-published').checked,
       in_stock: $('#v-stock').checked,
-      updated_at: new Date().toISOString()
+      raw_export: rawExport,
+      updated_at: now
     };
+    const submitButton = $('#variation-form button[type="submit"]');
+    if (submitButton) { submitButton.disabled = true; submitButton.textContent = 'Enregistrement…'; }
     try {
-      const result = currentVariationId
-        ? await client.from('mm_product_variations').update(payload).eq('id', currentVariationId).eq('product_id', currentProduct.id)
-        : await client.from('mm_product_variations').insert(payload);
+      let result;
+      if (currentVariationId) {
+        result = await client.from('mm_product_variations')
+          .update(payload).eq('id', currentVariationId).eq('product_id', currentProduct.id).select('id').single();
+      } else {
+        result = await client.from('mm_product_variations')
+          .insert({ ...payload, created_at: now }).select('id').single();
+      }
       if (result.error) throw result.error;
+      if (!result.data?.id) throw new Error('Supabase n’a confirmé aucune variation enregistrée. Vérifiez les colonnes et les règles RLS.');
       resetVariationForm();
       await Promise.all([loadVariations(currentProduct.id), loadProducts()]);
       toast('Variation enregistrée.');
-    } catch (error) { toast(errorMessage(error), true); }
+    } catch (error) {
+      console.error('Save variation error:', error);
+      toast(`Échec d’enregistrement de la variation : ${errorMessage(error)}`, true);
+    } finally {
+      if (submitButton) { submitButton.disabled = false; submitButton.textContent = 'Enregistrer variation'; }
+    }
   }
 
   async function handleVariationAction(event) {
@@ -763,6 +824,7 @@
     $('#blog-rows')?.addEventListener('click', handleBlogTableAction);
     $('#blog-image-form')?.addEventListener('submit', saveBlogImage);
     $('#blog-images')?.addEventListener('click', handleBlogImageAction);
+    bindWysiwygEditors(['b-summary-editor', 'b-content-editor']);
   }
 
   async function loadBlogs() {
@@ -788,8 +850,14 @@
     $('#b-image-file').value = '';
     $('#b-image-file').dataset.currentUrl = row?.featured_image_url || '';
     setImagePreview('b-image-preview', row?.featured_image_url || '');
-    $('#b-summary').value = row?.summary || '';
-    $('#b-content').value = row?.content || '';
+    const summaryHtml = row?.summary || '';
+    const contentHtml = row?.content || '';
+    $('#b-summary').value = summaryHtml;
+    $('#b-content').value = contentHtml;
+    if ($('#b-summary-editor')) $('#b-summary-editor').innerHTML = summaryHtml;
+    if ($('#b-content-editor')) $('#b-content-editor').innerHTML = contentHtml;
+    editorRanges.delete('b-summary-editor');
+    editorRanges.delete('b-content-editor');
     $('#b-seo-title').value = row?.seo_title || '';
     $('#b-seo-description').value = row?.seo_description || '';
     $('#b-published').checked = Boolean(row?.is_published);
@@ -801,10 +869,14 @@
   }
 
   async function saveBlog() {
+    syncEditors();
     const title = $('#b-title').value.trim();
     const slug = ($('#b-slug').value.trim() || slugify(title)).replace(/^\/+|\/+$/g, '');
-    const content = $('#b-content').value;
-    if (!title || !slug || !content.trim()) { setFormError('blog-form-error', 'Le titre, le slug et le contenu HTML sont obligatoires.'); return; }
+    const summaryHtml = readEditorHTML('#b-summary-editor', '#b-summary');
+    const content = readEditorHTML('#b-content-editor', '#b-content');
+    $('#b-summary').value = summaryHtml;
+    $('#b-content').value = content;
+    if (!title || !slug || !content.trim()) { setFormError('blog-form-error', 'Le titre, le slug et le contenu de l’article sont obligatoires.'); return; }
 
     const blogId = currentBlog?.id || (window.crypto && typeof window.crypto.randomUUID === 'function' ? window.crypto.randomUUID() : `blog-${Date.now()}`);
     let newlyUploadedPath = null;
@@ -838,7 +910,7 @@
       id: blogId,
       title,
       slug,
-      summary: blankToNull($('#b-summary').value),
+      summary: blankToNull(summaryHtml),
       content,
       featured_image_url: featuredImageUrl,
       seo_title: blankToNull($('#b-seo-title').value),
