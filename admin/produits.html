@@ -73,9 +73,27 @@
           <label class="cms-field">SKU / Référence<input id="p-sku" class="mm-input" maxlength="200"></label>
           <label class="cms-field">Catégories<input id="p-categories" class="mm-input" placeholder="Mariage, Nosy Be…"></label>
           <label class="cms-field">Type de produit<select id="p-type" class="mm-select"><option value="simple">Produit simple (prix unique)</option><option value="variable">Produit variable (plusieurs options)</option><option value="service">Service</option></select></label>
-          <label class="cms-field" id="p-simple-price-wrap">Prix unique (€)<input id="p-simple-price" class="mm-input" type="number" min="0" step="0.01" placeholder="Ex: 1500"><span class="cms-subtext">Crée/met à jour automatiquement la variation dans mm_product_variations.</span></label>
+          <label class="cms-field" id="p-simple-price-wrap">Prix du produit (€)<input id="p-simple-price" class="mm-input" type="number" min="0" step="0.01" placeholder="Ex: 1500"><span class="cms-subtext">Saisie directe du prix principal (enregistré dans mm_product_variations).</span></label>
           <label class="cms-field full">Description courte<textarea id="p-short" class="mm-textarea" rows="2"></textarea></label>
-          <label class="cms-field full">Description HTML<textarea id="p-description" class="mm-textarea cms-content" rows="9" spellcheck="false" placeholder="<p>Description du produit…</p>"></textarea></label>
+          <div class="cms-field full">
+            <label class="block mb-1 text-xs text-[#a0b4c4]">Description du produit</label>
+            <div class="cms-editor-container border border-[#223247] rounded-xl overflow-hidden bg-[#0b1220]">
+              <div class="cms-editor-toolbar flex flex-wrap gap-1 p-2 bg-[#141c2e] border-b border-[#223247]">
+                <button type="button" class="cms-small-btn" data-wysiwyg="bold" title="Gras"><b>B</b></button>
+                <button type="button" class="cms-small-btn" data-wysiwyg="italic" title="Italique"><i>I</i></button>
+                <button type="button" class="cms-small-btn" data-wysiwyg="formatBlock" data-value="h2" title="Titre 2">H2</button>
+                <button type="button" class="cms-small-btn" data-wysiwyg="formatBlock" data-value="h3" title="Titre 3">H3</button>
+                <button type="button" class="cms-small-btn" data-wysiwyg="formatBlock" data-value="p" title="Paragraphe">P</button>
+                <button type="button" class="cms-small-btn" data-wysiwyg="insertUnorderedList" title="Liste à puces">• Liste</button>
+                <button type="button" class="cms-small-btn" data-wysiwyg="insertOrderedList" title="Liste numérotée">1. Liste</button>
+                <button type="button" class="cms-small-btn" data-wysiwyg="createLink" title="Insérer un lien">🔗 Lien</button>
+                <button type="button" class="cms-small-btn" data-wysiwyg="unlink" title="Supprimer le lien">Suppr. Lien</button>
+                <button type="button" class="cms-small-btn" data-wysiwyg="removeFormat" title="Effacer la mise en forme">Effacer format</button>
+              </div>
+              <div id="p-description-editor" contenteditable="true" class="p-3 min-h-[220px] text-sm text-[#e0e8f0] focus:outline-none overflow-y-auto leading-relaxed" placeholder="Description du produit…"></div>
+              <textarea id="p-description" hidden></textarea>
+            </div>
+          </div>
           <label class="cms-field">Image principale — téléverser un fichier<input id="p-image-file" data-image-preview="p-image-preview" class="mm-input cms-file-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif"><span class="cms-subtext">JPG, PNG, WebP, GIF ou AVIF · 10 Mo maximum. L’image actuelle est conservée si vous ne choisissez pas de nouveau fichier.</span><img id="p-image-preview" class="cms-upload-preview" alt="Aperçu de l’image principale" hidden><input id="p-image" type="hidden"></label>
           <label class="cms-field">URL source (facultatif)<input id="p-source" class="mm-input" placeholder="https://…"></label>
           <label class="cms-field">Visibilité catalogue<select id="p-visibility" class="mm-select"><option value="visible">Visible</option><option value="catalog">Catalogue uniquement</option><option value="search">Recherche uniquement</option><option value="hidden">Masqué</option></select></label>
