@@ -180,6 +180,8 @@
 </footer>
 
 <script>
+// URL publique de production : ne jamais envoyer les liens d'authentification vers localhost.
+const MM_AUTH_REDIRECT_ORIGIN = 'https://mariage-madagascar.vercel.app';
 let authMode = 'login';
 function togglePasswordVisibility() {
   const pwdInput=document.getElementById('password'), eyeIcon=document.getElementById('eyeIcon');
@@ -207,7 +209,7 @@ document.getElementById('forgot-password').addEventListener('click',async e=>{
   e.preventDefault();const email=document.getElementById('email').value.trim();
   if(!email){authFeedback('Saisissez votre adresse email pour recevoir le lien de réinitialisation.','error');return;}
   if(!window.mmSupabase){authFeedback('Connexion Supabase indisponible. Réessayez plus tard.','error');return;}
-  const {error}=await window.mmSupabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/espace-client/login.html'});
+  const {error}=await window.mmSupabase.auth.resetPasswordForEmail(email,{redirectTo:MM_AUTH_REDIRECT_ORIGIN+'/espace-client/login.html'});
   authFeedback(error?error.message:'Si cette adresse correspond à un compte, un email de réinitialisation va être envoyé.',error?'error':'info');
 });
 async function handleLogin(event){
@@ -219,7 +221,7 @@ async function handleLogin(event){
   try{
     if(authMode==='signup'){
       const fullName=document.getElementById('fullName').value.trim();
-      const {data,error}=await client.auth.signUp({email,password,options:{data:{full_name:fullName},emailRedirectTo:location.origin+'/espace-client/index.html'}});
+      const {data,error}=await client.auth.signUp({email,password,options:{data:{full_name:fullName},emailRedirectTo:MM_AUTH_REDIRECT_ORIGIN+'/espace-client/index.html'}});
       if(error)throw error;
       if(data.session){location.href='/espace-client/index.html';return;}
       authFeedback('Compte créé. Consultez votre boîte email pour confirmer votre adresse avant de vous connecter.');
