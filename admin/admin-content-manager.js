@@ -323,7 +323,7 @@
     if (row) {
       loadVariations(row.id).then(() => {
         if (variations.length > 0 && $('#p-simple-price')) {
-          const firstPrice = variations[0].regular_price ?? variations[0].price;
+          const firstPrice = variations[0].regular_price;
           if (firstPrice != null) $('#p-simple-price').value = firstPrice;
         }
       }).catch((error) => toast(`Variations : ${errorMessage(error)}`, true));
@@ -490,7 +490,7 @@
       tbody.innerHTML = '<tr><td colspan="5" class="cms-empty">Aucune variation pour ce produit.</td></tr>';
       return;
     }
-    tbody.innerHTML = variations.map((v) => `<tr><td>${escapeHTML(v.name || (v.pax ? `${v.pax} personne(s)` : 'Option'))}</td><td>${escapeHTML(v.sku || '—')}</td><td>${money(v.regular_price ?? v.price)}</td><td><span class="mm-badge ${v.published && v.in_stock ? 'green' : 'orange'}">${v.published && v.in_stock ? 'Active' : 'Inactive'}</span></td><td><div class="cms-actions"><button type="button" class="cms-small-btn" data-variation-edit="${escapeHTML(v.id)}">Modifier</button>${v.published || v.in_stock ? `<button type="button" class="cms-small-btn danger" data-variation-disable="${escapeHTML(v.id)}">Désactiver</button>` : ''}</div></td></tr>`).join('');
+    tbody.innerHTML = variations.map((v) => `<tr><td>${escapeHTML(v.name || (v.pax ? `${v.pax} personne(s)` : 'Option'))}</td><td>${escapeHTML(v.sku || '—')}</td><td>${money(v.regular_price)}</td><td><span class="mm-badge ${v.published && v.in_stock ? 'green' : 'orange'}">${v.published && v.in_stock ? 'Active' : 'Inactive'}</span></td><td><div class="cms-actions"><button type="button" class="cms-small-btn" data-variation-edit="${escapeHTML(v.id)}">Modifier</button>${v.published || v.in_stock ? `<button type="button" class="cms-small-btn danger" data-variation-disable="${escapeHTML(v.id)}">Désactiver</button>` : ''}</div></td></tr>`).join('');
   }
 
   function resetVariationForm() {
@@ -514,7 +514,7 @@
     $('#v-name').value = variation?.name || '';
     $('#v-sku').value = variation?.sku || '';
     $('#v-pax').value = variation?.pax ?? '';
-    $('#v-price').value = variation ? (variation.regular_price ?? variation.price ?? '') : '';
+    $('#v-price').value = variation ? (variation.regular_price ?? '') : '';
     $('#v-published').checked = variation ? Boolean(variation.published) : true;
     $('#v-stock').checked = variation ? Boolean(variation.in_stock) : true;
   }
