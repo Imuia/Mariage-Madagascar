@@ -175,6 +175,7 @@
       if (!slugEdited && !currentProduct) $('#p-slug').value = slugify($('#p-name').value);
     });
     $('#p-slug')?.addEventListener('input', () => { slugEdited = true; });
+    $('#p-type')?.addEventListener('change', toggleProductTypeFields);
     $('#new-variation')?.addEventListener('click', () => openVariationForm(null));
     $('#cancel-variation')?.addEventListener('click', (event) => { event.preventDefault(); resetVariationForm(); });
     $('#variation-form')?.addEventListener('submit', saveVariation);
@@ -182,6 +183,46 @@
     $('#product-images')?.addEventListener('click', handleProductImageAction);
     $('#product-rows')?.addEventListener('click', handleProductTableAction);
     $('#variation-rows')?.addEventListener('click', handleVariationAction);
+
+    // WYSIWYG Editor Bindings
+    document.querySelectorAll('[data-wysiwyg]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const command = btn.dataset.wysiwyg;
+        const val = btn.dataset.value || null;
+        if (command === 'createLink') {
+          const url = window.prompt('Entrez l’URL du lien :', 'https://');
+          if (url) document.execCommand('createLink', false, url);
+        } else if (command === 'formatBlock') {
+          document.execCommand('formatBlock', false, `<${val}>`);
+        } else {
+          document.execCommand(command, false, val);
+        }
+        syncDescriptionEditor();
+      });
+    });
+
+    const editorEl = $('#p-description-editor');
+    if (editorEl) {
+      editorEl.addEventListener('input', syncDescriptionEditor);
+      editorEl.addEventListener('blur', syncDescriptionEditor);
+    }
+  }
+
+  function syncDescriptionEditor() {
+    const editor = $('#p-description-editor');
+    const textarea = $('#p-description');
+    if (editor && textarea) {
+      textarea.value = editor.innerHTML;
+    }
+  }
+
+  function toggleProductTypeFields() {
+    const type = $('#p-type')?.value || 'simple';
+    const simpleWrap = $('#p-simple-price-wrap');
+    if (simpleWrap) {
+      simpleWrap.hidden = (type === 'variable');
+    }
   }
 
   async function loadProducts() {
@@ -260,8 +301,12 @@
     $('#p-sku').value = row?.sku || '';
     $('#p-categories').value = formatCommaList(row?.categories) || '';
     $('#p-type').value = row?.product_type || 'simple';
+    toggleProductTypeFields();
+    if ($('#p-simple-price')) $('#p-simple-price').value = row?._minPrice ?? '';
     $('#p-short').value = row?.short_description || '';
-    $('#p-description').value = row?.description_html || '';
+    const descHtml = row?.description_html || '';
+    $('#p-description').value = descHtml;
+    if ($('#p-description-editor')) $('#p-description-editor').innerHTML = descHtml;
     $('#p-image').value = row?.featured_image_url || '';
     $('#p-image-file').value = '';
     $('#p-image-file').dataset.currentUrl = row?.featured_image_url || '';
@@ -276,7 +321,12 @@
     $('#p-stock').checked = row ? Boolean(row.in_stock) : true;
     $('#product-subpanels').hidden = !row;
     if (row) {
-      loadVariations(row.id).catch((error) => toast(`Variations : ${errorMessage(error)}`, true));
+      loadVariations(row.id).then(() => {
+        if (variations.length > 0 && $('#p-simple-price')) {
+          const firstPrice = variations[0].regular_price;
+          if (firstPrice != null) $('#p-simple-price').value = firstPrice;
+        }
+      }).catch((error) => toast(`Variations : ${errorMessage(error)}`, true));
       loadProductImages(row.id).catch((error) => toast(`Images : ${errorMessage(error)}`, true));
     } else {
       $('#variation-rows').innerHTML = '<tr><td colspan="5" class="cms-empty">Enregistrez d’abord le produit pour ajouter des variations.</td></tr>';
@@ -314,6 +364,10 @@
       }
     }
 
+    syncDescriptionEditor();
+    const descriptionHtml = $('#p-description-editor')?.innerHTML || $('#p-description')?.value || '';
+    $('#p-description').value = descriptionHtml;
+
     const payload = {
       id: productId,
       name,
@@ -322,7 +376,7 @@
       categories: parseCommaList($('#p-categories').value),
       product_type: blankToNull($('#p-type').value) || 'simple',
       short_description: blankToNull($('#p-short').value),
-      description_html: $('#p-description').value || '',
+      description_html: descriptionHtml,
       featured_image_url: featuredImageUrl,
       source_url: blankToNull($('#p-source').value),
       catalog_visibility: $('#p-visibility').value,
@@ -355,6 +409,42 @@
       $('#product-modal-title').textContent = 'Modifier le produit';
       $('#product-subpanels').hidden = false;
       $('#p-slug').value = currentProduct.slug;
+
+      // Auto-create/update variation for simple products
+      const pType = $('#p-type').value || 'simple';
+      const simplePriceInput = $('#p-simple-price')?.value;
+      if ((pType === 'simple' || pType === 'service') && simplePriceInput !== '' && simplePriceInput != null) {
+        const simplePrice = Number(simplePriceInput);
+        if (Number.isFinite(simplePrice) && simplePrice >= 0) {
+          const { data: existingVars } = await client.from('mm_product_variations').select('id').eq('product_id', currentProduct.id).limit(1);
+          const varPayload = {
+            product_id: currentProduct.id,
+            sku: currentProduct.sku ? `${currentProduct.sku}-MAIN` : `${currentProduct.slug}-MAIN`,
+            name: `${currentProduct.name} - Tarif de base`,
+            attribute_name: currentProduct.attribute_name || 'Option',
+            attribute_value: currentProduct.attribute_values || 'Standard',
+            pax: 1,
+            regular_price: simplePrice,
+            currency: 'EUR',
+            published: currentProduct.published,
+            in_stock: currentProduct.in_stock,
+            raw_export: {
+              SKU: currentProduct.sku || '',
+              Name: currentProduct.name,
+              Type: 'variation',
+              'Regular price': simplePrice,
+              Published: currentProduct.published ? 1 : 0
+            },
+            updated_at: new Date().toISOString()
+          };
+
+          if (existingVars && existingVars.length > 0) {
+            await client.from('mm_product_variations').update(varPayload).eq('id', existingVars[0].id);
+          } else {
+            await client.from('mm_product_variations').insert(varPayload);
+          }
+        }
+      }
 
       setFormError('product-form-error', '');
       await loadProducts();
@@ -400,7 +490,7 @@
       tbody.innerHTML = '<tr><td colspan="5" class="cms-empty">Aucune variation pour ce produit.</td></tr>';
       return;
     }
-    tbody.innerHTML = variations.map((v) => `<tr><td>${escapeHTML(v.name || (v.pax ? `${v.pax} personne(s)` : 'Option'))}</td><td>${escapeHTML(v.sku || '—')}</td><td>${money(v.regular_price ?? v.price)}</td><td><span class="mm-badge ${v.published && v.in_stock ? 'green' : 'orange'}">${v.published && v.in_stock ? 'Active' : 'Inactive'}</span></td><td><div class="cms-actions"><button type="button" class="cms-small-btn" data-variation-edit="${escapeHTML(v.id)}">Modifier</button>${v.published || v.in_stock ? `<button type="button" class="cms-small-btn danger" data-variation-disable="${escapeHTML(v.id)}">Désactiver</button>` : ''}</div></td></tr>`).join('');
+    tbody.innerHTML = variations.map((v) => `<tr><td>${escapeHTML(v.name || (v.pax ? `${v.pax} personne(s)` : 'Option'))}</td><td>${escapeHTML(v.sku || '—')}</td><td>${money(v.regular_price)}</td><td><span class="mm-badge ${v.published && v.in_stock ? 'green' : 'orange'}">${v.published && v.in_stock ? 'Active' : 'Inactive'}</span></td><td><div class="cms-actions"><button type="button" class="cms-small-btn" data-variation-edit="${escapeHTML(v.id)}">Modifier</button>${v.published || v.in_stock ? `<button type="button" class="cms-small-btn danger" data-variation-disable="${escapeHTML(v.id)}">Désactiver</button>` : ''}</div></td></tr>`).join('');
   }
 
   function resetVariationForm() {
@@ -424,7 +514,7 @@
     $('#v-name').value = variation?.name || '';
     $('#v-sku').value = variation?.sku || '';
     $('#v-pax').value = variation?.pax ?? '';
-    $('#v-price').value = variation ? (variation.regular_price ?? variation.price ?? '') : '';
+    $('#v-price').value = variation ? (variation.regular_price ?? '') : '';
     $('#v-published').checked = variation ? Boolean(variation.published) : true;
     $('#v-stock').checked = variation ? Boolean(variation.in_stock) : true;
   }
