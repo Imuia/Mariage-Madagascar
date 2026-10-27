@@ -13,6 +13,7 @@
   <script src="/assets/js/supabase-config.js"></script>
   <script src="admin-auth.js"></script>
   <style>
+    [hidden]{display:none!important}
     .cms-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
     .cms-toolbar .mm-input{max-width:360px}
     .cms-modal{width:min(1050px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:auto;padding:0;border:1px solid #2a3a48;border-radius:18px;background:#0f1524;color:#e0e8f0;box-shadow:0 24px 80px #0009}
@@ -42,6 +43,17 @@
     .cms-file-input::file-selector-button{margin-right:12px;padding:7px 12px;border:1px solid #35536a;border-radius:7px;background:#1a2b3f;color:#7dd3fc;cursor:pointer}
     .cms-subtext{color:#a0b4c4;font-size:11px;line-height:1.5}
     .cms-content{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;min-height:230px}
+    /* Real visual-editor surface and visible placeholders; no design-framework dependency. */
+    #p-short-editor,#p-description-editor{display:block;width:100%;white-space:normal;overflow-wrap:anywhere;cursor:text;color:#e0e8f0;line-height:1.65}
+    #p-short-editor{min-height:90px}
+    #p-description-editor{min-height:220px}
+    #p-short-editor:empty::before,#p-description-editor:empty::before{content:attr(placeholder);display:block;color:#718096;pointer-events:none}
+    #p-description-editor h2{font-size:1.35rem;font-weight:700;margin:.8em 0 .35em}
+    #p-description-editor h3{font-size:1.15rem;font-weight:700;margin:.7em 0 .3em}
+    #p-short-editor p,#p-description-editor p{margin:.35em 0}
+    #p-short-editor ul,#p-description-editor ul{list-style:disc;padding-left:1.5rem}
+    #p-short-editor ol,#p-description-editor ol{list-style:decimal;padding-left:1.5rem}
+    #p-short-editor a,#p-description-editor a{color:#7dd3fc;text-decoration:underline}
     .cms-inline-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:end;margin-top:12px}
     @media(max-width:800px){.cms-form-grid{grid-template-columns:1fr}.cms-inline-form{grid-template-columns:repeat(2,minmax(0,1fr))}.cms-modal-body{padding:16px}.cms-modal-head{padding:16px}}
     @media(max-width:480px){.cms-inline-form{grid-template-columns:1fr}.cms-modal{width:calc(100vw - 14px);max-height:calc(100vh - 14px)}}
@@ -129,6 +141,6 @@
   </dialog>
   <div id="mm-toast" class="mm-toast" role="status" aria-live="polite"></div>
   <script src="admin-shared.js"></script>
-  <script src="admin-content-manager.js"></script>
+  <script src="admin-content-manager.js?v=20261027-cmsfix2"></script>
 </body>
 </html>

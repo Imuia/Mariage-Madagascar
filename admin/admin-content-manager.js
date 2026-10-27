@@ -26,6 +26,9 @@
   let blogImages = [];
   let currentVariationId = null;
   let slugEdited = false;
+  // Keep selections while toolbar buttons are clicked, so WYSIWYG commands
+  // apply to the selected text instead of losing the caret.
+  const editorRanges = new Map();
 
   function setStatus(message, type = '') {
     if (!statusEl) return;
@@ -184,47 +187,100 @@
     $('#product-rows')?.addEventListener('click', handleProductTableAction);
     $('#variation-rows')?.addEventListener('click', handleVariationAction);
 
-    // WYSIWYG Editors Bindings
-    document.querySelectorAll('[data-wysiwyg]').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const targetId = btn.dataset.target || 'p-description-editor';
-        const targetEditor = document.getElementById(targetId);
-        if (targetEditor) targetEditor.focus();
-        const command = btn.dataset.wysiwyg;
-        const val = btn.dataset.value || null;
-        if (command === 'createLink') {
-          const url = window.prompt('Entrez l’URL du lien :', 'https://');
-          if (url) document.execCommand('createLink', false, url);
-        } else if (command === 'formatBlock') {
-          document.execCommand('formatBlock', false, `<${val}>`);
-        } else {
-          document.execCommand(command, false, val);
-        }
-        syncEditors();
-      });
+    // WYSIWYG editors: preserve the text selection when toolbar controls are used.
+    const editorIds = ['p-short-editor', 'p-description-editor'];
+    editorIds.forEach((id) => {
+      const editor = document.getElementById(id);
+      if (!editor) return;
+      const rememberSelection = () => saveEditorSelection(editor);
+      editor.addEventListener('keyup', rememberSelection);
+      editor.addEventListener('mouseup', rememberSelection);
+      editor.addEventListener('focus', rememberSelection);
+      editor.addEventListener('input', () => { syncEditors(); rememberSelection(); });
+      editor.addEventListener('blur', syncEditors);
     });
 
-    ['p-short-editor', 'p-description-editor'].forEach((id) => {
-      const editorEl = document.getElementById(id);
-      if (editorEl) {
-        editorEl.addEventListener('input', syncEditors);
-        editorEl.addEventListener('blur', syncEditors);
-      }
+    document.querySelectorAll('[data-wysiwyg]').forEach((btn) => {
+      // Prevent the toolbar button from taking focus and discarding the editor selection.
+      btn.addEventListener('mousedown', (event) => {
+        if (event.button === 0) event.preventDefault();
+      });
+      btn.addEventListener('click', (event) => {
+        event.preventDefault();
+        const targetId = btn.dataset.target || 'p-description-editor';
+        const editor = document.getElementById(targetId);
+        if (!editor) return;
+        restoreEditorSelection(editor);
+
+        const command = btn.dataset.wysiwyg;
+        const value = btn.dataset.value || null;
+        if (command === 'createLink') {
+          const url = window.prompt('Entrez l’URL du lien :', 'https://');
+          if (url && url.trim()) {
+            restoreEditorSelection(editor);
+            document.execCommand('createLink', false, url.trim());
+          }
+        } else if (command === 'formatBlock') {
+          // Chromium accepts the block tag with angle brackets for formatBlock.
+          document.execCommand('formatBlock', false, `<${value || 'p'}>`);
+        } else {
+          document.execCommand(command, false, value);
+        }
+        syncEditors();
+        saveEditorSelection(editor);
+      });
     });
+  }
+
+  function saveEditorSelection(editor) {
+    if (!editor || !editor.id) return;
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+    const range = selection.getRangeAt(0);
+    if (editor.contains(range.startContainer) && editor.contains(range.endContainer)) {
+      editorRanges.set(editor.id, range.cloneRange());
+    }
+  }
+
+  function restoreEditorSelection(editor) {
+    if (!editor) return;
+    editor.focus({ preventScroll: true });
+    const selection = window.getSelection();
+    if (!selection) return;
+    const saved = editorRanges.get(editor.id);
+    if (saved && editor.contains(saved.startContainer) && editor.contains(saved.endContainer)) {
+      selection.removeAllRanges();
+      selection.addRange(saved);
+      return;
+    }
+    // If the user has not selected text yet, put the caret at the end of this editor.
+    const range = document.createRange();
+    range.selectNodeContents(editor);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    editorRanges.set(editor.id, range.cloneRange());
+  }
+
+  function normalizedEditorHTML(value) {
+    const html = String(value || '').trim();
+    if (!html || /^(?:<br\s*\/?\s*>|<div>\s*<br\s*\/?\s*>\s*<\/div>|<p>\s*<br\s*\/?\s*>\s*<\/p>)$/i.test(html)) return '';
+    return html;
+  }
+
+  function readEditorHTML(editorSelector, fallbackSelector) {
+    const editor = $(editorSelector);
+    if (editor) return normalizedEditorHTML(editor.innerHTML);
+    return $(fallbackSelector)?.value || '';
   }
 
   function syncEditors() {
     const shortEditor = $('#p-short-editor');
     const shortTextarea = $('#p-short');
-    if (shortEditor && shortTextarea) {
-      shortTextarea.value = shortEditor.innerHTML;
-    }
+    if (shortEditor && shortTextarea) shortTextarea.value = normalizedEditorHTML(shortEditor.innerHTML);
     const descEditor = $('#p-description-editor');
     const descTextarea = $('#p-description');
-    if (descEditor && descTextarea) {
-      descTextarea.value = descEditor.innerHTML;
-    }
+    if (descEditor && descTextarea) descTextarea.value = normalizedEditorHTML(descEditor.innerHTML);
   }
 
   function toggleProductTypeFields() {
@@ -243,20 +299,28 @@
       .range(0, 999);
     if (error) throw error;
     currentRows = data || [];
-    let variationPrices = {};
+    const variationPrices = {};
+    const anyVariationPrices = {};
     const { data: prices, error: priceError } = await client.from('mm_product_variations')
       .select('product_id,regular_price,published,in_stock').range(0, 1999);
     if (!priceError && prices) {
       prices.forEach((row) => {
-        if (!row.published || row.regular_price == null) return;
+        if (row.regular_price == null || row.product_id == null) return;
         const key = row.product_id;
         const amount = Number(row.regular_price);
-        if (Number.isFinite(amount) && (variationPrices[key] == null || amount < variationPrices[key])) variationPrices[key] = amount;
+        if (!Number.isFinite(amount)) return;
+        // The catalogue uses published prices, but the edit form must also
+        // prefill draft/unpublished products so an existing price is not lost.
+        if (anyVariationPrices[key] == null || amount < anyVariationPrices[key]) anyVariationPrices[key] = amount;
+        if (row.published && (variationPrices[key] == null || amount < variationPrices[key])) variationPrices[key] = amount;
       });
     } else if (priceError) {
       console.warn('Prix des variations non chargés :', priceError.message);
     }
-    currentRows.forEach((row) => { row._minPrice = variationPrices[row.id]; });
+    currentRows.forEach((row) => {
+      row._minPrice = variationPrices[row.id];
+      row._anyPrice = anyVariationPrices[row.id];
+    });
     renderRows();
     setStatus(`${currentRows.length} produit(s) chargé(s). Les prix sont lus depuis mm_product_variations.`, 'success');
   }
@@ -288,14 +352,14 @@
     if (isProducts) {
       tbody.innerHTML = rows.map((row) => `
         <tr>
-          <td><div class="flex items-center gap-3">${row.featured_image_url ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(row.featured_image_url)}" alt="">` : '<div class="cms-thumb"></div>'}<div><strong>${escapeHTML(row.name || 'Sans nom')}</strong><div class="cms-subtext">${escapeHTML(row.sku || row.slug || '')}</div></div></div></td>
+          <td><div class="flex items-center gap-3">${row.featured_image_url ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(imageDisplayUrl(row.featured_image_url, row.featured_image_url))}" alt="">` : '<div class="cms-thumb"></div>'}<div><strong>${escapeHTML(row.name || 'Sans nom')}</strong><div class="cms-subtext">${escapeHTML(row.sku || row.slug || '')}</div></div></div></td>
           <td>${escapeHTML(formatCommaList(row.categories) || '—')}</td><td>${escapeHTML(row.product_type || '—')}</td><td>${money(row._minPrice)}</td>
           <td><span class="mm-badge ${row.published ? 'green' : 'orange'}">${row.published ? 'Publié' : 'Brouillon'}</span><div class="cms-subtext">${row.in_stock ? 'En stock' : 'Hors stock'}</div></td>
           <td><div class="cms-actions"><button class="cms-small-btn" data-product-edit="${escapeHTML(row.id)}">Modifier</button><button class="cms-small-btn" data-product-toggle="${escapeHTML(row.id)}">${row.published ? 'Dépublier' : 'Publier'}</button>${row.slug ? `<a class="cms-small-btn" href="/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener">Voir</a>` : ''}</div></td>
         </tr>`).join('');
     } else {
       tbody.innerHTML = rows.map((row) => `
-        <tr><td><div class="flex items-center gap-3">${row.featured_image_url ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(row.featured_image_url)}" alt="">` : '<div class="cms-thumb"></div>'}<div><strong>${escapeHTML(row.title || 'Sans titre')}</strong><div class="cms-subtext">${escapeHTML(row.summary || '').slice(0, 150)}</div></div></div></td>
+        <tr><td><div class="flex items-center gap-3">${row.featured_image_url ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(imageDisplayUrl(row.featured_image_url, row.featured_image_url))}" alt="">` : '<div class="cms-thumb"></div>'}<div><strong>${escapeHTML(row.title || 'Sans titre')}</strong><div class="cms-subtext">${escapeHTML(row.summary || '').slice(0, 150)}</div></div></div></td>
         <td><code>${escapeHTML(row.slug || '')}</code></td><td><span class="mm-badge ${row.is_published ? 'green' : 'orange'}">${row.is_published ? 'Publié' : 'Brouillon'}</span></td><td>${dateText(row.updated_at || row.published_at || row.created_at)}</td>
         <td><div class="cms-actions"><button class="cms-small-btn" data-blog-edit="${escapeHTML(row.id)}">Modifier le HTML</button><button class="cms-small-btn" data-blog-toggle="${escapeHTML(row.id)}">${row.is_published ? 'Dépublier' : 'Publier'}</button>${row.slug ? `<a class="cms-small-btn" href="/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener">Voir</a>` : ''}</div></td></tr>`).join('');
     }
@@ -312,7 +376,7 @@
     $('#p-categories').value = formatCommaList(row?.categories) || '';
     $('#p-type').value = row?.product_type || 'simple';
     toggleProductTypeFields();
-    if ($('#p-simple-price')) $('#p-simple-price').value = row?._minPrice ?? '';
+    if ($('#p-simple-price')) $('#p-simple-price').value = row?._anyPrice ?? row?._minPrice ?? '';
     const shortHtml = row?.short_description || '';
     $('#p-short').value = shortHtml;
     if ($('#p-short-editor')) $('#p-short-editor').innerHTML = shortHtml;
@@ -334,9 +398,9 @@
     $('#product-subpanels').hidden = !row;
     if (row) {
       loadVariations(row.id).then(() => {
-        if (variations.length > 0 && $('#p-simple-price')) {
-          const firstPrice = variations[0].regular_price;
-          if (firstPrice != null) $('#p-simple-price').value = firstPrice;
+        if (['simple', 'service'].includes($('#p-type')?.value) && variations.length === 1 && $('#p-simple-price')) {
+          const existingPrice = variations[0].regular_price;
+          if (existingPrice != null) $('#p-simple-price').value = existingPrice;
         }
       }).catch((error) => toast(`Variations : ${errorMessage(error)}`, true));
       loadProductImages(row.id).catch((error) => toast(`Images : ${errorMessage(error)}`, true));
@@ -355,7 +419,8 @@
 
     const productId = currentProduct?.id || (window.crypto && typeof window.crypto.randomUUID === 'function' ? window.crypto.randomUUID() : `prod-${Date.now()}`);
     let newlyUploadedPath = null;
-    let featuredImageUrl = blankToNull($('#p-image').value);
+    let productRecordSaved = false;
+    let featuredImageUrl = normalizeImageValue($('#p-image').value);
 
     $('#save-product').disabled = true;
     $('#save-product').textContent = 'Enregistrement…';
@@ -377,8 +442,8 @@
     }
 
     syncEditors();
-    const shortDescription = $('#p-short-editor')?.innerHTML || $('#p-short')?.value || '';
-    const descriptionHtml = $('#p-description-editor')?.innerHTML || $('#p-description')?.value || '';
+    const shortDescription = readEditorHTML('#p-short-editor', '#p-short');
+    const descriptionHtml = readEditorHTML('#p-description-editor', '#p-description');
     $('#p-short').value = shortDescription;
     $('#p-description').value = descriptionHtml;
 
@@ -412,6 +477,7 @@
       }
       if (result.error) throw result.error;
       currentProduct = result.data;
+      productRecordSaved = true;
 
       if (currentProduct.featured_image_url) {
         $('#p-image').value = currentProduct.featured_image_url;
@@ -430,7 +496,10 @@
       if ((pType === 'simple' || pType === 'service') && simplePriceInput !== '' && simplePriceInput != null) {
         const simplePrice = Number(simplePriceInput);
         if (Number.isFinite(simplePrice) && simplePrice >= 0) {
-          const { data: existingVars } = await client.from('mm_product_variations').select('id').eq('product_id', currentProduct.id).limit(1);
+          const { data: existingVars, error: lookupError } = await client.from('mm_product_variations')
+            .select('id,regular_price').eq('product_id', currentProduct.id)
+            .order('created_at', { ascending: true }).limit(1);
+          if (lookupError) throw lookupError;
           const varPayload = {
             product_id: currentProduct.id,
             sku: currentProduct.sku ? `${currentProduct.sku}-MAIN` : `${currentProduct.slug}-MAIN`,
@@ -452,11 +521,14 @@
             updated_at: new Date().toISOString()
           };
 
-          if (existingVars && existingVars.length > 0) {
-            await client.from('mm_product_variations').update(varPayload).eq('id', existingVars[0].id);
-          } else {
-            await client.from('mm_product_variations').insert(varPayload);
-          }
+          // For an existing simple product, change only its price and timestamp.
+          // Preserve the variation's SKU, name, attributes, publication and stock values.
+          const variationResult = existingVars && existingVars.length > 0
+            ? await client.from('mm_product_variations')
+                .update({ regular_price: simplePrice, updated_at: new Date().toISOString() })
+                .eq('id', existingVars[0].id).eq('product_id', currentProduct.id)
+            : await client.from('mm_product_variations').insert(varPayload);
+          if (variationResult.error) throw variationResult.error;
         }
       }
 
@@ -466,7 +538,9 @@
       toast(featuredFile ? 'Produit et image principale enregistrés avec succès.' : 'Produit enregistré avec succès.');
     } catch (error) {
       console.error('Save product error:', error);
-      if (newlyUploadedPath) {
+      // Do not delete a newly uploaded image if the product row was already saved:
+      // later gallery/variation refresh errors must not break the stored image URL.
+      if (newlyUploadedPath && !productRecordSaved) {
         try { await client.storage.from(STORAGE_BUCKET).remove([newlyUploadedPath]); } catch (_) {}
       }
       setFormError('product-form-error', errorMessage(error));
@@ -613,7 +687,15 @@
         sort_order: Number($('#pi-order').value || 0),
         is_featured: $('#pi-featured').checked
       };
-      const { error } = await client.from('mm_product_images').insert(payload);
+      let { error } = await client.from('mm_product_images').insert(payload);
+      // Older deployments may not yet have the optional image_url column. The
+      // legacy schema uses source_url + local_path, so retry only for that exact
+      // missing-column/schema-cache case rather than masking unrelated errors.
+      if (error && /(?:column .*image_url.*does not exist|could not find the .*image_url.*column|schema cache.*image_url)/i.test(error.message || '')) {
+        const { image_url: _imageUrl, ...legacyPayload } = payload;
+        const retry = await client.from('mm_product_images').insert(legacyPayload);
+        error = retry.error;
+      }
       if (error) {
         try { await client.storage.from(STORAGE_BUCKET).remove([uploaded.path]); } catch (_) { /* don't hide the original database error */ }
         throw error;
@@ -726,7 +808,8 @@
 
     const blogId = currentBlog?.id || (window.crypto && typeof window.crypto.randomUUID === 'function' ? window.crypto.randomUUID() : `blog-${Date.now()}`);
     let newlyUploadedPath = null;
-    let featuredImageUrl = blankToNull($('#b-image').value);
+    let blogRecordSaved = false;
+    let featuredImageUrl = normalizeImageValue($('#b-image').value);
 
     $('#save-blog').disabled = true;
     $('#save-blog').textContent = 'Enregistrement…';
@@ -771,6 +854,7 @@
       else result = await client.from('blog_posts').insert(payload).select('*').single();
       if (result.error) throw result.error;
       currentBlog = result.data;
+      blogRecordSaved = true;
 
       if (featuredFile && featuredImageUrl) {
         $('#b-image').value = featuredImageUrl;
@@ -788,7 +872,7 @@
       toast(featuredFile ? 'Article et image principale enregistrés avec succès.' : 'Article enregistré avec succès.');
     } catch (error) {
       console.error('Save blog error:', error);
-      if (newlyUploadedPath) {
+      if (newlyUploadedPath && !blogRecordSaved) {
         try { await client.storage.from(STORAGE_BUCKET).remove([newlyUploadedPath]); } catch (_) {}
       }
       setFormError('blog-form-error', errorMessage(error));
@@ -827,7 +911,7 @@
     const container = $('#blog-images');
     if (!blogImages.length) { container.innerHTML = '<div class="cms-subtext">Aucune image supplémentaire dans la galerie.</div>'; return; }
     container.innerHTML = blogImages.map((img) => {
-      return `<div class="mm-list-item"><div class="flex items-center gap-3">${img.image_url ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(img.image_url)}" alt="${escapeHTML(img.alt_text || '')}">` : ''}<div><strong>${escapeHTML(img.alt_text || 'Image article')}</strong><small>${escapeHTML(img.image_url || '')}</small></div></div><div class="cms-actions"><span class="mm-badge">Ordre ${Number(img.sort_order) || 0}${img.is_featured ? ' · vedette' : ''}</span><button type="button" class="cms-small-btn danger" data-blog-image-remove="${escapeHTML(img.id)}">Retirer</button></div></div>`;
+      return `<div class="mm-list-item"><div class="flex items-center gap-3">${img.image_url ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(imageDisplayUrl(img.image_url, img.image_url))}" alt="${escapeHTML(img.alt_text || '')}">` : ''}<div><strong>${escapeHTML(img.alt_text || 'Image article')}</strong><small>${escapeHTML(img.image_url || '')}</small></div></div><div class="cms-actions"><span class="mm-badge">Ordre ${Number(img.sort_order) || 0}${img.is_featured ? ' · vedette' : ''}</span><button type="button" class="cms-small-btn danger" data-blog-image-remove="${escapeHTML(img.id)}">Retirer</button></div></div>`;
     }).join('');
   }
 
@@ -898,8 +982,9 @@
   function setImagePreview(previewId, url) {
     const preview = document.getElementById(previewId);
     if (!preview) return;
-    if (url) {
-      preview.src = url;
+    const displayUrl = normalizeImageValue(url);
+    if (displayUrl) {
+      preview.src = displayUrl;
       preview.hidden = false;
     } else {
       preview.removeAttribute('src');
@@ -940,13 +1025,31 @@
     return { path: storedPath, publicUrl: urlData.publicUrl };
   }
 
+  function supabasePublicImageUrl(path) {
+    const cleanPath = String(path || '').trim().replace(/^\/+/, '');
+    if (!cleanPath) return '';
+    return `https://qrkinjuhtyfptldlvdyg.supabase.co/storage/v1/object/public/${STORAGE_BUCKET}/${cleanPath.split('/').map((part) => encodeURIComponent(part)).join('/')}`;
+  }
+
   function imageDisplayUrl(localPath, sourceUrl) {
-    const candidate = sourceUrl || localPath || '';
-    if (!candidate) return '';
-    if (candidate.startsWith('http://') || candidate.startsWith('https://') || candidate.startsWith('/')) {
-      return candidate;
-    }
-    return `https://qrkinjuhtyfptldlvdyg.supabase.co/storage/v1/object/public/${STORAGE_BUCKET}/${candidate.replace(/^\/+/, '')}`;
+    const local = String(localPath || '').trim();
+    const source = String(sourceUrl || '').trim();
+    // A path uploaded by this admin is authoritative: render it from Storage even
+    // if a legacy external source_url is also present.
+    if (isManagedStoragePath(local)) return supabasePublicImageUrl(local);
+    if (/^https?:\/\//i.test(local)) return local;
+    if (local.startsWith('/')) return local;
+    if (/^https?:\/\//i.test(source)) return source;
+    if (source.startsWith('/')) return source;
+    if (isManagedStoragePath(source)) return supabasePublicImageUrl(source);
+    const fallback = local || source;
+    return fallback ? supabasePublicImageUrl(fallback) : '';
+  }
+
+  function normalizeImageValue(value) {
+    const imageValue = String(value || '').trim();
+    if (!imageValue) return '';
+    return imageDisplayUrl(imageValue, imageValue);
   }
 
   function isManagedStoragePath(path) {

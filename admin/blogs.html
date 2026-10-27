@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="/assets/js/supabase-config.js"></script><script src="admin-auth.js"></script>
   <style>
+    [hidden]{display:none!important}
     .cms-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}.cms-toolbar .mm-input{max-width:360px}
     .cms-modal{width:min(1050px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:auto;padding:0;border:1px solid #2a3a48;border-radius:18px;background:#0f1524;color:#e0e8f0;box-shadow:0 24px 80px #0009}.cms-modal::backdrop{background:rgba(3,7,15,.78);backdrop-filter:blur(5px)}
     .cms-modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:20px 24px;border-bottom:1px solid #223247;position:sticky;top:0;background:#0f1524;z-index:2}.cms-modal-body{padding:22px 24px;display:grid;gap:20px}
@@ -44,6 +45,6 @@
     <div id="blog-form-error" class="cms-status error" hidden></div><div class="flex justify-end gap-2 flex-wrap"><button type="button" class="mm-btn secondary" data-close-modal>Annuler</button><button type="button" class="mm-btn" id="save-blog">Enregistrer l'article</button></div></div>
   </div></dialog>
   <div id="mm-toast" class="mm-toast" role="status" aria-live="polite"></div>
-  <script src="admin-shared.js"></script><script src="admin-content-manager.js"></script>
+  <script src="admin-shared.js"></script><script src="admin-content-manager.js?v=20261027-cmsfix2"></script>
 </body>
 </html>
