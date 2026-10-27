@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="fr" class="dark" data-admin-page="produits.html" data-cms-type="products">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Produits — Admin Mariage Madagascar</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="admin-shared.css">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/js/supabase-config.js"></script>
+  <script src="admin-auth.js"></script>
+  <style>
+    .cms-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+    .cms-toolbar .mm-input{max-width:360px}
+    .cms-modal{width:min(1050px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:auto;padding:0;border:1px solid #2a3a48;border-radius:18px;background:#0f1524;color:#e0e8f0;box-shadow:0 24px 80px #0009}
+    .cms-modal::backdrop{background:rgba(3,7,15,.78);backdrop-filter:blur(5px)}
+    .cms-modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:20px 24px;border-bottom:1px solid #223247;position:sticky;top:0;background:#0f1524;z-index:2}
+    .cms-modal-body{padding:22px 24px;display:grid;gap:20px}
+    .cms-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .cms-field{display:grid;gap:6px;font-size:12px;color:#a0b4c4}
+    .cms-field.full{grid-column:1/-1}
+    .cms-checks{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+    .cms-check{display:flex;gap:8px;align-items:center;color:#a0b4c4;font-size:12px}
+    .cms-check input{accent-color:#7dd3fc}
+    .cms-section{border:1px solid #223247;border-radius:14px;padding:16px;background:rgba(10,14,26,.5)}
+    .cms-section-head{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .cms-section-title{font-size:14px;font-weight:700}
+    .cms-actions{display:flex;gap:7px;flex-wrap:wrap}
+    .cms-small-btn{border:1px solid #2a3a48;border-radius:8px;padding:6px 9px;font-size:11px;color:#e0e8f0;background:#141c2e;cursor:pointer}
+    .cms-small-btn:hover{border-color:#7dd3fc;color:#7dd3fc}
+    .cms-small-btn.danger{color:#ff8585}
+    .cms-status{padding:10px 12px;border-radius:10px;border:1px solid #2a3a48;color:#a0b4c4;font-size:12px;margin-bottom:14px}
+    .cms-status.error{color:#ffb3b3;background:#3d1414;border-color:#ff858555}
+    .cms-status.success{color:#6ee7b7;background:#052e2b;border-color:#6ee7b733}
+    .cms-empty{padding:32px 16px;text-align:center;color:#a0b4c4;font-size:13px}
+    .cms-thumb{width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid #2a3a48;background:#0a0e1a}
+    .cms-subtext{color:#a0b4c4;font-size:11px;line-height:1.5}
+    .cms-content{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;min-height:230px}
+    .cms-inline-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:end;margin-top:12px}
+    @media(max-width:800px){.cms-form-grid{grid-template-columns:1fr}.cms-inline-form{grid-template-columns:repeat(2,minmax(0,1fr))}.cms-modal-body{padding:16px}.cms-modal-head{padding:16px}}
+    @media(max-width:480px){.cms-inline-form{grid-template-columns:1fr}.cms-modal{width:calc(100vw - 14px);max-height:calc(100vh - 14px)}}
+  </style>
+</head>
+<body class="mm-page">
+  <main class="mm-main"><div class="mm-content">
+    <header class="mm-head">
+      <div><div class="flex items-center gap-3"><button class="mm-mobile-burger md:hidden" data-mm-burger aria-label="Ouvrir le menu"><span class="material-symbols-outlined">menu</span></button><div class="mm-eyebrow">Catalogue & contenu du site</div></div>
+      <h1 class="mm-title">Produits</h1><p class="mm-subtitle">Ajoutez et modifiez les fiches, le HTML des descriptions, les prix des variations et les images du catalogue.</p></div>
+      <div class="mm-toolbar"><button class="mm-btn" id="new-product"><span class="material-symbols-outlined">add</span>Nouveau produit</button></div>
+    </header>
+    <div id="cms-status" class="cms-status" role="status">Connexion à Supabase…</div>
+    <div class="cms-toolbar"><input id="cms-search" class="mm-input" type="search" placeholder="Rechercher un produit, SKU, slug…" aria-label="Rechercher un produit"><select id="cms-filter" class="mm-select" style="max-width:180px"><option value="all">Tous les statuts</option><option value="published">Publiés</option><option value="draft">Brouillons</option><option value="stock">En stock</option><option value="out">Hors stock</option></select><span id="product-count" class="mm-badge">— produit</span></div>
+    <section class="mm-card"><div class="mm-card-head"><div><h2 class="mm-section-title">Catalogue des produits</h2><p class="cms-subtext">Les fiches et leurs prix sont enregistrés dans Supabase. Les pages publiques sont rendues par le modèle produit avec le slug correspondant.</p></div></div>
+      <div class="mm-table-wrap"><table class="mm-table"><thead><tr><th>Produit</th><th>Catégorie</th><th>Type</th><th>Prix à partir de</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="product-rows"><tr><td colspan="6" class="cms-empty">Chargement…</td></tr></tbody></table></div>
+      <div id="product-empty" class="cms-empty" hidden>Aucun produit ne correspond à cette recherche.</div>
+    </section>
+    <p class="cms-subtext" style="margin-top:16px">Pas de création de fichiers middleware. Cette page s'appuie sur l'authentification admin et les règles RLS existantes/à appliquer via la migration fournie.</p>
+  </div><footer class="mm-footer">© 2026 Mariage Madagascar · Administration privée</footer></main>
+
+  <dialog id="product-modal" class="cms-modal">
+    <div id="product-form">
+      <div class="cms-modal-head"><div><div class="mm-eyebrow">Éditeur de fiche produit</div><h2 id="product-modal-title" class="mm-title" style="font-size:24px">Nouveau produit</h2><p class="cms-subtext">La description accepte le HTML pour conserver la mise en page de la fiche publique.</p></div><button type="button" class="cms-small-btn" data-close-modal aria-label="Fermer">Fermer ✕</button></div>
+      <div class="cms-modal-body">
+        <div class="cms-form-grid">
+          <label class="cms-field full">Nom du produit *<input id="p-name" class="mm-input" required maxlength="500"></label>
+          <label class="cms-field">Slug URL *<input id="p-slug" class="mm-input" required maxlength="200" placeholder="exemple-de-produit"><span class="cms-subtext">URL publique : /{slug}</span></label>
+          <label class="cms-field">SKU / Référence<input id="p-sku" class="mm-input" maxlength="200"></label>
+          <label class="cms-field">Catégories<input id="p-categories" class="mm-input" placeholder="Mariage, Nosy Be…"></label>
+          <label class="cms-field">Type de produit<input id="p-type" class="mm-input" placeholder="simple / variable / service"></label>
+          <label class="cms-field full">Description courte<textarea id="p-short" class="mm-textarea" rows="2"></textarea></label>
+          <label class="cms-field full">Description HTML<textarea id="p-description" class="mm-textarea cms-content" rows="9" spellcheck="false" placeholder="<p>Description du produit…</p>"></textarea></label>
+          <label class="cms-field">Image principale — URL ou chemin local<input id="p-image" class="mm-input" placeholder="/assets/img/products/…"></label>
+          <label class="cms-field">URL source (facultatif)<input id="p-source" class="mm-input" placeholder="https://…"></label>
+          <label class="cms-field">Visibilité catalogue<select id="p-visibility" class="mm-select"><option value="visible">Visible</option><option value="catalog">Catalogue uniquement</option><option value="search">Recherche uniquement</option><option value="hidden">Masqué</option></select></label>
+          <label class="cms-field">Statut fiscal<input id="p-tax" class="mm-input" value="taxable"></label>
+          <label class="cms-field">Nom de l'attribut<input id="p-attribute-name" class="mm-input" placeholder="Nombre de personnes (pax)"></label>
+          <label class="cms-field">Valeurs d'attribut<input id="p-attribute-values" class="mm-input" placeholder="2, 4, 6…"></label>
+        </div>
+        <div class="cms-checks"><label class="cms-check"><input id="p-published" type="checkbox"> Publié sur le site</label><label class="cms-check"><input id="p-featured" type="checkbox"> Produit vedette</label><label class="cms-check"><input id="p-stock" type="checkbox" checked> En stock</label></div>
+        <div id="product-subpanels" hidden style="display:grid;gap:16px">
+          <section class="cms-section"><div class="cms-section-head"><div><h3 class="cms-section-title">Variations & prix</h3><p class="cms-subtext">Les prix sont stockés dans mm_product_variations, pas dans mm_products.</p></div><button type="button" class="cms-small-btn" id="new-variation">+ Ajouter une variation</button></div><div class="mm-table-wrap"><table class="mm-table"><thead><tr><th>Variation</th><th>SKU</th><th>Prix</th><th>État</th><th>Actions</th></tr></thead><tbody id="variation-rows"><tr><td colspan="5" class="cms-empty">Aucune variation chargée.</td></tr></tbody></table></div>
+            <form id="variation-form" class="cms-inline-form" hidden><input id="v-id" type="hidden"><label class="cms-field">Nom / option<input id="v-name" class="mm-input" placeholder="2 personnes"></label><label class="cms-field">SKU<input id="v-sku" class="mm-input"></label><label class="cms-field">Personnes (pax)<input id="v-pax" class="mm-input" type="number" min="1" step="1"></label><label class="cms-field">Prix (€) *<input id="v-price" class="mm-input" type="number" min="0" step="0.01" required></label><label class="cms-check"><input id="v-published" type="checkbox" checked> Publiée</label><label class="cms-check"><input id="v-stock" type="checkbox" checked> En stock</label><div class="cms-actions"><button class="mm-btn" type="submit">Enregistrer variation</button><button class="cms-small-btn" id="cancel-variation" type="button">Annuler</button></div></form>
+          </section>
+          <section class="cms-section"><div class="cms-section-head"><div><h3 class="cms-section-title">Images de la fiche</h3><p class="cms-subtext">Ajoute des images supplémentaires pour la galerie du produit.</p></div></div><div id="product-images" class="mm-list"><div class="cms-subtext">Aucune image chargée.</div></div><form id="product-image-form" class="cms-inline-form"><label class="cms-field full">URL source de l'image *<input id="pi-source" class="mm-input" required placeholder="https://… ou chemin local"></label><label class="cms-field">Chemin local<input id="pi-local" class="mm-input" placeholder="/assets/img/products/…"></label><label class="cms-field">Texte alternatif<input id="pi-alt" class="mm-input"></label><label class="cms-field">Ordre<input id="pi-order" class="mm-input" type="number" step="1" value="0"></label><label class="cms-check"><input id="pi-featured" type="checkbox"> Image principale de galerie</label><button class="mm-btn" type="submit">Ajouter l'image</button></form></section>
+        </div>
+        <div id="product-form-error" class="cms-status error" hidden></div>
+        <div class="flex justify-end gap-2 flex-wrap"><button type="button" class="mm-btn secondary" data-close-modal>Annuler</button><button type="button" class="mm-btn" id="save-product">Enregistrer le produit</button></div>
+      </div>
+    </div>
+  </dialog>
+  <div id="mm-toast" class="mm-toast" role="status" aria-live="polite"></div>
+  <script src="admin-shared.js"></script>
+  <script src="admin-content-manager.js"></script>
+</body>
+</html>

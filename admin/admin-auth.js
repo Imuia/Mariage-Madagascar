@@ -111,7 +111,9 @@
       'facturation.html',
       'commissions.html',
       'rapports.html',
-      'parametres.html'
+      'parametres.html',
+      'produits.html',
+      'blogs.html'
     ];
     if (validPages.includes(cleanName)) {
       return target;
@@ -297,8 +299,16 @@
     return data;
   }
 
+  // Share one initialization promise so pages that need the result do not
+  // trigger a second simultaneous session refresh.
+  let authInitializationPromise = null;
+  function getAuthInitialization() {
+    if (!authInitializationPromise) authInitializationPromise = checkAdminAuth();
+    return authInitializationPromise;
+  }
+
   window.MMAdminAuth = {
-    checkAdminAuth,
+    checkAdminAuth: getAuthInitialization,
     signIn,
     signOut,
     resetPasswordForEmail,
@@ -306,10 +316,10 @@
     getClient
   };
 
-  // Run Auth Check on Load
+  // Run the initial auth guard once on page load.
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', checkAdminAuth);
+    document.addEventListener('DOMContentLoaded', getAuthInitialization, { once: true });
   } else {
-    checkAdminAuth();
+    getAuthInitialization();
   }
 })();

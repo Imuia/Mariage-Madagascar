@@ -69,6 +69,16 @@
             <span>Mariages</span>
           </a>
 
+          <a href="produits.html" class="mm-nav-link ${currentPage === 'produits.html' ? 'active' : ''}">
+            <span class="material-symbols-outlined" style="${currentPage === 'produits.html' ? "font-variation-settings:'FILL' 1;" : ''}">inventory_2</span>
+            <span>Produits</span>
+          </a>
+
+          <a href="blogs.html" class="mm-nav-link ${currentPage === 'blogs.html' ? 'active' : ''}">
+            <span class="material-symbols-outlined" style="${currentPage === 'blogs.html' ? "font-variation-settings:'FILL' 1;" : ''}">article</span>
+            <span>Blogs & articles</span>
+          </a>
+
           <!-- Finance Collapsible Group -->
           <div class="mm-nav-group ${isFinanceActive ? 'expanded' : ''}" id="mm-finance-group">
             <button type="button" class="mm-nav-link mm-group-toggle ${isFinanceActive ? 'parent-active' : ''}" id="mm-finance-toggle" aria-expanded="${isFinanceActive}">
