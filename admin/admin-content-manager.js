@@ -269,7 +269,9 @@
       name,
       slug,
       sku: blankToNull($('#p-sku').value),
-      categories: blankToNull($('#p-categories').value),
+      // La colonne public.mm_products.categories est NOT NULL dans la base actuelle.
+      // En l'absence de catégorie saisie, enregistrer explicitement une valeur neutre.
+      categories: ($('#p-categories').value || '').trim() || 'Non classé',
       product_type: blankToNull($('#p-type').value) || 'simple',
       short_description: blankToNull($('#p-short').value),
       description_html: $('#p-description').value || '',
