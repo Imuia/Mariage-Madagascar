@@ -194,12 +194,12 @@
     currentRows = data || [];
     let variationPrices = {};
     const { data: prices, error: priceError } = await client.from('mm_product_variations')
-      .select('product_id,price,published,in_stock').range(0, 1999);
+      .select('product_id,regular_price,published,in_stock').range(0, 1999);
     if (!priceError && prices) {
       prices.forEach((row) => {
-        if (!row.published || row.price == null) return;
+        if (!row.published || row.regular_price == null) return;
         const key = row.product_id;
-        const amount = Number(row.price);
+        const amount = Number(row.regular_price);
         if (Number.isFinite(amount) && (variationPrices[key] == null || amount < variationPrices[key])) variationPrices[key] = amount;
       });
     } else if (priceError) {
@@ -345,11 +345,11 @@
       if (result.error) throw result.error;
       currentProduct = result.data;
 
-      if (featuredFile && featuredImageUrl) {
-        $('#p-image').value = featuredImageUrl;
+      if (currentProduct.featured_image_url) {
+        $('#p-image').value = currentProduct.featured_image_url;
         $('#p-image-file').value = '';
-        $('#p-image-file').dataset.currentUrl = featuredImageUrl;
-        setImagePreview('p-image-preview', featuredImageUrl);
+        $('#p-image-file').dataset.currentUrl = currentProduct.featured_image_url;
+        setImagePreview('p-image-preview', currentProduct.featured_image_url);
       }
 
       $('#product-modal-title').textContent = 'Modifier le produit';
@@ -400,7 +400,7 @@
       tbody.innerHTML = '<tr><td colspan="5" class="cms-empty">Aucune variation pour ce produit.</td></tr>';
       return;
     }
-    tbody.innerHTML = variations.map((v) => `<tr><td>${escapeHTML(v.name || (v.pax ? `${v.pax} personne(s)` : 'Option'))}</td><td>${escapeHTML(v.sku || '—')}</td><td>${money(v.price)}</td><td><span class="mm-badge ${v.published && v.in_stock ? 'green' : 'orange'}">${v.published && v.in_stock ? 'Active' : 'Inactive'}</span></td><td><div class="cms-actions"><button type="button" class="cms-small-btn" data-variation-edit="${escapeHTML(v.id)}">Modifier</button>${v.published || v.in_stock ? `<button type="button" class="cms-small-btn danger" data-variation-disable="${escapeHTML(v.id)}">Désactiver</button>` : ''}</div></td></tr>`).join('');
+    tbody.innerHTML = variations.map((v) => `<tr><td>${escapeHTML(v.name || (v.pax ? `${v.pax} personne(s)` : 'Option'))}</td><td>${escapeHTML(v.sku || '—')}</td><td>${money(v.regular_price ?? v.price)}</td><td><span class="mm-badge ${v.published && v.in_stock ? 'green' : 'orange'}">${v.published && v.in_stock ? 'Active' : 'Inactive'}</span></td><td><div class="cms-actions"><button type="button" class="cms-small-btn" data-variation-edit="${escapeHTML(v.id)}">Modifier</button>${v.published || v.in_stock ? `<button type="button" class="cms-small-btn danger" data-variation-disable="${escapeHTML(v.id)}">Désactiver</button>` : ''}</div></td></tr>`).join('');
   }
 
   function resetVariationForm() {
@@ -424,7 +424,7 @@
     $('#v-name').value = variation?.name || '';
     $('#v-sku').value = variation?.sku || '';
     $('#v-pax').value = variation?.pax ?? '';
-    $('#v-price').value = variation?.price ?? '';
+    $('#v-price').value = variation ? (variation.regular_price ?? variation.price ?? '') : '';
     $('#v-published').checked = variation ? Boolean(variation.published) : true;
     $('#v-stock').checked = variation ? Boolean(variation.in_stock) : true;
   }
@@ -434,12 +434,16 @@
     if (!currentProduct?.id) return;
     const price = Number($('#v-price').value);
     if (!Number.isFinite(price) || price < 0) { toast('Saisissez un prix valide.', true); return; }
+    const paxVal = $('#v-pax').value ? Number($('#v-pax').value) : null;
     const payload = {
       product_id: currentProduct.id,
       name: blankToNull($('#v-name').value),
       sku: blankToNull($('#v-sku').value),
-      pax: $('#v-pax').value ? Number($('#v-pax').value) : null,
-      price,
+      pax: paxVal,
+      regular_price: price,
+      currency: 'EUR',
+      attribute_name: currentProduct.attribute_name || (paxVal ? 'Nombre de personnes (pax)' : null),
+      attribute_value: paxVal ? String(paxVal) : null,
       published: $('#v-published').checked,
       in_stock: $('#v-stock').checked,
       updated_at: new Date().toISOString()
@@ -481,8 +485,8 @@
     productImages = data || [];
     if (!productImages.length) { container.innerHTML = '<div class="cms-subtext">Aucune image supplémentaire enregistrée.</div>'; return; }
     container.innerHTML = productImages.map((img) => {
-      const displayUrl = imageDisplayUrl(img.local_path, img.source_url);
-      return `<div class="mm-list-item"><div class="flex items-center gap-3">${displayUrl ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(displayUrl)}" alt="${escapeHTML(img.alt_text || '')}">` : ''}<div><strong>${escapeHTML(img.alt_text || 'Image produit')}</strong><small>${escapeHTML(img.local_path || img.source_url || '')}</small></div></div><div class="cms-actions"><span class="mm-badge">Ordre ${Number(img.sort_order) || 0}${img.is_featured ? ' · vedette' : ''}</span><button type="button" class="cms-small-btn danger" data-product-image-remove="${escapeHTML(img.id)}">Retirer</button></div></div>`;
+      const displayUrl = imageDisplayUrl(img.local_path, img.image_url || img.source_url);
+      return `<div class="mm-list-item"><div class="flex items-center gap-3">${displayUrl ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(displayUrl)}" alt="${escapeHTML(img.alt_text || '')}">` : ''}<div><strong>${escapeHTML(img.alt_text || 'Image produit')}</strong><small>${escapeHTML(img.local_path || img.image_url || img.source_url || '')}</small></div></div><div class="cms-actions"><span class="mm-badge">Ordre ${Number(img.sort_order) || 0}${img.is_featured ? ' · vedette' : ''}</span><button type="button" class="cms-small-btn danger" data-product-image-remove="${escapeHTML(img.id)}">Retirer</button></div></div>`;
     }).join('');
   }
 
@@ -498,6 +502,7 @@
       uploaded = await uploadImageFile(file, `products/${currentProduct.id}/gallery`);
       const payload = {
         product_id: currentProduct.id,
+        image_url: uploaded.publicUrl,
         source_url: uploaded.publicUrl,
         local_path: uploaded.path,
         alt_text: blankToNull($('#pi-alt').value),
