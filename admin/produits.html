@@ -54,6 +54,14 @@
     #p-short-editor ul,#p-description-editor ul{list-style:disc;padding-left:1.5rem}
     #p-short-editor ol,#p-description-editor ol{list-style:decimal;padding-left:1.5rem}
     #p-short-editor a,#p-description-editor a{color:#7dd3fc;text-decoration:underline}
+    .cms-category-dropdown{position:relative;display:grid;gap:6px}
+    .cms-category-trigger{text-align:left;width:100%;cursor:pointer;display:flex;align-items:center;justify-content:space-between;min-height:38px}
+    .cms-category-menu{margin-top:2px;padding:10px;border:1px solid #2a3a48;border-radius:10px;background:#0b1220;max-height:220px;overflow:auto}
+    .cms-category-menu[hidden]{display:none!important}
+    .cms-category-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}
+    .cms-category-option{display:flex;align-items:center;gap:7px;color:#c7d5e2;font-size:12px;min-width:0}
+    .cms-category-option input{accent-color:#7dd3fc;flex:0 0 auto}
+    @media(max-width:480px){.cms-category-options{grid-template-columns:1fr}}
     .cms-inline-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:end;margin-top:12px}
     @media(max-width:800px){.cms-form-grid{grid-template-columns:1fr}.cms-inline-form{grid-template-columns:repeat(2,minmax(0,1fr))}.cms-modal-body{padding:16px}.cms-modal-head{padding:16px}}
     @media(max-width:480px){.cms-inline-form{grid-template-columns:1fr}.cms-modal{width:calc(100vw - 14px);max-height:calc(100vh - 14px)}}
@@ -83,7 +91,17 @@
           <label class="cms-field full">Nom du produit *<input id="p-name" class="mm-input" required maxlength="500"></label>
           <label class="cms-field">Slug URL *<input id="p-slug" class="mm-input" required maxlength="200" placeholder="exemple-de-produit"><span class="cms-subtext">URL publique : /{slug}</span></label>
           <label class="cms-field">SKU / Référence<input id="p-sku" class="mm-input" maxlength="200"></label>
-          <label class="cms-field">Catégories<input id="p-categories" class="mm-input" placeholder="Mariage, Nosy Be…"></label>
+          <div class="cms-field" id="p-categories-field">
+            <label for="p-categories-toggle">Catégories</label>
+            <div class="cms-category-dropdown" id="p-categories-dropdown">
+              <button type="button" id="p-categories-toggle" class="mm-input cms-category-trigger" aria-expanded="false" aria-controls="p-category-menu">Choisir des catégories ▾</button>
+              <div id="p-category-menu" class="cms-category-menu" hidden>
+                <div id="p-category-options" class="cms-category-options"></div>
+              </div>
+              <div id="p-categories-summary" class="cms-subtext">Aucune catégorie sélectionnée.</div>
+              <input id="p-categories" type="hidden" value="">
+            </div>
+          </div>
           <label class="cms-field">Type de produit<select id="p-type" class="mm-select"><option value="simple">Produit simple (prix unique)</option><option value="variable">Produit variable (plusieurs options)</option><option value="service">Service</option></select></label>
           <label class="cms-field" id="p-simple-price-wrap">Prix du produit (€)<input id="p-simple-price" class="mm-input" type="number" min="0" step="0.01" placeholder="Ex: 1500"><span class="cms-subtext">Saisie directe du prix principal (enregistré dans mm_product_variations).</span></label>
           <div class="cms-field full">
@@ -141,6 +159,6 @@
   </dialog>
   <div id="mm-toast" class="mm-toast" role="status" aria-live="polite"></div>
   <script src="admin-shared.js"></script>
-  <script src="admin-content-manager.js?v=20261027-cmsfix3"></script>
+  <script src="admin-content-manager.js?v=20261027-categories1"></script>
 </body>
 </html>

@@ -12,6 +12,11 @@
   // Images are uploaded to this public-read, admin-write Supabase Storage bucket.
   const STORAGE_BUCKET = 'mm-content-images';
   const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+  const PRODUCT_CATEGORY_OPTIONS = [
+    'Mariage', 'Lune de miel', 'Anniversaire', 'Séjour romantique', 'Shooting photo',
+    'Événement privé', 'Prestations', 'Destinations', 'Voyage & escapade',
+    'Nosy Be', 'Nosy Saba', 'Antananarivo', 'Morondava', 'Tuléar', 'Diego-Suarez', 'Autre', 'Non classé'
+  ];
 
   const $ = (selector) => document.querySelector(selector);
   const statusEl = $('#cms-status');
@@ -181,6 +186,28 @@
     });
     $('#p-slug')?.addEventListener('input', () => { slugEdited = true; });
     $('#p-type')?.addEventListener('change', toggleProductTypeFields);
+    $('#p-categories-toggle')?.addEventListener('click', () => {
+      const menu = $('#p-category-menu');
+      const button = $('#p-categories-toggle');
+      if (!menu || !button) return;
+      menu.hidden = !menu.hidden;
+      button.setAttribute('aria-expanded', String(!menu.hidden));
+    });
+    $('#p-category-options')?.addEventListener('change', (event) => {
+      if (!event.target.matches('[data-product-category]')) return;
+      const values = [...$('#p-category-options').querySelectorAll('[data-product-category]:checked')].map((input) => input.value);
+      $('#p-categories').value = values.join(', ');
+      updateProductCategorySummary(values);
+    });
+    document.addEventListener('click', (event) => {
+      const dropdown = $('#p-categories-dropdown');
+      const menu = $('#p-category-menu');
+      const button = $('#p-categories-toggle');
+      if (dropdown && !dropdown.contains(event.target) && menu && !menu.hidden) {
+        menu.hidden = true;
+        button?.setAttribute('aria-expanded', 'false');
+      }
+    });
     $('#new-variation')?.addEventListener('click', () => openVariationForm(null));
     $('#cancel-variation')?.addEventListener('click', (event) => { event.preventDefault(); resetVariationForm(); });
     $('#variation-form')?.addEventListener('submit', saveVariation);
@@ -351,7 +378,7 @@
     const empty = isProducts ? $('#product-empty') : $('#blog-empty');
     if (empty) empty.hidden = rows.length > 0;
     if (!rows.length) {
-      tbody.innerHTML = `<tr><td colspan="${isProducts ? 6 : 5}" class="cms-empty">Aucun résultat.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" class="cms-empty">Aucun résultat.</td></tr>`;
       return;
     }
     if (isProducts) {
@@ -365,7 +392,7 @@
     } else {
       tbody.innerHTML = rows.map((row) => `
         <tr><td><div class="flex items-center gap-3">${row.featured_image_url ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(imageDisplayUrl(row.featured_image_url, row.featured_image_url))}" alt="">` : '<div class="cms-thumb"></div>'}<div><strong>${escapeHTML(row.title || 'Sans titre')}</strong><div class="cms-subtext">${escapeHTML(row.summary || '').slice(0, 150)}</div></div></div></td>
-        <td><code>${escapeHTML(row.slug || '')}</code></td><td><span class="mm-badge ${row.is_published ? 'green' : 'orange'}">${row.is_published ? 'Publié' : 'Brouillon'}</span></td><td>${dateText(row.updated_at || row.published_at || row.created_at)}</td>
+        <td><code>${escapeHTML(row.slug || '')}</code></td><td>${escapeHTML(row.category || '—')}</td><td><span class="mm-badge ${row.is_published ? 'green' : 'orange'}">${row.is_published ? 'Publié' : 'Brouillon'}</span></td><td>${dateText(row.updated_at || row.published_at || row.created_at)}</td>
         <td><div class="cms-actions"><button class="cms-small-btn" data-blog-edit="${escapeHTML(row.id)}">Modifier le HTML</button><button class="cms-small-btn" data-blog-toggle="${escapeHTML(row.id)}">${row.is_published ? 'Dépublier' : 'Publier'}</button>${row.slug ? `<a class="cms-small-btn" href="/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener">Voir</a>` : ''}</div></td></tr>`).join('');
     }
   }
@@ -378,7 +405,7 @@
     $('#p-name').value = row?.name || '';
     $('#p-slug').value = row?.slug || '';
     $('#p-sku').value = row?.sku || '';
-    $('#p-categories').value = formatCommaList(row?.categories) || '';
+    renderProductCategoryDropdown(row?.categories || []);
     $('#p-type').value = row?.product_type || 'simple';
     toggleProductTypeFields();
     if ($('#p-simple-price')) $('#p-simple-price').value = row?._anyPrice ?? row?._minPrice ?? '';
@@ -483,6 +510,7 @@
       if (result.error) throw result.error;
       currentProduct = result.data;
       productRecordSaved = true;
+      renderProductCategoryDropdown(currentProduct.categories || $('#p-categories').value || []);
 
       if (currentProduct.featured_image_url) {
         $('#p-image').value = currentProduct.featured_image_url;
@@ -830,7 +858,7 @@
   async function loadBlogs() {
     setStatus('Chargement des articles depuis Supabase…');
     const { data, error } = await client.from('blog_posts')
-      .select('id,title,slug,content,summary,featured_image_url,seo_title,seo_description,is_published,published_at,created_at,updated_at')
+      .select('id,title,slug,category,content,summary,featured_image_url,seo_title,seo_description,is_published,published_at,created_at,updated_at')
       .order('updated_at', { ascending: false })
       .range(0, 999);
     if (error) throw error;
@@ -846,6 +874,7 @@
     $('#blog-modal-title').textContent = row ? 'Modifier l’article' : 'Nouvel article';
     $('#b-title').value = row?.title || '';
     $('#b-slug').value = row?.slug || '';
+    setSelectValuePreservingOption($('#b-category'), row?.category || '');
     $('#b-image').value = row?.featured_image_url || '';
     $('#b-image-file').value = '';
     $('#b-image-file').dataset.currentUrl = row?.featured_image_url || '';
@@ -910,6 +939,7 @@
       id: blogId,
       title,
       slug,
+      category: blankToNull($('#b-category')?.value),
       summary: blankToNull(summaryHtml),
       content,
       featured_image_url: featuredImageUrl,
@@ -1038,6 +1068,45 @@
       await loadBlogImages(currentBlog.id);
       toast('Image retirée de la galerie.');
     } catch (error) { toast(errorMessage(error), true); }
+  }
+
+  function categoryValues(value) {
+    const raw = Array.isArray(value) ? value : String(value || '').split(',');
+    return [...new Set(raw.map((item) => String(item).trim()).filter(Boolean))];
+  }
+
+  function renderProductCategoryDropdown(value) {
+    const container = $('#p-category-options');
+    const hiddenInput = $('#p-categories');
+    if (!container || !hiddenInput) return;
+    const selected = categoryValues(value);
+    const categories = [...PRODUCT_CATEGORY_OPTIONS, ...selected.filter((item) => !PRODUCT_CATEGORY_OPTIONS.includes(item))];
+    container.innerHTML = categories.map((category) => `
+      <label class="cms-category-option"><input type="checkbox" data-product-category value="${escapeHTML(category)}" ${selected.includes(category) ? 'checked' : ''}><span>${escapeHTML(category)}</span></label>
+    `).join('');
+    hiddenInput.value = selected.join(', ');
+    updateProductCategorySummary(selected);
+    const menu = $('#p-category-menu');
+    const button = $('#p-categories-toggle');
+    if (menu) menu.hidden = true;
+    button?.setAttribute('aria-expanded', 'false');
+  }
+
+  function updateProductCategorySummary(values) {
+    const selected = categoryValues(values);
+    const button = $('#p-categories-toggle');
+    const summary = $('#p-categories-summary');
+    if (button) button.textContent = selected.length ? `Catégories sélectionnées (${selected.length}) ▾` : 'Choisir des catégories ▾';
+    if (summary) summary.textContent = selected.length ? selected.join(' · ') : 'Aucune sélection. Un produit sans catégorie sera classé « Non classé ». ';
+  }
+
+  function setSelectValuePreservingOption(select, value) {
+    if (!select) return;
+    const selectedValue = String(value || '');
+    if (selectedValue && ![...select.options].some((option) => option.value === selectedValue)) {
+      select.add(new Option(selectedValue, selectedValue));
+    }
+    select.value = selectedValue;
   }
 
   function parseCommaList(value) {
