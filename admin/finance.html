@@ -124,8 +124,8 @@
 <span class="material-symbols-outlined text-primary">trending_up</span>
 </div>
 <div class="relative z-10">
-<p class="text-3xl font-bold font-headline text-on-surface">Ar 145M</p>
-<p class="text-xs text-primary mt-2 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> +12.5% ce mois</p>
+<p id="finance-revenue" class="text-3xl font-bold font-headline text-on-surface">Chargement…</p>
+<p id="finance-revenue-note" class="text-xs text-primary mt-2">Paiements réellement réussis</p>
 </div>
 </div>
 <div class="glass-panel rounded-xl p-6 relative overflow-hidden group hover:border-error/30 transition-colors duration-500">
@@ -135,8 +135,8 @@
 <span class="material-symbols-outlined text-error">trending_down</span>
 </div>
 <div class="relative z-10">
-<p class="text-3xl font-bold font-headline text-on-surface">Ar 82M</p>
-<p class="text-xs text-on-surface-variant mt-2">Logistique: 45% | Prestataires: 35%</p>
+<p id="finance-expenses" class="text-3xl font-bold font-headline text-on-surface">Non disponible</p>
+<p class="text-xs text-on-surface-variant mt-2">Aucune table de dépenses identifiée dans le schéma vérifié.</p>
 </div>
 </div>
 <div class="glass-panel rounded-xl p-6 relative overflow-hidden group hover:border-primary/30 transition-colors duration-500">
@@ -145,8 +145,8 @@
 <span class="material-symbols-outlined text-tertiary">account_balance</span>
 </div>
 <div>
-<p class="text-3xl font-bold font-headline text-on-surface">Ar 63M</p>
-<p class="text-xs text-on-surface-variant mt-2">Trésorerie opérationnelle</p>
+<p id="finance-net" class="text-3xl font-bold font-headline text-on-surface">Non calculable</p>
+<p class="text-xs text-on-surface-variant mt-2">À calculer lorsque les dépenses seront enregistrées.</p>
 </div>
 </div>
 <div class="glass-panel rounded-xl p-6 relative overflow-hidden flex flex-col justify-between group">
@@ -156,16 +156,16 @@
 </div>
 <div class="mt-4">
 <div class="w-full bg-surface-dim rounded-full h-2 mb-2 overflow-hidden border border-outline-variant/20">
-<div class="bg-primary h-2 rounded-full shadow-[0_0_10px_#7dd3fc]" style="width: 85%"></div>
+<div id="finance-reconciliation-bar" class="bg-primary h-2 rounded-full shadow-[0_0_10px_#7dd3fc]" style="width: 0%"></div>
 </div>
 <div class="flex justify-between text-xs">
-<span class="text-on-surface">85% Synchronisé</span>
-<span class="text-on-surface-variant">15 transactions en attente</span>
+<span id="finance-reconciliation-rate" class="text-on-surface">Calcul en cours…</span>
+<span id="finance-reconciliation-note" class="text-on-surface-variant">Vérification des paiements</span>
 </div>
 </div>
 </div>
 </div>
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="lg:col-span-3 space-y-6"><div class="flex items-center justify-between mb-2"><h2 class="text-2xl font-headline font-bold text-on-surface tracking-tight">Rapports Analytiques</h2><div class="flex gap-2"><button class="glass-panel px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 hover:bg-surface-variant/50 transition-colors border border-outline-variant/30 text-on-surface"><span class="material-symbols-outlined text-[16px]">filter_alt</span> Filtrer par Période</button></div></div><div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="lg:col-span-2 glass-panel-elevated rounded-xl p-6 flex flex-col h-[400px]"><div class="flex justify-between items-center mb-6"><div><h3 class="text-lg font-semibold font-headline">Évolution des Revenus vs Dépenses</h3><p class="text-xs text-on-surface-variant">Comparaison semestrielle (Ar)</p></div><div class="flex gap-4 text-xs"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-primary"></span> Revenus</div><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-error"></span> Dépenses</div></div></div><div class="flex-1 flex items-end gap-4 px-2 pb-4"><div class="flex-1 bg-primary/20 rounded-t-lg relative group" style="height: 60%"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container-highest px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">Ar 45M</div></div><div class="flex-1 bg-error/20 rounded-t-lg relative group" style="height: 40%"></div><div class="flex-1 bg-primary/20 rounded-t-lg relative group" style="height: 75%"></div><div class="flex-1 bg-error/20 rounded-t-lg relative group" style="height: 35%"></div><div class="flex-1 bg-primary/20 rounded-t-lg relative group" style="height: 90%"></div><div class="flex-1 bg-error/20 rounded-t-lg relative group" style="height: 50%"></div><div class="flex-1 bg-primary/20 rounded-t-lg relative group" style="height: 65%"></div><div class="flex-1 bg-error/20 rounded-t-lg relative group" style="height: 45%"></div><div class="flex-1 bg-primary/20 rounded-t-lg relative group" style="height: 80%"></div><div class="flex-1 bg-error/20 rounded-t-lg relative group" style="height: 55%"></div><div class="flex-1 bg-primary/20 rounded-t-lg relative group" style="height: 95%"></div><div class="flex-1 bg-error/20 rounded-t-lg relative group" style="height: 40%"></div></div><div class="flex justify-between px-2 text-[10px] text-on-surface-variant uppercase tracking-wider border-t border-outline-variant/20 pt-4"><span>Mai</span><span>Juin</span><span>Juil</span><span>Août</span><span>Sept</span><span>Oct</span></div></div><div class="glass-panel-elevated rounded-xl p-6 flex flex-col"><h3 class="text-lg font-semibold font-headline mb-6">Répartition des Coûts</h3><div class="flex-1 flex items-center justify-center relative"><div class="w-48 h-48 rounded-full border-[16px] border-surface-variant relative flex items-center justify-center"><div class="absolute inset-0 rounded-full border-[16px] border-primary border-t-transparent border-r-transparent rotate-45"></div><div class="text-center"><p class="text-2xl font-bold">Ar 82M</p><p class="text-[10px] text-on-surface-variant uppercase">Total Dépenses</p></div></div></div><div class="mt-6 space-y-3"><div class="flex justify-between items-center text-xs"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary"></span> Logistique</div><span class="font-medium">45%</span></div><div class="flex justify-between items-center text-xs"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-secondary"></span> Prestataires</div><span class="font-medium">35%</span></div><div class="flex justify-between items-center text-xs"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-tertiary"></span> Marketing</div><span class="font-medium">12%</span></div><div class="flex justify-between items-center text-xs"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-outline"></span> Opérations</div><span class="font-medium">8%</span></div></div></div><div class="lg:col-span-3 glass-panel rounded-xl p-6 border border-primary/20 bg-gradient-to-r from-primary/5 to-transparent"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div class="flex items-center gap-4"><div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary">query_stats</span></div><div><h3 class="text-lg font-semibold font-headline">Prévisions de Trésorerie</h3><p class="text-sm text-on-surface-variant">Projection basée sur les réservations confirmées (Nov - Jan)</p></div></div><div class="flex gap-8"><div class="text-right"><p class="text-xs text-on-surface-variant uppercase">Projection Q4</p><p class="text-xl font-bold text-primary">+ Ar 210M</p></div><div class="text-right"><p class="text-xs text-on-surface-variant uppercase">Confiance</p><p class="text-xl font-bold text-tertiary">92%</p></div></div></div></div></div></div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><div class="lg:col-span-3 space-y-6"><div class="flex items-center justify-between mb-2"><h2 class="text-2xl font-headline font-bold text-on-surface tracking-tight">Rapports Analytiques</h2><div class="flex gap-2"><button class="glass-panel px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 hover:bg-surface-variant/50 transition-colors border border-outline-variant/30 text-on-surface"><span class="material-symbols-outlined text-[16px]">filter_alt</span> Filtrer par Période</button></div></div><div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="lg:col-span-2 glass-panel-elevated rounded-xl p-6 flex flex-col h-[400px]"><div class="flex justify-between items-center mb-6"><div><h3 class="text-lg font-semibold font-headline">Évolution des Revenus vs Dépenses</h3><p class="text-xs text-on-surface-variant">Données réelles disponibles (EUR)</p></div><div class="flex gap-4 text-xs"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-primary"></span> Revenus</div><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-error"></span> Dépenses</div></div></div><div id="finance-chart" class="flex-1 flex items-center justify-center text-sm text-on-surface-variant text-center">Chargement des données financières…</div><div class="flex justify-between px-2 text-[10px] text-on-surface-variant uppercase tracking-wider border-t border-outline-variant/20 pt-4"><span>Mai</span><span>Juin</span><span>Juil</span><span>Août</span><span>Sept</span><span>Oct</span></div></div><div class="glass-panel-elevated rounded-xl p-6 flex flex-col"><h3 class="text-lg font-semibold font-headline mb-6">Répartition des Coûts</h3><div class="flex-1 flex items-center justify-center relative"><div class="w-48 h-48 rounded-full border-[16px] border-surface-variant relative flex items-center justify-center"><div class="text-center px-3"><p class="text-lg font-bold">Non disponible</p><p class="text-[10px] text-on-surface-variant uppercase">Dépenses non enregistrées</p></div></div></div><p class="mt-6 text-xs text-on-surface-variant">La base vérifiée ne fournit pas encore de ventilation fiable des dépenses. Aucun pourcentage fictif n’est affiché.</p></div><div class="lg:col-span-3 glass-panel rounded-xl p-6 border border-primary/20 bg-gradient-to-r from-primary/5 to-transparent"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div class="flex items-center gap-4"><div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary">query_stats</span></div><div><h3 class="text-lg font-semibold font-headline">Prévisions de Trésorerie</h3><p class="text-sm text-on-surface-variant">Prévision désactivée tant que les coûts et échéances ne sont pas structurés</p></div></div><div class="flex gap-8"><div class="text-right"><p class="text-xs text-on-surface-variant uppercase">Projection Q4</p><p id="finance-forecast" class="text-xl font-bold text-primary">Non disponible</p></div><div class="text-right"><p class="text-xs text-on-surface-variant uppercase">Confiance</p><p class="text-xl font-bold text-tertiary">Non calculable</p></div></div></div></div></div></div>
 <!-- Cash Flow Tracking -->
 <div class="lg:col-span-2 space-y-6">
 <div class="glass-panel-elevated rounded-xl flex flex-col h-[500px]">
@@ -187,35 +187,8 @@
 <th class="p-4 text-xs font-semibold text-on-surface-variant uppercase tracking-wider border-b border-outline-variant/20 text-center">Statut</th>
 </tr>
 </thead>
-<tbody class="text-sm divide-y divide-outline-variant/10">
-<tr class="hover:bg-surface-variant/20 transition-colors">
-<td class="p-4 text-on-surface-variant">12 Oct 2023</td>
-<td class="p-4 font-medium">Famille Rakoto (Mariage)</td>
-<td class="p-4"><span class="px-2 py-1 rounded-md text-[10px] bg-primary/10 text-primary border border-primary/20">Acompte</span></td>
-<td class="p-4 text-right text-primary font-semibold">+ Ar 45,000,000</td>
-<td class="p-4 text-center"><span class="material-symbols-outlined text-primary text-[18px]">verified</span></td>
-</tr>
-<tr class="hover:bg-surface-variant/20 transition-colors">
-<td class="p-4 text-on-surface-variant">11 Oct 2023</td>
-<td class="p-4 font-medium">Domaine des Cascades</td>
-<td class="p-4"><span class="px-2 py-1 rounded-md text-[10px] bg-surface-variant text-on-surface-variant border border-outline-variant/30">Location Lieu</span></td>
-<td class="p-4 text-right text-on-surface">- Ar 12,500,000</td>
-<td class="p-4 text-center"><span class="material-symbols-outlined text-primary text-[18px]">verified</span></td>
-</tr>
-<tr class="hover:bg-surface-variant/20 transition-colors">
-<td class="p-4 text-on-surface-variant">10 Oct 2023</td>
-<td class="p-4 font-medium">Flora Design Mada</td>
-<td class="p-4"><span class="px-2 py-1 rounded-md text-[10px] bg-surface-variant text-on-surface-variant border border-outline-variant/30">Décoration</span></td>
-<td class="p-4 text-right text-on-surface">- Ar 5,200,000</td>
-<td class="p-4 text-center"><span class="material-symbols-outlined text-outline text-[18px]">pending_actions</span></td>
-</tr>
-<tr class="hover:bg-surface-variant/20 transition-colors">
-<td class="p-4 text-on-surface-variant">09 Oct 2023</td>
-<td class="p-4 font-medium">Couples Dubois</td>
-<td class="p-4"><span class="px-2 py-1 rounded-md text-[10px] bg-primary/10 text-primary border border-primary/20">Solde Final</span></td>
-<td class="p-4 text-right text-primary font-semibold">+ Ar 18,000,000</td>
-<td class="p-4 text-center"><span class="material-symbols-outlined text-primary text-[18px]">verified</span></td>
-</tr>
+<tbody id="finance-transactions-body" class="text-sm divide-y divide-outline-variant/10">
+<tr><td colspan="5" class="p-6 text-center text-on-surface-variant">Chargement des transactions réelles…</td></tr>
 </tbody>
 </table>
 </div>
@@ -228,9 +201,9 @@
 <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent z-0"></div>
 <div class="relative z-10">
 <h2 class="text-lg font-semibold font-headline mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">account_balance</span> BNI Madagascar</h2>
-<p class="text-sm text-on-surface-variant mb-6">Dernière synchronisation : Aujourd'hui, 08:30</p>
+<p id="finance-sync-status" class="text-sm text-on-surface-variant mb-6">Synchronisation bancaire externe non configurée.</p>
 <div class="flex gap-4">
-<button class="flex-1 bg-primary/20 text-primary border border-primary/30 rounded-lg py-2 text-sm font-medium hover:bg-primary/30 transition-colors shadow-[0_0_15px_rgba(125,211,252,0.1)]" data-demo-action="">Synchroniser</button>
+<button class="flex-1 bg-primary/20 text-primary border border-primary/30 rounded-lg py-2 text-sm font-medium hover:bg-primary/30 transition-colors shadow-[0_0_15px_rgba(125,211,252,0.1)]" id="finance-sync" type="button">Actualiser les données</button>
 </div>
 </div>
 </div>
@@ -240,36 +213,11 @@
 <h2 class="text-lg font-semibold font-headline">Factures &amp; Devis</h2>
 <a href="facturation.html" class="text-primary hover:text-primary-fixed transition-colors text-sm font-medium">Voir tout</a>
 </div>
-<div class="space-y-4">
-<div class="flex items-center justify-between p-3 rounded-lg border border-outline-variant/20 hover:bg-surface-variant/30 transition-colors">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-surface-dim border border-outline-variant/30 flex items-center justify-center">
-<span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings: 'FILL' 1;">description</span>
-</div>
-<div>
-<p class="text-sm font-medium">INV-2023-089</p>
-<p class="text-xs text-on-surface-variant">Famille Rakoto</p>
-</div>
-</div>
-<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">download</span></button>
-</div>
-<div class="flex items-center justify-between p-3 rounded-lg border border-outline-variant/20 hover:bg-surface-variant/30 transition-colors">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-surface-dim border border-outline-variant/30 flex items-center justify-center">
-<span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings: 'FILL' 1;">description</span>
-</div>
-<div>
-<p class="text-sm font-medium">DEV-2023-112</p>
-<p class="text-xs text-on-surface-variant">Client International</p>
-</div>
-</div>
-<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">download</span></button>
-</div>
-</div>
-<div class="mt-6 border-2 border-dashed border-outline-variant/30 rounded-xl p-6 text-center hover:border-primary/50 transition-colors hover:bg-primary/5 cursor-pointer group">
+<div id="finance-invoices-note" class="text-sm text-on-surface-variant">Aucune table de factures/devis n’a encore été identifiée dans le schéma vérifié. Consultez la page Factures et devis pour vérifier sa structure.</div>
+<div class="mt-6 border-2 border-dashed border-outline-variant/30 rounded-xl p-6 text-center" title="Import de reçu à connecter à un stockage sécurisé">
 <span class="material-symbols-outlined text-on-surface-variant mb-2 group-hover:text-primary transition-colors">cloud_upload</span>
-<p class="text-sm text-on-surface font-medium">Importer un reçu</p>
-<p class="text-xs text-on-surface-variant mt-1">Glissez-déposez ou parcourez</p>
+<p class="text-sm text-on-surface font-medium">Import de reçu non activé</p>
+<p class="text-xs text-on-surface-variant mt-1">À connecter à un stockage sécurisé avant utilisation.</p>
 </div>
 </div>
 </div>
@@ -278,6 +226,141 @@
 <footer class="mt-auto border-t border-outline-variant/20 bg-surface-container/30 p-8"><div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8"><div><h4 class="text-primary font-bold mb-4">Mariage Madagascar</h4><p class="text-xs text-on-surface-variant leading-relaxed">Gestion financière et opérationnelle de luxe pour les événements d'exception à Madagascar.</p></div><div><h4 class="text-sm font-semibold mb-4">Navigation</h4><ul class="text-xs text-on-surface-variant space-y-2"><li><a class="hover:text-primary transition-colors" href="index.html">Tableau de bord</a></li><li><a class="hover:text-primary transition-colors" href="rapports.html">Rapports</a></li><li><a class="hover:text-primary transition-colors" href="facturation.html">Facturation</a></li></ul></div><div><h4 class="text-sm font-semibold mb-4">Support</h4><ul class="text-xs text-on-surface-variant space-y-2"><li><a class="hover:text-primary transition-colors" href="parametres.html#support">Centre d'aide</a></li><li><a class="hover:text-primary transition-colors" href="parametres.html#support">Contact</a></li><li><a class="hover:text-primary transition-colors" href="parametres.html#support">Documentation</a></li></ul></div><div><h4 class="text-sm font-semibold mb-4">Légal</h4><ul class="text-xs text-on-surface-variant space-y-2"><li><a class="hover:text-primary transition-colors" href="#">Confidentialité</a></li><li><a class="hover:text-primary transition-colors" href="#">Conditions d'utilisation</a></li></ul></div></div><div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-outline-variant/10 gap-4"><p class="text-[10px] text-on-surface-variant">© 2023 Mariage Madagascar. Tous droits réservés.</p><div class="flex gap-4"><span class="material-symbols-outlined text-on-surface-variant text-sm">language</span><span class="material-symbols-outlined text-on-surface-variant text-sm">security</span></div></div></footer></main>
 
 <div aria-live="polite" class="mm-toast" id="mm-toast" role="status"></div>
+
+<script>
+(() => {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const fmtMoney = (amount, currency = 'EUR') => {
+    const n = Number(amount || 0);
+    try { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency, maximumFractionDigits: 2 }).format(n); }
+    catch (_) { return `${n.toFixed(2)} ${currency}`; }
+  };
+  const fmtDate = (value) => {
+    if (!value) return '—';
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? '—' : new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium', timeStyle: 'short' }).format(d);
+  };
+  const esc = (value) => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const toast = (message) => typeof window.mmToast === 'function' ? window.mmToast(message) : window.alert(message);
+  function getClient() {
+    const candidates = [
+      window.supabaseClient,
+      (window.supabase && typeof window.supabase.from === 'function') ? window.supabase : null,
+      window.mmSupabase, window.sb, window._supabase, window.supabaseInstance
+    ];
+    return candidates.find(c => c && typeof c.from === 'function') || null;
+  }
+  function statusLabel(status) {
+    const s = String(status || '').toLowerCase();
+    if (s === 'succeeded' || s === 'paid' || s === 'confirmed') return ['Réussi', 'text-primary'];
+    if (s === 'pending' || s === 'processing') return ['En attente', 'text-yellow-300'];
+    if (s === 'failed' || s === 'canceled' || s === 'cancelled') return ['Échec', 'text-red-300'];
+    return [status || 'Inconnu', 'text-on-surface-variant'];
+  }
+  let loadedPayments = [];
+  async function loadFinance() {
+    const client = getClient();
+    if (!client) {
+      $('finance-revenue').textContent = 'Indisponible';
+      $('finance-transactions-body').innerHTML = '<tr><td colspan="5" class="p-6 text-center text-red-300">Client Supabase introuvable. Vérifiez la configuration chargée par /assets/js/supabase-config.js.</td></tr>';
+      $('finance-sync-status').textContent = 'Connexion Supabase non détectée.';
+      toast('Impossible de trouver le client Supabase configuré. Aucune donnée fictive n’est affichée.');
+      return;
+    }
+    $('finance-sync-status').textContent = 'Lecture des données Supabase…';
+    try {
+      const [ordersResult, paymentsResult] = await Promise.all([
+        client.from('orders').select('id,order_number,guest_first_name,guest_last_name,guest_email,total_amount,payment_status,status,created_at,stripe_checkout_session_id,stripe_payment_intent_id').order('created_at', { ascending: false }).limit(500),
+        client.from('payments').select('id,order_id,amount,currency,status,payment_method,stripe_payment_intent_id,stripe_checkout_session_id,created_at').order('created_at', { ascending: false }).limit(500)
+      ]);
+      if (ordersResult.error) throw new Error('Lecture des commandes : ' + ordersResult.error.message);
+      if (paymentsResult.error) throw new Error('Lecture des paiements : ' + paymentsResult.error.message);
+      const orders = ordersResult.data || [];
+      const payments = paymentsResult.data || [];
+      loadedPayments = payments;
+      const orderMap = new Map(orders.map(o => [o.id, o]));
+      const succeeded = payments.filter(p => String(p.status || '').toLowerCase() === 'succeeded');
+      const totalByCurrency = {};
+      succeeded.forEach(p => {
+        const currency = String(p.currency || 'EUR').toUpperCase();
+        totalByCurrency[currency] = (totalByCurrency[currency] || 0) + Number(p.amount || 0);
+      });
+      const currencies = Object.keys(totalByCurrency);
+      $('finance-revenue').textContent = currencies.length
+        ? currencies.map(c => fmtMoney(totalByCurrency[c], c)).join(' · ')
+        : fmtMoney(0, 'EUR');
+      $('finance-revenue-note').textContent = `${succeeded.length} paiement(s) au statut succeeded — toutes périodes`;
+      const pendingOrders = orders.filter(o => String(o.payment_status || '').toLowerCase() === 'pending');
+      const pendingByCurrency = orders.filter(o => String(o.payment_status || '').toLowerCase() === 'pending').reduce((acc,o) => {
+        // orders table currently exposes total_amount but not a currency column; order checkout is currently EUR.
+        acc.EUR = (acc.EUR || 0) + Number(o.total_amount || 0); return acc;
+      }, {});
+      $('finance-expenses').textContent = 'Non disponible';
+      $('finance-net').textContent = 'Non calculable';
+      $('finance-reconciliation-rate').textContent = `${orders.length ? Math.round((orders.filter(o => String(o.payment_status || '').toLowerCase() === 'paid').length / orders.length) * 100) : 0}% commandes payées`;
+      const mismatches = orders.filter(o => String(o.payment_status || '').toLowerCase() === 'paid' &&
+        !payments.some(p => p.order_id === o.id && String(p.status || '').toLowerCase() === 'succeeded'));
+      const reconciled = orders.filter(o => String(o.payment_status || '').toLowerCase() === 'paid').length;
+      const paidCount = orders.filter(o => String(o.payment_status || '').toLowerCase() === 'paid').length;
+      const pct = paidCount ? Math.max(0, Math.min(100, Math.round((paidCount - mismatches.length) / paidCount * 100))) : 100;
+      $('finance-reconciliation-bar').style.width = `${pct}%`;
+      $('finance-reconciliation-note').textContent = `${mismatches.length} commande(s) payée(s) sans paiement réussi associé`;
+      $('finance-chart').textContent = `Encaissements confirmés : ${succeeded.length} transaction(s). Les dépenses ne peuvent pas être comparées car elles ne sont pas enregistrées dans une table identifiée.`;
+      $('finance-sync-status').textContent = `Données Supabase actualisées le ${fmtDate(new Date().toISOString())}. Synchronisation bancaire externe non configurée.`;
+      const body = $('finance-transactions-body');
+      const rows = payments.slice(0, 50);
+      if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-on-surface-variant">Aucun paiement enregistré.</td></tr>';
+      } else {
+        body.innerHTML = rows.map(p => {
+          const o = orderMap.get(p.order_id) || {};
+          const name = [o.guest_first_name, o.guest_last_name].filter(Boolean).join(' ') || o.guest_email || o.order_number || 'Client non renseigné';
+          const [label, color] = statusLabel(p.status);
+          const amount = Number(p.amount || 0);
+          const sign = String(p.status || '').toLowerCase() === 'succeeded' ? '+' : '';
+          return `<tr class="hover:bg-surface-variant/20 transition-colors">
+            <td class="p-4 text-on-surface-variant whitespace-nowrap">${esc(fmtDate(p.created_at))}</td>
+            <td class="p-4 font-medium">${esc(name)}<div class="text-xs text-on-surface-variant">${esc(o.order_number || '')}</div></td>
+            <td class="p-4"><span class="px-2 py-1 rounded-md text-[10px] bg-surface-variant text-on-surface-variant border border-outline-variant/30">${esc(p.payment_method || 'Paiement')}</span></td>
+            <td class="p-4 text-right ${sign ? 'text-primary' : 'text-on-surface'} font-semibold whitespace-nowrap">${sign}${esc(fmtMoney(amount, String(p.currency || 'EUR').toUpperCase()))}</td>
+            <td class="p-4 text-center"><span class="${color} text-xs font-semibold">${esc(label)}</span></td>
+          </tr>`;
+        }).join('');
+      }
+      const invoiceNote = $('finance-invoices-note');
+      if (invoiceNote) invoiceNote.textContent = 'Aucune table de factures/devis n’a été confirmée dans la structure consultée. Les exemples fictifs ont été retirés.';
+      $('finance-forecast').textContent = 'Non disponible';
+      $('finance-export').disabled = payments.length === 0;
+      if (mismatches.length) console.warn('[Finance] Commandes marquées paid sans paiement succeeded associé :', mismatches.map(o => o.order_number));
+    } catch (error) {
+      console.error('[Finance] Chargement impossible', error);
+      $('finance-revenue').textContent = 'Erreur de chargement';
+      $('finance-revenue-note').textContent = 'Vérifiez les autorisations RLS et la configuration Supabase.';
+      $('finance-transactions-body').innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-300">${esc(error.message || 'Erreur de lecture Supabase')}</td></tr>`;
+      $('finance-sync-status').textContent = 'Échec de la lecture Supabase.';
+      toast('Erreur lors du chargement des données financières. Consultez la console et les politiques RLS.');
+    }
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    $('finance-export')?.addEventListener('click', () => {
+      const rows = [['Date','Commande','Client','Montant','Devise','Statut','Méthode']];
+      const client = getClient();
+      if (!loadedPayments.length) { toast('Aucun paiement à exporter.'); return; }
+      const orderCache = new Map();
+      // Export the payments returned by the page without pretending to have invoice/expense data.
+      loadedPayments.forEach(p => rows.push([p.created_at || '', p.order_id || '', '', p.amount ?? '', p.currency || 'EUR', p.status || '', p.payment_method || '']));
+      const csv = '\ufeff' + rows.map(row => row.map(v => '"' + String(v).replace(/"/g,'""') + '"').join(';')).join('\r\n');
+      const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+      const a = document.createElement('a'); a.href = url; a.download = 'mariage-madagascar-paiements.csv'; a.click(); URL.revokeObjectURL(url);
+      toast('Export CSV des paiements Supabase généré.');
+    });
+    $('finance-sync')?.addEventListener('click', loadFinance);
+    loadFinance();
+  });
+})();
+</script>
+
 <script src="admin-shared.js"></script>
 <script defer="True" src="admin-demo.js"></script>
 </body>
