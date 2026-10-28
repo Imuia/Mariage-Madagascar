@@ -306,7 +306,16 @@
   }
   let loadedPayments = [];
   let loadedOrdersById = new Map();
+  let financeLoadInProgress = false;
+  let financeReloadQueued = false;
+  let financeRealtimeChannel = null;
   async function loadFinance() {
+    // Évite les chargements simultanés déclenchés par Realtime et le polling.
+    if (financeLoadInProgress) {
+      financeReloadQueued = true;
+      return;
+    }
+    financeLoadInProgress = true;
     const client = getClient();
     if (!client) {
       $('finance-revenue').textContent = 'Indisponible';
@@ -444,6 +453,12 @@
       if ($('finance-transactions-body')) $('finance-transactions-body').innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-300">${esc(error.message || 'Erreur de lecture Supabase')}</td></tr>`;
       if ($('finance-sync-status')) $('finance-sync-status').textContent = `Échec de la lecture Supabase : ${error.message || 'erreur inconnue'}`;
       toast('Erreur lors du chargement des données financières. Consultez la console et les politiques RLS.');
+    } finally {
+      financeLoadInProgress = false;
+      if (financeReloadQueued) {
+        financeReloadQueued = false;
+        window.setTimeout(loadFinance, 250);
+      }
     }
   }
   document.addEventListener('DOMContentLoaded', () => {
@@ -465,12 +480,37 @@
     });
     $('finance-sync')?.addEventListener('click', loadFinance);
     loadFinance();
-    // Actualisation automatique sans rechargement de la page.
+
+    // Mise à jour instantanée lors de la création/modification d'une commande
+    // ou d'un paiement, si Realtime est activé dans Supabase.
+    const client = getClient();
+    if (client && typeof client.channel === 'function') {
+      try {
+        financeRealtimeChannel = client
+          .channel('finance-live-orders-and-payments')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => loadFinance())
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'payments' }, () => loadFinance())
+          .subscribe((status) => {
+            if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+              console.warn('[Finance] Realtime indisponible; actualisation périodique de secours activée.');
+            }
+          });
+      } catch (error) {
+        console.warn('[Finance] Impossible d’activer Realtime; actualisation périodique conservée.', error);
+      }
+    }
+
+    // Filet de sécurité si Realtime n'est pas activé ou connecté.
     window.setInterval(() => {
       if (document.visibilityState === 'visible') loadFinance();
-    }, 60000);
+    }, 15000);
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') loadFinance();
+    });
+    window.addEventListener('beforeunload', () => {
+      if (financeRealtimeChannel && client && typeof client.removeChannel === 'function') {
+        client.removeChannel(financeRealtimeChannel);
+      }
     });
   });
 })();
