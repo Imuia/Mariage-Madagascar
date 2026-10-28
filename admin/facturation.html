@@ -194,12 +194,15 @@
   main.mm-main label, main.mm-main th, main.mm-main td {
     font-size: 10px;
   }
-  main.mm-main .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4,
-  main.mm-main > div > .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  /* Les quatre indicateurs entourés en rouge restent sur une seule ligne sur ordinateur. */
+  main.mm-main > div > .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
     gap: 8px !important;
     width: 100% !important;
     max-width: 100% !important;
+  }
+  main.mm-main > div > .grid:not(.grid-cols-1) {
+    min-width: 0 !important;
   }
   main.mm-main .rounded-xl, main.mm-main .rounded-2xl {
     border-radius: 10px !important;
@@ -232,8 +235,7 @@
       font-size: 11px !important;
     }
     main.mm-main > div { padding: 10px !important; }
-    main.mm-main .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4,
-    main.mm-main > div > .grid { grid-template-columns: minmax(0, 1fr) !important; }
+    main.mm-main > div > .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
     main.mm-main h1 { font-size: 21px !important; }
   }
 </style>
