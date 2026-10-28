@@ -269,6 +269,42 @@
   main.mm-main .overflow-x-auto { max-width: 100% !important; overflow-x: auto !important; }
 </style>
 
+
+<style id="facturation-kpi-cards-compactes">
+  /* Cartes financières plus compactes, sans modifier les données ni les scripts. */
+  @media (min-width: 1100px) {
+    main.mm-main > div > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      gap: 8px !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    main.mm-main > div > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 > div {
+      padding: 9px !important;
+      gap: 5px !important;
+      min-height: 76px !important;
+    }
+    main.mm-main > div > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 > div > div:first-child {
+      gap: 5px !important;
+    }
+    main.mm-main > div > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 > div > div:first-child p {
+      font-size: 9px !important;
+      line-height: 1.25 !important;
+    }
+    main.mm-main > div > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 > div > p {
+      font-size: 15px !important;
+      line-height: 1.2 !important;
+    }
+    main.mm-main > div > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 > div .material-symbols-outlined {
+      font-size: 15px !important;
+    }
+    main.mm-main > div > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 > div > div:nth-of-type(2) p {
+      font-size: 9px !important;
+      line-height: 1.25 !important;
+    }
+  }
+</style>
+
 </head>
 <body class="bg-background text-on-surface antialiased font-body selection:bg-primary-container selection:text-on-primary-container">
 <div class="relative flex h-auto min-h-screen w-full flex-col bg-[#101d23] dark group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
