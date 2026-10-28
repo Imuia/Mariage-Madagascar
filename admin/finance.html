@@ -193,6 +193,30 @@
 </table>
 </div>
 </div>
+<section class="glass-panel-elevated rounded-xl p-6 border border-primary/10">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+    <div>
+      <h2 class="text-lg font-semibold font-headline">Commandes à venir</h2>
+      <p class="text-xs text-on-surface-variant mt-1">Commandes dont la date de réservation est aujourd’hui ou ultérieure, chargées depuis Supabase.</p>
+    </div>
+    <span id="finance-upcoming-count" class="text-xs rounded-full bg-primary/10 text-primary px-3 py-1">Chargement…</span>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left border-collapse">
+      <thead class="bg-surface-container-highest/30">
+        <tr>
+          <th class="p-3 text-xs font-semibold text-on-surface-variant uppercase">Date prévue</th>
+          <th class="p-3 text-xs font-semibold text-on-surface-variant uppercase">Commande / Client</th>
+          <th class="p-3 text-xs font-semibold text-on-surface-variant uppercase">Statut</th>
+          <th class="p-3 text-xs font-semibold text-on-surface-variant uppercase text-right">Montant</th>
+        </tr>
+      </thead>
+      <tbody id="finance-upcoming-orders-body" class="text-sm divide-y divide-outline-variant/10">
+        <tr><td colspan="4" class="p-5 text-center text-on-surface-variant">Chargement des commandes à venir…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 </div>
 <!-- Invoice Management & Bank Link -->
 <div class="space-y-6">
@@ -367,6 +391,46 @@
           </tr>`;
         }).join('');
       }
+
+      // Commandes à venir : booking_date est la date de réservation/prestation
+      // disponible dans le schéma orders vérifié. Aucune date n'est inventée.
+      const upcomingBody = $('finance-upcoming-orders-body');
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const upcomingOrders = orders
+        .filter(o => {
+          if (!o.booking_date) return false;
+          const bookingDate = new Date(`${String(o.booking_date).slice(0, 10)}T00:00:00`);
+          if (Number.isNaN(bookingDate.getTime()) || bookingDate < today) return false;
+          const state = String(o.status || '').toLowerCase();
+          const paymentState = String(o.payment_status || '').toLowerCase();
+          return !['cancelled', 'canceled', 'annule', 'annulé', 'refunded'].includes(state)
+            && !['cancelled', 'canceled', 'refunded'].includes(paymentState);
+        })
+        .sort((a, b) => String(a.booking_date).localeCompare(String(b.booking_date)));
+
+      const upcomingCount = $('finance-upcoming-count');
+      if (upcomingCount) upcomingCount.textContent = `${upcomingOrders.length} commande(s)`;
+      if (upcomingBody) {
+        if (!upcomingOrders.length) {
+          upcomingBody.innerHTML = '<tr><td colspan="4" class="p-5 text-center text-on-surface-variant">Aucune commande future datée trouvée. Vérifiez que la date de prestation est renseignée dans booking_date.</td></tr>';
+        } else {
+          upcomingBody.innerHTML = upcomingOrders.map(o => {
+            const name = [o.guest_first_name, o.guest_last_name].filter(Boolean).join(' ')
+              || o.guest_email || 'Client non renseigné';
+            const [label, color] = statusLabel(o.payment_status || o.status);
+            const dateLabel = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium' })
+              .format(new Date(`${String(o.booking_date).slice(0, 10)}T00:00:00`));
+            return `<tr class="hover:bg-surface-variant/20 transition-colors">
+              <td class="p-3 whitespace-nowrap text-on-surface-variant">${esc(dateLabel)}</td>
+              <td class="p-3 font-medium">${esc(o.order_number || o.id)}<div class="text-xs text-on-surface-variant">${esc(name)}</div></td>
+              <td class="p-3"><span class="${color} text-xs font-semibold">${esc(label)}</span></td>
+              <td class="p-3 text-right font-semibold whitespace-nowrap">${esc(fmtMoney(o.total_amount, 'EUR'))}</td>
+            </tr>`;
+          }).join('');
+        }
+      }
+
       const invoiceNote = $('finance-invoices-note');
       if (invoiceNote) invoiceNote.textContent = 'Aucune table de factures/devis n’a été confirmée dans la structure consultée. Les exemples fictifs ont été retirés.';
       $('finance-forecast').textContent = 'Non disponible';
@@ -401,6 +465,13 @@
     });
     $('finance-sync')?.addEventListener('click', loadFinance);
     loadFinance();
+    // Actualisation automatique sans rechargement de la page.
+    window.setInterval(() => {
+      if (document.visibilityState === 'visible') loadFinance();
+    }, 60000);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') loadFinance();
+    });
   });
 })();
 </script>
