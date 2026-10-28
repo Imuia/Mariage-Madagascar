@@ -125,6 +125,50 @@
   }
 </style>
 
+
+<style id="facturation-layout-final-fix">
+  /* Correctif structurel : la zone de contenu doit rester dans l'espace à droite du menu admin. */
+  html, body { margin: 0; width: 100%; max-width: 100%; overflow-x: hidden !important; }
+  .layout-container { width: 100%; max-width: 100%; min-width: 0; }
+  main.mm-main {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+  main.mm-main > div { width: 100%; max-width: 100%; min-width: 0; }
+  main.mm-main * { min-width: 0; }
+  /* Les cartes KPI passent sur 2 colonnes avant de manquer de place. */
+  main.mm-main > div > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    width: 100%;
+    max-width: 100%;
+  }
+  main.mm-main .grid { min-width: 0; }
+  main.mm-main .flex { min-width: 0; }
+  main.mm-main .overflow-x-auto {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+  main.mm-main table { width: max-content; min-width: 100%; }
+  main.mm-main th, main.mm-main td { white-space: normal; overflow-wrap: anywhere; }
+  main.mm-main .flex.items-center.justify-between { flex-wrap: wrap; }
+  @media (max-width: 720px) {
+    main.mm-main > div { padding: 1rem !important; }
+    main.mm-main > div > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+    main.mm-main .p-5, main.mm-main .lg\:p-6 { padding: 1rem !important; }
+  }
+</style>
+
 </head>
 <body class="bg-background text-on-surface antialiased font-body selection:bg-primary-container selection:text-on-primary-container">
 <div class="relative flex h-auto min-h-screen w-full flex-col bg-[#101d23] dark group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
