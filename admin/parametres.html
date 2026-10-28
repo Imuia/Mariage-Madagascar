@@ -40,13 +40,13 @@
 <section class="mm-card mm-card-pad">
 <h2 class="mm-section-title">Informations de l’entreprise</h2>
 <p class="mm-subtitle" style="margin-top:7px">Ces informations préremplies sont des exemples à confirmer avant mise en service.</p>
-<form data-demo-form class="mm-form-grid" style="margin-top:20px">
-<label class="mm-field">Nom commercial<input class="mm-input" value="Mariage Madagascar"></label>
-<label class="mm-field">Adresse e-mail de contact<input class="mm-input" type="email" value="contact@mariage-madagascar.example"></label>
-<label class="mm-field">Téléphone<input class="mm-input" placeholder="Numéro professionnel"></label>
-<label class="mm-field">Devise principale<select class="mm-select"><option>EUR — Euro</option><option>MGA — Ariary malgache</option><option>USD — Dollar américain</option></select></label>
-<label class="mm-field" style="grid-column:1/-1">Adresse professionnelle<textarea class="mm-textarea" rows="2" placeholder="Adresse à compléter"></textarea></label>
-<div style="grid-column:1/-1"><button class="mm-btn" type="submit">Enregistrer les paramètres</button></div>
+<form id="mm-company-settings-form" class="mm-form-grid" style="margin-top:20px">
+<label class="mm-field">Nom commercial<input class="mm-input" name="company_name" id="company_name" value="Mariage Madagascar" required maxlength="160"></label>
+<label class="mm-field">Adresse e-mail de contact<input class="mm-input" type="email" name="contact_email" id="contact_email" value="" placeholder="contact@votre-domaine.com" maxlength="254"></label>
+<label class="mm-field">Téléphone<input class="mm-input" name="phone" id="company_phone" placeholder="Numéro professionnel" maxlength="40"></label>
+<label class="mm-field">Devise principale<select class="mm-select" name="currency" id="company_currency"><option value="EUR">EUR — Euro</option><option value="MGA">MGA — Ariary malgache</option><option value="USD">USD — Dollar américain</option></select></label>
+<label class="mm-field" style="grid-column:1/-1">Adresse professionnelle<textarea class="mm-textarea" name="address" id="company_address" rows="2" placeholder="Adresse professionnelle à compléter" maxlength="1000"></textarea></label>
+<div style="grid-column:1/-1"><button class="mm-btn" id="mm-save-company-settings" type="submit">Enregistrer les paramètres</button></div>
 </form>
 </section>
 
@@ -88,5 +88,6 @@ Se déconnecter de la session Admin
 <div id="mm-toast" class="mm-toast" role="status" aria-live="polite"></div>
 <script src="admin-shared.js"></script>
 <script src="admin-demo.js" defer></script>
+<script src="parametres-admin.js" defer></script>
 </body>
 </html>
