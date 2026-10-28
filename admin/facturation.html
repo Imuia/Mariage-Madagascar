@@ -88,6 +88,43 @@
 <script src="/assets/js/supabase-config.js"></script>
 <script src="admin-auth.js"></script>
 
+
+<style id="facturation-overflow-fix">
+  /* Empêche la page de s'élargir au-delà de la zone disponible après la sidebar. */
+  html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+  .mm-main, .mm-main > div, #quick-action-panel,
+  .mm-main .grid, .mm-main section, .mm-main table {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .mm-main { width: 100%; overflow-x: clip; }
+  .mm-main > div { width: 100%; }
+  .mm-main .overflow-x-auto {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto !important;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mm-main table { width: 100%; }
+  #billing-tbody td { overflow-wrap: anywhere; }
+  /* La sidebar prend de la place : on réduit les colonnes plus tôt que les breakpoints Tailwind. */
+  @media (max-width: 1450px) {
+    .mm-main .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+  @media (max-width: 900px) {
+    .mm-main .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+    .mm-main .p-6, .mm-main .lg\:p-8 { padding: 1rem !important; }
+    .mm-main .p-5, .mm-main .lg\:p-6 { padding: 1rem !important; }
+    .mm-main h1 { font-size: 1.65rem !important; }
+  }
+</style>
+
 </head>
 <body class="bg-background text-on-surface antialiased font-body selection:bg-primary-container selection:text-on-primary-container">
 <div class="relative flex h-auto min-h-screen w-full flex-col bg-[#101d23] dark group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
