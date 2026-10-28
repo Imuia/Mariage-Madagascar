@@ -110,7 +110,7 @@
 <button class="glass-panel px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-surface-variant/50 transition-colors border border-outline-variant/30 text-on-surface">
 <span class="material-symbols-outlined text-[18px]">calendar_today</span> Ce Mois
                     </button>
-<button class="glass-panel px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-surface-variant/50 transition-colors border border-outline-variant/30 text-on-surface">
+<button id="finance-export" type="button" class="glass-panel px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-surface-variant/50 transition-colors border border-outline-variant/30 text-on-surface">
 <span class="material-symbols-outlined text-[18px]">download</span> Exporter
                     </button>
 </div>
@@ -247,9 +247,31 @@
     const candidates = [
       window.supabaseClient,
       (window.supabase && typeof window.supabase.from === 'function') ? window.supabase : null,
-      window.mmSupabase, window.sb, window._supabase, window.supabaseInstance
+      window.mmSupabase, window.sb, window._supabase, window.supabaseInstance,
+      window.MARIAGE_SUPABASE_CLIENT
     ];
-    return candidates.find(c => c && typeof c.from === 'function') || null;
+    const existing = candidates.find(c => c && typeof c.from === 'function');
+    if (existing) return existing;
+
+    // supabase-config.js peut exposer la configuration sans créer le client.
+    const config = window.MARIAGE_SUPABASE;
+    const sdk = window.supabase;
+    if (config && sdk && typeof sdk.createClient === 'function') {
+      const url = config.url || config.supabaseUrl || config.SUPABASE_URL;
+      const key = config.anonKey || config.publishableKey || config.supabaseKey ||
+                  config.supabaseAnonKey || config.SUPABASE_ANON_KEY || config.key;
+      if (url && key) {
+        try {
+          const client = sdk.createClient(url, key);
+          window.supabaseClient = client;
+          window.mmSupabase = window.mmSupabase || client;
+          return client;
+        } catch (error) {
+          console.error('[Finance] Création du client Supabase impossible :', error);
+        }
+      }
+    }
+    return null;
   }
   function statusLabel(status) {
     const s = String(status || '').toLowerCase();
@@ -331,14 +353,15 @@
       const invoiceNote = $('finance-invoices-note');
       if (invoiceNote) invoiceNote.textContent = 'Aucune table de factures/devis n’a été confirmée dans la structure consultée. Les exemples fictifs ont été retirés.';
       $('finance-forecast').textContent = 'Non disponible';
-      $('finance-export').disabled = payments.length === 0;
+      const exportButton = $('finance-export');
+      if (exportButton) exportButton.disabled = payments.length === 0;
       if (mismatches.length) console.warn('[Finance] Commandes marquées paid sans paiement succeeded associé :', mismatches.map(o => o.order_number));
     } catch (error) {
       console.error('[Finance] Chargement impossible', error);
-      $('finance-revenue').textContent = 'Erreur de chargement';
-      $('finance-revenue-note').textContent = 'Vérifiez les autorisations RLS et la configuration Supabase.';
-      $('finance-transactions-body').innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-300">${esc(error.message || 'Erreur de lecture Supabase')}</td></tr>`;
-      $('finance-sync-status').textContent = 'Échec de la lecture Supabase.';
+      if ($('finance-revenue')) $('finance-revenue').textContent = 'Erreur de chargement';
+      if ($('finance-revenue-note')) $('finance-revenue-note').textContent = 'Erreur Supabase : consultez le message affiché dans le tableau.';
+      if ($('finance-transactions-body')) $('finance-transactions-body').innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-300">${esc(error.message || 'Erreur de lecture Supabase')}</td></tr>`;
+      if ($('finance-sync-status')) $('finance-sync-status').textContent = `Échec de la lecture Supabase : ${error.message || 'erreur inconnue'}`;
       toast('Erreur lors du chargement des données financières. Consultez la console et les politiques RLS.');
     }
   }
