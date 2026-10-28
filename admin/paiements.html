@@ -159,9 +159,13 @@
     '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
   })[ch]);
   const norm = value => String(value ?? '').toLowerCase();
-  const isSuccess = p => ['succeeded', 'success', 'paid', 'succeeded '].includes(norm(p.status));
-  const isRefund = p => norm(p.status).includes('refund') || norm(p.status).includes('rembours');
-  const isPending = p => ['pending', 'processing', 'requires_action', 'requires_payment_method', 'unpaid', 'en attente'].includes(norm(p.status));
+  const statusOf = value => norm(value).trim().replace(/[ -]+/g, '_');
+  const isSuccess = p => ['succeeded', 'success', 'paid', 'confirmed', 'complete', 'completed', 'encaissé', 'encaisse'].includes(statusOf(p?.status));
+  const isRefund = p => /refund|rembours/.test(statusOf(p?.status));
+  const isPending = p => ['pending', 'processing', 'requires_action', 'requires_payment_method', 'unpaid', 'en_attente', 'incomplete'].includes(statusOf(p?.status));
+  const isOrderPaid = order => ['paid', 'succeeded', 'success', 'confirmed', 'complete', 'completed'].includes(statusOf(order?.payment_status));
+  const isOrderCancelled = order => /cancel|annul/.test(statusOf(order?.status));
+  const isOrderRefunded = order => /refund|rembours/.test(statusOf(order?.payment_status));
   const clientName = order => {
     if (!order) return 'Client non associé';
     const name = [order.guest_first_name, order.guest_last_name].filter(Boolean).join(' ').trim();
@@ -204,11 +208,14 @@
   function renderMetrics() {
     const successful = payments.filter(isSuccess);
     const refunded = payments.filter(isRefund);
-    const pendingOrders = orders.filter(o => !['paid', 'succeeded', 'refunded'].includes(norm(o.payment_status)));
+    // Exclure les commandes annulées des montants commandés et des impayés.
+    const activeOrders = orders.filter(o => !isOrderCancelled(o));
+    const pendingOrders = activeOrders.filter(o => !isOrderPaid(o) && !isOrderRefunded(o));
     const paidTotal = successful.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
     const pendingTotal = pendingOrders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
     const refundedTotal = refunded.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
-    const allOrderTotal = orders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
+    const allOrderTotal = activeOrders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
+    // Le taux compare les encaissements confirmés au montant total des commandes non annulées.
     const recovery = allOrderTotal > 0 ? Math.min(100, Math.round((paidTotal / allOrderTotal) * 100)) : 0;
 
     $('#metric-paid').textContent = money(paidTotal);
@@ -220,10 +227,10 @@
     $('#reconciliation-rate').textContent = allOrderTotal > 0 ? recovery + ' %' : '—';
 
     const paidOrderIds = new Set(successful.map(p => p.order_id).filter(Boolean).map(String));
-    const paidOrdersWithPayment = orders.filter(o =>
-      ['paid', 'succeeded'].includes(norm(o.payment_status)) && paidOrderIds.has(String(o.id))
+    const paidOrdersWithPayment = activeOrders.filter(o =>
+      isOrderPaid(o) && paidOrderIds.has(String(o.id))
     ).length;
-    const paidOrders = orders.filter(o => ['paid', 'succeeded'].includes(norm(o.payment_status))).length;
+    const paidOrders = activeOrders.filter(isOrderPaid).length;
     $('#reconciliation-note').textContent =
       `${paidOrdersWithPayment} commande(s) payée(s) avec un paiement associé sur ${paidOrders} commande(s) marquée(s) payée(s). Les virements externes ne sont pas vérifiés automatiquement.`;
   }
@@ -260,9 +267,9 @@
       const text = norm(row.textContent);
       const status = norm(row.dataset.paymentStatus);
       const statusMatches = selected === 'all'
-        || (selected === 'encaissé' && ['succeeded', 'success', 'paid'].includes(status))
+        || (selected === 'encaissé' && isSuccess({ status }))
         || (selected === 'attente' && isPending({ status }))
-        || (selected === 'remboursé' && status.includes('refund'));
+        || (selected === 'remboursé' && isRefund({ status }));
       row.hidden = !(text.includes(search) && statusMatches);
     });
   }
