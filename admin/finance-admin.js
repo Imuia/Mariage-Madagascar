@@ -104,11 +104,31 @@
 
   async function api(action, body) {
     const isWrite = body !== undefined;
+
+    // L'API serveur exige le jeton Supabase dans l'en-tête Authorization.
+    // On réutilise la session administrateur déjà ouverte.
+    const authClient = window.MMAdminAuth?.getClient?.();
+    if (!authClient?.auth?.getSession) {
+      throw new Error('Authentification admin indisponible. Vérifie admin-auth.js.');
+    }
+
+    const { data: sessionData, error: sessionError } = await authClient.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+    if (sessionError || !accessToken) {
+      throw new Error('Session administrateur expirée. Reconnecte-toi puis réessaie.');
+    }
+
+    const headers = { Authorization: `Bearer ${accessToken}` };
+    if (isWrite) headers['Content-Type'] = 'application/json';
+
     const response = await fetch('/api/admin-finance' + (isWrite ? '' : `?action=${encodeURIComponent(action)}`), {
-      method: isWrite ? 'POST' : 'GET', credentials: 'same-origin', cache: 'no-store',
-      headers: isWrite ? { 'Content-Type': 'application/json' } : {},
+      method: isWrite ? 'POST' : 'GET',
+      credentials: 'same-origin',
+      cache: 'no-store',
+      headers,
       body: isWrite ? JSON.stringify({ action, ...body }) : undefined
     });
+
     let payload = {};
     try { payload = await response.json(); } catch (_) {}
     if (!response.ok) throw new Error(payload.error || `Erreur serveur (${response.status}).`);
