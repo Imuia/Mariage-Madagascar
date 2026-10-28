@@ -104,19 +104,9 @@
 
   async function api(action, body) {
     const isWrite = body !== undefined;
-    // Supabase Auth stores the session in the browser; forward its access token
-    // to the Vercel function so the server can verify the administrator.
-    let accessToken = '';
-    const client = window.supabaseClient || window.mmSupabase || window.sb;
-    if (client?.auth?.getSession) {
-      const { data: sessionData } = await client.auth.getSession();
-      accessToken = sessionData?.session?.access_token || '';
-    }
-    const headers = { ...(isWrite ? { 'Content-Type': 'application/json' } : {}) };
-    if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
     const response = await fetch('/api/admin-finance' + (isWrite ? '' : `?action=${encodeURIComponent(action)}`), {
       method: isWrite ? 'POST' : 'GET', credentials: 'same-origin', cache: 'no-store',
-      headers,
+      headers: isWrite ? { 'Content-Type': 'application/json' } : {},
       body: isWrite ? JSON.stringify({ action, ...body }) : undefined
     });
     let payload = {};
@@ -196,7 +186,7 @@
       rows.push({ key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`, label: new Intl.DateTimeFormat('fr-FR', { month: 'short' }).format(d), income: 0, expense: 0 });
     }
     const map = new Map(rows.map((x) => [x.key, x]));
-    transactions().filter((x) => x.status === 'succeeded' && (!x.currency || x.currency === 'EUR')).forEach((x) => {
+    transactions().filter((x) => ['succeeded', 'paid'].includes(String(x.status || '').toLowerCase()) && (!x.currency || x.currency === 'EUR')).forEach((x) => {
       const d = new Date(x.created_at || ''); if (!Number.isNaN(d.getTime())) {
         const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; if (map.has(key)) map.get(key).income += num(x.amount);
       }
@@ -492,16 +482,21 @@
 
   function renderReportsPage() {
     const t = totals();
+    const monthsForReport = makeMonthRows();
+    // All-time turnover includes only successful/paid transactions, never pending orders.
+    const reportIncome = round(transactions().filter((x) => ['succeeded', 'paid'].includes(String(x.status || '').toLowerCase()) && (!x.currency || x.currency === 'EUR')).reduce((sum, x) => sum + num(x.amount), 0));
+    // A real forecast needs an explicit projection model; the current net balance is not a forecast.
+    const forecastValue = 'Non disponible';
     const metrics = $$('.mm-grid .mm-metric');
-    const vals = [money(t.income), String(t.paidOrders), money(t.pending), money(t.net)];
-    const notes = ['Total des paiements confirmés depuis Supabase.', `Commandes payées sur ${t.totalOrders} commande(s).`, 'Paiements et commandes en attente.', 'Encaissements moins dépenses et commissions réglées.'];
+    const vals = [money(reportIncome), String(t.paidOrders), money(t.pending), forecastValue];
+    const notes = ['Somme de tous les paiements réellement encaissés depuis Supabase.', `Commandes payées sur ${t.totalOrders} commande(s).`, 'Paiements et commandes en attente ; non inclus dans le chiffre d’affaires.', 'Aucune prévision fiable tant qu’un modèle de projection n’est pas défini.'];
     metrics.forEach((card,i)=>{const value=$('.value',card),note=$('.note',card); if(value)value.textContent=vals[i]||'—';if(note)note.textContent=notes[i]||'';});
     const chartHead = findHeading('Évolution mensuelle des revenus');
     const chartSection = chartHead?.closest('section');
     if (chartSection) {
       const note = $('.mm-muted', chartSection); if (note) note.textContent = 'Données calculées sur les six derniers mois complets et en cours. Les mois sans mouvement affichent zéro.';
       const container = $('#reports-month-chart', chartSection) || $('.mm-bar-row', chartSection)?.parentElement;
-      const months = makeMonthRows();
+      const months = monthsForReport;
       const max = Math.max(1, ...months.map((m)=>m.income));
       if (container) container.innerHTML = months.map((m)=>`<div class="mm-bar-row"><span>${esc(m.label)}</span><div class="mm-bar"><span style="width:${Math.max(0.5,m.income/max*100)}%" title="${esc(money(m.income))}"></span></div><strong style="text-align:right">${esc(money(m.income))}</strong></div>`).join('');
     }
@@ -518,7 +513,7 @@
     }
     const table = $('#report-table tbody');
     if (table) {
-      const months = makeMonthRows();
+      const months = monthsForReport;
       table.innerHTML = months.map((m)=>`<tr><td>${esc(m.label)} ${esc(m.key.slice(0,4))}</td><td>${esc(money(m.income))}</td><td>${esc(money(m.expense))}</td><td>${esc(money(m.net))}</td></tr>`).join('');
       const head = $('#report-table thead th:nth-child(2)'); if(head)head.textContent='Valeur réelle';
       const head3 = $('#report-table thead th:nth-child(3)'); if(head3)head3.textContent='Commentaire';
