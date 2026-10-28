@@ -1,0 +1,21 @@
+/* Mariage Madagascar — styles complémentaires de la page Commissions */
+.fa-finance-form { display: grid; gap: 10px; }
+.fa-finance-form .mm-field { display: grid; gap: 5px; min-width: 0; color: var(--mm-muted, #9fb0c5); font-size: 12px; }
+.fa-finance-form .mm-input, .fa-finance-form .mm-select, .fa-finance-form .mm-textarea { width: 100%; min-width: 0; box-sizing: border-box; color: var(--mm-text, #e8eef8); background: var(--mm-input-bg, #0b1422); border: 1px solid var(--mm-border, #223148); border-radius: 10px; padding: 10px 12px; font: inherit; }
+.fa-finance-form .mm-input:focus, .fa-finance-form .mm-select:focus, .fa-finance-form .mm-textarea:focus { outline: 2px solid #68c9f4; outline-offset: 1px; }
+.fa-finance-form .mm-textarea { resize: vertical; }
+.fa-form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.fa-cell-sub { display: block; margin-top: 4px; color: var(--mm-muted, #91a4bb); font-size: 11px; overflow-wrap: anywhere; }
+.fa-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.fa-disabled-action, button:disabled { opacity: .6; cursor: not-allowed; }
+#finance-data-notice { margin: 12px 0 18px; padding: 10px 13px; border: 1px solid var(--mm-border, #26364a); border-radius: 10px; color: var(--mm-muted, #a8bad0); background: rgba(15, 27, 43, .72); font-size: 12px; overflow-wrap: anywhere; }
+#finance-data-notice[data-kind="warning"] { border-color: #8a6a2b; color: #f2d48a; }
+#finance-data-notice[data-kind="error"] { border-color: #8b3945; color: #ffb4bd; }
+#finance-data-notice details { margin-top: 7px; }
+#finance-data-notice ul { margin: 7px 0 0; padding-left: 18px; }
+.mm-table-wrap { max-width: 100%; overflow-x: auto; }
+#commissions-table { width: 100%; min-width: 720px; }
+#commissions-table th, #commissions-table td { vertical-align: top; }
+#commissions-table td { overflow-wrap: anywhere; }
+@media (max-width: 760px) { .fa-form-row { grid-template-columns: 1fr; } .mm-two-col { grid-template-columns: minmax(0, 1fr) !important; } .mm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
+@media (max-width: 460px) { .mm-grid { grid-template-columns: minmax(0, 1fr) !important; } .mm-card-head { align-items: flex-start; gap: 10px; flex-wrap: wrap; } }
