@@ -7,6 +7,7 @@
 <meta name="robots" content="noindex,nofollow">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link rel="stylesheet" href="admin-shared.css">
+<link rel="stylesheet" href="finance-admin.css?v=20261028-commissions1">
 
 <!-- Supabase SDK & Auth Guard -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -37,23 +38,23 @@
 <div class="mm-grid">
 <article class="mm-card mm-card-pad mm-metric">
 <div class="label">Commissions à régler</div>
-<div class="value" style="color:var(--mm-purple)">3 180 €</div>
-<div class="note">Montant de démonstration</div>
+<div class="value" style="color:var(--mm-purple)">—</div>
+<div class="note">Somme réelle des commissions en attente</div>
 </article>
 <article class="mm-card mm-card-pad mm-metric">
 <div class="label">Prestataires éligibles</div>
-<div class="value" style="color:var(--mm-blue)">5</div>
-<div class="note">Selon les dossiers présentés</div>
+<div class="value" style="color:var(--mm-blue)">—</div>
+<div class="note">Prestataires présents dans le registre</div>
 </article>
 <article class="mm-card mm-card-pad mm-metric">
 <div class="label">Déjà réglées</div>
-<div class="value" style="color:var(--mm-green)">12 640 €</div>
-<div class="note">Période de démonstration</div>
+<div class="value" style="color:var(--mm-green)">—</div>
+<div class="note">Commissions enregistrées comme réglées</div>
 </article>
 <article class="mm-card mm-card-pad mm-metric">
 <div class="label">Taux indicatif</div>
-<div class="value" style="color:var(--mm-blue)">7,5 %</div>
-<div class="note">À confirmer selon les contrats</div>
+<div class="value" style="color:var(--mm-blue)">—</div>
+<div class="note">Taux par défaut configuré</div>
 </article>
 </div>
 
@@ -61,48 +62,50 @@
 <section class="mm-card">
 <div class="mm-card-head">
 <div>
-<h2 class="mm-section-title">Commissions prestataires</h2>
-<p class="mm-muted" style="font-size:11px;margin-top:5px">Montants fictifs pour illustrer le suivi des règlements.</p>
+<h2 class="mm-section-title">Registre des commissions</h2>
+<p class="mm-muted" style="font-size:11px;margin-top:5px">Données enregistrées dans Supabase. Cette page ne déclenche aucun virement bancaire.</p>
 </div>
-<button class="mm-btn" data-demo-action data-message="Le paiement des commissions n’est pas activé dans cette maquette.">Régler les commissions</button>
+<a class="mm-btn" href="#commission-create-form">Ajouter une commission</a>
 </div>
+
+<form id="commission-create-form" class="fa-finance-form" data-finance-form="commission" style="padding:0 16px 16px">
+<label class="mm-field">Prestataire
+<input class="mm-input" name="provider_name" maxlength="250" required>
+</label>
+<label class="mm-field">E-mail (facultatif)
+<input class="mm-input" name="provider_email" type="email" maxlength="320">
+</label>
+<label class="mm-field">Prestation / dossier
+<input class="mm-input" name="description" maxlength="2000" required>
+</label>
+<div class="fa-form-row">
+<label class="mm-field">Montant de base (€)
+<input class="mm-input" name="base_amount" type="number" min="0" step="0.01" required>
+</label>
+<label class="mm-field">Taux (%)
+<input class="mm-input" name="commission_rate" type="number" min="0" max="100" step="0.1" value="7.5" required>
+</label>
+</div>
+<label class="mm-field">Note interne
+<textarea class="mm-textarea" name="notes" rows="2" maxlength="1000"></textarea>
+</label>
+<button class="mm-btn" type="submit">Enregistrer la commission</button>
+</form>
+
 <div class="mm-table-wrap">
-<table class="mm-table">
+<table id="commissions-table" class="mm-table">
 <thead>
 <tr>
 <th>Prestataire</th>
-<th>Type</th>
-<th>Dossiers</th>
+<th>Prestation</th>
+<th>Base (€)</th>
 <th>Commission due</th>
 <th>Statut</th>
 <th>Action</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><strong>Marc Keller</strong></td>
-<td>Consultant réseau</td>
-<td>3 factures</td>
-<td>1 420 €</td>
-<td><span class="mm-badge orange">À régler</span></td>
-<td><button class="mm-btn secondary" data-demo-action>Payer</button></td>
-</tr>
-<tr>
-<td><strong>Elena Laroche</strong></td>
-<td>Décoration</td>
-<td>2 factures</td>
-<td>980 €</td>
-<td><span class="mm-badge orange">À régler</span></td>
-<td><button class="mm-btn secondary" data-demo-action>Payer</button></td>
-</tr>
-<tr>
-<td><strong>DevSquad Solutions</strong></td>
-<td>Sous-traitance</td>
-<td>1 facture</td>
-<td>780 €</td>
-<td><span class="mm-badge orange">À régler</span></td>
-<td><button class="mm-btn secondary" data-demo-action>Payer</button></td>
-</tr>
+<tr><td colspan="6" style="padding:22px;text-align:center;color:var(--mm-muted)">Chargement depuis Supabase…</td></tr>
 </tbody>
 </table>
 </div>
@@ -110,24 +113,34 @@
 
 <section class="mm-card mm-card-pad">
 <h2 class="mm-section-title">Règles de calcul</h2>
-<p class="mm-subtitle" style="margin-top:7px">Configurez ici les paramètres indicatifs, à valider avec les contrats signés.</p>
-<form data-demo-form style="display:grid;gap:14px;margin-top:18px">
-<label class="mm-field">Taux par défaut (%)<input class="mm-input" type="number" step="0.1" value="7.5"></label>
-<label class="mm-field">Déclenchement du règlement<select class="mm-select"><option>Après encaissement client</option><option>Après validation du dossier</option><option>À la fin de l’événement</option></select></label>
-<label class="mm-field">Notes internes<textarea class="mm-textarea" rows="3" placeholder="Conditions particulières…"></textarea></label>
+<p class="mm-subtitle" style="margin-top:7px">Le taux par défaut sert aux nouvelles commissions. Vérifie les conditions prévues dans les contrats prestataires avant de l’appliquer.</p>
+<form id="commission-settings-form" class="fa-finance-form" data-finance-form="settings" style="display:grid;gap:14px;margin-top:18px">
+<label class="mm-field">Taux par défaut (%)
+<input class="mm-input" name="default_commission_rate" type="number" min="0" max="100" step="0.1" value="7.5" required>
+</label>
+<label class="mm-field">Déclenchement du règlement
+<select class="mm-select" name="payout_trigger">
+<option value="after_client_payment">Après encaissement client</option>
+<option value="after_case_validation">Après validation du dossier</option>
+<option value="after_event">À la fin de l’événement</option>
+</select>
+</label>
+<label class="mm-field">Notes internes
+<textarea class="mm-textarea" name="internal_notes" rows="3" maxlength="2000" placeholder="Conditions particulières…"></textarea>
+</label>
 <button class="mm-btn" type="submit">Enregistrer les préférences</button>
 </form>
 </section>
 </div>
 
-<p class="mm-muted" style="font-size:10px;margin-top:24px">Données fictives de démonstration — à connecter à la base de données avant utilisation réelle.</p>
+<p class="mm-muted" style="font-size:10px;margin-top:24px">Les montants affichés proviennent du registre Supabase. « Marquer réglée » enregistre le suivi comptable et une référence de règlement ; aucun virement bancaire n’est exécuté depuis cette page.</p>
 </div>
 
-<footer class="mm-footer">© 2026 Mariage Madagascar · Administration privée · Prototype non connecté aux données de production</footer>
+<footer class="mm-footer">© 2026 Mariage Madagascar · Administration privée · Registre de commissions Supabase</footer>
 </main>
 
 <div id="mm-toast" class="mm-toast" role="status" aria-live="polite"></div>
 <script src="admin-shared.js"></script>
-<script src="admin-demo.js" defer></script>
+<script src="finance-admin.js?v=20261028-commissions1" defer></script>
 </body>
 </html>
