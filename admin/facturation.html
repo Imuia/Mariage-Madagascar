@@ -240,6 +240,35 @@
   }
 </style>
 
+
+<style id="facturation-final-grid-correction">
+  /* Override unique, placé après les anciens correctifs contradictoires. */
+  @media (min-width: 1100px) {
+    main.mm-main > div > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      gap: 10px !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+  }
+  @media (min-width: 701px) and (max-width: 1099px) {
+    main.mm-main > div > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+  @media (max-width: 700px) {
+    main.mm-main > div > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+  html, body { max-width: 100%; overflow-x: hidden !important; }
+  .layout-container { width: 100%; max-width: 100%; min-width: 0; overflow-x: clip; }
+  main.mm-main { min-width: 0 !important; max-width: 100% !important; overflow-x: clip !important; }
+  main.mm-main > div { min-width: 0 !important; max-width: 100% !important; }
+  main.mm-main .overflow-x-auto { max-width: 100% !important; overflow-x: auto !important; }
+</style>
+
 </head>
 <body class="bg-background text-on-surface antialiased font-body selection:bg-primary-container selection:text-on-primary-container">
 <div class="relative flex h-auto min-h-screen w-full flex-col bg-[#101d23] dark group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
