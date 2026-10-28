@@ -7,6 +7,7 @@
 <meta name="robots" content="noindex,nofollow">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link rel="stylesheet" href="admin-shared.css">
+<link rel="stylesheet" href="finance-admin.css?v=20261027-finance2">
 
 <!-- Supabase SDK & Auth Guard -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -37,23 +38,23 @@
 <div class="mm-grid">
 <article class="mm-card mm-card-pad mm-metric">
 <div class="label">Chiffre d’affaires</div>
-<div class="value" style="color:var(--mm-blue)">48 290 €</div>
-<div class="note">Exemple de période</div>
+<div class="value" style="color:var(--mm-blue)">—</div>
+<div class="note">Encaissements confirmés depuis Supabase</div>
 </article>
 <article class="mm-card mm-card-pad mm-metric">
 <div class="label">Dossiers confirmés</div>
-<div class="value" style="color:var(--mm-green)">22</div>
-<div class="note">Exemple de saison</div>
+<div class="value" style="color:var(--mm-green)">—</div>
+<div class="note">Nombre de commandes payées</div>
 </article>
 <article class="mm-card mm-card-pad mm-metric">
 <div class="label">Montants en attente</div>
-<div class="value" style="color:var(--mm-red)">6 420 €</div>
-<div class="note">À rapprocher</div>
+<div class="value" style="color:var(--mm-red)">—</div>
+<div class="note">Commandes et paiements en attente</div>
 </article>
 <article class="mm-card mm-card-pad mm-metric">
 <div class="label">Prévision trimestre</div>
-<div class="value" style="color:var(--mm-purple)">+ 21 000 €</div>
-<div class="note">Projection indicative</div>
+<div class="value" style="color:var(--mm-purple)">—</div>
+<div class="note">Solde net estimé à partir des données enregistrées</div>
 </article>
 </div>
 
@@ -62,30 +63,18 @@
 <div class="flex justify-between items-start gap-3">
 <div>
 <h2 class="mm-section-title">Évolution mensuelle des revenus</h2>
-<p class="mm-muted" style="font-size:11px;margin-top:5px">Illustration visuelle — données non issues de la production.</p>
+<p class="mm-muted" style="font-size:11px;margin-top:5px">Évolution calculée depuis les paiements et dépenses réels enregistrés.</p>
 </div>
-<select class="mm-select" style="width:100px"><option>2026</option><option>2025</option></select>
+<select id="reports-year" class="mm-select" style="width:100px" disabled><option>Six derniers mois</option></select>
 </div>
-<div style="display:grid;gap:17px;margin-top:24px">
-<div class="mm-bar-row"><span>Mai</span><div class="mm-bar"><span style="width:35%"></span></div><strong style="text-align:right">4,2 k€</strong></div>
-<div class="mm-bar-row"><span>Juin</span><div class="mm-bar"><span style="width:48%"></span></div><strong style="text-align:right">5,8 k€</strong></div>
-<div class="mm-bar-row"><span>Juil.</span><div class="mm-bar"><span style="width:62%"></span></div><strong style="text-align:right">7,1 k€</strong></div>
-<div class="mm-bar-row"><span>Août</span><div class="mm-bar"><span style="width:44%"></span></div><strong style="text-align:right">5,3 k€</strong></div>
-<div class="mm-bar-row"><span>Sept.</span><div class="mm-bar"><span style="width:72%"></span></div><strong style="text-align:right">8,6 k€</strong></div>
-<div class="mm-bar-row"><span>Oct.</span><div class="mm-bar"><span style="width:88%"></span></div><strong style="text-align:right">10,4 k€</strong></div>
-</div>
+<div id="reports-month-chart" style="display:grid;gap:17px;margin-top:24px"><p class="mm-muted">Chargement des données…</p></div>
 <button class="mm-btn secondary" style="margin-top:22px" data-export-table="#report-table" data-filename="rapport-mariage-madagascar.csv">Exporter le tableau récapitulatif</button>
 </section>
 
 <section class="mm-card mm-card-pad">
 <h2 class="mm-section-title">Répartition des dossiers</h2>
-<p class="mm-muted" style="font-size:11px;margin-top:5px">Indicateurs fictifs à brancher sur les dossiers réels.</p>
-<div class="mm-list" style="margin-top:16px">
-<div class="mm-list-item"><div><strong>Mariages confirmés</strong><small>Contrat / acompte validé</small></div><strong style="color:var(--mm-green)">22</strong></div>
-<div class="mm-list-item"><div><strong>Devis envoyés</strong><small>En attente de retour client</small></div><strong style="color:var(--mm-purple)">8</strong></div>
-<div class="mm-list-item"><div><strong>Nouvelles demandes</strong><small>À qualifier par le CRM</small></div><strong style="color:var(--mm-blue)">12</strong></div>
-<div class="mm-list-item"><div><strong>Paiements en attente</strong><small>À contrôler</small></div><strong style="color:var(--mm-red)">4</strong></div>
-</div>
+<p class="mm-muted" style="font-size:11px;margin-top:5px">Synthèse des commandes, devis et paiements chargés depuis Supabase.</p>
+<div class="mm-list" style="margin-top:16px"><p class="mm-muted">Chargement des données Supabase…</p></div>
 </section>
 </div>
 
@@ -99,28 +88,24 @@
 <thead>
 <tr>
 <th>Indicateur</th>
-<th>Valeur indicative</th>
-<th>Commentaire</th>
+<th>Encaissements</th>
+<th>Sorties</th>
+<th>Solde</th>
 </tr>
 </thead>
-<tbody>
-<tr><td>Chiffre d’affaires</td><td>48 290 €</td><td>Échantillon de démonstration</td></tr>
-<tr><td>Devis en cours</td><td>8 dossiers</td><td>À relier au module facturation</td></tr>
-<tr><td>Montants en attente</td><td>6 420 €</td><td>À relier au journal des paiements</td></tr>
-<tr><td>Commissions dues</td><td>3 180 €</td><td>À rapprocher des contrats prestataires</td></tr>
-</tbody>
+<tbody><tr><td colspan="4" style="padding:22px;text-align:center;color:var(--mm-muted)">Chargement des données Supabase…</td></tr></tbody>
 </table>
 </div>
 </section>
 
-<p class="mm-muted" style="font-size:10px;margin-top:24px">Données fictives de démonstration — à connecter à la base de données avant utilisation réelle.</p>
+<p class="mm-muted" style="font-size:10px;margin-top:24px">Rapport calculé depuis Supabase. Aucun chiffre de démonstration n’est utilisé.</p>
 </div>
 
-<footer class="mm-footer">© 2026 Mariage Madagascar · Administration privée · Prototype non connecté aux données de production</footer>
+<footer class="mm-footer">© 2026 Mariage Madagascar · Administration privée · Indicateurs calculés depuis Supabase</footer>
 </main>
 
 <div id="mm-toast" class="mm-toast" role="status" aria-live="polite"></div>
 <script src="admin-shared.js"></script>
-<script src="admin-demo.js" defer></script>
+<script src="finance-admin.js?v=20261028-rapports1" defer></script>
 </body>
 </html>
