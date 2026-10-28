@@ -281,6 +281,7 @@
     return [status || 'Inconnu', 'text-on-surface-variant'];
   }
   let loadedPayments = [];
+  let loadedOrdersById = new Map();
   async function loadFinance() {
     const client = getClient();
     if (!client) {
@@ -292,16 +293,32 @@
     }
     $('finance-sync-status').textContent = 'Lecture des données Supabase…';
     try {
-      const [ordersResult, paymentsResult] = await Promise.all([
-        client.from('orders').select('id,order_number,guest_first_name,guest_last_name,guest_email,total_amount,payment_status,status,created_at,stripe_checkout_session_id,stripe_payment_intent_id').order('created_at', { ascending: false }).limit(500),
-        client.from('payments').select('id,order_id,amount,currency,status,payment_method,stripe_payment_intent_id,stripe_checkout_session_id,created_at').order('created_at', { ascending: false }).limit(500)
-      ]);
-      if (ordersResult.error) throw new Error('Lecture des commandes : ' + ordersResult.error.message);
-      if (paymentsResult.error) throw new Error('Lecture des paiements : ' + paymentsResult.error.message);
-      const orders = ordersResult.data || [];
+      // Les paiements constituent la source de vérité des recettes encaissées.
+      // Une erreur sur une colonne facultative de orders ne doit pas masquer payments.
+      const paymentsResult = await client
+        .from('payments')
+        .select('id,order_id,amount,currency,status,payment_method,stripe_payment_intent_id,stripe_checkout_session_id,created_at')
+        .order('created_at', { ascending: false })
+        .limit(500);
+      if (paymentsResult.error) {
+        throw new Error('Lecture des paiements : ' + paymentsResult.error.message);
+      }
       const payments = paymentsResult.data || [];
+
+      let orders = [];
+      const ordersResult = await client
+        .from('orders')
+        .select('id,order_number,guest_first_name,guest_last_name,guest_email,total_amount,payment_status,status,created_at,stripe_checkout_session_id,stripe_payment_intent_id')
+        .order('created_at', { ascending: false })
+        .limit(500);
+      if (ordersResult.error) {
+        console.warn('[Finance] Commandes non disponibles; affichage des paiements maintenu :', ordersResult.error.message);
+      } else {
+        orders = ordersResult.data || [];
+      }
       loadedPayments = payments;
       const orderMap = new Map(orders.map(o => [o.id, o]));
+      loadedOrdersById = orderMap;
       const succeeded = payments.filter(p => String(p.status || '').toLowerCase() === 'succeeded');
       const totalByCurrency = {};
       succeeded.forEach(p => {
@@ -329,7 +346,7 @@
       $('finance-reconciliation-bar').style.width = `${pct}%`;
       $('finance-reconciliation-note').textContent = `${mismatches.length} commande(s) payée(s) sans paiement réussi associé`;
       $('finance-chart').textContent = `Encaissements confirmés : ${succeeded.length} transaction(s). Les dépenses ne peuvent pas être comparées car elles ne sont pas enregistrées dans une table identifiée.`;
-      $('finance-sync-status').textContent = `Données Supabase actualisées le ${fmtDate(new Date().toISOString())}. Synchronisation bancaire externe non configurée.`;
+      $('finance-sync-status').textContent = `${payments.length} paiement(s) lus depuis Supabase · actualisé le ${fmtDate(new Date().toISOString())}. Synchronisation bancaire externe non configurée.`;
       const body = $('finance-transactions-body');
       const rows = payments.slice(0, 50);
       if (!rows.length) {
@@ -372,7 +389,11 @@
       if (!loadedPayments.length) { toast('Aucun paiement à exporter.'); return; }
       const orderCache = new Map();
       // Export the payments returned by the page without pretending to have invoice/expense data.
-      loadedPayments.forEach(p => rows.push([p.created_at || '', p.order_id || '', '', p.amount ?? '', p.currency || 'EUR', p.status || '', p.payment_method || '']));
+      loadedPayments.forEach(p => {
+        const order = loadedOrdersById.get(p.order_id) || {};
+        const clientName = [order.guest_first_name, order.guest_last_name].filter(Boolean).join(' ') || order.guest_email || '';
+        rows.push([p.created_at || '', order.order_number || p.order_id || '', clientName, p.amount ?? '', p.currency || 'EUR', p.status || '', p.payment_method || '']);
+      });
       const csv = '\ufeff' + rows.map(row => row.map(v => '"' + String(v).replace(/"/g,'""') + '"').join(';')).join('\r\n');
       const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
       const a = document.createElement('a'); a.href = url; a.download = 'mariage-madagascar-paiements.csv'; a.click(); URL.revokeObjectURL(url);
@@ -385,6 +406,6 @@
 </script>
 
 <script src="admin-shared.js"></script>
-<script defer="True" src="admin-demo.js"></script>
+<!-- admin-demo.js volontairement exclu : cette page doit afficher les données Supabase réelles, pas les données de démonstration. -->
 </body>
 </html>
