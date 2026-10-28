@@ -305,6 +305,16 @@
   }
 </style>
 
+
+<style id="billing-overflow-fix">
+  html, body { max-width: 100%; overflow-x: hidden; }
+  main, main.mm-main, .mm-main { min-width: 0; max-width: 100%; }
+  .billing-table-scroll { width: 100%; max-width: 100%; max-height: 620px; overflow: auto !important; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-gutter: stable; }
+  .billing-table { min-width: 1050px; }
+  .billing-table thead th { position: sticky; top: 0; z-index: 2; background: #172333; }
+  .billing-table th, .billing-table td { white-space: normal; overflow-wrap: anywhere; }
+  @media (max-width: 760px) { .billing-table-scroll { max-height: 70vh; } .billing-table { min-width: 900px; } }
+</style>
 </head>
 <body class="bg-background text-on-surface antialiased font-body selection:bg-primary-container selection:text-on-primary-container">
 <div class="relative flex h-auto min-h-screen w-full flex-col bg-[#101d23] dark group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
@@ -449,8 +459,8 @@
 </div>
 </div>
 <!-- Table Container -->
-<div class="overflow-x-auto rounded-2xl border border-outline-variant/70 bg-surface-container/40 backdrop-blur-md shadow-lg">
-<table class="w-full text-left border-collapse">
+<div class="billing-table-scroll rounded-2xl border border-outline-variant/70 bg-surface-container/40 backdrop-blur-md shadow-lg">
+<table class="billing-table w-full text-left border-collapse">
 <thead>
 <tr class="border-b border-outline-variant/60 bg-surface-container-high/60 text-secondary text-xs uppercase font-semibold tracking-wider">
 <th class="py-3.5 px-4">N° Facture / Devis</th>
@@ -469,25 +479,7 @@
 <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t border-outline-variant/60 bg-surface-container-low/80 text-xs text-secondary">
 <div id="billing-count">Chargement des enregistrements Supabase…</div></div></div></div>
 </div>
-<!-- Synthèse des sources de données réelles -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 p-2 mt-1">
-  <section class="lg:col-span-2 rounded-2xl border border-outline-variant/80 bg-surface-container/50 backdrop-blur-md p-5">
-    <h3 class="text-white font-bold text-base flex items-center gap-2 mb-2">
-      <span class="material-symbols-outlined text-tertiary text-[20px]">account_balance</span>
-      Commissions prestataires
-    </h3>
-    <p class="text-sm text-secondary">Aucun montant ni prestataire fictif n’est affiché. Le calcul et le règlement des commissions seront activés lorsque la table de commissions et ses règles de calcul auront été confirmées dans Supabase.</p>
-    <a href="commissions.html" class="mt-4 inline-flex text-xs font-bold text-primary hover:text-primary-fixed items-center gap-1">Ouvrir la page Commissions <span class="material-symbols-outlined text-[16px]">arrow_forward</span></a>
-  </section>
-  <section class="rounded-2xl border border-outline-variant/80 bg-surface-container/50 backdrop-blur-md p-5">
-    <h3 class="text-white font-bold text-base flex items-center gap-2 mb-2">
-      <span class="material-symbols-outlined text-primary text-[20px]">sync</span>
-      État de synchronisation
-    </h3>
-    <p id="billing-sync-status" class="text-sm text-secondary">Connexion à Supabase en cours…</p>
-    <button id="billing-refresh" type="button" class="mt-4 w-full rounded-xl h-10 px-4 bg-[#213d4a] hover:bg-secondary-container text-white text-sm font-bold border border-outline-variant">Actualiser les données</button>
-  </section>
-</div>
+<!-- Les panneaux de synthèse du bas ont été retirés pour éviter leur chevauchement avec le tableau. -->
 <!-- Minimal Footer with Mariage Madagascar Branding -->
 <footer class="mt-8 border-t border-outline-variant/40 py-6 px-4 flex flex-col sm:flex-row items-center justify-between text-xs text-secondary gap-3">
 <div class="flex items-center gap-2">
