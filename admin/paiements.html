@@ -37,23 +37,23 @@
 <div class="mm-grid">
 <article class="mm-card mm-card-pad mm-metric">
 <div class="label">Montants encaissés</div>
-<div class="value" style="color:var(--mm-blue)">48 290 €</div>
-<div class="note">Sur la période sélectionnée</div>
+<div class="value" id="metric-paid" style="color:var(--mm-blue)">Chargement…</div>
+<div class="note">Paiements confirmés en base</div>
 </article>
 <article class="mm-card mm-card-pad mm-metric">
 <div class="label">En attente</div>
-<div class="value" style="color:var(--mm-red)">6 420 €</div>
-<div class="note">Factures non soldées</div>
+<div class="value" id="metric-pending" style="color:var(--mm-red)">Chargement…</div>
+<div class="note" id="metric-pending-note">Commandes en attente de paiement</div>
 </article>
 <article class="mm-card mm-card-pad mm-metric">
 <div class="label">Remboursements</div>
-<div class="value" style="color:var(--mm-purple)">0 €</div>
-<div class="note">Aucun remboursement enregistré</div>
+<div class="value" id="metric-refunded" style="color:var(--mm-purple)">Chargement…</div>
+<div class="note">Remboursements enregistrés en base</div>
 </article>
 <article class="mm-card mm-card-pad mm-metric">
 <div class="label">Taux de recouvrement</div>
-<div class="value" style="color:var(--mm-green)">88 %</div>
-<div class="note">État indicatif</div>
+<div class="value" id="metric-recovery" style="color:var(--mm-green)">—</div>
+<div class="note">Part des montants commandés encaissés</div>
 </article>
 </div>
 
@@ -61,9 +61,10 @@
 <div class="mm-card-head">
 <div>
 <h2 class="mm-section-title">Journal des paiements</h2>
-<p class="mm-muted" style="font-size:11px;margin-top:5px">Historique de démonstration des acomptes, soldes et règlements.</p>
+<p class="mm-muted" id="payments-status" style="font-size:11px;margin-top:5px">Connexion à Supabase…</p>
 </div>
 <div class="mm-toolbar">
+<button class="mm-btn secondary" id="refresh-payments" type="button">Actualiser</button>
 <input class="mm-input" style="width:200px" placeholder="Chercher client ou référence…" data-filter-target="#payments-table">
 <select class="mm-select" style="width:150px" data-status-filter="#payments-table">
 <option value="all">Tous les statuts</option>
@@ -88,48 +89,7 @@
 <th>Action</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td>PAY-DEMO-1042</td>
-<td>Famille Rakoto</td>
-<td>Acompte mariage</td>
-<td>12 oct. 2026</td>
-<td>2 500 €</td>
-<td>Carte</td>
-<td><span class="mm-badge green">Encaissé</span></td>
-<td><button class="mm-btn secondary" data-demo-action>Voir</button></td>
-</tr>
-<tr>
-<td>PAY-DEMO-1041</td>
-<td>Couple Dubois</td>
-<td>Solde séjour</td>
-<td>11 oct. 2026</td>
-<td>4 800 €</td>
-<td>Virement</td>
-<td><span class="mm-badge orange">En attente</span></td>
-<td><button class="mm-btn secondary" data-demo-action>Vérifier</button></td>
-</tr>
-<tr>
-<td>PAY-DEMO-1040</td>
-<td>Couple Bernard</td>
-<td>Acompte lune de miel</td>
-<td>10 oct. 2026</td>
-<td>1 200 €</td>
-<td>Carte</td>
-<td><span class="mm-badge green">Encaissé</span></td>
-<td><button class="mm-btn secondary" data-demo-action>Voir</button></td>
-</tr>
-<tr>
-<td>PAY-DEMO-1039</td>
-<td>Groupe Morel</td>
-<td>Prestations événement</td>
-<td>9 oct. 2026</td>
-<td>6 420 €</td>
-<td>Virement</td>
-<td><span class="mm-badge orange">En attente</span></td>
-<td><button class="mm-btn secondary" data-demo-action>Relancer</button></td>
-</tr>
-</tbody>
+<tbody id="payments-tbody"><tr><td colspan="8">Chargement des paiements réels…</td></tr></tbody>
 </table>
 </div>
 </section>
@@ -137,10 +97,10 @@
 <div class="mm-two-col" style="margin-top:18px">
 <section class="mm-card mm-card-pad">
 <h2 class="mm-section-title">Rapprochement bancaire</h2>
-<p class="mm-subtitle" style="margin-top:8px">Cette interface n’est pas encore connectée à un compte bancaire ou à un prestataire de paiement.</p>
-<div class="mm-bar" style="margin:18px 0"><span style="width:88%"></span></div>
-<div class="flex justify-between text-xs"><span class="mm-muted">Rapprochement de démonstration</span><strong>88 %</strong></div>
-<button class="mm-btn" style="margin-top:18px" data-demo-action data-message="Aucun compte bancaire n’est connecté. Le rapprochement réel doit être intégré et sécurisé.">Configurer le rapprochement</button>
+<p class="mm-subtitle" style="margin-top:8px">Les paiements Stripe sont rapprochés avec les commandes Supabase. Les virements bancaires doivent être vérifiés à partir d’un justificatif ou du relevé bancaire avant confirmation.</p>
+<div class="mm-bar" style="margin:18px 0"><span id="reconciliation-bar" style="width:0%"></span></div>
+<div class="flex justify-between text-xs"><span class="mm-muted">Commandes payées avec un paiement associé</span><strong id="reconciliation-rate">—</strong></div>
+<p class="mm-muted" id="reconciliation-note" style="font-size:11px;margin-top:12px">Calcul en cours…</p>
 </section>
 
 <section class="mm-card mm-card-pad">
@@ -158,14 +118,250 @@
 </section>
 </div>
 
-<p class="mm-muted" style="font-size:10px;margin-top:24px">Données fictives de démonstration — à connecter à la base de données avant utilisation réelle.</p>
+<p class="mm-muted" id="payments-footnote" style="font-size:10px;margin-top:24px">Les montants et statuts affichés proviennent de Supabase. Un paiement en attente n’est jamais considéré comme encaissé.</p>
 </div>
 
-<footer class="mm-footer">© 2026 Mariage Madagascar · Administration privée · Prototype non connecté aux données de production</footer>
+<footer class="mm-footer">© 2026 Mariage Madagascar · Administration privée</footer>
 </main>
 
 <div id="mm-toast" class="mm-toast" role="status" aria-live="polite"></div>
 <script src="admin-shared.js"></script>
-<script src="admin-demo.js" defer></script>
+
+<script>
+(() => {
+  'use strict';
+
+  const $ = (selector) => document.querySelector(selector);
+  const tbody = $('#payments-tbody');
+  const statusLine = $('#payments-status');
+  const money = (value, currency = 'EUR') => {
+    const amount = Number(value);
+    if (!Number.isFinite(amount)) return '—';
+    try {
+      return new Intl.NumberFormat('fr-FR', {
+        style: 'currency', currency: (currency || 'EUR').toUpperCase(),
+        maximumFractionDigits: 2
+      }).format(amount);
+    } catch (_) {
+      return amount.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + ' ' + (currency || 'EUR');
+    }
+  };
+  const date = (value) => {
+    if (!value) return '—';
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return String(value);
+    return new Intl.DateTimeFormat('fr-FR', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    }).format(d);
+  };
+  const esc = (value) => String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  })[ch]);
+  const norm = value => String(value ?? '').toLowerCase();
+  const isSuccess = p => ['succeeded', 'success', 'paid', 'succeeded '].includes(norm(p.status));
+  const isRefund = p => norm(p.status).includes('refund') || norm(p.status).includes('rembours');
+  const isPending = p => ['pending', 'processing', 'requires_action', 'requires_payment_method', 'unpaid', 'en attente'].includes(norm(p.status));
+  const clientName = order => {
+    if (!order) return 'Client non associé';
+    const name = [order.guest_first_name, order.guest_last_name].filter(Boolean).join(' ').trim();
+    return name || order.guest_email || 'Client';
+  };
+  const paymentLabel = p => {
+    if (isRefund(p)) return ['Remboursé', 'purple'];
+    if (isSuccess(p)) return ['Encaissé', 'green'];
+    if (isPending(p)) return ['En attente', 'orange'];
+    return [p.status || 'À vérifier', 'orange'];
+  };
+  const getClient = () => {
+    const candidates = [
+      window.supabaseClient,
+      window.supabase,
+      window.sb,
+      window._supabase
+    ];
+    return candidates.find(candidate => candidate && typeof candidate.from === 'function') || null;
+  };
+
+  let allRows = [];
+  let orders = [];
+  let payments = [];
+  let realtimeChannel = null;
+  let pollingId = null;
+  let loading = false;
+
+  function toast(message) {
+    const el = $('#mm-toast');
+    if (el) {
+      el.textContent = message;
+      el.classList.add('show');
+      window.setTimeout(() => el.classList.remove('show'), 3500);
+    } else {
+      statusLine.textContent = message;
+    }
+  }
+
+  function renderMetrics() {
+    const successful = payments.filter(isSuccess);
+    const refunded = payments.filter(isRefund);
+    const pendingOrders = orders.filter(o => !['paid', 'succeeded', 'refunded'].includes(norm(o.payment_status)));
+    const paidTotal = successful.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+    const pendingTotal = pendingOrders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
+    const refundedTotal = refunded.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+    const allOrderTotal = orders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
+    const recovery = allOrderTotal > 0 ? Math.min(100, Math.round((paidTotal / allOrderTotal) * 100)) : 0;
+
+    $('#metric-paid').textContent = money(paidTotal);
+    $('#metric-pending').textContent = money(pendingTotal);
+    $('#metric-refunded').textContent = money(refundedTotal);
+    $('#metric-recovery').textContent = allOrderTotal > 0 ? recovery + ' %' : '—';
+    $('#metric-pending-note').textContent = pendingOrders.length + ' commande(s) non réglée(s)';
+    $('#reconciliation-bar').style.width = recovery + '%';
+    $('#reconciliation-rate').textContent = allOrderTotal > 0 ? recovery + ' %' : '—';
+
+    const paidOrderIds = new Set(successful.map(p => p.order_id).filter(Boolean).map(String));
+    const paidOrdersWithPayment = orders.filter(o =>
+      ['paid', 'succeeded'].includes(norm(o.payment_status)) && paidOrderIds.has(String(o.id))
+    ).length;
+    const paidOrders = orders.filter(o => ['paid', 'succeeded'].includes(norm(o.payment_status))).length;
+    $('#reconciliation-note').textContent =
+      `${paidOrdersWithPayment} commande(s) payée(s) avec un paiement associé sur ${paidOrders} commande(s) marquée(s) payée(s). Les virements externes ne sont pas vérifiés automatiquement.`;
+  }
+
+  function renderTable() {
+    if (!allRows.length) {
+      tbody.innerHTML = '<tr><td colspan="8">Aucun paiement trouvé dans la base de données.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = allRows.map(({ payment: p, order }) => {
+      const [label, color] = paymentLabel(p);
+      const ref = p.id || p.stripe_payment_intent_id || p.stripe_checkout_session_id || '—';
+      const orderRef = order?.order_number || (p.order_id ? String(p.order_id).slice(0, 8) : '');
+      const method = p.payment_method || (p.stripe_payment_intent_id ? 'Stripe / carte' : 'Non précisé');
+      const object = orderRef ? `Commande ${orderRef}` : 'Paiement';
+      return `<tr data-payment-status="${esc(norm(p.status))}">
+        <td>${esc(ref)}</td>
+        <td>${esc(clientName(order))}</td>
+        <td>${esc(object)}</td>
+        <td>${esc(date(p.created_at))}</td>
+        <td>${esc(money(p.amount, p.currency))}</td>
+        <td>${esc(method)}</td>
+        <td><span class="mm-badge ${color}">${esc(label)}</span></td>
+        <td><button class="mm-btn secondary" type="button" data-payment-detail="${esc(p.id || '')}">Détails</button></td>
+      </tr>`;
+    }).join('');
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const search = norm(document.querySelector('[data-filter-target="#payments-table"]')?.value).trim();
+    const selected = norm(document.querySelector('[data-status-filter="#payments-table"]')?.value || 'all');
+    [...tbody.querySelectorAll('tr[data-payment-status]')].forEach(row => {
+      const text = norm(row.textContent);
+      const status = norm(row.dataset.paymentStatus);
+      const statusMatches = selected === 'all'
+        || (selected === 'encaissé' && ['succeeded', 'success', 'paid'].includes(status))
+        || (selected === 'attente' && isPending({ status }))
+        || (selected === 'remboursé' && status.includes('refund'));
+      row.hidden = !(text.includes(search) && statusMatches);
+    });
+  }
+
+  function showDetails(paymentId) {
+    const item = allRows.find(row => String(row.payment.id) === String(paymentId));
+    if (!item) return;
+    const p = item.payment;
+    const o = item.order;
+    const details = [
+      `Référence : ${p.id || '—'}`,
+      `Commande : ${o?.order_number || p.order_id || '—'}`,
+      `Client : ${clientName(o)}`,
+      `E-mail : ${o?.guest_email || '—'}`,
+      `Montant : ${money(p.amount, p.currency)}`,
+      `Moyen : ${p.payment_method || 'Non précisé'}`,
+      `Statut du paiement : ${p.status || '—'}`,
+      `Date : ${date(p.created_at)}`,
+      `Identifiant Stripe : ${p.stripe_payment_intent_id || p.stripe_checkout_session_id || '—'}`,
+      '',
+      'Pour un virement bancaire, vérifiez le relevé ou le justificatif avant de confirmer le paiement.'
+    ].join('\n');
+    window.alert(details);
+  }
+
+  async function loadData({ silent = false } = {}) {
+    if (loading) return;
+    const client = getClient();
+    if (!client) {
+      statusLine.textContent = 'Erreur : client Supabase introuvable. Vérifiez /assets/js/supabase-config.js.';
+      tbody.innerHTML = '<tr><td colspan="8">Connexion Supabase indisponible. Aucun montant fictif n’est affiché.</td></tr>';
+      return;
+    }
+    loading = true;
+    if (!silent) statusLine.textContent = 'Chargement des données Supabase…';
+    try {
+      const [paymentResult, orderResult] = await Promise.all([
+        client.from('payments').select('*').order('created_at', { ascending: false }).limit(500),
+        client.from('orders').select('*').order('created_at', { ascending: false }).limit(1000)
+      ]);
+      if (paymentResult.error) throw new Error('payments : ' + paymentResult.error.message);
+      if (orderResult.error) throw new Error('orders : ' + orderResult.error.message);
+
+      payments = paymentResult.data || [];
+      orders = orderResult.data || [];
+      const orderMap = new Map(orders.map(o => [String(o.id), o]));
+      allRows = payments.map(payment => ({ payment, order: orderMap.get(String(payment.order_id)) || null }));
+      renderMetrics();
+      renderTable();
+      statusLine.textContent = `${payments.length} paiement(s) et ${orders.length} commande(s) chargés depuis Supabase · actualisé à ${new Date().toLocaleTimeString('fr-FR')}.`;
+    } catch (error) {
+      console.error('[Paiements admin]', error);
+      statusLine.textContent = 'Erreur de chargement : ' + (error?.message || 'erreur inconnue') + '. Vérifiez les permissions RLS Supabase.';
+      if (!silent) toast('Les données de paiement n’ont pas pu être chargées.');
+    } finally {
+      loading = false;
+    }
+  }
+
+  document.addEventListener('input', event => {
+    if (event.target.matches('[data-filter-target="#payments-table"]')) applyFilters();
+  });
+  document.addEventListener('change', event => {
+    if (event.target.matches('[data-status-filter="#payments-table"]')) applyFilters();
+  });
+  tbody.addEventListener('click', event => {
+    const button = event.target.closest('[data-payment-detail]');
+    if (button) showDetails(button.dataset.paymentDetail);
+  });
+  $('#refresh-payments')?.addEventListener('click', () => loadData());
+
+
+  async function startRealtime() {
+    const client = getClient();
+    if (!client || typeof client.channel !== 'function') return;
+    try {
+      realtimeChannel = client.channel('admin-paiements-live')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'payments' }, () => loadData({ silent: true }))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => loadData({ silent: true }))
+        .subscribe();
+    } catch (error) {
+      console.warn('[Paiements admin] Realtime indisponible, le rafraîchissement périodique reste actif.', error);
+    }
+  }
+
+  function boot() {
+    loadData();
+    startRealtime();
+    pollingId = window.setInterval(() => loadData({ silent: true }), 20000);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+  window.addEventListener('beforeunload', () => {
+    if (pollingId) window.clearInterval(pollingId);
+    const client = getClient();
+    if (client && realtimeChannel && typeof client.removeChannel === 'function') client.removeChannel(realtimeChannel);
+  });
+})();
+</script>
+
 </body>
 </html>
