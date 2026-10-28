@@ -332,7 +332,7 @@
       let orders = [];
       const ordersResult = await client
         .from('orders')
-        .select('id,order_number,guest_first_name,guest_last_name,guest_email,total_amount,payment_status,status,created_at,stripe_checkout_session_id,stripe_payment_intent_id')
+        .select('id,order_number,guest_first_name,guest_last_name,guest_email,total_amount,payment_status,status,booking_date,created_at,stripe_checkout_session_id,stripe_payment_intent_id')
         .order('created_at', { ascending: false })
         .limit(500);
       if (ordersResult.error) {
