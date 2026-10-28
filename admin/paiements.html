@@ -208,31 +208,54 @@
   function renderMetrics() {
     const successful = payments.filter(isSuccess);
     const refunded = payments.filter(isRefund);
-    // Exclure les commandes annulées des montants commandés et des impayés.
+    // Exclure les commandes annulées et calculer ce qu'il reste à payer
+    // après déduction des paiements réellement réussis liés à chaque commande.
     const activeOrders = orders.filter(o => !isOrderCancelled(o));
-    const pendingOrders = activeOrders.filter(o => !isOrderPaid(o) && !isOrderRefunded(o));
+    const successfulByOrder = new Map();
+    for (const payment of successful) {
+      if (!payment.order_id) continue;
+      const key = String(payment.order_id);
+      successfulByOrder.set(key, (successfulByOrder.get(key) || 0) + (Number(payment.amount) || 0));
+    }
+
+    const pendingOrders = activeOrders.filter(o => {
+      if (isOrderRefunded(o)) return false;
+      const total = Number(o.total_amount) || 0;
+      const paidForOrder = successfulByOrder.get(String(o.id)) || 0;
+      // Une commande n'est pas considérée réglée uniquement sur son libellé :
+      // on vérifie aussi les encaissements associés dans la table payments.
+      return total - paidForOrder > 0.009;
+    });
+
     const paidTotal = successful.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
-    const pendingTotal = pendingOrders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
+    const pendingTotal = pendingOrders.reduce((sum, o) => {
+      const total = Number(o.total_amount) || 0;
+      const paidForOrder = successfulByOrder.get(String(o.id)) || 0;
+      return sum + Math.max(0, total - paidForOrder);
+    }, 0);
     const refundedTotal = refunded.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
     const allOrderTotal = activeOrders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
-    // Le taux compare les encaissements confirmés au montant total des commandes non annulées.
+    // Taux basé sur les paiements réussis réellement enregistrés, plafonné à 100 %.
     const recovery = allOrderTotal > 0 ? Math.min(100, Math.round((paidTotal / allOrderTotal) * 100)) : 0;
 
     $('#metric-paid').textContent = money(paidTotal);
     $('#metric-pending').textContent = money(pendingTotal);
     $('#metric-refunded').textContent = money(refundedTotal);
     $('#metric-recovery').textContent = allOrderTotal > 0 ? recovery + ' %' : '—';
-    $('#metric-pending-note').textContent = pendingOrders.length + ' commande(s) non réglée(s)';
+    $('#metric-pending-note').textContent = pendingOrders.length + ' commande(s) avec un solde restant';
     $('#reconciliation-bar').style.width = recovery + '%';
     $('#reconciliation-rate').textContent = allOrderTotal > 0 ? recovery + ' %' : '—';
 
     const paidOrderIds = new Set(successful.map(p => p.order_id).filter(Boolean).map(String));
     const paidOrdersWithPayment = activeOrders.filter(o =>
-      isOrderPaid(o) && paidOrderIds.has(String(o.id))
+      paidOrderIds.has(String(o.id)) &&
+      (successfulByOrder.get(String(o.id)) || 0) >= (Number(o.total_amount) || 0) - 0.009
     ).length;
-    const paidOrders = activeOrders.filter(isOrderPaid).length;
+    const paidOrders = activeOrders.filter(o =>
+      isOrderPaid(o) || (successfulByOrder.get(String(o.id)) || 0) >= (Number(o.total_amount) || 0) - 0.009
+    ).length;
     $('#reconciliation-note').textContent =
-      `${paidOrdersWithPayment} commande(s) payée(s) avec un paiement associé sur ${paidOrders} commande(s) marquée(s) payée(s). Les virements externes ne sont pas vérifiés automatiquement.`;
+      `${paidOrdersWithPayment} commande(s) réglée(s) intégralement avec un paiement associé sur ${paidOrders} commande(s) considérée(s) réglée(s). Les virements externes ne sont pas vérifiés automatiquement.`;
   }
 
   function renderTable() {
