@@ -104,9 +104,19 @@
 
   async function api(action, body) {
     const isWrite = body !== undefined;
+    // Supabase Auth stores the session in the browser; forward its access token
+    // to the Vercel function so the server can verify the administrator.
+    let accessToken = '';
+    const client = window.supabaseClient || window.mmSupabase || window.sb;
+    if (client?.auth?.getSession) {
+      const { data: sessionData } = await client.auth.getSession();
+      accessToken = sessionData?.session?.access_token || '';
+    }
+    const headers = { ...(isWrite ? { 'Content-Type': 'application/json' } : {}) };
+    if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
     const response = await fetch('/api/admin-finance' + (isWrite ? '' : `?action=${encodeURIComponent(action)}`), {
       method: isWrite ? 'POST' : 'GET', credentials: 'same-origin', cache: 'no-store',
-      headers: isWrite ? { 'Content-Type': 'application/json' } : {},
+      headers,
       body: isWrite ? JSON.stringify({ action, ...body }) : undefined
     });
     let payload = {};
