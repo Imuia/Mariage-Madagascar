@@ -436,6 +436,94 @@
   }
 </style>
 
+
+<style id="facturation-layout-width-final">
+  /* La sidebar admin occupe environ 280px sur desktop : le main doit utiliser uniquement le reste. */
+  html, body {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    overflow-x: hidden !important;
+  }
+  .layout-container {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: clip !important;
+  }
+  main.mm-main {
+    box-sizing: border-box !important;
+    width: calc(100vw - 280px) !important;
+    max-width: calc(100vw - 280px) !important;
+    min-width: 0 !important;
+    flex: 1 1 calc(100vw - 280px) !important;
+    overflow-x: hidden !important;
+  }
+  main.mm-main > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+  main.mm-main .grid,
+  main.mm-main .flex,
+  main.mm-main section,
+  main.mm-main .rounded-xl,
+  main.mm-main .rounded-2xl {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  main.mm-main > div > .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  main.mm-main .billing-table-scroll {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  main.mm-main .billing-table {
+    width: max-content !important;
+    min-width: 1050px !important;
+    max-width: none !important;
+  }
+  main.mm-main .billing-table th,
+  main.mm-main .billing-table td {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+  @media (min-width: 701px) and (max-width: 1199px) {
+    main.mm-main {
+      width: calc(100vw - 220px) !important;
+      max-width: calc(100vw - 220px) !important;
+      flex-basis: calc(100vw - 220px) !important;
+    }
+    main.mm-main > div > .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+  @media (max-width: 700px) {
+    .layout-container { display: block !important; }
+    main.mm-main {
+      width: 100% !important;
+      max-width: 100% !important;
+      flex: 1 1 100% !important;
+    }
+    main.mm-main > div { padding: 10px !important; }
+    main.mm-main > div > .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+</style>
+
 </head>
 <body class="bg-background text-on-surface antialiased font-body selection:bg-primary-container selection:text-on-primary-container">
 <div class="relative flex h-auto min-h-screen w-full flex-col bg-[#101d23] dark group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
