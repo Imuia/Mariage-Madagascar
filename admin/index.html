@@ -102,6 +102,14 @@
 <script src="/assets/js/supabase-config.js"></script>
 <script src="admin-auth.js"></script>
 
+<style id="dashboard-live-style">
+main.mm-main, main.mm-main > div { min-width:0; max-width:100%; }
+main.mm-main .grid, main.mm-main .glass-panel { min-width:0; }
+#dashboard-chart svg { width:100%; max-width:100%; display:block; }
+#dashboard-activity > div { min-width:0; }
+#dashboard-activity p { overflow-wrap:anywhere; }
+@media(max-width:640px){main.mm-main>div{padding:1rem!important}main.mm-main header{align-items:flex-start;flex-wrap:wrap}main.mm-main h2{font-size:1.35rem!important}}
+</style>
 </head>
 <body class="bg-background text-on-surface font-body min-h-screen flex antialiased overflow-x-hidden selection:bg-primary/30 selection:text-primary">
 <!-- Decorative Ambient Light -->
@@ -120,26 +128,27 @@
 </button>
 <h2 class="text-3xl font-headline font-semibold text-on-surface tracking-tight">Tableau de bord — Activité</h2>
 </div>
-<p class="text-on-surface-variant mt-1 text-sm">Aperçu en temps réel des performances de Mariage Madagascar.</p>
+<p class="text-on-surface-variant mt-1 text-sm">Aperçu des commandes et paiements réels de Mariage Madagascar.</p><p id="dashboard-sync-status" role="status" aria-live="polite" class="text-xs text-on-surface-variant mt-2">Connexion à Supabase…</p>
 </div>
 </header>
+<div class="flex justify-end"><button id="dashboard-refresh" type="button" class="px-4 py-2 rounded-lg border border-primary/20 text-primary hover:bg-primary/10 text-sm">Actualiser les données</button></div>
 <!-- KPIs Bento Grid -->
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
 <!-- KPI 1: Chiffre d'affaires -->
 <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:border-primary/30 transition-colors duration-500">
 <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all"></div>
 <div class="flex justify-between items-start mb-4">
-<p class="text-sm font-medium text-on-surface-variant">Chiffre d'affaires total</p>
+<p class="text-sm font-medium text-on-surface-variant">Chiffre d’affaires encaissé</p>
 <div class="p-2 bg-primary/10 rounded-lg border border-primary/10">
 <span class="material-symbols-outlined text-primary text-sm">euro</span>
 </div>
 </div>
 <div class="flex items-baseline gap-2">
-<h3 class="text-3xl font-headline font-bold text-on-surface text-glow">€1.2M</h3>
-<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">+12.5%</span>
+<h3 id="dashboard-revenue" class="text-3xl font-headline font-bold text-on-surface text-glow">—</h3>
+<span id="dashboard-revenue-note" class="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">Supabase</span>
 </div>
 </div>
-<!-- KPI 2: Mariages en cours -->
+<!-- KPI 2: Commandes confirmées -->
 <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:border-primary/30 transition-colors duration-500">
 <div class="absolute -right-4 -top-4 w-24 h-24 bg-tertiary/5 rounded-full blur-2xl group-hover:bg-tertiary/10 transition-all"></div>
 <div class="flex justify-between items-start mb-4">
@@ -149,25 +158,25 @@
 </div>
 </div>
 <div class="flex items-baseline gap-2">
-<h3 class="text-3xl font-headline font-bold text-on-surface">14</h3>
-<span class="text-xs font-medium text-on-surface-variant">saison 2024</span>
+<h3 id="dashboard-confirmed-orders" class="text-3xl font-headline font-bold text-on-surface">—</h3>
+<span class="text-xs font-medium text-on-surface-variant">données réelles</span>
 </div>
 </div>
 <!-- KPI 3: Nouveaux leads -->
 <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:border-primary/30 transition-colors duration-500">
 <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all"></div>
 <div class="flex justify-between items-start mb-4">
-<p class="text-sm font-medium text-on-surface-variant">Nouveaux leads (CRM)</p>
+<p class="text-sm font-medium text-on-surface-variant">Commandes à traiter</p>
 <div class="p-2 bg-primary/10 rounded-lg border border-primary/10">
 <span class="material-symbols-outlined text-primary text-sm">group_add</span>
 </div>
 </div>
 <div class="flex items-baseline gap-2">
-<h3 class="text-3xl font-headline font-bold text-on-surface">42</h3>
-<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">+8 cette sem.</span>
+<h3 id="dashboard-pending-orders" class="text-3xl font-headline font-bold text-on-surface">—</h3>
+<span id="dashboard-orders-note" class="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">commandes</span>
 </div>
 </div>
-<!-- KPI 4: Taux de conversion -->
+<!-- KPI 4: Taux de paiement -->
 <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:border-primary/30 transition-colors duration-500">
 <div class="flex justify-between items-start mb-4">
 <p class="text-sm font-medium text-on-surface-variant">Taux de conversion</p>
@@ -176,8 +185,8 @@
 </div>
 </div>
 <div class="flex items-baseline gap-2">
-<h3 class="text-3xl font-headline font-bold text-on-surface">6.8%</h3>
-<span class="text-xs font-medium text-on-surface-variant">-0.2% vs le mois dernier</span>
+<h3 id="dashboard-payment-rate" class="text-3xl font-headline font-bold text-on-surface">—</h3>
+<span id="dashboard-payment-rate-note" class="text-xs font-medium text-on-surface-variant">sur les commandes</span>
 </div>
 </div>
 </div>
@@ -190,15 +199,15 @@
 <div class="flex justify-between items-center mb-6 relative z-10">
 <div>
 <h3 class="text-lg font-headline font-semibold text-on-surface">Revenus Mensuels</h3>
-<p class="text-xs text-on-surface-variant mt-1">Activité globale de l'année en cours</p>
+<p id="dashboard-chart-note" class="text-xs text-on-surface-variant mt-1">Recettes encaissées par mois</p>
 </div>
-<select class="bg-surface border border-primary/20 text-on-surface text-sm rounded-lg focus:ring-primary/50 focus:border-primary block p-2 backdrop-blur-md">
+<select id="dashboard-year" aria-label="Année du graphique" class="bg-surface border border-primary/20 text-on-surface text-sm rounded-lg focus:ring-primary/50 focus:border-primary block p-2 backdrop-blur-md">
 <option>2024</option>
 <option>2023</option>
 </select>
 </div>
 <!-- CSS/SVG Simulated Chart -->
-<div class="flex-1 relative min-h-[250px] w-full flex items-end">
+<div id="dashboard-chart" class="flex-1 relative min-h-[250px] w-full flex items-end">
 <!-- Y Axis labels -->
 <div class="absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-on-surface-variant pb-6 pr-2">
 <span>150k</span>
@@ -252,56 +261,12 @@
 <div class="glass-panel rounded-2xl p-6 flex flex-col">
 <div class="flex justify-between items-center mb-6">
 <h3 class="text-lg font-headline font-semibold text-on-surface">Tâches Prioritaires</h3>
-<button class="text-primary hover:text-primary-fixed-dim transition-colors">
+<button id="dashboard-add-task" type="button" class="text-primary hover:text-primary-fixed-dim transition-colors" aria-label="Ajouter une tâche">
 <span class="material-symbols-outlined text-sm">add</span>
 </button>
 </div>
-<div class="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
-<!-- Task Item 1 -->
-<label class="flex items-start gap-3 p-3 rounded-xl hover:bg-surface-container/50 border border-transparent hover:border-primary/5 transition-all cursor-pointer group">
-<div class="relative flex items-center justify-center mt-0.5">
-<input class="w-4 h-4 rounded border-primary/30 bg-surface/50 text-primary focus:ring-primary/20 focus:ring-offset-0 focus:ring-1 appearance-none checked:bg-primary checked:border-primary transition-colors peer" type="checkbox"/>
-<span class="material-symbols-outlined text-[12px] absolute text-on-primary opacity-0 peer-checked:opacity-100 pointer-events-none">check</span>
-</div>
-<div>
-<p class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">Valider devis Mariage 'Dupont'</p>
-<p class="text-xs text-on-surface-variant mt-0.5 flex items-center gap-1">
-<span class="material-symbols-outlined text-[10px] text-error">schedule</span>
-                                    Échéance: Aujourd'hui
-                                </p>
-</div>
-</label>
-<!-- Task Item 2 -->
-<label class="flex items-start gap-3 p-3 rounded-xl hover:bg-surface-container/50 border border-transparent hover:border-primary/5 transition-all cursor-pointer group">
-<div class="relative flex items-center justify-center mt-0.5">
-<input class="w-4 h-4 rounded border-primary/30 bg-surface/50 text-primary focus:ring-primary/20 focus:ring-offset-0 focus:ring-1 appearance-none checked:bg-primary checked:border-primary transition-colors peer" type="checkbox"/>
-<span class="material-symbols-outlined text-[12px] absolute text-on-primary opacity-0 peer-checked:opacity-100 pointer-events-none">check</span>
-</div>
-<div>
-<p class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">Appel de qualification Lead #4092</p>
-<p class="text-xs text-on-surface-variant mt-0.5">Contact: M. Rakoto</p>
-</div>
-</label>
-<!-- Task Item 3 -->
-<label class="flex items-start gap-3 p-3 rounded-xl hover:bg-surface-container/50 border border-transparent hover:border-primary/5 transition-all cursor-pointer group">
-<div class="relative flex items-center justify-center mt-0.5">
-<input checked="" class="w-4 h-4 rounded border-primary/30 bg-surface/50 text-primary focus:ring-primary/20 focus:ring-offset-0 focus:ring-1 appearance-none checked:bg-primary checked:border-primary transition-colors peer" type="checkbox"/>
-<span class="material-symbols-outlined text-[12px] absolute text-on-primary opacity-0 peer-checked:opacity-100 pointer-events-none">check</span>
-</div>
-<div>
-<p class="text-sm font-medium text-on-surface-variant line-through">Revue contrats prestataires Nosy Be</p>
-</div>
-</label>
-<!-- Task Item 4 -->
-<label class="flex items-start gap-3 p-3 rounded-xl hover:bg-surface-container/50 border border-transparent hover:border-primary/5 transition-all cursor-pointer group">
-<div class="relative flex items-center justify-center mt-0.5">
-<input class="w-4 h-4 rounded border-primary/30 bg-surface/50 text-primary focus:ring-primary/20 focus:ring-offset-0 focus:ring-1 appearance-none checked:bg-primary checked:border-primary transition-colors peer" type="checkbox"/>
-<span class="material-symbols-outlined text-[12px] absolute text-on-primary opacity-0 peer-checked:opacity-100 pointer-events-none">check</span>
-</div>
-<div>
-<p class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">Finaliser itinéraire Séjour Luxe S-45</p>
-</div>
-</label>
+<div id="dashboard-tasks" class="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+<p class="text-xs text-on-surface-variant">Les tâches ajoutées ici sont enregistrées dans ce navigateur, pas dans Supabase.</p>
 </div>
 </div>
 </div>
@@ -309,49 +274,9 @@
 <div class="glass-panel rounded-2xl overflow-hidden">
 <div class="p-6 border-b border-primary/5 flex justify-between items-center bg-surface/30">
 <h3 class="text-lg font-headline font-semibold text-on-surface">Activité Récente</h3>
-<a class="text-sm text-primary hover:underline font-medium" href="#">Voir tout</a>
+<a class="text-sm text-primary hover:underline font-medium" href="finance.html">Voir tout</a>
 </div>
-<div class="divide-y divide-primary/5">
-<!-- Activity Item 1 -->
-<div class="p-4 sm:p-6 flex items-center gap-4 hover:bg-primary/[0.02] transition-colors">
-<div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center border border-secondary/20 flex-shrink-0">
-<span class="material-symbols-outlined text-secondary text-lg">hotel_class</span>
-</div>
-<div class="flex-1 min-w-0">
-<p class="text-sm font-medium text-on-surface truncate">Nouvelle inscription prestataire : "Villa Tsara"</p>
-<p class="text-xs text-on-surface-variant mt-0.5">Hébergement - Catégorie Luxe (Nosy Be)</p>
-</div>
-<div class="text-right flex-shrink-0">
-<span class="text-xs text-on-surface-variant block">Il y a 10 min</span>
-<span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-secondary/10 text-secondary text-[10px] font-medium border border-secondary/20">À vérifier</span>
-</div>
-</div>
-<!-- Activity Item 2 -->
-<div class="p-4 sm:p-6 flex items-center gap-4 hover:bg-primary/[0.02] transition-colors">
-<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 flex-shrink-0">
-<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
-</div>
-<div class="flex-1 min-w-0">
-<p class="text-sm font-medium text-on-surface truncate">Réservation confirmée : Séjour "Découverte Baobabs"</p>
-<p class="text-xs text-on-surface-variant mt-0.5">Client: Famille Martin - Montant: €12,500</p>
-</div>
-<div class="text-right flex-shrink-0">
-<span class="text-xs text-on-surface-variant block">Il y a 2 heures</span>
-</div>
-</div>
-<!-- Activity Item 3 -->
-<div class="p-4 sm:p-6 flex items-center gap-4 hover:bg-primary/[0.02] transition-colors">
-<div class="w-10 h-10 rounded-full bg-tertiary/10 flex items-center justify-center border border-tertiary/20 flex-shrink-0">
-<span class="material-symbols-outlined text-tertiary text-lg">mail</span>
-</div>
-<div class="flex-1 min-w-0">
-<p class="text-sm font-medium text-on-surface truncate">Nouveau Lead entrant (Formulaire Web)</p>
-<p class="text-xs text-on-surface-variant mt-0.5">Demande d'information - Mariage sur la plage</p>
-</div>
-<div class="text-right flex-shrink-0">
-<span class="text-xs text-on-surface-variant block">Hier, 16:45</span>
-<span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-medium border border-primary/20">Nouveau</span>
-</div>
+<div id="dashboard-activity" class="divide-y divide-primary/5"><div class="p-6 text-sm text-on-surface-variant">Chargement de l’activité réelle depuis Supabase…</div></div>
 </div>
 </div>
 </div>
@@ -377,6 +302,6 @@
 
 <div aria-live="polite" class="mm-toast" id="mm-toast" role="status"></div>
 <script src="admin-shared.js"></script>
-<script defer="True" src="admin-demo.js"></script>
+<script defer src="dashboard-admin.js?v=20261029-live1"></script>
 </body>
 </html>
