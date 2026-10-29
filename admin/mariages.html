@@ -96,7 +96,55 @@
         }
         .text-glow { text-shadow: 0 0 10px rgba(125, 211, 252, 0.3); }
         .bg-glow { position: fixed; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.15; pointer-events: none; }
-    </style>
+    
+
+/* Correctifs anti-débordement — page Gestion des mariages */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+*, *::before, *::after { box-sizing: border-box; }
+main.mm-main {
+  width: calc(100% - 300px) !important;
+  max-width: calc(100% - 300px) !important;
+  min-width: 0 !important;
+  margin-left: 300px;
+  overflow-x: clip;
+}
+main.mm-main > * { min-width: 0; max-width: 100%; }
+main.mm-main .grid { min-width: 0; }
+main.mm-main .grid > * { min-width: 0; }
+main.mm-main .flex { min-width: 0; }
+main.mm-main h1, main.mm-main h2, main.mm-main h3,
+main.mm-main p, main.mm-main td, main.mm-main th {
+  overflow-wrap: anywhere;
+}
+#weddings-refresh-top { max-width: 100%; white-space: normal; }
+#mm-weddings-table { width: 100%; min-width: 760px; }
+#mm-weddings-table th, #mm-weddings-table td { white-space: normal; }
+main.mm-main .overflow-x-auto {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 767px) {
+  main.mm-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    padding: 1rem !important;
+  }
+  main.mm-main .grid { grid-template-columns: minmax(0, 1fr) !important; }
+  main.mm-main .flex.flex-col.md\:flex-row {
+    align-items: stretch;
+  }
+  #weddings-refresh-top { align-self: flex-start; }
+  #mm-weddings-table { min-width: 680px; }
+}
+
+</style>
 <link href="admin-shared.css" rel="stylesheet"/>
 
 <!-- Supabase SDK & Auth Guard -->
