@@ -27,6 +27,7 @@
   let currentProduct = null;
   let detailsProduct = null;
   let currentBlog = null;
+  let detailsBlog = null;
   let variations = [];
   let productImages = [];
   let blogImages = [];
@@ -403,9 +404,10 @@
         </tr>`).join('');
     } else {
       tbody.innerHTML = rows.map((row) => `
-        <tr><td><div class="flex items-center gap-3">${row.featured_image_url ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(imageDisplayUrl(row.featured_image_url, row.featured_image_url))}" alt="">` : '<div class="cms-thumb"></div>'}<div><strong>${escapeHTML(row.title || 'Sans titre')}</strong><div class="cms-subtext">${escapeHTML(row.summary || '').slice(0, 150)}</div></div></div></td>
+        <tr data-blog-row="${escapeHTML(row.id)}" tabindex="0" role="button" aria-label="Voir les détails de ${escapeHTML(row.title || 'cet article')}" style="cursor:pointer">
+        <td><div class="flex items-center gap-3">${row.featured_image_url ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(imageDisplayUrl(row.featured_image_url, row.featured_image_url))}" alt="">` : '<div class="cms-thumb"></div>'}<div><strong>${escapeHTML(row.title || 'Sans titre')}</strong><div class="cms-subtext">${escapeHTML(row.summary || '').slice(0, 150)}</div><div class="cms-subtext">Cliquer pour voir les détails</div></div></div></td>
         <td><code>${escapeHTML(row.slug || '')}</code></td><td>${escapeHTML(row.category || '—')}</td><td><span class="mm-badge ${row.is_published ? 'green' : 'orange'}">${row.is_published ? 'Publié' : 'Brouillon'}</span></td><td>${dateText(row.updated_at || row.published_at || row.created_at)}</td>
-        <td><div class="cms-actions"><button class="cms-small-btn" data-blog-edit="${escapeHTML(row.id)}">Modifier le HTML</button><button class="cms-small-btn" data-blog-toggle="${escapeHTML(row.id)}">${row.is_published ? 'Dépublier' : 'Publier'}</button>${row.slug ? `<a class="cms-small-btn" href="/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener">Voir</a>` : ''}</div></td></tr>`).join('');
+        <td><div class="cms-actions"><button type="button" class="cms-small-btn" data-blog-edit="${escapeHTML(row.id)}">Modifier le HTML</button><button type="button" class="cms-small-btn" data-blog-toggle="${escapeHTML(row.id)}">${row.is_published ? 'Dépublier' : 'Publier'}</button><button type="button" class="cms-small-btn danger" data-blog-delete="${escapeHTML(row.id)}">Supprimer</button>${row.slug ? `<a class="cms-small-btn" href="/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener">Voir</a>` : ''}</div></td></tr>`).join('');
     }
   }
 
@@ -930,11 +932,22 @@
   function bindBlogEvents() {
     $('#new-blog')?.addEventListener('click', () => openBlogEditor(null));
     $('#save-blog')?.addEventListener('click', saveBlog);
+    $('#blog-details-edit')?.addEventListener('click', () => {
+      const row = detailsBlog;
+      closeDialog($('#blog-details-modal'));
+      if (row) openBlogEditor(row);
+    });
     $('#b-title')?.addEventListener('input', () => {
       if (!slugEdited && !currentBlog) $('#b-slug').value = slugify($('#b-title').value);
     });
     $('#b-slug')?.addEventListener('input', () => { slugEdited = true; });
     $('#blog-rows')?.addEventListener('click', handleBlogTableAction);
+    $('#blog-rows')?.addEventListener('keydown', (event) => {
+      if (!['Enter', ' '].includes(event.key) || !event.target.matches('[data-blog-row]')) return;
+      event.preventDefault();
+      const row = currentRows.find((item) => String(item.id) === event.target.dataset.blogRow);
+      if (row) openBlogDetails(row);
+    });
     $('#blog-image-form')?.addEventListener('submit', saveBlogImage);
     $('#blog-images')?.addEventListener('click', handleBlogImageAction);
     bindWysiwygEditors(['b-summary-editor', 'b-content-editor']);
@@ -1070,14 +1083,42 @@
   }
 
   async function handleBlogTableAction(event) {
+    const remove = event.target.closest('[data-blog-delete]');
     const edit = event.target.closest('[data-blog-edit]');
     const toggle = event.target.closest('[data-blog-toggle]');
+    const rowElement = event.target.closest('[data-blog-row]');
+
+    if (remove) {
+      event.preventDefault();
+      event.stopPropagation();
+      const row = currentRows.find((item) => String(item.id) === remove.dataset.blogDelete);
+      if (!row) return;
+      const confirmed = window.confirm(`Supprimer définitivement l’article « ${row.title || 'Sans titre'} » ?\\n\\nCette action est irréversible. Si des références en base de données empêchent la suppression, Supabase affichera une erreur.`);
+      if (!confirmed) return;
+      remove.disabled = true;
+      try {
+        const { error } = await client.from('blog_posts').delete().eq('id', row.id);
+        if (error) throw error;
+        toast('Article supprimé.');
+        await loadBlogs();
+      } catch (error) {
+        console.error('Blog deletion error:', error);
+        toast(`Suppression impossible : ${errorMessage(error)}`, true);
+        remove.disabled = false;
+      }
+      return;
+    }
     if (edit) {
-      const row = currentRows.find((item) => item.id === edit.dataset.blogEdit);
+      event.preventDefault();
+      event.stopPropagation();
+      const row = currentRows.find((item) => String(item.id) === edit.dataset.blogEdit);
       if (row) openBlogEditor(row);
+      return;
     }
     if (toggle) {
-      const row = currentRows.find((item) => item.id === toggle.dataset.blogToggle);
+      event.preventDefault();
+      event.stopPropagation();
+      const row = currentRows.find((item) => String(item.id) === toggle.dataset.blogToggle);
       if (!row) return;
       try {
         const now = new Date().toISOString();
@@ -1088,7 +1129,42 @@
         toast(row.is_published ? 'Article dépublié.' : 'Article publié.');
         await loadBlogs();
       } catch (error) { toast(errorMessage(error), true); }
+      return;
     }
+    if (rowElement && !event.target.closest('a,button,input,select,label')) {
+      const row = currentRows.find((item) => String(item.id) === rowElement.dataset.blogRow);
+      if (row) openBlogDetails(row);
+    }
+  }
+
+  function openBlogDetails(row) {
+    if (!row) return;
+    detailsBlog = row;
+    const modal = $('#blog-details-modal');
+    const content = $('#blog-details-content');
+    if (!modal || !content) { openBlogEditor(row); return; }
+    const image = row.featured_image_url
+      ? `<img src="${escapeHTML(imageDisplayUrl(row.featured_image_url, row.featured_image_url))}" alt="${escapeHTML(row.title || 'Image de l’article')}" style="width:100%;max-height:320px;object-fit:cover;border-radius:12px;border:1px solid #2a3a48">`
+      : '<div class="cms-empty" style="border:1px solid #223247;border-radius:12px">Aucune image principale</div>';
+    const summary = row.summary || '<p class="cms-subtext">Aucun résumé renseigné.</p>';
+    const articleContent = row.content || '<p class="cms-subtext">Aucun contenu renseigné.</p>';
+    content.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;align-items:start">
+        <div>${image}</div>
+        <div style="display:grid;gap:12px">
+          <div><div class="cms-subtext">Titre de l’article</div><h3 style="font-size:20px;font-weight:700;margin-top:4px">${escapeHTML(row.title || 'Sans titre')}</h3></div>
+          <div><div class="cms-subtext">Slug URL</div><code>${escapeHTML(row.slug || '—')}</code></div>
+          <div><div class="cms-subtext">Catégorie</div><div>${escapeHTML(row.category || '—')}</div></div>
+          <div><div class="cms-subtext">Publication</div><div>${row.is_published ? 'Publié' : 'Brouillon'}</div></div>
+          <div><div class="cms-subtext">Date de publication</div><div>${escapeHTML(dateText(row.published_at))}</div></div>
+          <div><div class="cms-subtext">Dernière modification</div><div>${escapeHTML(dateText(row.updated_at || row.created_at))}</div></div>
+          <div><div class="cms-subtext">Titre SEO</div><div>${escapeHTML(row.seo_title || '—')}</div></div>
+          <div><div class="cms-subtext">Description SEO</div><div>${escapeHTML(row.seo_description || '—')}</div></div>
+        </div>
+      </div>
+      <section style="margin-top:20px"><div class="cms-subtext" style="margin-bottom:8px">Résumé / extrait</div><div style="line-height:1.7;overflow-wrap:anywhere">${summary}</div></section>
+      <section style="margin-top:20px"><div class="cms-subtext" style="margin-bottom:8px">Contenu de l’article</div><div style="line-height:1.75;overflow-wrap:anywhere">${articleContent}</div></section>`;
+    openDialog(modal);
   }
 
   async function loadBlogImages(blogId) {
