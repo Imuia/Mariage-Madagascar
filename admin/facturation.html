@@ -315,6 +315,127 @@
   .billing-table th, .billing-table td { white-space: normal; overflow-wrap: anywhere; }
   @media (max-width: 760px) { .billing-table-scroll { max-height: 70vh; } .billing-table { min-width: 900px; } }
 </style>
+
+<style id="facturation-overflow-final">
+  /* Correctif final : aucun élément de la facturation ne doit élargir le viewport. */
+  html, body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    overflow-x: hidden !important;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+
+  .layout-container {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+  }
+  main.mm-main {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow-x: clip !important;
+  }
+  main.mm-main > div {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  main.mm-main section,
+  main.mm-main .grid,
+  main.mm-main .flex,
+  main.mm-main .rounded-xl,
+  main.mm-main .rounded-2xl {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Les indicateurs s'adaptent à la largeur réellement disponible à droite du menu. */
+  main.mm-main > div > .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+  main.mm-main > div > .grid > div { min-width: 0 !important; }
+  main.mm-main > div > .grid p,
+  main.mm-main > div > .grid span {
+    overflow-wrap: anywhere;
+  }
+
+  /* En-têtes et actions passent à la ligne plutôt que de pousser la page. */
+  main.mm-main .flex.items-center,
+  main.mm-main .flex.items-center.justify-between {
+    flex-wrap: wrap;
+  }
+  main.mm-main h1,
+  main.mm-main h2,
+  main.mm-main p,
+  main.mm-main button,
+  main.mm-main a {
+    overflow-wrap: anywhere;
+  }
+  #quick-action-panel,
+  #quick-action-panel > *,
+  main.mm-main .billing-table-scroll {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Le tableau garde sa largeur utile, mais le défilement reste dans son propre cadre. */
+  .billing-table-scroll {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .billing-table {
+    width: max-content !important;
+    min-width: 1050px !important;
+    max-width: none !important;
+    table-layout: auto;
+  }
+  .billing-table th,
+  .billing-table td {
+    overflow-wrap: anywhere;
+  }
+
+  footer {
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+    overflow-wrap: anywhere;
+  }
+  footer > div { min-width: 0; flex-wrap: wrap; }
+
+  @media (max-width: 1199px) {
+    main.mm-main > div > .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+  @media (max-width: 700px) {
+    main.mm-main > div {
+      padding: 10px !important;
+      gap: 12px !important;
+    }
+    main.mm-main > div > .grid {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+    main.mm-main h1 { font-size: 21px !important; }
+    main.mm-main .p-5,
+    main.mm-main .p-6,
+    main.mm-main .lg\\:p-6,
+    main.mm-main .lg\\:p-8 {
+      padding: 12px !important;
+    }
+    .billing-table { min-width: 900px !important; }
+    footer { align-items: flex-start; }
+  }
+</style>
+
 </head>
 <body class="bg-background text-on-surface antialiased font-body selection:bg-primary-container selection:text-on-primary-container">
 <div class="relative flex h-auto min-h-screen w-full flex-col bg-[#101d23] dark group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
