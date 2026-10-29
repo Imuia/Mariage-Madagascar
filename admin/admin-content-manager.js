@@ -214,6 +214,12 @@
     $('#product-image-form')?.addEventListener('submit', saveProductImage);
     $('#product-images')?.addEventListener('click', handleProductImageAction);
     $('#product-rows')?.addEventListener('click', handleProductTableAction);
+    $('#product-rows')?.addEventListener('keydown', (event) => {
+      if (!['Enter', ' '].includes(event.key) || !event.target.matches('[data-product-row]')) return;
+      event.preventDefault();
+      const row = currentRows.find((item) => String(item.id) === event.target.dataset.productRow);
+      if (row) openProductEditor(row);
+    });
     $('#variation-rows')?.addEventListener('click', handleVariationAction);
 
     bindWysiwygEditors(['p-short-editor', 'p-description-editor']);
@@ -383,11 +389,11 @@
     }
     if (isProducts) {
       tbody.innerHTML = rows.map((row) => `
-        <tr>
+        <tr class="product-row-clickable" data-product-row="${escapeHTML(row.id)}" tabindex="0" title="Cliquer pour ouvrir les détails du produit">
           <td><div class="flex items-center gap-3">${row.featured_image_url ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(imageDisplayUrl(row.featured_image_url, row.featured_image_url))}" alt="">` : '<div class="cms-thumb"></div>'}<div><strong>${escapeHTML(row.name || 'Sans nom')}</strong><div class="cms-subtext">${escapeHTML(row.sku || row.slug || '')}</div></div></div></td>
           <td>${escapeHTML(formatCommaList(row.categories) || '—')}</td><td>${escapeHTML(row.product_type || '—')}</td><td>${money(row._minPrice)}</td>
           <td><span class="mm-badge ${row.published ? 'green' : 'orange'}">${row.published ? 'Publié' : 'Brouillon'}</span><div class="cms-subtext">${row.in_stock ? 'En stock' : 'Hors stock'}</div></td>
-          <td><div class="cms-actions"><button class="cms-small-btn" data-product-edit="${escapeHTML(row.id)}">Modifier</button><button class="cms-small-btn" data-product-toggle="${escapeHTML(row.id)}">${row.published ? 'Dépublier' : 'Publier'}</button>${row.slug ? `<a class="cms-small-btn" href="/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener">Voir</a>` : ''}</div></td>
+          <td><div class="cms-actions"><button class="cms-small-btn" data-product-edit="${escapeHTML(row.id)}">Modifier</button><button class="cms-small-btn" data-product-toggle="${escapeHTML(row.id)}">${row.published ? 'Dépublier' : 'Publier'}</button><button type="button" class="cms-small-btn danger" data-product-delete="${escapeHTML(row.id)}">Supprimer</button>${row.slug ? `<a class="cms-small-btn" href="/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener">Voir</a>` : ''}</div></td>
         </tr>`).join('');
     } else {
       tbody.innerHTML = rows.map((row) => `
@@ -586,12 +592,40 @@
   async function handleProductTableAction(event) {
     const edit = event.target.closest('[data-product-edit]');
     const toggle = event.target.closest('[data-product-toggle]');
+    const remove = event.target.closest('[data-product-delete]');
+    const rowElement = event.target.closest('[data-product-row]');
+
+    if (remove) {
+      event.preventDefault();
+      event.stopPropagation();
+      const row = currentRows.find((item) => String(item.id) === remove.dataset.productDelete);
+      if (!row) return;
+      const confirmed = window.confirm(`Supprimer définitivement « ${row.name || 'ce produit'} » ?\n\nCette action est irréversible. Si des commandes ou des contraintes de base de données utilisent ce produit, Supabase peut refuser la suppression.`);
+      if (!confirmed) return;
+      remove.disabled = true;
+      try {
+        // Delete the parent first: foreign-key restrictions can safely stop the operation
+        // without first deleting variations or gallery records.
+        const { error } = await client.from('mm_products').delete().eq('id', row.id);
+        if (error) throw error;
+        toast('Produit supprimé.');
+        await loadProducts();
+      } catch (error) {
+        console.error('Product deletion error:', error);
+        toast(`Suppression impossible : ${errorMessage(error)}`, true);
+        remove.disabled = false;
+      }
+      return;
+    }
     if (edit) {
-      const row = currentRows.find((item) => item.id === edit.dataset.productEdit);
+      event.stopPropagation();
+      const row = currentRows.find((item) => String(item.id) === edit.dataset.productEdit);
       if (row) openProductEditor(row);
+      return;
     }
     if (toggle) {
-      const row = currentRows.find((item) => item.id === toggle.dataset.productToggle);
+      event.stopPropagation();
+      const row = currentRows.find((item) => String(item.id) === toggle.dataset.productToggle);
       if (!row) return;
       try {
         const { error } = await client.from('mm_products').update({ published: !row.published, updated_at: new Date().toISOString() }).eq('id', row.id);
@@ -599,6 +633,11 @@
         toast(row.published ? 'Produit dépublié.' : 'Produit publié.');
         await loadProducts();
       } catch (error) { toast(errorMessage(error), true); }
+      return;
+    }
+    if (rowElement && !event.target.closest('a,button,input,select,label')) {
+      const row = currentRows.find((item) => String(item.id) === rowElement.dataset.productRow);
+      if (row) openProductEditor(row);
     }
   }
 
