@@ -162,6 +162,21 @@
       </div>
     </div>
   </dialog>
+  <dialog id="product-details-modal" class="cms-modal" aria-labelledby="product-details-title">
+    <div>
+      <div class="cms-modal-head">
+        <div><div class="mm-eyebrow">Consultation du catalogue</div><h2 id="product-details-title" class="mm-title" style="font-size:24px">Détails du produit</h2><p class="cms-subtext">Mode consultation — aucune modification n’est effectuée ici.</p></div>
+        <button type="button" class="cms-small-btn" data-close-modal aria-label="Fermer">Fermer ✕</button>
+      </div>
+      <div class="cms-modal-body">
+        <div id="product-details-content" class="cms-section"><p class="cms-subtext">Chargement des détails…</p></div>
+        <div class="flex justify-end gap-2 flex-wrap">
+          <button type="button" class="mm-btn secondary" data-close-modal>Fermer</button>
+          <button type="button" class="mm-btn" id="product-details-edit">Modifier le produit</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
   <div id="mm-toast" class="mm-toast" role="status" aria-live="polite"></div>
   <script src="admin-shared.js"></script>
   <script src="admin-content-manager.js?v=20261029-product-actions1"></script>

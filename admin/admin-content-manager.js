@@ -25,6 +25,7 @@
   let client = null;
   let currentRows = [];
   let currentProduct = null;
+  let detailsProduct = null;
   let currentBlog = null;
   let variations = [];
   let productImages = [];
@@ -181,6 +182,11 @@
   function bindProductEvents() {
     $('#new-product')?.addEventListener('click', () => openProductEditor(null));
     $('#save-product')?.addEventListener('click', saveProduct);
+    $('#product-details-edit')?.addEventListener('click', () => {
+      const row = detailsProduct;
+      closeDialog($('#product-details-modal'));
+      if (row) openProductEditor(row);
+    });
     $('#p-name')?.addEventListener('input', () => {
       if (!slugEdited && !currentProduct) $('#p-slug').value = slugify($('#p-name').value);
     });
@@ -218,7 +224,7 @@
       if (!['Enter', ' '].includes(event.key) || !event.target.matches('[data-product-row]')) return;
       event.preventDefault();
       const row = currentRows.find((item) => String(item.id) === event.target.dataset.productRow);
-      if (row) openProductEditor(row);
+      if (row) openProductDetails(row);
     });
     $('#variation-rows')?.addEventListener('click', handleVariationAction);
 
@@ -400,6 +406,46 @@
         <tr><td><div class="flex items-center gap-3">${row.featured_image_url ? `<img class="cms-thumb" loading="lazy" src="${escapeHTML(imageDisplayUrl(row.featured_image_url, row.featured_image_url))}" alt="">` : '<div class="cms-thumb"></div>'}<div><strong>${escapeHTML(row.title || 'Sans titre')}</strong><div class="cms-subtext">${escapeHTML(row.summary || '').slice(0, 150)}</div></div></div></td>
         <td><code>${escapeHTML(row.slug || '')}</code></td><td>${escapeHTML(row.category || '—')}</td><td><span class="mm-badge ${row.is_published ? 'green' : 'orange'}">${row.is_published ? 'Publié' : 'Brouillon'}</span></td><td>${dateText(row.updated_at || row.published_at || row.created_at)}</td>
         <td><div class="cms-actions"><button class="cms-small-btn" data-blog-edit="${escapeHTML(row.id)}">Modifier le HTML</button><button class="cms-small-btn" data-blog-toggle="${escapeHTML(row.id)}">${row.is_published ? 'Dépublier' : 'Publier'}</button>${row.slug ? `<a class="cms-small-btn" href="/${encodeURIComponent(row.slug)}" target="_blank" rel="noopener">Voir</a>` : ''}</div></td></tr>`).join('');
+    }
+  }
+
+  async function openProductDetails(row) {
+    if (!row) return;
+    detailsProduct = row;
+    const modal = $('#product-details-modal');
+    const content = $('#product-details-content');
+    if (!modal || !content) { openProductEditor(row); return; }
+    const image = row.featured_image_url
+      ? `<img src="${escapeHTML(imageDisplayUrl(row.featured_image_url, row.featured_image_url))}" alt="${escapeHTML(row.name || 'Image du produit')}" style="width:100%;max-height:280px;object-fit:cover;border-radius:12px;border:1px solid #2a3a48">`
+      : '';
+    const description = row.description_html || row.short_description || '';
+    content.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;align-items:start">
+        <div>${image || '<div class="cms-empty" style="border:1px solid #223247;border-radius:12px">Aucune image principale</div>'}</div>
+        <div style="display:grid;gap:12px">
+          <div><div class="cms-subtext">Nom du produit</div><h3 style="font-size:20px;font-weight:700;margin-top:4px">${escapeHTML(row.name || 'Sans nom')}</h3></div>
+          <div><div class="cms-subtext">SKU / Référence</div><div>${escapeHTML(row.sku || '—')}</div></div>
+          <div><div class="cms-subtext">Slug URL</div><code>${escapeHTML(row.slug || '—')}</code></div>
+          <div><div class="cms-subtext">Catégories</div><div>${escapeHTML(formatCommaList(row.categories) || '—')}</div></div>
+          <div><div class="cms-subtext">Type de produit</div><div>${escapeHTML(row.product_type || '—')}</div></div>
+          <div><div class="cms-subtext">Prix à partir de</div><div style="font-size:18px;font-weight:700">${escapeHTML(row._minPrice == null ? '—' : money(row._minPrice))}</div></div>
+          <div><div class="cms-subtext">Statut</div><div>${row.published ? 'Publié' : 'Brouillon'} · ${row.in_stock ? 'En stock' : 'Hors stock'}</div></div>
+        </div>
+      </div>
+      <div style="margin-top:20px"><div class="cms-subtext" style="margin-bottom:6px">Description</div><div style="line-height:1.7;overflow-wrap:anywhere">${description || '<span class="cms-subtext">Aucune description renseignée.</span>'}</div></div>
+      <div id="product-details-variations" style="margin-top:18px"><div class="cms-subtext">Chargement des variations et prix…</div></div>`;
+    openDialog(modal);
+    const variationBox = $('#product-details-variations');
+    try {
+      const { data, error } = await client.from('mm_product_variations').select('name,sku,regular_price,is_published,in_stock').eq('product_id', row.id).order('created_at', { ascending: true });
+      if (error) throw error;
+      if (detailsProduct?.id !== row.id || !variationBox) return;
+      const list = data || [];
+      variationBox.innerHTML = `<div class="cms-subtext" style="margin-bottom:8px">Variations et tarifs</div>` + (list.length
+        ? `<div class="mm-table-wrap"><table class="mm-table"><thead><tr><th>Option</th><th>SKU</th><th>Prix</th><th>État</th></tr></thead><tbody>${list.map(v => `<tr><td>${escapeHTML(v.name || '—')}</td><td>${escapeHTML(v.sku || '—')}</td><td>${escapeHTML(money(v.regular_price))}</td><td>${v.is_published ? 'Publiée' : 'Brouillon'} · ${v.in_stock ? 'En stock' : 'Hors stock'}</td></tr>`).join('')}</tbody></table></div>`
+        : '<p class="cms-subtext">Aucune variation enregistrée pour ce produit.</p>');
+    } catch (error) {
+      if (variationBox) variationBox.innerHTML = `<p class="cms-status error">Impossible de charger les variations : ${escapeHTML(errorMessage(error))}</p>`;
     }
   }
 
@@ -637,7 +683,7 @@
     }
     if (rowElement && !event.target.closest('a,button,input,select,label')) {
       const row = currentRows.find((item) => String(item.id) === rowElement.dataset.productRow);
-      if (row) openProductEditor(row);
+      if (row) openProductDetails(row);
     }
   }
 
