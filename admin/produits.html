@@ -30,6 +30,11 @@
     .cms-section-head{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-bottom:12px}
     .cms-section-title{font-size:14px;font-weight:700}
     .cms-actions{display:flex;gap:7px;flex-wrap:wrap}
+    #product-rows .product-row-clickable{cursor:pointer}
+    #product-rows .product-row-clickable:hover{background:rgba(125,211,252,.055)}
+    #product-rows .product-row-clickable:focus-visible{outline:2px solid #7dd3fc;outline-offset:-2px}
+    .cms-small-btn.danger{border-color:#7f3038;background:#2a151d;color:#ff9a9a}
+    .cms-small-btn.danger:hover{border-color:#ff8585;color:#ffd1d1}
     .cms-small-btn{border:1px solid #2a3a48;border-radius:8px;padding:6px 9px;font-size:11px;color:#e0e8f0;background:#141c2e;cursor:pointer}
     .cms-small-btn:hover{border-color:#7dd3fc;color:#7dd3fc}
     .cms-small-btn.danger{color:#ff8585}
@@ -159,6 +164,6 @@
   </dialog>
   <div id="mm-toast" class="mm-toast" role="status" aria-live="polite"></div>
   <script src="admin-shared.js"></script>
-  <script src="admin-content-manager.js?v=20261027-categories1"></script>
+  <script src="admin-content-manager.js?v=20261029-product-actions1"></script>
 </body>
 </html>
