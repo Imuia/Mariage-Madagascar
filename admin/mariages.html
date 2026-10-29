@@ -123,9 +123,9 @@
 </div>
 <h1 class="text-3xl md:text-4xl font-headline font-bold text-on-surface text-glow">Gestion des mariages</h1>
 </div>
-<button class="glass-panel px-6 py-2.5 rounded-lg text-primary font-medium flex items-center gap-2 hover:bg-primary/10 hover:border-primary/30 transition-all border border-primary/20 shadow-[0_0_15px_rgba(125,211,252,0.1)]" data-demo-action="">
-<span class="material-symbols-outlined text-sm">add_circle</span>
-                Nouveau Mariage
+<button type="button" id="weddings-refresh-top" class="glass-panel px-6 py-2.5 rounded-lg text-primary font-medium flex items-center gap-2 hover:bg-primary/10 hover:border-primary/30 transition-all border border-primary/20 shadow-[0_0_15px_rgba(125,211,252,0.1)]">
+<span class="material-symbols-outlined text-sm">refresh</span>
+                Actualiser les mariages
             </button>
 </div>
 <!-- Analytics Overview Bento Grid -->
@@ -137,9 +137,9 @@
 <div class="p-2 rounded-lg bg-surface-container/50 border border-outline-variant/30 text-on-surface-variant">
 <span class="material-symbols-outlined">favorite</span>
 </div>
-<span class="text-xs font-medium text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full">+12%</span>
+<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">Supabase</span>
 </div>
-<h3 class="text-3xl font-bold font-display text-on-surface mb-1 relative z-10">42</h3>
+<h3 id="weddings-kpi-total" class="text-3xl font-bold font-display text-on-surface mb-1 relative z-10">—</h3>
 <p class="text-sm text-on-surface-variant relative z-10">Mariages sur la saison</p>
 </div>
 <!-- Card 2 -->
@@ -150,7 +150,7 @@
 <span class="material-symbols-outlined">event</span>
 </div>
 </div>
-<h3 class="text-3xl font-bold font-display text-on-surface mb-1 relative z-10">12</h3>
+<h3 id="weddings-kpi-upcoming" class="text-3xl font-bold font-display text-on-surface mb-1 relative z-10">—</h3>
 <p class="text-sm text-on-surface-variant relative z-10">À venir (30 jours)</p>
 </div>
 <!-- Card 3 -->
@@ -161,7 +161,7 @@
 <span class="material-symbols-outlined">groups</span>
 </div>
 </div>
-<h3 class="text-3xl font-bold font-display text-on-surface mb-1 relative z-10">4,800</h3>
+<h3 id="weddings-kpi-guests" class="text-3xl font-bold font-display text-on-surface mb-1 relative z-10">—</h3>
 <p class="text-sm text-on-surface-variant relative z-10">Invités cumulés</p>
 </div>
 <!-- Card 4 -->
@@ -173,25 +173,30 @@
 </div>
 <span class="text-xs font-medium text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full">+5%</span>
 </div>
-<h3 class="text-3xl font-bold font-display text-primary text-glow mb-1 relative z-10">1.8M</h3>
-<p class="text-sm text-on-surface-variant relative z-10">Revenus des mariages (€)</p>
+<h3 id="weddings-kpi-revenue" class="text-3xl font-bold font-display text-primary text-glow mb-1 relative z-10">—</h3>
+<p class="text-sm text-on-surface-variant relative z-10">Montant des commandes associées (€)</p>
 </div>
 </div>
 
 <section aria-label="Suivi des mariages" class="mt-8 space-y-5">
-<div class="flex flex-col md:flex-row md:items-end justify-between gap-4"><div><p class="text-xs uppercase tracking-widest text-primary font-semibold">Planning &amp; production</p><h2 class="text-2xl font-bold mt-2">Mariages à suivre</h2><p class="text-sm text-on-surface-variant mt-1">Vue de démonstration des dossiers et de leur préparation.</p></div><div class="flex flex-wrap gap-2"><input aria-label="Rechercher un mariage" class="bg-surface-container border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface" data-filter-target="#mm-weddings-table" placeholder="Rechercher un couple…"/><button class="bg-primary/15 border border-primary/30 text-primary rounded-lg px-4 py-2 text-sm" data-demo-action="" data-message="Création de dossier en démonstration uniquement : aucun dossier n’a été enregistré." type="button">+ Nouveau dossier</button></div></div>
-<div class="rounded-2xl border border-outline-variant/70 bg-surface/80 overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left text-sm" id="mm-weddings-table"><thead class="bg-surface-container text-on-surface-variant text-[10px] uppercase tracking-wider"><tr><th class="p-4">Client / Couple</th><th class="p-4">Destination</th><th class="p-4">Date prévue</th><th class="p-4">Budget estimé</th><th class="p-4">Statut</th><th class="p-4">Suivi</th></tr></thead><tbody class="divide-y divide-outline-variant/50">
-<tr><td class="p-4 font-semibold">Famille Dubois</td><td class="p-4">Nosy Be</td><td class="p-4">15 déc. 2026</td><td class="p-4 text-primary">12 000 €</td><td class="p-4"><span class="rounded-md px-2 py-1 text-xs bg-primary/10 text-primary">Nouveau</span></td><td class="p-4"><button class="text-primary" data-demo-action="">Ouvrir</button></td></tr>
-<tr><td class="p-4 font-semibold">Couple Lemaire</td><td class="p-4">Nosy Be — Sud</td><td class="p-4">10 sept. 2027</td><td class="p-4 text-primary">25 000 €</td><td class="p-4"><span class="rounded-md px-2 py-1 text-xs bg-purple-400/10 text-purple-300">Qualification</span></td><td class="p-4"><button class="text-primary" data-demo-action="">Ouvrir</button></td></tr>
-<tr><td class="p-4 font-semibold">Groupe Executive</td><td class="p-4">Isalo</td><td class="p-4">5 août 2027</td><td class="p-4 text-primary">45 000 €</td><td class="p-4"><span class="rounded-md px-2 py-1 text-xs bg-amber-400/10 text-amber-300">Devis envoyé</span></td><td class="p-4"><button class="text-primary" data-demo-action="">Ouvrir</button></td></tr>
-<tr><td class="p-4 font-semibold">Famille Rakoto</td><td class="p-4">Morondava</td><td class="p-4">22 nov. 2026</td><td class="p-4 text-primary">8 900 €</td><td class="p-4"><span class="rounded-md px-2 py-1 text-xs bg-emerald-400/10 text-emerald-300">Confirmé</span></td><td class="p-4"><button class="text-primary" data-demo-action="">Ouvrir</button></td></tr>
-</tbody></table></div></div>
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-5"><div class="rounded-2xl border border-outline-variant/70 bg-surface/80 p-5"><h3 class="font-bold text-lg">À préparer cette semaine</h3><div class="space-y-4 mt-4 text-sm"><label class="flex gap-3 items-start"><input class="mt-1 rounded border-outline-variant bg-surface-container text-primary" data-demo-check="" type="checkbox"/><span>Valider le devis du mariage Dubois<small class="block text-on-surface-variant mt-1">Échéance : aujourd’hui</small></span></label><label class="flex gap-3 items-start"><input class="mt-1 rounded border-outline-variant bg-surface-container text-primary" data-demo-check="" type="checkbox"/><span>Confirmer les prestataires de décoration<small class="block text-on-surface-variant mt-1">Échéance : demain</small></span></label><label class="flex gap-3 items-start"><input class="mt-1 rounded border-outline-variant bg-surface-container text-primary" data-demo-check="" type="checkbox"/><span>Finaliser l’itinéraire du séjour Nosy Be<small class="block text-on-surface-variant mt-1">Échéance : vendredi</small></span></label></div></div><div class="rounded-2xl border border-outline-variant/70 bg-surface/80 p-5"><h3 class="font-bold text-lg">Étapes du dossier</h3><div class="space-y-4 mt-4 text-sm"><div class="flex justify-between"><span>Nouvelle demande</span><strong class="text-primary">12</strong></div><div class="h-1.5 rounded-full bg-surface-container"><div class="h-1.5 w-3/4 rounded-full bg-primary"></div></div><div class="flex justify-between"><span>Devis en attente</span><strong class="text-purple-300">8</strong></div><div class="h-1.5 rounded-full bg-surface-container"><div class="h-1.5 w-1/2 rounded-full bg-purple-300"></div></div><div class="flex justify-between"><span>Mariages confirmés</span><strong class="text-emerald-300">22</strong></div><p class="text-xs text-on-surface-variant">Les chiffres affichés sont des exemples à remplacer par les données réelles.</p></div></div></div>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4"><div><p class="text-xs uppercase tracking-widest text-primary font-semibold">Planning &amp; production</p><h2 class="text-2xl font-bold mt-2">Mariages à suivre</h2><p class="text-sm text-on-surface-variant mt-1">Dossiers associés aux commandes réelles de Mariage Madagascar.</p></div><div class="flex flex-wrap gap-2"><input aria-label="Rechercher un mariage" class="bg-surface-container border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface" data-filter-target="#mm-weddings-table" placeholder="Rechercher un couple…"/><button id="weddings-refresh" class="bg-primary/15 border border-primary/30 text-primary rounded-lg px-4 py-2 text-sm" type="button">Actualiser</button></div></div>
+<div class="rounded-2xl border border-outline-variant/70 bg-surface/80 overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left text-sm" id="mm-weddings-table"><thead class="bg-surface-container text-on-surface-variant text-[10px] uppercase tracking-wider"><tr><th class="p-4">Client / Couple</th><th class="p-4">Destination</th><th class="p-4">Date prévue</th><th class="p-4">Budget estimé</th><th class="p-4">Statut</th><th class="p-4">Suivi</th></tr></thead><tbody id="mm-weddings-rows" class="divide-y divide-outline-variant/50"><tr><td class="p-4" colspan="6">Chargement des commandes depuis Supabase…</td></tr></tbody></table></div></div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+<div class="rounded-2xl border border-outline-variant/70 bg-surface/80 p-5">
+<h3 class="font-bold text-lg">Suivi opérationnel</h3>
+<p class="text-sm text-on-surface-variant mt-3">Les tâches, devis et prestataires ne sont pas reliés à une table dédiée dans la configuration identifiée. Aucun élément fictif n’est affiché.</p>
+</div>
+<div class="rounded-2xl border border-outline-variant/70 bg-surface/80 p-5">
+<h3 class="font-bold text-lg">État des dossiers</h3>
+<div id="weddings-status-summary" class="space-y-3 mt-4 text-sm"><p class="text-on-surface-variant">Les statuts seront calculés à partir des commandes chargées.</p></div>
+</div>
+</div>
 </section>
 </main>
 
+<div id="weddings-data-notice" class="mx-6 mb-4 text-xs text-on-surface-variant" role="status" aria-live="polite">Connexion à Supabase…</div>
 <div aria-live="polite" class="mm-toast" id="mm-toast" role="status"></div>
 <script src="admin-shared.js"></script>
-<script defer="True" src="admin-demo.js"></script>
+<script defer src="mariages-admin.js?v=20261029-realdata1"></script>
 </body>
 </html>
