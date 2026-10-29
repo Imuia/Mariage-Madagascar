@@ -437,7 +437,7 @@
     openDialog(modal);
     const variationBox = $('#product-details-variations');
     try {
-      const { data, error } = await client.from('mm_product_variations').select('name,sku,regular_price,is_published,in_stock').eq('product_id', row.id).order('created_at', { ascending: true });
+      const { data, error } = await client.from('mm_product_variations').select('name,sku,regular_price,published,in_stock').eq('product_id', row.id).order('created_at', { ascending: true });
       if (error) throw error;
       if (detailsProduct?.id !== row.id || !variationBox) return;
       const list = data || [];
