@@ -524,6 +524,30 @@
   }
 </style>
 
+
+<style id="facturation-table-fill-space">
+  main.mm-main .billing-table-scroll {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+  }
+  main.mm-main .billing-table {
+    width: 100% !important;
+    min-width: 1050px !important;
+    max-width: 100% !important;
+    table-layout: auto !important;
+  }
+  @media (max-width: 700px) {
+    main.mm-main .billing-table {
+      width: max-content !important;
+      min-width: 900px !important;
+      max-width: none !important;
+    }
+  }
+</style>
+
 </head>
 <body class="bg-background text-on-surface antialiased font-body selection:bg-primary-container selection:text-on-primary-container">
 <div class="relative flex h-auto min-h-screen w-full flex-col bg-[#101d23] dark group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
