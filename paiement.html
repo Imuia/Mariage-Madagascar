@@ -277,6 +277,10 @@
 </main>
 
 <div data-global-footer></div>
+<!-- Supabase : réutilisation du client partagé pour rattacher les commandes au compte connecté -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/js/supabase-config.js"></script>
+<script src="/assets/js/supabase-client.js"></script>
 <script src="/components/components.js"></script>
 
 <script>
@@ -590,11 +594,34 @@
     };
 
     try {
+      // Si le client est connecté, transmettre son jeton Supabase :
+      // l'API pourra alors associer la commande à son user_id.
+      // En mode invité, aucun en-tête Authorization n'est ajouté.
+      const supabaseClient = window.mmSupabase || window.supabaseClient || window.sb || null;
+      let accessToken = null;
+      if (supabaseClient?.auth?.getSession) {
+        try {
+          const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+          if (sessionError) {
+            console.warn('[Paiement] Session Supabase indisponible, poursuite en mode invité :', sessionError);
+          } else {
+            accessToken = sessionData?.session?.access_token || null;
+          }
+        } catch (sessionErr) {
+          console.warn('[Paiement] Lecture de session impossible, poursuite en mode invité :', sessionErr);
+        }
+      }
+
+      const requestHeaders = {
+        'Content-Type': 'application/json'
+      };
+      if (accessToken) {
+        requestHeaders.Authorization = `Bearer ${accessToken}`;
+      }
+
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: requestHeaders,
         body: JSON.stringify(payload)
       });
 
