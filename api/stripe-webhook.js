@@ -112,7 +112,7 @@ async function sendConfirmationEmail(order, orderItems, invoiceUrl) {
         <div style="margin-top: 35px; padding-top: 20px; border-top: 1px solid #2a3a48; font-size: 13px; color: #a0b4c4; line-height: 1.6;">
           <strong style="color: #e0e8f0;">Coordonnées Mariage Madagascar :</strong><br>
           Email : <a href="mailto:info@mariage-madagascar.com" style="color: #7dd3fc;">info@mariage-madagascar.com</a><br>
-          Site Web : <a href="https://mariage-madagascar.vercel.app" style="color: #7dd3fc;">mariage-madagascar.vercel.app</a><br>
+          Site Web : <a href="https://www.mariage-madagascar.com/" style="color: #7dd3fc;">mariage-madagascar.vercel.app</a><br>
           Notre équipe prendra contact avec vous très prochainement pour affiner tous les détails de votre séjour.
         </div>
       </div>
