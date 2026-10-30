@@ -129,6 +129,23 @@
   .sidebar-mobile-nav a.active{color:var(--blue)}
 }
 @media(min-width:761px){.sidebar-mobile-nav{display:none}}
+
+/* Fenêtre Détails commande — ajout ciblé, sans modifier la mise en page existante */
+.order-detail-overlay{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(3,8,18,.78);backdrop-filter:blur(8px)}
+.order-detail-overlay.is-open{display:flex}
+.order-detail-modal{width:min(760px,100%);max-height:min(88vh,900px);overflow:auto;background:#101827;border:1px solid #29465d;border-radius:22px;box-shadow:0 25px 80px rgba(0,0,0,.55);color:#e0e8f0}
+.order-detail-head{position:sticky;top:0;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:22px 24px;background:rgba(16,24,39,.97);border-bottom:1px solid #26374b}
+.order-detail-body{padding:22px 24px}
+.order-detail-section{padding:16px;margin-bottom:14px;border:1px solid #26374b;border-radius:15px;background:rgba(20,28,46,.65)}
+.order-detail-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#91a8bb;font-weight:700}
+.order-detail-value{font-size:14px;color:#e0e8f0;overflow-wrap:anywhere}
+.order-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.order-detail-item{padding:14px 0;border-bottom:1px solid #26374b}
+.order-detail-item:last-child{border-bottom:0}
+.order-detail-close{width:36px;height:36px;border:1px solid #36536a;border-radius:50%;color:#b8d8e9;background:#17263a;display:grid;place-items:center;flex:0 0 auto}
+.order-detail-close:hover{background:#213d4a}
+@media(max-width:600px){.order-detail-overlay{padding:8px}.order-detail-modal{max-height:94vh;border-radius:16px}.order-detail-head,.order-detail-body{padding:17px}.order-detail-grid{grid-template-columns:1fr}}
+
 </style>
 <style id="mm-sidebar-stitch">
 
@@ -276,6 +293,24 @@
 </div>
 </div>
 
+
+  <!-- Fenêtre de détail d'une commande -->
+  <div id="order-detail-overlay" class="order-detail-overlay" aria-hidden="true">
+    <section class="order-detail-modal" role="dialog" aria-modal="true" aria-labelledby="order-detail-title">
+      <div class="order-detail-head">
+        <div>
+          <p class="order-detail-label">Votre réservation</p>
+          <h2 id="order-detail-title" class="text-xl sm:text-2xl font-bold mt-1">Détail de la commande</h2>
+          <p id="order-detail-reference" class="text-sm mt-1" style="color:#7dd3fc"></p>
+        </div>
+        <button type="button" id="order-detail-close" class="order-detail-close" aria-label="Fermer">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div id="order-detail-content" class="order-detail-body"></div>
+    </section>
+  </div>
+
   <div class="footer-note">© 2026 Mariage Madagascar · Espace client privé · Vos préparatifs en un seul endroit</div>
 </main>
 
@@ -290,6 +325,129 @@ function showToast(message) {
 
 const searchInput = document.getElementById('order-search');
 const rowsContainer = document.getElementById('order-rows');
+
+const orderDetailsById = new Map();
+
+function escapeOrderHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[char]));
+}
+
+function formatOrderDate(value) {
+  if (!value) return 'Non renseignée';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? escapeOrderHtml(value) :
+    date.toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
+}
+
+function formatOrderMoney(value, currency) {
+  const amount = Number(value);
+  return Number.isFinite(amount)
+    ? `${amount.toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2})} ${currency || 'EUR'}`
+    : `— ${currency || 'EUR'}`;
+}
+
+function openOrderDetails(orderId) {
+  const order = orderDetailsById.get(String(orderId));
+  if (!order) {
+    showToast('Impossible de retrouver le détail de cette commande. Actualisez la page.');
+    return;
+  }
+
+  const currency = order.currency || 'EUR';
+  const fullName = `${order.guest_first_name || ''} ${order.guest_last_name || ''}`.trim() || 'Non renseigné';
+  const items = Array.isArray(order.order_items) ? order.order_items : [];
+
+  const itemsHtml = items.length ? items.map((item, index) => {
+    const name = item.product_name || item.name || `Prestation ${index + 1}`;
+    const variation = item.variation_name ? ` — ${item.variation_name}` : '';
+    const quantity = Math.max(1, Number(item.quantity || 1));
+    const options = item.options_snapshot && typeof item.options_snapshot === 'object' ? item.options_snapshot : {};
+    const bookingMode = options.booking_mode || '';
+    const arrival = options.arrival_date || (bookingMode === 'duration' ? item.booking_date : '');
+    const departure = options.departure_date || options.booking_end_date || '';
+    const eventDate = options.event_date || (bookingMode === 'event' ? item.booking_date : '');
+    const startTime = options.booking_start_time || options.event_start_time || '';
+    const endTime = options.booking_end_time || options.event_end_time || '';
+    const optionLines = Object.entries(options)
+      .filter(([key, value]) => !['booking_mode','arrival_date','departure_date','booking_end_date','event_date','booking_start_time','event_start_time','booking_end_time','event_end_time'].includes(key) && value !== null && value !== '' && typeof value !== 'object')
+      .map(([key, value]) => `<div class="text-xs mt-1" style="color:#9aafc1">${escapeOrderHtml(key.replace(/[_-]/g,' '))} : ${escapeOrderHtml(value)}</div>`)
+      .join('');
+    const bookingHtml = arrival || departure
+      ? `<div class="text-xs mt-2" style="color:#9aafc1">Séjour : ${escapeOrderHtml(formatOrderDate(arrival))} → ${escapeOrderHtml(formatOrderDate(departure))}</div>`
+      : eventDate
+        ? `<div class="text-xs mt-2" style="color:#9aafc1">Événement : ${escapeOrderHtml(formatOrderDate(eventDate))}${startTime ? ` · ${escapeOrderHtml(startTime)}` : ''}${endTime ? ` – ${escapeOrderHtml(endTime)}` : ''}</div>`
+        : (item.booking_date ? `<div class="text-xs mt-2" style="color:#9aafc1">Date : ${escapeOrderHtml(formatOrderDate(item.booking_date))}</div>` : '');
+    return `<div class="order-detail-item">
+      <div class="flex flex-wrap justify-between gap-3">
+        <div class="min-w-0"><div class="font-semibold">${escapeOrderHtml(name)}${escapeOrderHtml(variation)}</div>
+          <div class="text-xs mt-1" style="color:#9aafc1">Quantité : ${quantity}${item.pax ? ` · Participants : ${escapeOrderHtml(item.pax)}` : ''}</div>
+          ${bookingHtml}${optionLines}
+        </div>
+        <div class="font-semibold whitespace-nowrap">${escapeOrderHtml(formatOrderMoney(item.total_price ?? (Number(item.unit_price || 0) * quantity), currency))}</div>
+      </div>
+    </div>`;
+  }).join('') : '<p class="text-sm" style="color:#9aafc1">Aucune ligne de prestation détaillée n’est associée à cette commande.</p>';
+
+  const isPaid = order.payment_status === 'paid';
+  const statusText = isPaid ? 'Payée' : (order.status === 'confirmed' ? 'Confirmée' : 'En attente');
+  const content = document.getElementById('order-detail-content');
+  content.innerHTML = `
+    <div class="order-detail-section">
+      <div class="order-detail-grid">
+        <div><div class="order-detail-label">Date de commande</div><div class="order-detail-value mt-1">${escapeOrderHtml(formatOrderDate(order.created_at))}</div></div>
+        <div><div class="order-detail-label">Statut</div><div class="order-detail-value mt-1">${escapeOrderHtml(statusText)} · ${escapeOrderHtml(order.payment_status || order.status || 'Non renseigné')}</div></div>
+        <div><div class="order-detail-label">Nom du client</div><div class="order-detail-value mt-1">${escapeOrderHtml(fullName)}</div></div>
+        <div><div class="order-detail-label">E-mail</div><div class="order-detail-value mt-1">${escapeOrderHtml(order.guest_email || 'Non renseigné')}</div></div>
+        <div><div class="order-detail-label">Téléphone</div><div class="order-detail-value mt-1">${escapeOrderHtml(order.guest_phone || 'Non renseigné')}</div></div>
+        <div><div class="order-detail-label">Pays</div><div class="order-detail-value mt-1">${escapeOrderHtml(order.guest_country || 'Non renseigné')}</div></div>
+      </div>
+    </div>
+    <div class="order-detail-section">
+      <div class="flex items-center justify-between gap-3 mb-2">
+        <h3 class="font-semibold">Prestations et options</h3>
+        <span class="text-xs" style="color:#9aafc1">${items.length} ligne${items.length > 1 ? 's' : ''}</span>
+      </div>
+      ${itemsHtml}
+    </div>
+    <div class="order-detail-section">
+      <h3 class="font-semibold mb-3">Récapitulatif financier</h3>
+      <div class="flex justify-between gap-3 text-sm py-1"><span style="color:#9aafc1">Sous-total</span><span>${escapeOrderHtml(formatOrderMoney(order.subtotal ?? order.total_amount, currency))}</span></div>
+      <div class="flex justify-between gap-3 text-sm py-1"><span style="color:#9aafc1">Remise</span><span>− ${escapeOrderHtml(formatOrderMoney(order.discount_amount || 0, currency))}</span></div>
+      <div class="flex justify-between gap-3 text-base font-bold mt-3 pt-3 border-t" style="border-color:#26374b"><span>Total TTC</span><span style="color:#7dd3fc">${escapeOrderHtml(formatOrderMoney(order.total_amount, currency))}</span></div>
+    </div>
+    ${order.notes ? `<div class="order-detail-section"><h3 class="font-semibold mb-2">Informations complémentaires</h3><p class="text-sm whitespace-pre-line" style="color:#b8c8d6">${escapeOrderHtml(order.notes)}</p></div>` : ''}
+  `;
+
+  document.getElementById('order-detail-reference').textContent = order.order_number || '';
+  const overlay = document.getElementById('order-detail-overlay');
+  overlay.classList.add('is-open');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('order-detail-close').focus();
+}
+
+function closeOrderDetails() {
+  const overlay = document.getElementById('order-detail-overlay');
+  if (!overlay) return;
+  overlay.classList.remove('is-open');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('order-detail-close')?.addEventListener('click', closeOrderDetails);
+document.getElementById('order-detail-overlay')?.addEventListener('click', event => {
+  if (event.target.id === 'order-detail-overlay') closeOrderDetails();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') closeOrderDetails();
+});
+document.getElementById('order-rows')?.addEventListener('click', event => {
+  const button = event.target.closest('[data-order-detail-id]');
+  if (button) openOrderDetails(button.dataset.orderDetailId);
+});
+
 
 searchInput?.addEventListener('input', () => {
   const q = searchInput.value.toLowerCase();
@@ -318,7 +476,7 @@ async function loadRealClientOrders() {
 
     const { data: orders, error } = await sb
       .from('orders')
-      .select('id, order_number, created_at, guest_first_name, guest_last_name, guest_email, total_amount, currency, status, payment_status, order_items(product_name, variation_name, quantity)')
+      .select('id, order_number, created_at, guest_first_name, guest_last_name, guest_email, guest_phone, guest_country, subtotal, discount_amount, total_amount, currency, status, payment_status, notes, booking_date, order_items(*)')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
@@ -362,8 +520,10 @@ async function loadRealClientOrders() {
     let pendingCount = 0;
     let totalSum = 0;
 
+    orderDetailsById.clear();
     rowsContainer.innerHTML = orders.map(ord => {
-      const isPaid = String(ord.payment_status || '').toLowerCase() === 'paid';
+      orderDetailsById.set(String(ord.id), ord);
+      const isPaid = ord.payment_status === 'paid' || ord.status === 'confirmed';
       if (isPaid) confirmedCount++; else pendingCount++;
       totalSum += Number(ord.total_amount || 0);
 
@@ -395,7 +555,7 @@ async function loadRealClientOrders() {
           <td class="py-4 px-6 font-bold text-on-surface">${Number(ord.total_amount).toLocaleString('fr-FR')} ${ord.currency || '€'}</td>
           <td class="py-4 px-6">${badgeHtml}</td>
           <td class="py-4 px-6 text-right">
-            <button class="px-3 py-1.5 rounded-xl bg-surface-variant text-primary border border-primary/20 hover:bg-primary/20 text-xs font-medium transition-colors inline-flex items-center gap-1.5" onclick="showToast('Réf: ${ord.order_number} — Montant: ${ord.total_amount} €')">
+            <button type="button" data-order-detail-id="${escapeOrderHtml(ord.id)}" class="px-3 py-1.5 rounded-xl bg-surface-variant text-primary border border-primary/20 hover:bg-primary/20 text-xs font-medium transition-colors inline-flex items-center gap-1.5">
               <span class="material-symbols-outlined text-[16px]">visibility</span> Détails
             </button>
           </td>
