@@ -243,6 +243,31 @@ module.exports = async function handler(req, res) {
     const verifiedTotalAmount = Math.max(0, verifiedSubtotal - discountAmount);
     const orderNumber = `MM-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
+
+    // Vérifier la session Supabase avant toute création de commande.
+    let authenticatedUserId = null;
+    const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const userToken = authHeader.split(' ')[1];
+      try {
+        const authRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${userToken}`
+          }
+        });
+        if (authRes.ok) {
+          const userData = await authRes.json();
+          if (userData && userData.id) {
+            authenticatedUserId = userData.id;
+          }
+        }
+      } catch (authErr) {
+        console.warn('Vérification du jeton client échouée:', authErr);
+      }
+    }
+
+
     // VIREMENT BANCAIRE : créer une commande en attente sans créer de session Stripe.
     // La devise du virement est enregistrée dans notes, sans changer la devise du panier (EUR).
     if (paymentMethod === 'bank_transfer') {
@@ -252,6 +277,7 @@ module.exports = async function handler(req, res) {
       }
       const bankTransferOrderRecord = {
         order_number: orderNumber,
+        user_id: authenticatedUserId,
         guest_first_name: customer.first_name,
         guest_last_name: customer.last_name,
         guest_email: customer.email,
@@ -392,31 +418,10 @@ module.exports = async function handler(req, res) {
     }
 
     const session = JSON.parse(stripeText);
-
-    // 4. VÉRIFICATION SÉCURISÉE DU JETON SUPABASE AUTH CÔTÉ SERVEUR (SI CLIENT CONNECTÉ)
-    let authenticatedUserId = null;
-    const authHeader = req.headers['authorization'] || req.headers['Authorization'];
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const userToken = authHeader.split(' ')[1];
-      try {
-        const authRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-          headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${userToken}`
-          }
-        });
-        if (authRes.ok) {
-          const userData = await authRes.json();
-          if (userData && userData.id) {
-            authenticatedUserId = userData.id;
-          }
-        }
-      } catch (authErr) {
-        console.warn('Vérification du jeton client échouée:', authErr);
-      }
-    }
-
     // 5. CRÉATION DE LA COMMANDE EN STATUT 'pending' DANS SUPABASE AVEC USER_ID VÉRIFIÉ
+    if (!authenticatedUserId) {
+      console.warn(`[Commande ${orderNumber}] Aucun jeton Supabase valide reçu : user_id restera NULL. Le tunnel client doit transmettre Authorization: Bearer <access_token>.`);
+    }
     const orderRecord = {
       order_number: orderNumber,
       user_id: authenticatedUserId,

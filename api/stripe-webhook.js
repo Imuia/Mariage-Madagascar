@@ -231,12 +231,22 @@ module.exports = async function handler(req, res) {
 
       console.log(`[Webhook Stripe] Traitement de checkout.session.completed pour session ID: ${sessionId}`);
 
-      // 1. Recherche de la commande dans Supabase
-      const orders = await supabaseFetch(`orders?stripe_checkout_session_id=eq.${sessionId}&limit=1`);
+      // 1. Recherche de la commande dans Supabase.
+      // La session Stripe reste la clé principale ; client_reference_id (order_number)
+      // sert de secours si la création de la ligne DB et le webhook se croisent.
+      let orders = await supabaseFetch(`orders?stripe_checkout_session_id=eq.${encodeURIComponent(sessionId)}&limit=1`);
 
       if (!orders || orders.length === 0) {
-        console.warn(`[Webhook Stripe] Aucune commande trouvée pour la session Stripe ${sessionId}`);
-        return res.status(200).json({ received: true, note: 'Order not found' });
+        const orderNumber = session.client_reference_id;
+        if (orderNumber) {
+          orders = await supabaseFetch(`orders?order_number=eq.${encodeURIComponent(orderNumber)}&limit=1`);
+        }
+      }
+
+      if (!orders || orders.length === 0) {
+        console.error(`[Webhook Stripe] Commande introuvable pour session ${sessionId} (référence ${session.client_reference_id || 'absente'}). Stripe doit réessayer.`);
+        // Ne pas répondre 200 : Stripe doit retenter le webhook.
+        return res.status(500).json({ received: false, message: 'Commande pas encore disponible dans Supabase. Réessai Stripe requis.' });
       }
 
       let order = orders[0];
@@ -255,6 +265,7 @@ module.exports = async function handler(req, res) {
           body: JSON.stringify({
             status: 'confirmed',
             payment_status: 'paid',
+            stripe_checkout_session_id: sessionId,
             stripe_payment_intent_id: paymentIntentId,
             stripe_invoice_id: invoiceId,
             updated_at: new Date().toISOString()
