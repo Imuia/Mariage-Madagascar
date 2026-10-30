@@ -53,7 +53,6 @@
 @media(min-width:761px){.sidebar-mobile-nav{display:none}}
 </style>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/assets/js/supabase-config.js"></script>
 <script src="/assets/js/supabase-client.js"></script>
@@ -102,7 +101,6 @@
 <body class="bg-background text-on-surface antialiased overflow-x-hidden min-h-screen">
 
 <div id="client-sidebar-root"></div>
-</div>
 
 <main class="workspace relative z-10 flex-1 flex flex-col min-w-0 gap-6">
 
@@ -127,44 +125,27 @@
       <input id="conversation-search" class="glass-input w-full rounded-lg px-3 py-2 text-sm" placeholder="Rechercher une conversation..." aria-label="Rechercher une conversation">
     </div>
     <div id="conversation-items" class="flex-1 overflow-y-auto">
-      <button class="conversation-item active" data-name="Elena Rostova" data-role="Lead Designer" data-preview="Les maquettes pour la réception sont prêtes." data-avatar="design" type="button">
-        <span class="avatar avatar-photo">ER<span class="online-dot"></span></span>
-        <span class="conversation-copy"><span class="conversation-top"><strong>Elena Rostova</strong><small>10:42</small></span><span class="conversation-preview">Les maquettes pour la réception sont prêtes.</span><span class="tag">Design</span></span>
-      </button>
-      <button class="conversation-item" data-name="Équipe Voyage" data-role="Planification voyage" data-preview="Nouveaux itinéraires pour les Maldives ajoutés." data-avatar="flight" type="button">
-        <span class="avatar avatar-icon"><span class="material-symbols-outlined">flight_takeoff</span><i></i></span>
-        <span class="conversation-copy"><span class="conversation-top"><strong>Équipe Voyage</strong><small>Hier</small></span><span class="conversation-preview">Nouveaux itinéraires pour les Maldives ajoutés.</span><span class="tag">Planification</span></span><span class="unread">2</span>
-      </button>
-      <button class="conversation-item" data-name="Marc Dubois" data-role="Wedding Planner" data-preview="Le traiteur a confirmé le menu dégustation." data-avatar="person" type="button">
-        <span class="avatar avatar-icon"><span class="material-symbols-outlined">person</span></span>
-        <span class="conversation-copy"><span class="conversation-top"><strong>Marc Dubois</strong><small>Lun</small></span><span class="conversation-preview">Le traiteur a confirmé le menu dégustation.</span><span class="tag tag-purple">Logistique</span></span>
-      </button>
     </div>
     <button id="new-message" class="new-message"><span class="material-symbols-outlined">edit</span> Nouveau message</button>
   </aside>
   <section class="chat-panel flex flex-col min-w-0">
     <div class="chat-head p-4 border-b border-primary/10 flex justify-between items-center gap-3">
-      <div class="flex items-center gap-3 min-w-0"><span id="chat-avatar" class="avatar avatar-photo">ER</span><div class="min-w-0"><h2 id="chat-name" class="font-semibold text-primary truncate">Elena Rostova</h2><p id="chat-role" class="text-xs text-on-surface-variant">● En ligne · Lead Designer</p></div></div>
+      <div class="flex items-center gap-3 min-w-0"><span id="chat-avatar" class="avatar avatar-photo">ER</span><div class="min-w-0"><h2 id="chat-name" class="font-semibold text-primary truncate">Chargement…</h2><p id="chat-role" class="text-xs text-on-surface-variant">● En ligne · Lead Designer</p></div></div>
       <button id="toggle-details" class="icon-button" title="Afficher les informations du contact" aria-label="Afficher les informations du contact"><span class="material-symbols-outlined">info</span></button>
     </div>
     <div id="chat-messages" class="chat-messages flex-1 overflow-y-auto p-5 flex flex-col gap-5" aria-live="polite">
-      <div class="text-center"><span class="date-pill">Aujourd'hui, 09:30</span></div>
-      <div class="message-row incoming"><span class="mini-avatar">ER</span><div class="message-content"><small>Elena · 09:30</small><div class="bubble glass-panel">Bonjour ! J'espère que vous passez une excellente matinée. J'ai terminé la première itération des concepts de design pour l'espace de réception.</div></div></div>
-      <div class="message-row incoming"><span class="mini-avatar">ER</span><div class="message-content"><div class="bubble glass-panel">J'ai opté pour une approche « Frozen Light » qui s'aligne parfaitement avec l'esthétique Glacier, en insistant sur des tons bleus profonds et de la verrerie translucide.<div class="attachment"><span class="material-symbols-outlined">picture_as_pdf</span><span><strong>Reception_Concept_V1.pdf</strong><small>12,4 MB · Document PDF (exemple)</small></span></div></div><small>09:32</small></div></div>
-      <div class="message-row outgoing"><div class="message-content"><small class="text-right">10:15 · Vous</small><div class="bubble sent">C'est magnifique, Elena. La façon dont vous avez capturé la lumière à travers les éléments en verre est exactement ce que nous cherchions. Pouvons-nous prévoir un point rapide cet après-midi pour discuter des arrangements floraux ?</div><small class="text-right">Lu ✓✓</small></div></div>
     </div>
     <form id="message-form" class="composer p-3 border-t border-primary/10 flex items-center gap-2">
       <button type="button" id="attach-button" class="icon-button" title="Joindre un fichier" aria-label="Joindre un fichier"><span class="material-symbols-outlined">attach_file</span></button>
-      <input id="attachment-input" type="file" hidden>
+      <input id="attachment-input" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf,.txt,.doc,.docx" hidden>
       <textarea id="message-input" rows="1" class="glass-input flex-1 rounded-xl px-3 py-3 resize-none" placeholder="Rédiger un message..." aria-label="Rédiger un message"></textarea>
       <button type="submit" class="send-button" aria-label="Envoyer le message"><span class="material-symbols-outlined">send</span></button>
     </form>
     <p id="chat-notice" class="px-4 pb-3 text-xs text-on-surface-variant">Messagerie sécurisée connectée à Supabase.</p>
   </section>
   <aside id="contact-details" class="contact-details border-l border-primary/10 flex flex-col">
-    <div class="p-6 text-center border-b border-primary/10"><div class="profile-avatar">ER</div><h3 id="detail-name" class="font-semibold text-lg mt-3">Elena Rostova</h3><p id="detail-role" class="text-sm text-primary">Lead Designer</p><div class="flex justify-center gap-2 mt-4"><span class="detail-chip material-symbols-outlined">mail</span><span class="detail-chip material-symbols-outlined">calendar_month</span></div></div>
-    <div class="p-5"><h4 class="section-label">Projet actuel</h4><div class="glass-panel p-4 rounded-xl project-card"><strong>Gala d'Hiver 2024</strong><p class="text-xs text-on-surface-variant mt-2">Statut : En cours de conception</p><div class="progress"><span></span></div></div></div>
-    <div class="p-5 border-t border-primary/10"><h4 class="section-label">Fichiers partagés</h4><div class="shared-file"><span class="material-symbols-outlined">picture_as_pdf</span><span><strong>Reception_Concept_V1.pdf</strong><small>12,4 MB · Aujourd'hui</small></span></div><div class="shared-file"><span class="material-symbols-outlined">palette</span><span><strong>Color_Palette_Winter.aco</strong><small>2,1 MB · Lun</small></span></div><div class="shared-file"><span class="material-symbols-outlined">folder</span><span><strong>Moodboards_Archives</strong><small>Dossier · 12 éléments</small></span></div></div>
+    <div class="p-6 text-center border-b border-primary/10"><div class="profile-avatar">ER</div><h3 id="detail-name" class="font-semibold text-lg mt-3">Équipe Mariage Madagascar</h3><p id="detail-role" class="text-sm text-primary">Votre interlocuteur</p><div class="flex justify-center gap-2 mt-4"><span class="detail-chip material-symbols-outlined">mail</span><span class="detail-chip material-symbols-outlined">calendar_month</span></div></div>
+    <div class="p-5"><h4 class="section-label">Projet actuel</h4><p id="detail-project" class="text-xs text-on-surface-variant">Les informations du projet seront affichées lorsqu’elles seront associées à votre conversation.</p></div><div class="p-5 border-t border-primary/10"><h4 class="section-label">Fichiers partagés</h4><div id="shared-files-list"><p class="text-xs text-on-surface-variant">Les pièces jointes des échanges apparaîtront ici.</p></div></div><div class="shared-file"><span class="material-symbols-outlined">palette</span><span><strong>Color_Palette_Winter.aco</strong><small>2,1 MB · Lun</small></span></div><div class="shared-file"><span class="material-symbols-outlined">folder</span><span><strong>Moodboards_Archives</strong><small>Dossier · 12 éléments</small></span></div></div>
   </aside>
 </div>
 <style>
@@ -210,12 +191,20 @@
 </style>
 <script>
 (async function(){
- const sb=window.supabaseClient || window.mmSupabase || (window.supabase ? window.supabase.createClient('https://qrkinjuhtyfptldlvdyg.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdWIiLCJyZWYiOiJxcmtpbmp1aHR5cHRsZGx2ZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MzY3NzUsImV4cCI6MjEwNjQxMjc3NX0.rKo326yy_QALlLVH5FfFfzyRp_J6Fd6B3EnZhbdIj9I') : null);
+ const sb=window.mmSupabase || window.supabaseClient || window.sb || null;
  const form=document.getElementById('message-form'), input=document.getElementById('message-input');
  const list=document.getElementById('conversation-items'), search=document.getElementById('conversation-search');
  const messages=document.getElementById('chat-messages'), notice=document.getElementById('chat-notice');
  const attach=document.getElementById('attach-button'), fileInput=document.getElementById('attachment-input');
  let currentConversation=null, channel=null, currentUser=null, pendingFile=null;
+ const sendButton=form.querySelector('button[type="submit"]');
+ function setComposerEnabled(enabled){
+   input.disabled=!enabled; attach.disabled=!enabled;
+   if(sendButton)sendButton.disabled=!enabled;
+   input.placeholder=enabled?'Rédiger un message...':'Sélectionnez une conversation pour écrire...';
+ }
+ setComposerEnabled(false);
+
  function showNotice(text,isError=false){if(!notice)return;notice.textContent=text;notice.classList.remove('hidden');notice.style.color=isError?'#ff9b9b':'#7dd3fc';}
  function clearNotice(){if(notice)notice.classList.add('hidden');}
  function initials(name='Client'){return name.split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase();}
@@ -228,11 +217,28 @@
    const meta=document.createElement('small');meta.textContent=(outgoing?'Vous':(msg.sender_name||'Équipe'))+' · '+new Date(msg.created_at).toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'});
    const bubble=document.createElement('div');bubble.className='bubble '+(outgoing?'sent':'glass-panel');bubble.textContent=msg.body;
    content.append(meta,bubble);
-   if(msg.attachment_path){const link=document.createElement('a');link.className='attachment';link.textContent='Télécharger la pièce jointe';link.href='#';link.addEventListener('click',async e=>{e.preventDefault();const {data,error}=await sb.storage.from('client-message-files').createSignedUrl(msg.attachment_path,60);if(error)showNotice('Impossible de générer le lien du fichier.',true);else window.open(data.signedUrl,'_blank','noopener');});content.append(link);}
+   if(msg.attachment_path){
+     const link=document.createElement('a');link.className='attachment';link.textContent='Télécharger la pièce jointe';link.href='#';
+     link.addEventListener('click',async e=>{
+       e.preventDefault();
+       const {data,error}=await sb.storage.from('client-message-files').createSignedUrl(msg.attachment_path,60);
+       if(error)showNotice('Impossible de générer le lien du fichier.',true);
+       else window.open(data.signedUrl,'_blank','noopener');
+     });
+     content.append(link);
+     const filesList=document.getElementById('shared-files-list');
+     if(filesList){
+       const file=document.createElement('div');file.className='shared-file';
+       const icon=document.createElement('span');icon.className='material-symbols-outlined';icon.textContent='attach_file';
+       const info=document.createElement('span');const name=document.createElement('strong');name.textContent=msg.attachment_path.split('/').pop();
+       const date=document.createElement('small');date.textContent=new Date(msg.created_at).toLocaleDateString('fr-FR');
+       info.append(name,date);file.append(icon,info);filesList.append(file);
+     }
+   }
    row.append(content);messages.append(row);
  }
  async function loadMessages(conversationId){
-   currentConversation=conversationId;messages.innerHTML='';clearNotice();
+   currentConversation=conversationId;messages.innerHTML='';clearNotice();setComposerEnabled(true);const filesList=document.getElementById('shared-files-list');if(filesList)filesList.innerHTML='';
    const {data,error}=await sb.from('client_messages').select('id,conversation_id,sender_id,body,attachment_path,created_at').eq('conversation_id',conversationId).order('created_at',{ascending:true}).limit(300);
    if(error){showNotice('Impossible de charger les messages : '+error.message,true);return;}
    for(const msg of (data||[]))renderMessage(msg);
@@ -248,7 +254,16 @@
    const {data:members,error}=await sb.from('client_conversation_members').select('conversation_id,role,client_conversations(id,subject,project_id,created_at)').eq('user_id',currentUser.id);
    if(error){showNotice('Les conversations ne sont pas accessibles. Vérifiez les tables et les règles RLS Supabase.',true);return;}
    const rows=(members||[]).filter(x=>x.client_conversations).map(x=>({id:x.conversation_id,subject:x.client_conversations.subject,role:x.role,created_at:x.client_conversations.created_at}));
-   if(!rows.length){const empty=document.createElement('p');empty.className='p-4 text-sm text-on-surface-variant';empty.textContent='Aucune conversation pour le moment. L’équipe pourra ouvrir une conversation liée à votre projet.';list.append(empty);messages.innerHTML='';showNotice('Votre messagerie est connectée. Aucune conversation ne vous a encore été attribuée.');return;}
+   if(!rows.length){
+     const empty=document.createElement('p');empty.className='p-4 text-sm text-on-surface-variant';empty.textContent='Aucune conversation pour le moment. L’équipe ouvrira un échange lié à votre projet.';list.append(empty);
+     messages.innerHTML='';currentConversation=null;setComposerEnabled(false);
+     document.getElementById('chat-name').textContent='Aucune conversation';
+     document.getElementById('chat-role').textContent='En attente de votre équipe';
+     document.getElementById('detail-name').textContent='Équipe Mariage Madagascar';
+     document.getElementById('detail-role').textContent='Votre interlocuteur';
+     showNotice('Votre messagerie est connectée. L’équipe doit d’abord vous attribuer une conversation.');
+     return;
+   }
    rows.forEach((row,index)=>{
      const btn=document.createElement('button');btn.type='button';btn.className='conversation-item'+(index===0?' active':'');btn.dataset.id=row.id;btn.dataset.name=row.subject;btn.dataset.role=row.role;
      const av=document.createElement('span');av.className='avatar avatar-icon';av.textContent='✦';
@@ -262,6 +277,7 @@
  }
  form.addEventListener('submit',async e=>{
    e.preventDefault();const body=input.value.trim();if(!body&&!pendingFile)return;
+   if(body.length>10000){showNotice('Votre message dépasse la limite de 10 000 caractères.',true);return;}
    if(!currentConversation){showNotice('Aucune conversation active. Contactez l’équipe pour en ouvrir une.',true);return;}
    const submit=form.querySelector('button[type="submit"],button:not([type])');if(submit)submit.disabled=true;
    try{
@@ -283,10 +299,17 @@
  input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px';});
  search.addEventListener('input',()=>list.querySelectorAll('.conversation-item').forEach(item=>item.hidden=!item.innerText.toLowerCase().includes(search.value.toLowerCase())));
  attach.addEventListener('click',()=>fileInput.click());
- fileInput.addEventListener('change',e=>{pendingFile=e.target.files[0]||null;if(pendingFile)showNotice('Pièce jointe prête : '+pendingFile.name+' — envoyez votre message pour la transmettre.');});
- document.getElementById('new-message').addEventListener('click',()=>showNotice('Pour votre sécurité, les conversations sont créées par l’équipe et attribuées à votre projet.'));
+ fileInput.addEventListener('change',e=>{
+   pendingFile=e.target.files[0]||null;
+   if(!pendingFile)return;
+   const allowed=['image/jpeg','image/png','image/webp','application/pdf','text/plain','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+   if(!allowed.includes(pendingFile.type)){pendingFile=null;fileInput.value='';showNotice('Type de fichier non autorisé. Formats acceptés : JPG, PNG, WEBP, PDF, TXT, DOC, DOCX.',true);return;}
+   if(pendingFile.size>10*1024*1024){pendingFile=null;fileInput.value='';showNotice('Le fichier dépasse la limite de 10 Mo.',true);return;}
+   showNotice('Pièce jointe prête : '+pendingFile.name+' — envoyez votre message pour la transmettre.');
+ });
+ document.getElementById('new-message').addEventListener('click',()=>showNotice('Pour ouvrir un nouvel échange, contactez l’équipe. Elle créera une conversation privée liée à votre projet.'));
  try{
-   if(!sb)throw new Error('Le client Supabase ne s’est pas chargé.');
+   if(!sb)throw new Error('Le client Supabase partagé ne s’est pas chargé. Vérifiez les scripts de configuration.');
    const {data:{session},error}=await sb.auth.getSession();if(error)throw error;
    if(!session){location.href='/espace-client/login.html';return;}
    currentUser=session.user;
