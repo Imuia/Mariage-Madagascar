@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin/
+Disallow: /api/
+Disallow: /espace-client/
+
+Sitemap: https://www.mariage-madagascar.com/sitemap.xml

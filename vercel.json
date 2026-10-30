@@ -1,5 +1,18 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "mariage-madagascar.vercel.app"
+        }
+      ],
+      "destination": "https://www.mariage-madagascar.com/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/:slug([^/.]+)",
