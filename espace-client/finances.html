@@ -123,7 +123,7 @@
       const { data: orders } = await sb
         .from('orders')
         .select('id, order_number, total_amount, payment_status, status, created_at, booking_date, order_items(product_name)')
-        .or(`user_id.eq.${user.id},guest_email.eq.${user.email}`);
+        .eq('user_id', user.id);
 
       let totalSum = 0;
       let paidSum = 0;
@@ -133,7 +133,7 @@
         orders.forEach(ord => {
           const amt = Number(ord.total_amount || 0);
           totalSum += amt;
-          const isPaid = ord.payment_status === 'paid' || ord.status === 'confirmed';
+          const isPaid = String(ord.payment_status || '').toLowerCase() === 'paid';
           if (isPaid) paidSum += amt;
 
           if (ord.booking_date) {

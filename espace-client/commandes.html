@@ -363,7 +363,7 @@ async function loadRealClientOrders() {
     let totalSum = 0;
 
     rowsContainer.innerHTML = orders.map(ord => {
-      const isPaid = ord.payment_status === 'paid' || ord.status === 'confirmed';
+      const isPaid = String(ord.payment_status || '').toLowerCase() === 'paid';
       if (isPaid) confirmedCount++; else pendingCount++;
       totalSum += Number(ord.total_amount || 0);
 

@@ -111,11 +111,29 @@ async function loadRealPlanningData() {
     const { data: orders } = await sb
       .from('orders')
       .select('id, order_number, booking_date, status, payment_status, order_items(product_name)')
-      .or(`user_id.eq.${user.id},guest_email.eq.${user.email}`)
+      .eq('user_id', user.id)
       .not('booking_date', 'is', null)
       .order('booking_date', { ascending: true });
 
-    if (!orders || orders.length === 0) {
+    const { data: project, error: projectError } = await sb
+      .from('client_projects')
+      .select('event_date, title')
+      .eq('owner_id', user.id)
+      .limit(1)
+      .maybeSingle();
+    if (projectError) throw projectError;
+
+    const planningOrders = orders || [];
+    if (project?.event_date) {
+      planningOrders.push({
+        booking_date: project.event_date,
+        order_number: 'Projet mariage',
+        order_items: [{ product_name: project.title || 'Événement principal' }],
+        payment_status: 'project'
+      });
+    }
+
+    if (planningOrders.length === 0) {
       container.innerHTML = `
         <div style="padding: 30px 10px; text-align: center;">
           <span class="material-symbols-outlined" style="font-size: 36px; color: var(--muted); display: block; margin-bottom: 8px;">event_busy</span>
@@ -128,12 +146,12 @@ async function loadRealPlanningData() {
 
     const monthShorts = ['JAN.', 'FÉV.', 'MARS', 'AVR.', 'MAI', 'JUIN', 'JUIL.', 'AOÛT', 'SEPT.', 'OCT.', 'NOV.', 'DÉC.'];
 
-    container.innerHTML = orders.map(ord => {
+    container.innerHTML = planningOrders.map(ord => {
       const d = new Date(ord.booking_date);
       const day = String(d.getDate()).padStart(2, '0');
       const month = monthShorts[d.getMonth()] || '';
       const title = (ord.order_items && ord.order_items[0]) ? ord.order_items[0].product_name : 'Réservation';
-      const isPaid = ord.payment_status === 'paid' || ord.status === 'confirmed';
+      const isPaid = ord.payment_status === 'paid' || ord.payment_status === 'project';
 
       return `
         <div class="schedule-row">

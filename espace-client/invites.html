@@ -164,16 +164,26 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
      }
      const user = session.user;
 
+     // Schéma réel client_guests : project_id, name, email, category,
+     // rsvp_status, dietary_requirements, table_name.
+     const { data: project, error: projectError } = await sb
+       .from('client_projects')
+       .select('id')
+       .eq('owner_id', user.id)
+       .limit(1)
+       .maybeSingle();
+
+     if (projectError) throw projectError;
+     if (!project?.id) throw new Error('Aucun projet de mariage associé à votre compte.');
+
      const payload = {
-       user_id: user.id,
-       first_name: firstName,
-       last_name: lastName,
+       project_id: project.id,
+       name: [firstName, lastName].filter(Boolean).join(' '),
        email: email || null,
        category: categoryVal,
-       status: rsvpStatus,
-       menu_choice: menuChoice || null,
-       table_name: tableNameVal || null,
-       updated_at: new Date().toISOString()
+       rsvp_status: rsvpStatus,
+       dietary_requirements: $('diet')?.value?.trim() || null,
+       table_name: tableNameVal || null
      };
 
      if (id && id !== '' && !id.startsWith('temp_')) {
@@ -181,7 +191,7 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
          .from('client_guests')
          .update(payload)
          .eq('id', id)
-         .eq('user_id', user.id);
+         .eq('project_id', project.id);
 
        if (error) throw error;
        toast('Invité et statut RSVP enregistrés dans Supabase.');
@@ -201,7 +211,7 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
      toast('Erreur lors de la sauvegarde : ' + (err.message || 'accès refusé par RLS.'));
    }
  });
- $('guestTableBody').addEventListener('click',e=>{const b=e.target.closest('.editGuest');if(!b)return;const g=guests.find(x=>x.id===Number(b.dataset.id));if(g)openModal(g)});
+ $('guestTableBody').addEventListener('click',e=>{const b=e.target.closest('.editGuest');if(!b)return;const g=guests.find(x=>String(x.id)===String(b.dataset.id));if(g)openModal(g)});
  $('searchInput').addEventListener('input',()=>{page=1;render()});$('statusFilter').addEventListener('change',()=>{page=1;render()});$('sortSelect').addEventListener('change',()=>{page=1;render()});
  document.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('click',()=>{category=b.dataset.category;page=1;document.querySelectorAll('[data-category]').forEach(x=>x.classList.toggle('active',x===b));render()}));
  $('prevPage').addEventListener('click',()=>{if(page>1){page--;render()}});$('nextPage').addEventListener('click',()=>{page++;render()});
@@ -218,29 +228,45 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
      if (!session) return;
      const user = session.user;
 
+     const { data: project, error: projectError } = await sb
+       .from('client_projects')
+       .select('id')
+       .eq('owner_id', user.id)
+       .limit(1)
+       .maybeSingle();
+
+     if (projectError) throw projectError;
+     if (!project?.id) {
+       guests = [];
+       render();
+       return;
+     }
+
      const { data: dbGuests, error } = await sb
        .from('client_guests')
-       .select('*')
-       .eq('user_id', user.id)
+       .select('id, project_id, name, email, category, rsvp_status, dietary_requirements, table_name, created_at')
+       .eq('project_id', project.id)
        .order('created_at', { ascending: false });
 
-     if (!error && dbGuests) {
-       guests = dbGuests.map(g => ({
+     if (error) throw error;
+     guests = (dbGuests || []).map(g => {
+       const parts = String(g.name || '').trim().split(/\\s+/);
+       return {
          id: g.id,
-         first: g.first_name || '',
-         last: g.last_name || '',
+         first: parts.shift() || '',
+         last: parts.join(' '),
          email: g.email || '',
          category: g.category || 'Famille',
-         role: g.role || '',
-         status: g.status || 'En attente',
-         plus: g.plus_one_count || 0,
-         menu: g.menu_choice || '—',
-         diet: g.dietary_notes || '',
+         role: '',
+         status: g.rsvp_status || 'En attente',
+         plus: 0,
+         menu: '—',
+         diet: g.dietary_requirements || '',
          table: g.table_name || '',
          recent: new Date(g.created_at || Date.now()).getTime()
-       }));
-       render();
-     }
+       };
+     });
+     render();
    } catch (err) {
      console.error('Erreur chargement invités:', err);
    }

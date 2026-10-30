@@ -679,31 +679,28 @@ function showToast(message) {
         avatarEl.textContent = initials || 'EM';
       }
 
-      // 2. Projet mariage (supporte owner_id, user_id et profile_id)
-      let projects = null;
-      const { data: pByOwner } = await sb.from('client_projects').select('title, wedding_date, event_date').eq('owner_id', user.id).limit(1);
-      if (pByOwner && pByOwner.length) {
-        projects = pByOwner;
-      } else {
-        const { data: pByUser } = await sb.from('client_projects').select('title, wedding_date, event_date').eq('user_id', user.id).limit(1);
-        if (pByUser && pByUser.length) {
-          projects = pByUser;
-        } else {
-          const { data: pByProf } = await sb.from('client_projects').select('title, wedding_date, event_date').eq('profile_id', user.id).limit(1);
-          if (pByProf && pByProf.length) projects = pByProf;
-        }
-      }
-
-      const project = projects && projects.length ? projects[0] : null;
+      // 2. Projet mariage — colonnes confirmées par le schéma Supabase.
+      const { data: project, error: projectError } = await sb
+        .from('client_projects')
+        .select('id, title, event_date, status')
+        .eq('owner_id', user.id)
+        .limit(1)
+        .maybeSingle();
+      if (projectError) throw projectError;
       const heroTitle = document.getElementById('hero-project-title');
       if (heroTitle && project && project.title) {
         heroTitle.textContent = `Votre projet : ${project.title}`;
       }
 
       // 3. Compteurs réels (orders, guests, docs)
-      const { data: orders } = await sb.from('orders').select('id').or(`user_id.eq.${user.id},guest_email.eq.${user.email}`);
-      const { data: guests } = await sb.from('client_guests').select('id').eq('user_id', user.id);
-      const { data: docs } = await sb.from('documents').select('id').or(`client_profile_id.eq.${user.id},user_id.eq.${user.id}`);
+      const { data: orders, error: ordersError } = await sb.from('orders').select('id').eq('user_id', user.id);
+      if (ordersError) throw ordersError;
+      const { data: guests, error: guestsError } = project?.id
+        ? await sb.from('client_guests').select('id').eq('project_id', project.id)
+        : { data: [], error: null };
+      if (guestsError) throw guestsError;
+      const { data: docs, error: docsError } = await sb.from('documents').select('id').or(`client_profile_id.eq.${user.id},user_id.eq.${user.id}`);
+      if (docsError) throw docsError;
 
       const ordersCountEl = document.getElementById('dash-orders-count');
       const guestsCountEl = document.getElementById('dash-guests-count');
