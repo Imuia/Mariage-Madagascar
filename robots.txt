@@ -4,5 +4,9 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 Disallow: /espace-client/
+Disallow: /panier-reservation.html
+Disallow: /paiement.html
+Disallow: /paiement-annule.html
+Disallow: /confirmation-paiement.html
 
 Sitemap: https://www.mariage-madagascar.com/sitemap.xml
