@@ -430,25 +430,40 @@ nav.fixed.top-0.left-0.w-full.z-50 .mm-account-link .material-symbols-outlined {
   }
 
   async function initAccountLinks() {
-    // Valeur de secours : l'URL de connexion reste disponible si Supabase est inaccessible.
-    updateAccountLinks(false);
     try {
+      // 1. Charger le SDK avant la configuration publique.
       await loadScriptOnce('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2', function () {
-        return !!window.supabase;
+        return !!(window.supabase && typeof window.supabase.createClient === 'function');
       });
-      await loadScriptOnce('/assets/js/supabase-client.js', function () {
-        return !!window.mmSupabase;
-      });
-      if (!window.mmSupabase || !window.mmSupabase.auth) return;
 
-      var result = await window.mmSupabase.auth.getSession();
+      // 2. Charger explicitement la configuration : le client partagé en dépend.
+      await loadScriptOnce('/assets/js/supabase-config.js', function () {
+        return !!(window.MARIAGE_SUPABASE && window.MARIAGE_SUPABASE.url && window.MARIAGE_SUPABASE.anonKey && window.mmSupabase);
+      });
+
+      // 3. Conserver le client commun utilisé par les autres pages du site.
+      await loadScriptOnce('/assets/js/supabase-client.js', function () {
+        return !!(window.mmSupabase && window.mmSupabase.auth);
+      });
+
+      var client = window.mmSupabase || window.supabaseClient;
+      if (!client || !client.auth) {
+        throw new Error(window.mmSupabaseError || 'Client Supabase indisponible.');
+      }
+
+      var result = await client.auth.getSession();
+      if (result.error) throw result.error;
+
       updateAccountLinks(!!(result.data && result.data.session && result.data.session.user));
-      window.mmSupabase.auth.onAuthStateChange(function (_event, session) {
+
+      // Mettre à jour les deux liens (desktop et mobile) à chaque changement de session.
+      client.auth.onAuthStateChange(function (_event, session) {
         updateAccountLinks(!!(session && session.user));
       });
     } catch (error) {
       console.warn('[Mariage Madagascar] État du lien espace client indisponible :', error);
-      updateAccountLinks(false);
+      // En cas d'erreur technique, conserver le lien de connexion par défaut.
+      // Ne pas déconnecter l'utilisateur ni effacer sa session.
     }
   }
 
