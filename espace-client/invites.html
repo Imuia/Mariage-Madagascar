@@ -84,7 +84,7 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
     <div><label class="form-label" for="menu">Menu / régime alimentaire</label><input class="form-field" id="menu" placeholder="Ex. Végétarien, sans gluten"></div>
     <div><label class="form-label" for="tableName">Table assignée</label><input class="form-field" id="tableName" placeholder="Ex. Table Camélia"></div>
     <div class="sm:col-span-2 flex justify-end gap-3 border-t border-[#2a3a48] pt-4"><button id="cancelModal" type="button" class="pill">Annuler</button><button type="submit" class="rounded-full px-5 py-2.5 bg-[#7dd3fc] text-[#10232c] font-bold text-xs">Enregistrer l’invité</button></div>
-  </form><p class="text-[11px] text-[#8eb9cc] mt-4">Cette version conserve les ajouts dans la page en cours. La synchronisation Supabase reste à connecter.</p>
+  </form>
 </div></div>
 <div id="toast" class="fixed bottom-5 right-5 z-[120] hidden max-w-sm rounded-xl border border-[#2a3a48] bg-[#141c2e] px-4 py-3 text-sm text-white shadow-xl" role="status"></div>
 <script>
@@ -111,7 +111,7 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
     <td><div class="flex items-center gap-3"><div class="w-9 h-9 shrink-0 rounded-full bg-[#213d4a] border border-[#7dd3fc]/30 flex items-center justify-center text-[#7dd3fc] text-[10px] font-bold">${esc(initials(g))}</div><div><div class="font-semibold text-white">${esc(g.first)} ${esc(g.last)} ${g.role?`<span class="ml-1 rounded-full bg-[#3d2060] text-[#e8d0ff] px-2 py-1 text-[9px]">${esc(g.role)}</span>`:''}</div><div class="text-[11px] text-[#a0b4c4] mt-1">${esc(g.email||'E-mail non renseigné')}</div></div></div></td>
     <td class="text-xs">${esc(g.category)}</td><td><span class="status ${g.status==='Confirmé'?'confirmed':g.status==='En attente'?'pending':'declined'}">● ${esc(g.status)}${g.status==='Confirmé'&&g.plus?` (+${g.plus})`:''}</span></td>
     <td><div class="text-xs text-white">${esc(g.menu||'—')}</div>${g.diet&&g.diet!=='Aucune restriction'?`<div class="mt-1 inline-block rounded-md border border-amber-500/30 bg-amber-950/40 px-2 py-1 text-[10px] text-amber-300">${esc(g.diet)}</div>`:''}</td>
-    <td class="text-xs ${g.table?'text-white':'text-[#a0b4c4] italic'}">${esc(g.table||'Non assignée')}</td><td><button class="editGuest p-2 text-[#a0b4c4] hover:text-[#7dd3fc]" data-id="${g.id}" title="Modifier cet invité" aria-label="Modifier ${esc(g.first)}"><span class="material-symbols-outlined">edit</span></button></td></tr>`).join(''):`<tr><td colspan="6" class="text-center py-10 text-[#a0b4c4]">Aucun invité ne correspond à la recherche.</td></tr>`;
+    <td class="text-xs ${g.table?'text-white':'text-[#a0b4c4] italic'}">${esc(g.table||'Non assignée')}</td><td><div class="flex items-center gap-1"><button class="editGuest p-2 text-[#a0b4c4] hover:text-[#7dd3fc]" data-id="${g.id}" title="Modifier cet invité" aria-label="Modifier ${esc(g.first)}"><span class="material-symbols-outlined text-lg">edit</span></button><button class="deleteGuest p-2 text-[#a0b4c4] hover:text-rose-400" data-id="${g.id}" title="Supprimer cet invité" aria-label="Supprimer ${esc(g.first)}"><span class="material-symbols-outlined text-lg">delete</span></button></div></td></tr>`).join(''):`<tr><td colspan="6" class="text-center py-10 text-[#a0b4c4]">Aucun invité ne correspond à la recherche.</td></tr>`;
    $('paginationInfo').textContent=list.length?`Affichage de ${(page-1)*perPage+1} à ${Math.min(page*perPage,list.length)} sur ${list.length} résultat(s)`:'Aucun résultat';
    $('pageNumber').textContent=page;$('prevPage').disabled=page<=1;$('nextPage').disabled=page>=pages;
    const total = guests.length;
@@ -132,7 +132,10 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
  }
  function openModal(g=null){
    $('guestForm').reset();$('modalTitle').textContent=g?'Modifier un invité':'Ajouter un invité';
-   $('firstName').value=g?.first||'';$('lastName').value=g?.last||'';$('email').value=g?.email||'';$('category').value=g?.category||'Famille';$('rsvp').value=g?.status||'En attente';$('menu').value=g?.menu==='—'?'':g?.menu||'';$('tableName').value=g?.table||'';
+   $('firstName').value=g?.first||'';$('lastName').value=g?.last||'';$('email').value=g?.email||'';$('category').value=g?.category||'Famille';$('rsvp').value=g?.status||'En attente';
+   const currentDiet = (g?.diet && g.diet !== '—') ? g.diet : ((g?.menu && g.menu !== '—') ? g.menu : '');
+   $('menu').value = currentDiet;
+   $('tableName').value=g?.table||'';
    $('guestForm').dataset.editId=g?String(g.id):'';$('guestModal').classList.remove('hidden');$('firstName').focus();
  }
  function closeModal(){$('guestModal').classList.add('hidden')}
@@ -182,7 +185,7 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
        email: email || null,
        category: categoryVal,
        rsvp_status: rsvpStatus,
-       dietary_requirements: $('diet')?.value?.trim() || null,
+       dietary_requirements: menuChoice || null,
        table_name: tableNameVal || null
      };
 
@@ -211,7 +214,40 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
      toast('Erreur lors de la sauvegarde : ' + (err.message || 'accès refusé par RLS.'));
    }
  });
- $('guestTableBody').addEventListener('click',e=>{const b=e.target.closest('.editGuest');if(!b)return;const g=guests.find(x=>String(x.id)===String(b.dataset.id));if(g)openModal(g)});
+ $('guestTableBody').addEventListener('click',async e=>{
+   const editBtn=e.target.closest('.editGuest');
+   if(editBtn){
+     const g=guests.find(x=>String(x.id)===String(editBtn.dataset.id));
+     if(g)openModal(g);
+     return;
+   }
+   const delBtn=e.target.closest('.deleteGuest');
+   if(delBtn){
+     const id=delBtn.dataset.id;
+     const g=guests.find(x=>String(x.id)===String(id));
+     const name=g?`${g.first} ${g.last}`.trim():'cet invité';
+     if(!confirm(`Confirmez-vous la suppression de ${name} ?`)) return;
+
+     const sb = window.clientSupabase || window.mmSupabase;
+     if(!sb){
+       guests=guests.filter(x=>String(x.id)!==String(id));
+       render();
+       toast('Invité supprimé.');
+       return;
+     }
+     try{
+       const { data: { session } } = await sb.auth.getSession();
+       if(!session) throw new Error('Session expirée.');
+       const { error } = await sb.from('client_guests').delete().eq('id', id);
+       if(error) throw error;
+       toast('Invité supprimé avec succès de Supabase.');
+       await syncWithSupabase();
+     }catch(err){
+       console.error('Erreur suppression invité:', err);
+       toast('Erreur lors de la suppression : ' + (err.message||'erreur serveur.'));
+     }
+   }
+ });
  $('searchInput').addEventListener('input',()=>{page=1;render()});$('statusFilter').addEventListener('change',()=>{page=1;render()});$('sortSelect').addEventListener('change',()=>{page=1;render()});
  document.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('click',()=>{category=b.dataset.category;page=1;document.querySelectorAll('[data-category]').forEach(x=>x.classList.toggle('active',x===b));render()}));
  $('prevPage').addEventListener('click',()=>{if(page>1){page--;render()}});$('nextPage').addEventListener('click',()=>{page++;render()});
