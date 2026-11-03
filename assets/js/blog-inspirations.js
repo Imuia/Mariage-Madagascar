@@ -213,16 +213,70 @@
     });
   }
 
+  const PAGE_SIZE = 18;
   let allPosts = [];
+  let currentFilteredPosts = [];
+  let visibleCount = PAGE_SIZE;
+
+  // Création dynamique du bouton "Charger plus d'articles" s'il n'existe pas encore
+  let loadMoreContainer = document.getElementById('blog-load-more-container');
+  let loadMoreBtn = document.getElementById('blog-load-more-btn');
+
+  function ensureLoadMoreControls() {
+    if (!loadMoreContainer) {
+      loadMoreContainer = document.createElement('div');
+      loadMoreContainer.id = 'blog-load-more-container';
+      loadMoreContainer.className = 'max-w-7xl mx-auto px-6 mt-12 flex justify-center items-center';
+
+      loadMoreBtn = document.createElement('button');
+      loadMoreBtn.id = 'blog-load-more-btn';
+      loadMoreBtn.type = 'button';
+      loadMoreBtn.className = 'glass-panel-elevated px-8 py-3.5 rounded-full text-primary border border-primary/40 hover:bg-primary/10 hover:border-primary/60 transition-all font-semibold text-sm flex items-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(125,211,252,0.1)] hover:shadow-[0_0_30px_rgba(125,211,252,0.2)]';
+      loadMoreBtn.innerHTML = '<span>Charger plus d’articles</span><span class="material-symbols-outlined text-[18px]">expand_more</span>';
+
+      loadMoreBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        visibleCount += PAGE_SIZE;
+        updateDisplay();
+      });
+
+      loadMoreContainer.appendChild(loadMoreBtn);
+
+      const gridSection = grid.closest('section');
+      if (gridSection && gridSection.parentNode) {
+        gridSection.parentNode.insertBefore(loadMoreContainer, gridSection.nextSibling);
+      }
+    }
+  }
+
+  function updateDisplay() {
+    ensureLoadMoreControls();
+    const postsToShow = currentFilteredPosts.slice(0, visibleCount);
+    renderGrid(postsToShow);
+
+    if (loadMoreContainer) {
+      if (visibleCount >= currentFilteredPosts.length) {
+        loadMoreContainer.style.display = 'none';
+      } else {
+        loadMoreContainer.style.display = 'flex';
+      }
+    }
+
+    if (status) {
+      status.textContent = `${postsToShow.length} sur ${currentFilteredPosts.length} article(s) affiché(s)`;
+    }
+  }
 
   function applyFilter(filter) {
     if (filter === 'all') {
-      renderGrid(allPosts);
-      return;
+      currentFilteredPosts = allPosts;
+    } else {
+      currentFilteredPosts = allPosts.filter(function (post) {
+        return post.category === filter;
+      });
     }
-    renderGrid(allPosts.filter(function (post) {
-      return post.category === filter;
-    }));
+    visibleCount = PAGE_SIZE;
+    updateDisplay();
   }
 
   /* Les boutons de filtres sont de vrais boutons : aucun clic ne doit
@@ -315,11 +369,9 @@
       }) || allPosts[0];
 
       renderFeatured(featured);
-      renderGrid(allPosts);
-
-      if (status) {
-        status.textContent = allPosts.length + ' articles ';
-      }
+      currentFilteredPosts = allPosts;
+      visibleCount = PAGE_SIZE;
+      updateDisplay();
     } catch (error) {
       console.error('Impossible de charger le blog depuis Supabase.', error);
       grid.innerHTML =

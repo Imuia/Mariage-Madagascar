@@ -84,7 +84,7 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
     <div><label class="form-label" for="menu">Menu / régime alimentaire</label><input class="form-field" id="menu" placeholder="Ex. Végétarien, sans gluten"></div>
     <div><label class="form-label" for="tableName">Table assignée</label><input class="form-field" id="tableName" placeholder="Ex. Table Camélia"></div>
     <div class="sm:col-span-2 flex justify-end gap-3 border-t border-[#2a3a48] pt-4"><button id="cancelModal" type="button" class="pill">Annuler</button><button type="submit" class="rounded-full px-5 py-2.5 bg-[#7dd3fc] text-[#10232c] font-bold text-xs">Enregistrer l’invité</button></div>
-  </form><p class="text-[11px] text-[#8eb9cc] mt-4">Cette version conserve les ajouts dans la page en cours. La synchronisation Supabase reste à connecter.</p>
+  </form>
 </div></div>
 <div id="toast" class="fixed bottom-5 right-5 z-[120] hidden max-w-sm rounded-xl border border-[#2a3a48] bg-[#141c2e] px-4 py-3 text-sm text-white shadow-xl" role="status"></div>
 <script>
@@ -132,7 +132,7 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
  }
  function openModal(g=null){
    $('guestForm').reset();$('modalTitle').textContent=g?'Modifier un invité':'Ajouter un invité';
-   $('firstName').value=g?.first||'';$('lastName').value=g?.last||'';$('email').value=g?.email||'';$('category').value=g?.category||'Famille';$('rsvp').value=g?.status||'En attente';$('menu').value=g?.menu==='—'?'':g?.menu||'';$('tableName').value=g?.table||'';
+   $('firstName').value=g?.first||'';$('lastName').value=g?.last||'';$('email').value=g?.email||'';$('category').value=g?.category||'Famille';$('rsvp').value=g?.status||'En attente';$('menu').value=g?.diet||g?.menu==='—'?'':g?.diet||g?.menu||'';$('tableName').value=g?.table||'';
    $('guestForm').dataset.editId=g?String(g.id):'';$('guestModal').classList.remove('hidden');$('firstName').focus();
  }
  function closeModal(){$('guestModal').classList.add('hidden')}
@@ -182,7 +182,7 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
        email: email || null,
        category: categoryVal,
        rsvp_status: rsvpStatus,
-       dietary_requirements: $('diet')?.value?.trim() || null,
+       dietary_requirements: menuChoice || null,
        table_name: tableNameVal || null
      };
 
