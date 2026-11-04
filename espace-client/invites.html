@@ -56,7 +56,14 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
           <option value="">Chargement de vos événements…</option>
         </select>
         <span id="eventDateBadge" class="text-xs text-[#8eb9cc] bg-[#192b3c] border border-[#264158] px-2.5 py-1 rounded-md hidden"></span>
+        <button id="retryProjectsBtn" type="button" class="hidden rounded-lg bg-[#213d4a] hover:bg-[#294b5a] text-[#7dd3fc] px-3 py-1.5 text-xs font-semibold flex items-center gap-1.5 transition">
+          <span class="material-symbols-outlined text-sm">refresh</span> Réessayer
+        </button>
       </div>
+      <p id="eventErrorNotice" class="hidden text-xs text-rose-300 mt-2 flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-sm">error</span>
+        <span id="eventErrorText">Impossible de charger vos événements.</span>
+      </p>
     </div>
     <div class="actions flex gap-3">
       <button id="exportBtn" class="rounded-full px-4 py-3 bg-[#213d4a] hover:bg-[#294b5a] text-white text-xs font-bold flex items-center gap-2">
@@ -78,14 +85,14 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
     </p>
   </div>
   <section class="summary-grid grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-6">
-    <div class="stat"><div class="text-sm text-white font-medium">Total invités</div><div id="totalCount" class="text-3xl font-extrabold text-white mt-3">148</div><p class="text-xs text-[#8eb9cc] mt-2">Invités enregistrés</p></div>
-    <div class="stat"><div class="text-sm text-white font-medium">Confirmés</div><div id="confirmedCount" class="text-3xl font-extrabold text-[#7dd3fc] mt-3">112</div><p class="text-xs text-[#8eb9cc] mt-2">Présences confirmées</p></div>
-    <div class="stat"><div class="text-sm text-white font-medium">En attente</div><div id="pendingCount" class="text-3xl font-extrabold text-white mt-3">24</div><p class="text-xs text-[#8eb9cc] mt-2">Réponses à relancer</p></div>
-    <div class="stat"><div class="text-sm text-white font-medium">Restrictions alimentaires</div><div id="dietCount" class="text-3xl font-extrabold text-[#c8a0f0] mt-3">19</div><p class="text-xs text-[#8eb9cc] mt-2">Besoins signalés</p></div>
+    <div class="stat"><div class="text-sm text-white font-medium">Total invités</div><div id="totalCount" class="text-3xl font-extrabold text-white mt-3">0</div><p class="text-xs text-[#8eb9cc] mt-2">Invités enregistrés</p></div>
+    <div class="stat"><div class="text-sm text-white font-medium">Confirmés</div><div id="confirmedCount" class="text-3xl font-extrabold text-[#7dd3fc] mt-3">0</div><p class="text-xs text-[#8eb9cc] mt-2">Présences confirmées</p></div>
+    <div class="stat"><div class="text-sm text-white font-medium">En attente</div><div id="pendingCount" class="text-3xl font-extrabold text-white mt-3">0</div><p class="text-xs text-[#8eb9cc] mt-2">Réponses à relancer</p></div>
+    <div class="stat"><div class="text-sm text-white font-medium">Restrictions alimentaires</div><div id="dietCount" class="text-3xl font-extrabold text-[#c8a0f0] mt-3">0</div><p class="text-xs text-[#8eb9cc] mt-2">Besoins signalés</p></div>
   </section>
   <section class="mt-6 px-1">
-    <div class="flex items-center justify-between gap-3 text-sm mb-3"><span class="text-white font-semibold">Taux de confirmation global (<span id="confirmedSummary">112</span> sur <span id="totalSummary">148</span> invités)</span><strong id="confirmationRate" class="text-white">76%</strong></div>
-    <div class="h-2 rounded-full bg-[#2f576a] overflow-hidden"><div id="confirmationBar" class="h-full rounded-full bg-[#7dd3fc]" style="width:75.7%"></div></div>
+    <div class="flex items-center justify-between gap-3 text-sm mb-3"><span class="text-white font-semibold">Taux de confirmation global (<span id="confirmedSummary">0</span> sur <span id="totalSummary">0</span> invités)</span><strong id="confirmationRate" class="text-white">0%</strong></div>
+    <div class="h-2 rounded-full bg-[#2f576a] overflow-hidden"><div id="confirmationBar" class="h-full rounded-full bg-[#7dd3fc]" style="width:0%"></div></div>
     <p class="text-xs text-[#8eb9cc] mt-3">Date limite de réponse : à définir pour votre événement</p>
   </section>
   <section class="mt-6">
@@ -97,12 +104,21 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
   </section>
   <section class="glass mt-4 overflow-hidden">
     <div class="overflow-x-auto"><table><thead><tr><th>Invité</th><th>Cercle / rôle</th><th>Statut RSVP</th><th>Menu &amp; régime</th><th>Table</th><th>Actions</th></tr></thead><tbody id="guestTableBody"></tbody></table></div>
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 text-xs text-[#a0b4c4]"><span id="paginationInfo">Affichage de 1 à 6 sur 148 invités</span><div class="flex items-center gap-2"><button id="prevPage" class="pill" disabled>Précédent</button><span id="pageNumber" class="rounded-lg bg-[#7dd3fc] text-[#10232c] px-3 py-2 font-bold">1</span><button id="nextPage" class="pill">Suivant</button></div></div>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 text-xs text-[#a0b4c4]"><span id="paginationInfo">0 invité</span><div class="flex items-center gap-2"><button id="prevPage" class="pill" disabled>Précédent</button><span id="pageNumber" class="rounded-lg bg-[#7dd3fc] text-[#10232c] px-3 py-2 font-bold">1</span><button id="nextPage" class="pill" disabled>Suivant</button></div></div>
   </section>
   <section class="bottom-cards grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-    <article class="stat"><div class="flex items-center justify-between gap-2"><h2 class="font-bold text-white text-sm">Régimes spécifiques</h2><span class="rounded-full bg-[#0e4d6e] text-[#c8eaff] px-3 py-1 text-xs">19 cas</span></div><div class="space-y-2 text-xs mt-4 text-[#a0b4c4]"><p class="flex justify-between"><span>Végétarien / Végétalien</span><strong class="text-white">11</strong></p><p class="flex justify-between"><span>Sans gluten</span><strong class="text-white">4</strong></p><p class="flex justify-between"><span>Sans arachides / noix</span><strong class="text-white">3</strong></p><p class="flex justify-between"><span>Sans lactose</span><strong class="text-white">1</strong></p></div><p class="text-[11px] text-[#8eb9cc] border-t border-[#2a3a48] mt-4 pt-3">À transmettre au traiteur après validation.</p></article>
-    <article class="stat"><div class="flex items-center justify-between gap-2"><h2 class="font-bold text-white text-sm">Navettes &amp; transports</h2><span class="rounded-full bg-[#213d4a] text-[#c0d8e8] px-3 py-1 text-xs">64 inscrits</span></div><div class="space-y-2 text-xs mt-4 text-[#a0b4c4]"><p class="flex justify-between gap-3"><span>Gare → Domaine</span><strong class="text-white">38</strong></p><p class="flex justify-between gap-3"><span>Hôtel → Domaine</span><strong class="text-white">26</strong></p><p class="flex justify-between gap-3"><span>Navettes retour de nuit</span><strong class="text-white">52</strong></p></div><p class="text-[11px] text-[#8eb9cc] border-t border-[#2a3a48] mt-4 pt-3">Suivi des besoins de transport.</p></article>
-    <article class="stat"><div class="flex items-center justify-between gap-2"><h2 class="font-bold text-white text-sm">Hébergement partenaire</h2><span class="rounded-full bg-[#3d2060] text-[#e8d0ff] px-3 py-1 text-xs">28 chambres</span></div><p class="text-xs text-[#a0b4c4] leading-relaxed mt-4">Suivez les chambres réservées pour la famille et les témoins ainsi que les disponibilités restantes.</p><div class="flex items-center justify-between border-t border-[#2a3a48] mt-4 pt-3 text-[11px]"><span class="text-[#8eb9cc]">Taux de remplissage indicatif</span><strong class="text-[#7dd3fc]">87%</strong></div></article>
+    <article class="stat">
+      <div class="flex items-center justify-between gap-2">
+        <h2 class="font-bold text-white text-sm">Régimes spécifiques</h2>
+        <span id="dietBadgeCount" class="rounded-full bg-[#0e4d6e] text-[#c8eaff] px-3 py-1 text-xs">0 cas</span>
+      </div>
+      <div id="dietListContainer" class="space-y-2 text-xs mt-4 text-[#a0b4c4]">
+        <p class="text-xs text-[#8eb9cc] italic">Aucun régime alimentaire particulier signalé pour cet événement</p>
+      </div>
+      <p class="text-[11px] text-[#8eb9cc] border-t border-[#2a3a48] mt-4 pt-3">À transmettre au traiteur après validation.</p>
+    </article>
+    <article class="stat"><div class="flex items-center justify-between gap-2"><h2 class="font-bold text-white text-sm">Navettes &amp; transports</h2><span class="rounded-full bg-[#213d4a] text-[#c0d8e8] px-3 py-1 text-xs">Suivi</span></div><div class="space-y-2 text-xs mt-4 text-[#a0b4c4]"><p class="text-xs text-[#8eb9cc] leading-relaxed">Centralisez les besoins de transport et d'acheminement de vos invités auprès de votre coordinateur local.</p></div><p class="text-[11px] text-[#8eb9cc] border-t border-[#2a3a48] mt-4 pt-3">Suivi des besoins de transport.</p></article>
+    <article class="stat"><div class="flex items-center justify-between gap-2"><h2 class="font-bold text-white text-sm">Hébergement partenaire</h2><span class="rounded-full bg-[#3d2060] text-[#e8d0ff] px-3 py-1 text-xs">Hébergements</span></div><p class="text-xs text-[#a0b4c4] leading-relaxed mt-4">Suivez les villas et chambres réservées pour vos invités ainsi que les disponibilités restantes auprès de vos hôtes.</p><div class="flex items-center justify-between border-t border-[#2a3a48] mt-4 pt-3 text-[11px]"><span class="text-[#8eb9cc]">Coordination personnalisée</span><strong class="text-[#7dd3fc]">Sur mesure</strong></div></article>
   </section>
   <footer class="text-center text-xs text-[#61778a] mt-8">© 2026 Mariage Madagascar · Espace client privé · Vos préparatifs en un seul endroit</footer>
 </main>
@@ -162,17 +178,35 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
  function render(){
    const list=filtered(),pages=Math.max(1,Math.ceil(list.length/perPage));if(page>pages)page=pages;
    const shown=list.slice((page-1)*perPage,page*perPage);
-   $('guestTableBody').innerHTML=shown.length?shown.map(g=>`<tr>
-    <td><div class="flex items-center gap-3"><div class="w-9 h-9 shrink-0 rounded-full bg-[#213d4a] border border-[#7dd3fc]/30 flex items-center justify-center text-[#7dd3fc] text-[10px] font-bold">${esc(initials(g))}</div><div><div class="font-semibold text-white">${esc(g.first)} ${esc(g.last)} ${g.role?`<span class="ml-1 rounded-full bg-[#3d2060] text-[#e8d0ff] px-2 py-1 text-[9px]">${esc(g.role)}</span>`:''}</div><div class="text-[11px] text-[#a0b4c4] mt-1">${esc(g.email||'E-mail non renseigné')}</div></div></div></td>
-    <td class="text-xs">${esc(g.category)}</td><td><span class="status ${g.statusDb==='confirmed'?'confirmed':g.statusDb==='pending'?'pending':'declined'}">● ${esc(g.statusLabel)}${g.statusDb==='confirmed'&&g.plus?` (+${g.plus})`:''}</span></td>
-    <td><div class="text-xs text-white">${esc(g.menu||'—')}</div>${g.diet&&g.diet!=='Aucune restriction'?`<div class="mt-1 inline-block rounded-md border border-amber-500/30 bg-amber-950/40 px-2 py-1 text-[10px] text-amber-300">${esc(g.diet)}</div>`:''}</td>
-    <td class="text-xs ${g.table?'text-white':'text-[#a0b4c4] italic'}">${esc(g.table||'Non assignée')}</td><td><div class="flex items-center gap-1"><button class="editGuest p-2 text-[#a0b4c4] hover:text-[#7dd3fc]" data-id="${g.id}" title="Modifier cet invité" aria-label="Modifier ${esc(g.first)}"><span class="material-symbols-outlined text-lg">edit</span></button><button class="deleteGuest p-2 text-[#a0b4c4] hover:text-rose-400" data-id="${g.id}" title="Supprimer cet invité" aria-label="Supprimer ${esc(g.first)}"><span class="material-symbols-outlined text-lg">delete</span></button></div></td></tr>`).join(''):`<tr><td colspan="6" class="text-center py-10 text-[#a0b4c4]">Aucun invité ne correspond à la recherche.</td></tr>`;
-   $('paginationInfo').textContent=list.length?`Affichage de ${(page-1)*perPage+1} à ${Math.min(page*perPage,list.length)} sur ${list.length} résultat(s)`:'Aucun résultat';
+
+   if (!guests.length) {
+     $('guestTableBody').innerHTML = `<tr><td colspan="6" class="text-center py-12 text-[#8eb9cc]"><span class="material-symbols-outlined text-3xl mb-2 text-[#7dd3fc] block">person_outline</span>Aucun invité enregistré pour cet événement.<br><span class="text-xs text-[#61778a]">Cliquez sur « Ajouter un invité » pour démarrer votre liste.</span></td></tr>`;
+   } else if (!shown.length) {
+     $('guestTableBody').innerHTML = `<tr><td colspan="6" class="text-center py-10 text-[#a0b4c4]">Aucun invité ne correspond à la recherche ou aux filtres sélectionnés.</td></tr>`;
+   } else {
+     $('guestTableBody').innerHTML = shown.map(g=>`<tr>
+      <td><div class="flex items-center gap-3"><div class="w-9 h-9 shrink-0 rounded-full bg-[#213d4a] border border-[#7dd3fc]/30 flex items-center justify-center text-[#7dd3fc] text-[10px] font-bold">${esc(initials(g))}</div><div><div class="font-semibold text-white">${esc(g.first)} ${esc(g.last)} ${g.role?`<span class="ml-1 rounded-full bg-[#3d2060] text-[#e8d0ff] px-2 py-1 text-[9px]">${esc(g.role)}</span>`:''}</div><div class="text-[11px] text-[#a0b4c4] mt-1">${esc(g.email||'E-mail non renseigné')}</div></div></div></td>
+      <td class="text-xs">${esc(g.category)}</td><td><span class="status ${g.statusDb==='confirmed'?'confirmed':g.statusDb==='pending'?'pending':'declined'}">● ${esc(g.statusLabel)}${g.statusDb==='confirmed'&&g.plus?` (+${g.plus})`:''}</span></td>
+      <td><div class="text-xs text-white">${esc(g.diet||'—')}</div>${g.diet&&g.diet!=='Aucune restriction'&&g.diet!=='—'?`<div class="mt-1 inline-block rounded-md border border-amber-500/30 bg-amber-950/40 px-2 py-1 text-[10px] text-amber-300">${esc(g.diet)}</div>`:''}</td>
+      <td class="text-xs ${g.table?'text-white':'text-[#a0b4c4] italic'}">${esc(g.table||'Non assignée')}</td><td><div class="flex items-center gap-1"><button class="editGuest p-2 text-[#a0b4c4] hover:text-[#7dd3fc]" data-id="${g.id}" title="Modifier cet invité" aria-label="Modifier ${esc(g.first)}"><span class="material-symbols-outlined text-lg">edit</span></button><button class="deleteGuest p-2 text-[#a0b4c4] hover:text-rose-400" data-id="${g.id}" title="Supprimer cet invité" aria-label="Supprimer ${esc(g.first)}"><span class="material-symbols-outlined text-lg">delete</span></button></div></td></tr>`).join('');
+   }
+
+   $('paginationInfo').textContent=list.length?`Affichage de ${(page-1)*perPage+1} à ${Math.min(page*perPage,list.length)} sur ${list.length} invité(s)`:'0 invité';
    $('pageNumber').textContent=page;$('prevPage').disabled=page<=1;$('nextPage').disabled=page>=pages;
    const total = guests.length;
    const confirmed = guests.filter(g=>g.statusDb==='confirmed').length;
    const pending = guests.filter(g=>g.statusDb==='pending').length;
-   const diet = guests.filter(g=>g.diet && g.diet !== 'Aucune restriction' && g.diet !== '—').length;
+
+   // Décompte et ventilation dynamique des régimes alimentaires réels
+   const dietCounts = {};
+   let totalDietCases = 0;
+   guests.forEach(g => {
+     const rawDiet = (g.diet || '').trim();
+     if (rawDiet && rawDiet !== '—' && rawDiet.toLowerCase() !== 'aucune restriction' && rawDiet.toLowerCase() !== 'aucun' && rawDiet.toLowerCase() !== 'aucune') {
+       totalDietCases++;
+       dietCounts[rawDiet] = (dietCounts[rawDiet] || 0) + 1;
+     }
+   });
 
    $('totalCount').textContent = total;
    $('totalSummary').textContent = total;
@@ -183,7 +217,22 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
    const rate = total > 0 ? Math.round((confirmed / total) * 100) : 0;
    $('confirmationRate').textContent = rate + '%';
    $('confirmationBar').style.width = rate + '%';
-   $('dietCount').textContent = diet;
+   $('dietCount').textContent = totalDietCases;
+
+   // Mise à jour de la carte basse Régimes spécifiques
+   const dietBadge = $('dietBadgeCount');
+   const dietContainer = $('dietListContainer');
+   if (dietBadge) dietBadge.textContent = `${totalDietCases} cas`;
+   if (dietContainer) {
+     const dietEntries = Object.entries(dietCounts);
+     if (dietEntries.length === 0) {
+       dietContainer.innerHTML = '<p class="text-xs text-[#8eb9cc] italic">Aucun régime alimentaire particulier signalé pour cet événement</p>';
+     } else {
+       dietContainer.innerHTML = dietEntries.map(([name, count]) => `
+         <p class="flex justify-between"><span>${esc(name)}</span><strong class="text-white">${count}</strong></p>
+       `).join('');
+     }
+   }
  }
  function openModal(g=null){
    $('guestForm').reset();$('modalTitle').textContent=g?'Modifier un invité':'Ajouter un invité';
@@ -214,10 +263,7 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
    if (proj && proj.event_date) {
      const d = new Date(proj.event_date);
      const str = Number.isNaN(d.getTime()) ? proj.event_date : new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(d);
-     badge.textContent = 'Date : ' + str + (proj.location ? ' · ' + proj.location : '');
-     badge.classList.remove('hidden');
-   } else if (proj && proj.location) {
-     badge.textContent = proj.location;
+     badge.textContent = 'Date de célébration : ' + str;
      badge.classList.remove('hidden');
    } else {
      badge.classList.add('hidden');
@@ -388,10 +434,16 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
      if (!session) return;
      const user = session.user;
 
-     // Récupération de tous les projets du client
+     const errorNotice = $('eventErrorNotice');
+     const errorText = $('eventErrorText');
+     const retryBtn = $('retryProjectsBtn');
+     if (errorNotice) errorNotice.classList.add('hidden');
+     if (retryBtn) retryBtn.classList.add('hidden');
+
+     // Récupération de tous les projets du client (colonnes réellement présentes dans Supabase)
      const { data: projects, error: projectsError } = await sb
        .from('client_projects')
-       .select('id, title, event_date, location, status')
+       .select('id, title, event_date, status, created_at')
        .eq('owner_id', user.id)
        .order('created_at', { ascending: true });
 
@@ -403,9 +455,10 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
      const addTrigger = $('addGuestTrigger');
 
      if (!userProjects.length) {
-       if (selectEl) selectEl.innerHTML = '<option value="">Aucun événement</option>';
+       if (selectEl) selectEl.innerHTML = '<option value="">Aucun événement disponible</option>';
        if (noticeEl) noticeEl.classList.remove('hidden');
        if (addTrigger) addTrigger.classList.add('hidden');
+       updateEventBadge(null);
        guests = [];
        render();
        return;
@@ -415,8 +468,8 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
      if (addTrigger) addTrigger.classList.remove('hidden');
 
      if (selectEl) {
-       selectEl.innerHTML = userProjects.map((p, idx) => `
-         <option value="${esc(p.id)}">${esc(p.title || 'Mon mariage')} ${p.location ? `(${esc(p.location)})` : ''}</option>
+       selectEl.innerHTML = userProjects.map((p) => `
+         <option value="${esc(p.id)}">${esc(p.title || 'Mon mariage')}</option>
        `).join('');
 
        if (!currentProjectId || !userProjects.some(p => p.id === currentProjectId)) {
@@ -431,8 +484,29 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
      await loadGuestsForProject(currentProjectId);
    } catch (err) {
      console.error('Erreur initialisation projets:', err);
+     const selectEl = $('eventProjectSelect');
+     if (selectEl) selectEl.innerHTML = '<option value="">Erreur de chargement des événements</option>';
+     const errorNotice = $('eventErrorNotice');
+     const errorText = $('eventErrorText');
+     const retryBtn = $('retryProjectsBtn');
+     if (errorText) errorText.textContent = 'Impossible de charger vos événements (' + (err.message || 'erreur serveur') + ').';
+     if (errorNotice) errorNotice.classList.remove('hidden');
+     if (retryBtn) retryBtn.classList.remove('hidden');
+     updateEventBadge(null);
+     guests = [];
+     render();
    }
  }
+
+ $('retryProjectsBtn')?.addEventListener('click', () => {
+   const selectEl = $('eventProjectSelect');
+   if (selectEl) selectEl.innerHTML = '<option value="">Chargement de vos événements…</option>';
+   const errorNotice = $('eventErrorNotice');
+   const retryBtn = $('retryProjectsBtn');
+   if (errorNotice) errorNotice.classList.add('hidden');
+   if (retryBtn) retryBtn.classList.add('hidden');
+   syncWithSupabase();
+ });
 
  syncWithSupabase();
 })();
