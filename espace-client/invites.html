@@ -41,9 +41,42 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
 <main class="workspace">
   <div class="flex flex-wrap items-center gap-2 text-sm text-[#8eb9cc] mb-5"><a href="/espace-client/index.html">Accueil</a><span>/</span><a href="/espace-client/index.html">Espace client</a><span>/</span><span class="text-white">Invités & RSVP</span></div>
   <header class="page-header flex flex-col lg:flex-row lg:items-end justify-between gap-5 pb-5 border-b border-[#2a3a48]">
-    <div><div class="inline-flex items-center gap-2 text-xs text-[#7dd3fc] bg-[#1a3a4e]/60 border border-[#7dd3fc]/20 rounded-full px-3 py-1 mb-3"><span class="w-1.5 h-1.5 rounded-full bg-[#7dd3fc]"></span> Suivi des réponses</div><h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white">Gestion des Invités &amp; RSVP</h1><p class="text-[#8eb9cc] mt-2 max-w-3xl">Suivez les confirmations de présence, les préférences de menu et les régimes spécifiques.</p></div>
-    <div class="actions flex gap-3"><button id="exportBtn" class="rounded-full px-4 py-3 bg-[#213d4a] hover:bg-[#294b5a] text-white text-xs font-bold flex items-center gap-2"><span class="material-symbols-outlined text-lg">download</span>Exporter la liste (.csv)</button><button id="addGuestTrigger" class="rounded-full px-5 py-3 bg-[#7dd3fc] hover:brightness-110 text-[#10232c] text-xs font-extrabold flex items-center gap-2"><span class="material-symbols-outlined text-lg">person_add</span>Ajouter un invité</button></div>
+    <div>
+      <div class="inline-flex items-center gap-2 text-xs text-[#7dd3fc] bg-[#1a3a4e]/60 border border-[#7dd3fc]/20 rounded-full px-3 py-1 mb-3">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#7dd3fc]"></span> Suivi des réponses par événement
+      </div>
+      <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white">Gestion des Invités &amp; RSVP</h1>
+      <p class="text-[#8eb9cc] mt-2 max-w-3xl">Suivez les confirmations de présence, les préférences de menu et les régimes spécifiques par célébration.</p>
+      <!-- Sélecteur d'événement / Mariage -->
+      <div id="eventSelectorContainer" class="mt-4 flex flex-wrap items-center gap-3">
+        <label for="eventProjectSelect" class="text-xs font-semibold text-[#8eb9cc] flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm text-[#7dd3fc]">celebration</span> Événement :
+        </label>
+        <select id="eventProjectSelect" class="field px-3.5 py-2 text-xs font-semibold rounded-lg bg-[#141f32] text-white border border-[#2a3a48] focus:border-[#7dd3fc] min-w-[240px]">
+          <option value="">Chargement de vos événements…</option>
+        </select>
+        <span id="eventDateBadge" class="text-xs text-[#8eb9cc] bg-[#192b3c] border border-[#264158] px-2.5 py-1 rounded-md hidden"></span>
+      </div>
+    </div>
+    <div class="actions flex gap-3">
+      <button id="exportBtn" class="rounded-full px-4 py-3 bg-[#213d4a] hover:bg-[#294b5a] text-white text-xs font-bold flex items-center gap-2">
+        <span class="material-symbols-outlined text-lg">download</span>Exporter la liste (.csv)
+      </button>
+      <button id="addGuestTrigger" class="rounded-full px-5 py-3 bg-[#7dd3fc] hover:brightness-110 text-[#10232c] text-xs font-extrabold flex items-center gap-2">
+        <span class="material-symbols-outlined text-lg">person_add</span>Ajouter un invité
+      </button>
+    </div>
   </header>
+  <!-- Notice si aucun événement mariage n'est présent -->
+  <div id="noWeddingNotice" class="hidden mt-6 p-6 rounded-2xl bg-[#141f32]/90 border border-[#2a3a48] text-center">
+    <div class="w-12 h-12 rounded-full bg-[#1b2b40] text-[#7dd3fc] flex items-center justify-center mx-auto mb-3">
+      <span class="material-symbols-outlined text-2xl">event_busy</span>
+    </div>
+    <h3 class="text-lg font-bold text-white mb-2">Aucun événement nécessitant une liste d'invités</h3>
+    <p class="text-sm text-[#8eb9cc] max-w-xl mx-auto">
+      Cet espace est réservé au suivi des invités et RSVP pour vos cérémonies et mariages. Vos séjours ou escapades romantiques ne requièrent pas de gestion d'invités. Si vous organisez une célébration, contactez votre wedding planner pour activer votre projet.
+    </p>
+  </div>
   <section class="summary-grid grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-6">
     <div class="stat"><div class="text-sm text-white font-medium">Total invités</div><div id="totalCount" class="text-3xl font-extrabold text-white mt-3">148</div><p class="text-xs text-[#8eb9cc] mt-2">Invités enregistrés</p></div>
     <div class="stat"><div class="text-sm text-white font-medium">Confirmés</div><div id="confirmedCount" class="text-3xl font-extrabold text-[#7dd3fc] mt-3">112</div><p class="text-xs text-[#8eb9cc] mt-2">Présences confirmées</p></div>
@@ -165,6 +198,32 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
  $('addGuestTrigger').addEventListener('click',()=>openModal());$('closeModal').addEventListener('click',closeModal);$('cancelModal').addEventListener('click',closeModal);
  $('guestModal').addEventListener('click',e=>{if(e.target===$('guestModal'))closeModal()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+ let userProjects = [];
+ let currentProjectId = null;
+
+ $('eventProjectSelect')?.addEventListener('change', async (e) => {
+   currentProjectId = e.target.value;
+   const currentProj = userProjects.find(p => p.id === currentProjectId);
+   updateEventBadge(currentProj);
+   await loadGuestsForProject(currentProjectId);
+ });
+
+ function updateEventBadge(proj) {
+   const badge = $('eventDateBadge');
+   if (!badge) return;
+   if (proj && proj.event_date) {
+     const d = new Date(proj.event_date);
+     const str = Number.isNaN(d.getTime()) ? proj.event_date : new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(d);
+     badge.textContent = 'Date : ' + str + (proj.location ? ' · ' + proj.location : '');
+     badge.classList.remove('hidden');
+   } else if (proj && proj.location) {
+     badge.textContent = proj.location;
+     badge.classList.remove('hidden');
+   } else {
+     badge.classList.add('hidden');
+   }
+ }
+
  $('guestForm').addEventListener('submit',async e=>{
    e.preventDefault();
    const sb = window.clientSupabase || window.mmSupabase;
@@ -190,22 +249,19 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
      }
      const user = session.user;
 
-     // Schéma réel client_guests : project_id, name, email, category,
-     // rsvp_status, dietary_requirements, table_name.
-     const { data: project, error: projectError } = await sb
-       .from('client_projects')
-       .select('id')
-       .eq('owner_id', user.id)
-       .limit(1)
-       .maybeSingle();
+     if (!currentProjectId) {
+       throw new Error('Veuillez sélectionner un événement avant d\'ajouter un invité.');
+     }
 
-     if (projectError) throw projectError;
-     if (!project?.id) throw new Error('Aucun projet de mariage associé à votre compte.');
+     const verifiedProj = userProjects.find(p => p.id === currentProjectId);
+     if (!verifiedProj) {
+       throw new Error('Projet sélectionné non autorisé ou invalide.');
+     }
 
      const dbRsvpStatus = normalizeRsvpToDb(rsvpStatus);
 
      const payload = {
-       project_id: project.id,
+       project_id: currentProjectId,
        name: [firstName, lastName].filter(Boolean).join(' '),
        email: email || null,
        category: categoryVal,
@@ -219,7 +275,7 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
          .from('client_guests')
          .update(payload)
          .eq('id', id)
-         .eq('project_id', project.id);
+         .eq('project_id', currentProjectId);
 
        if (error) throw error;
        toast('Invité et statut RSVP enregistrés dans Supabase.');
@@ -233,7 +289,7 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
      }
 
      closeModal();
-     await syncWithSupabase();
+     await loadGuestsForProject(currentProjectId);
    } catch (err) {
      console.error('Erreur sauvegarde invité:', err);
      toast('Erreur lors de la sauvegarde : ' + (err.message || 'accès refusé par RLS.'));
@@ -281,32 +337,18 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
    const csv=rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
    const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='liste-invites-rsvp.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);toast('Export CSV téléchargé.');
  });
- async function syncWithSupabase() {
+ async function loadGuestsForProject(projectId) {
    const sb = window.clientSupabase || window.mmSupabase;
-   if (!sb) return;
+   if (!sb || !projectId) {
+     guests = [];
+     render();
+     return;
+   }
    try {
-     const { data: { session } } = await sb.auth.getSession();
-     if (!session) return;
-     const user = session.user;
-
-     const { data: project, error: projectError } = await sb
-       .from('client_projects')
-       .select('id')
-       .eq('owner_id', user.id)
-       .limit(1)
-       .maybeSingle();
-
-     if (projectError) throw projectError;
-     if (!project?.id) {
-       guests = [];
-       render();
-       return;
-     }
-
      const { data: dbGuests, error } = await sb
        .from('client_guests')
        .select('id, project_id, name, email, category, rsvp_status, dietary_requirements, table_name, created_at')
-       .eq('project_id', project.id)
+       .eq('project_id', projectId)
        .order('created_at', { ascending: false });
 
      if (error) throw error;
@@ -333,12 +375,66 @@ table{border-collapse:collapse;min-width:780px;width:100%}th,td{padding:14px 13p
      });
      render();
    } catch (err) {
-     console.error('Erreur chargement invités:', err);
+     console.error('Erreur chargement invités pour projet:', err);
+     toast('Erreur lors du chargement des invités.');
+   }
+ }
+
+ async function syncWithSupabase() {
+   const sb = window.clientSupabase || window.mmSupabase;
+   if (!sb) return;
+   try {
+     const { data: { session } } = await sb.auth.getSession();
+     if (!session) return;
+     const user = session.user;
+
+     // Récupération de tous les projets du client
+     const { data: projects, error: projectsError } = await sb
+       .from('client_projects')
+       .select('id, title, event_date, location, status')
+       .eq('owner_id', user.id)
+       .order('created_at', { ascending: true });
+
+     if (projectsError) throw projectsError;
+
+     userProjects = projects || [];
+     const selectEl = $('eventProjectSelect');
+     const noticeEl = $('noWeddingNotice');
+     const addTrigger = $('addGuestTrigger');
+
+     if (!userProjects.length) {
+       if (selectEl) selectEl.innerHTML = '<option value="">Aucun événement</option>';
+       if (noticeEl) noticeEl.classList.remove('hidden');
+       if (addTrigger) addTrigger.classList.add('hidden');
+       guests = [];
+       render();
+       return;
+     }
+
+     if (noticeEl) noticeEl.classList.add('hidden');
+     if (addTrigger) addTrigger.classList.remove('hidden');
+
+     if (selectEl) {
+       selectEl.innerHTML = userProjects.map((p, idx) => `
+         <option value="${esc(p.id)}">${esc(p.title || 'Mon mariage')} ${p.location ? `(${esc(p.location)})` : ''}</option>
+       `).join('');
+
+       if (!currentProjectId || !userProjects.some(p => p.id === currentProjectId)) {
+         currentProjectId = userProjects[0].id;
+       }
+       selectEl.value = currentProjectId;
+     }
+
+     const currentProj = userProjects.find(p => p.id === currentProjectId);
+     updateEventBadge(currentProj);
+
+     await loadGuestsForProject(currentProjectId);
+   } catch (err) {
+     console.error('Erreur initialisation projets:', err);
    }
  }
 
  syncWithSupabase();
- render();
 })();
 </script>
 </body></html>

@@ -308,6 +308,54 @@ module.exports = async function handler(req, res) {
 
       // 5. Récupération des détails pour l'envoi des emails
       const orderItems = await supabaseFetch(`order_items?order_id=eq.${order.id}`);
+      // 5. Rattachement automatique du projet mariage si la commande contient une célébration
+      if (order.user_id) {
+        try {
+          const weddingItems = (orderItems || []).filter(item => {
+            const val = `${item.product_name || ''} ${item.variation_name || ''} ${item.product_slug || ''}`.toLowerCase();
+            return /mariage|wedding|cér[ée]mon|nuptial|vœux|voeux|ambariobe|mora mora/i.test(val);
+          });
+
+          if (weddingItems.length > 0) {
+            const weddingItem = weddingItems[0];
+            const eventTitle = weddingItem.product_name ? weddingItem.product_name.replace(/^[\s🎉💍✨]+|[\s💍✨]+$/g, '').trim() : 'Mariage';
+            const eventDate = order.booking_date || weddingItem.booking_date || null;
+
+            // Vérifier les projets existants du client
+            const existingProjects = await supabaseFetch(`client_projects?owner_id=eq.${order.user_id}&order=created_at.asc`);
+            if (Array.isArray(existingProjects) && existingProjects.length > 0) {
+              // Réutiliser le premier projet s'il a le titre par défaut "Mon mariage"
+              const defaultProj = existingProjects.find(p => p.title === 'Mon mariage');
+              if (defaultProj) {
+                await supabaseFetch(`client_projects?id=eq.${defaultProj.id}`, {
+                  method: 'PATCH',
+                  body: JSON.stringify({
+                    title: eventTitle,
+                    event_date: eventDate || defaultProj.event_date,
+                    updated_at: new Date().toISOString()
+                  })
+                });
+              }
+            } else {
+              // Créer le projet spécifique au mariage commandé
+              await supabaseFetch('client_projects', {
+                method: 'POST',
+                body: JSON.stringify({
+                  owner_id: order.user_id,
+                  title: eventTitle,
+                  event_date: eventDate,
+                  status: 'in_preparation',
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString()
+                })
+              });
+            }
+          }
+        } catch (projErr) {
+          console.warn('[Webhook Stripe] Erreur synchronisation client_projects:', projErr);
+        }
+      }
+
       const invoiceUrl = await fetchStripeInvoiceUrl(invoiceId);
 
       // Envoi de l'email client s'il n'a pas encore été envoyé
