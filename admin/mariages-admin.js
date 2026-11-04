@@ -90,17 +90,114 @@
 
   let currentRows = [];
 
-  function showDetails(row) {
+  function exportGuestsToCsv(weddingName, guests) {
+    if (!guests || !guests.length) {
+      alert('Aucun invité à exporter pour ce mariage.');
+      return;
+    }
+    const headers = ['Nom & Prénom', 'E-mail', 'Groupe', 'Statut RSVP', 'Régime alimentaire', 'Table'];
+    const rsvpLabels = { confirmed: 'Confirmé', pending: 'En attente', declined: 'Décliné' };
+    const rows = guests.map(g => [
+      g.name || '',
+      g.email || '',
+      g.category || '',
+      rsvpLabels[g.rsvp_status] || g.rsvp_status || 'En attente',
+      g.dietary_requirements || '',
+      g.table_name || ''
+    ]);
+    const csvContent = [
+      headers.map(h => `"${h.replace(/"/g, '""')}"`).join(';'),
+      ...rows.map(row => row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(';'))
+    ].join('\r\n');
+
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const safeName = (weddingName || 'mariage').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    link.setAttribute('href', url);
+    link.setAttribute('download', `invites_${safeName}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  async function loadGuestsForOrder(order, clientInstance) {
+    if (!clientInstance) return { project: null, guests: [] };
+    try {
+      let projectId = null;
+      let project = null;
+
+      // 1. Recherche par user_id du client sur client_projects
+      if (order.user_id) {
+        const { data: pData } = await clientInstance
+          .from('client_projects')
+          .select('*')
+          .eq('owner_id', order.user_id)
+          .limit(1)
+          .maybeSingle();
+        if (pData) {
+          project = pData;
+          projectId = pData.id;
+        }
+      }
+
+      // 2. Recherche par e-mail si aucun user_id ou aucun projet trouvé
+      if (!projectId && (order.guest_email || order.email)) {
+        const email = (order.guest_email || order.email).trim().toLowerCase();
+        // Recherche dans client_profiles
+        const { data: profData } = await clientInstance
+          .from('client_profiles')
+          .select('id')
+          .ilike('email', email)
+          .limit(1)
+          .maybeSingle();
+        if (profData && profData.id) {
+          const { data: pData } = await clientInstance
+            .from('client_projects')
+            .select('*')
+            .eq('owner_id', profData.id)
+            .limit(1)
+            .maybeSingle();
+          if (pData) {
+            project = pData;
+            projectId = pData.id;
+          }
+        }
+      }
+
+      if (!projectId) return { project: null, guests: [] };
+
+      // 3. Récupération des invités de ce projet
+      const { data: guests, error } = await clientInstance
+        .from('client_guests')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('name', { ascending: true });
+
+      if (error) {
+        console.warn('[Mariages Admin] Erreur chargement client_guests:', error);
+        return { project, guests: [] };
+      }
+      return { project, guests: guests || [] };
+    } catch (e) {
+      console.warn('[Mariages Admin] Exception chargement invités:', e);
+      return { project: null, guests: [] };
+    }
+  }
+
+  async function showDetails(row) {
     const dialog = document.createElement('dialog');
-    dialog.style.cssText = 'max-width:min(760px,94vw);width:100%;max-height:88vh;overflow:auto;padding:24px;border:1px solid #2a3a48;border-radius:16px;background:#0e1726;color:#e7eef8;';
+    dialog.style.cssText = 'max-width:min(900px,96vw);width:100%;max-height:90vh;overflow:auto;padding:24px;border:1px solid #2a3a48;border-radius:16px;background:#0e1726;color:#e7eef8;';
     const heading = document.createElement('h2');
     heading.textContent = 'Détails du dossier mariage';
     heading.style.cssText = 'font-size:22px;font-weight:700;margin-bottom:16px';
     dialog.append(heading);
+
     const grid = document.createElement('div');
     grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px';
     const fields = [
-      ['Client', row.client], ['E-mail', row.order.guest_email || '—'], ['Téléphone', row.order.guest_phone || '—'],
+      ['Client', row.client], ['E-mail', row.order.guest_email || row.order.email || '—'], ['Téléphone', row.order.guest_phone || '—'],
       ['Formule / prestation', row.products || '—'], ['Destination', row.destination || 'Non renseignée dans la commande'],
       ['Date prévue / arrivée', fmtDate(row.date)], ['Montant commande', money(row.order.total_amount)],
       ['Statut commande', pick(row.order, ['status']) || '—'], ['Statut paiement', pick(row.order, ['payment_status']) || '—'],
@@ -118,12 +215,35 @@
       grid.append(box);
     });
     dialog.append(grid);
+
+    // Section Suivi & Affectation de l'équipe interne
+    const assignSection = document.createElement('div');
+    assignSection.style.cssText = 'margin-top:20px;padding:16px;border:1px solid #26364a;border-radius:12px;background:#141f32';
+    assignSection.innerHTML = `
+      <h3 style="font-size:15px;font-weight:700;color:#7dd3fc;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+        Équipe affectée au dossier
+      </h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;font-size:13px;">
+        <div>
+          <span style="color:#86a0bb;display:block;font-size:11px;margin-bottom:4px;">Chargé de production responsable :</span>
+          <span id="dossier-assigned-prod" style="font-weight:600;color:#e2e8f0;">${esc(row.order.assigned_production_name || 'En attente d\'attribution')}</span>
+        </div>
+        <div>
+          <span style="color:#86a0bb;display:block;font-size:11px;margin-bottom:4px;">Commercial responsable :</span>
+          <span id="dossier-assigned-comm" style="font-weight:600;color:#e2e8f0;">${esc(row.order.assigned_commercial_name || 'En attente d\'attribution')}</span>
+        </div>
+      </div>
+    `;
+    dialog.append(assignSection);
+
+    // Prestations de la commande
     const itemHeading = document.createElement('h3');
     itemHeading.textContent = 'Prestations de la commande';
-    itemHeading.style.cssText = 'font-size:16px;font-weight:700;margin:18px 0 8px';
+    itemHeading.style.cssText = 'font-size:16px;font-weight:700;margin:20px 0 8px';
     dialog.append(itemHeading);
     const list = document.createElement('ul');
-    list.style.cssText = 'padding-left:20px;list-style:disc';
+    list.style.cssText = 'padding-left:20px;list-style:disc;font-size:13px;';
     row.items.forEach((item) => {
       const li = document.createElement('li');
       const amount = item.total_price == null ? '' : ` — ${money(item.total_price)}`;
@@ -136,15 +256,134 @@
       list.append(li);
     }
     dialog.append(list);
+
+    // Section Rubrique Invités & RSVP
+    const guestSection = document.createElement('div');
+    guestSection.style.cssText = 'margin-top:24px;border-top:1px solid #2a3a48;padding-top:18px';
+    guestSection.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+        <div>
+          <h3 style="font-size:16px;font-weight:700;color:#e7eef8;margin:0;">Liste des invités & RSVP</h3>
+          <p style="font-size:12px;color:#86a0bb;margin:2px 0 0 0;">Synchronisé avec l'espace client du couple</p>
+        </div>
+        <button type="button" id="btn-export-guests-csv" class="bg-primary/20 border border-primary/40 text-primary hover:bg-primary/30 rounded-lg px-3 py-1.5 text-xs font-semibold flex items-center gap-1.5 transition-colors" style="display:none;">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          Exporter en CSV
+        </button>
+      </div>
+      <div id="guests-stats-box" style="display:none;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:14px;">
+        <div style="background:#131d2e;border:1px solid #243447;border-radius:8px;padding:8px 12px;text-align:center;">
+          <div style="font-size:11px;color:#86a0bb;">Total invités</div>
+          <div id="stat-total-guests" style="font-size:18px;font-weight:700;color:#e7eef8;">0</div>
+        </div>
+        <div style="background:#131d2e;border:1px solid #243447;border-radius:8px;padding:8px 12px;text-align:center;">
+          <div style="font-size:11px;color:#34d399;">Confirmés</div>
+          <div id="stat-confirmed-guests" style="font-size:18px;font-weight:700;color:#34d399;">0</div>
+        </div>
+        <div style="background:#131d2e;border:1px solid #243447;border-radius:8px;padding:8px 12px;text-align:center;">
+          <div style="font-size:11px;color:#fbbf24;">En attente</div>
+          <div id="stat-pending-guests" style="font-size:18px;font-weight:700;color:#fbbf24;">0</div>
+        </div>
+        <div style="background:#131d2e;border:1px solid #243447;border-radius:8px;padding:8px 12px;text-align:center;">
+          <div style="font-size:11px;color:#f87171;">Déclinés</div>
+          <div id="stat-declined-guests" style="font-size:18px;font-weight:700;color:#f87171;">0</div>
+        </div>
+      </div>
+      <div id="guests-table-container" style="max-height:260px;overflow:auto;border:1px solid #243447;border-radius:8px;background:#0d1522;">
+        <div style="padding:16px;text-align:center;font-size:13px;color:#86a0bb;" id="guests-loading-msg">Chargement des invités depuis le projet client...</div>
+      </div>
+    `;
+    dialog.append(guestSection);
+
+    // Bouton de fermeture
+    const closeBtnWrap = document.createElement('div');
+    closeBtnWrap.style.cssText = 'display:flex;justify-content:flex-end;margin-top:20px;';
     const close = document.createElement('button');
     close.type = 'button';
     close.textContent = 'Fermer';
-    close.className = 'bg-primary/15 border border-primary/30 text-primary rounded-lg px-4 py-2 text-sm mt-5';
+    close.className = 'bg-primary/15 border border-primary/30 text-primary hover:bg-primary/25 rounded-lg px-5 py-2 text-sm font-semibold transition-colors';
     close.addEventListener('click', () => dialog.close());
-    dialog.append(close);
+    closeBtnWrap.append(close);
+    dialog.append(closeBtnWrap);
     dialog.addEventListener('close', () => dialog.remove());
     document.body.append(dialog);
     dialog.showModal();
+
+    // Chargement asynchrone des invités
+    const client = getClient();
+    const { project, guests } = await loadGuestsForOrder(row.order, client);
+    const container = dialog.querySelector('#guests-table-container');
+    const statsBox = dialog.querySelector('#guests-stats-box');
+    const exportBtn = dialog.querySelector('#btn-export-guests-csv');
+
+    if (!guests || guests.length === 0) {
+      if (container) {
+        container.innerHTML = `
+          <div style="padding:20px;text-align:center;font-size:13px;color:#86a0bb;">
+            ${project ? 'Le couple n\'a pas encore enregistré d\'invités pour ce mariage dans son espace client.' : 'Aucun projet client associé trouvé pour ce dossier.'}
+          </div>
+        `;
+      }
+    } else {
+      if (statsBox) statsBox.style.display = 'grid';
+      if (exportBtn) {
+        exportBtn.style.display = 'inline-flex';
+        exportBtn.addEventListener('click', () => exportGuestsToCsv(row.client, guests));
+      }
+
+      // Stats
+      const confirmed = guests.filter(g => g.rsvp_status === 'confirmed').length;
+      const pending = guests.filter(g => g.rsvp_status === 'pending').length;
+      const declined = guests.filter(g => g.rsvp_status === 'declined').length;
+
+      const tEl = dialog.querySelector('#stat-total-guests');
+      const cEl = dialog.querySelector('#stat-confirmed-guests');
+      const pEl = dialog.querySelector('#stat-pending-guests');
+      const dEl = dialog.querySelector('#stat-declined-guests');
+      if (tEl) tEl.textContent = String(guests.length);
+      if (cEl) cEl.textContent = String(confirmed);
+      if (pEl) pEl.textContent = String(pending);
+      if (dEl) dEl.textContent = String(declined);
+
+      // Table HTML
+      let html = `
+        <table style="width:100%;font-size:12px;border-collapse:collapse;text-align:left;">
+          <thead style="background:#162235;color:#94a3b8;text-transform:uppercase;font-size:10px;position:sticky;top:0;">
+            <tr>
+              <th style="padding:10px 12px;border-bottom:1px solid #243447;">Nom</th>
+              <th style="padding:10px 12px;border-bottom:1px solid #243447;">Groupe</th>
+              <th style="padding:10px 12px;border-bottom:1px solid #243447;">RSVP</th>
+              <th style="padding:10px 12px;border-bottom:1px solid #243447;">Régime alimentaire</th>
+              <th style="padding:10px 12px;border-bottom:1px solid #243447;">Table</th>
+            </tr>
+          </thead>
+          <tbody style="divide-y divide-outline-variant/50;">
+      `;
+      guests.forEach(g => {
+        let rsvpBadge = '<span style="background:rgba(251,191,36,0.15);color:#fbbf24;padding:2px 6px;border-radius:4px;font-size:11px;">En attente</span>';
+        if (g.rsvp_status === 'confirmed') {
+          rsvpBadge = '<span style="background:rgba(52,211,153,0.15);color:#34d399;padding:2px 6px;border-radius:4px;font-size:11px;">Confirmé</span>';
+        } else if (g.rsvp_status === 'declined') {
+          rsvpBadge = '<span style="background:rgba(248,113,113,0.15);color:#f87171;padding:2px 6px;border-radius:4px;font-size:11px;">Décliné</span>';
+        }
+        html += `
+          <tr style="border-bottom:1px solid #1a273b;">
+            <td style="padding:8px 12px;">
+              <div style="font-weight:600;color:#e2e8f0;">${esc(g.name)}</div>
+              ${g.email ? `<div style="font-size:11px;color:#86a0bb;">${esc(g.email)}</div>` : ''}
+            </td>
+            <td style="padding:8px 12px;color:#cbd5e1;">${esc(g.category || '—')}</td>
+            <td style="padding:8px 12px;">${rsvpBadge}</td>
+            <td style="padding:8px 12px;color:#e2e8f0;">
+              ${g.dietary_requirements ? `<span style="background:#1e293b;border:1px solid #334155;border-radius:4px;padding:2px 6px;display:inline-block;">${esc(g.dietary_requirements)}</span>` : '<span style="color:#64748b;">Standard</span>'}
+            </td>
+            <td style="padding:8px 12px;color:#cbd5e1;">${esc(g.table_name || 'Non attribuée')}</td>
+          </tr>
+        `;
+      });
+      html += '</tbody></table>';
+      if (container) container.innerHTML = html;
+    }
   }
 
   function render(rows) {
