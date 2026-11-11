@@ -180,6 +180,7 @@
           border: 0;
         }
         .helicopter-marker-icon {
+<<<<<<< HEAD
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -192,6 +193,40 @@
           box-shadow: 0 0 12px rgba(56, 189, 248, .35);
           filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .65));
         }
+=======
+          display: block;
+          width: 46px;
+          height: 46px;
+          color: #38bdf8;
+          transform-origin: 50% 50%;
+          will-change: transform;
+          filter: drop-shadow(0 2px 5px rgba(0, 8, 24, .95)) drop-shadow(0 0 7px rgba(56, 189, 248, .8));
+          overflow: visible;
+        }
+        .helicopter-marker-icon path,
+        .helicopter-marker-icon line,
+        .helicopter-marker-icon ellipse,
+        .helicopter-marker-icon circle {
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+        .helicopter-marker-icon .heli-body {
+          fill: #1688d4;
+          stroke: #d9f5ff;
+          stroke-width: 1.15;
+        }
+        .helicopter-marker-icon .heli-glass {
+          fill: #071b38;
+          stroke: #9ce7ff;
+          stroke-width: 1;
+        }
+        .helicopter-marker-icon .heli-detail {
+          fill: none;
+          stroke: #d9f5ff;
+          stroke-width: 1.6;
+        }
+        /* Rotor statique : animation volontairement supprimée pour un rendu apaisant. */
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
         @media (prefers-reduced-motion: reduce) {
           .plane-marker-icon { transition: none; }
         }
@@ -211,7 +246,11 @@
 <div class="relative z-10 container mx-auto px-6 text-center max-w-4xl flex flex-col items-center">
 <span class="text-tertiary text-sm tracking-[0.3em] uppercase mb-4 font-medium opacity-80 inline-block px-4 py-1 rounded-full border border-tertiary/20 bg-tertiary/5 backdrop-blur-sm">Expérience Exclusive</span>
 <h1 class="text-5xl md:text-7xl font-headline font-semibold text-on-background mb-6 leading-tight y">
+<<<<<<< HEAD
                     Mariage à Madagascar : <br> <span class="text-primary italic font-light">l'art de s'aimer</span>
+=======
+                    Mariage à Madagascar: <br> <span class="text-primary italic font-light">l'art de s'aimer</span>
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
 </h1>
 <p class="text-lg md:text-xl text-on-surface-variant font-body mb-10 max-w-2xl font-light leading-relaxed homepage-text-light ">
                     Wedding Planner &amp; Travel Planner - Créateur d'expériences uniques pour les amoureux à Madagascar, de Nosy Be à Sainte-Marie, de Tuléar à Antananarivo.
@@ -526,7 +565,11 @@
       <div id="realMadagascarMap"></div>
 
       <div class="absolute bottom-4 left-4 z-[1000] text-[10px] text-white/90 font-mono hidden sm:block bg-black/70 px-2.5 py-1 rounded-md backdrop-blur-sm border border-white/10">
+<<<<<<< HEAD
         Avion charter • Hélicoptères locaux
+=======
+        Avion charter • hélicoptère sur les liaisons
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
       </div>
     </div>
   </div>
@@ -660,6 +703,7 @@ document.addEventListener("DOMContentLoaded", function() {
     return { destination, points };
   });
 
+<<<<<<< HEAD
   // Hélicoptères en circuits locaux autour des destinations.
   const helicopterMarkers = flightDestinations.map((destination, index) => {
     const icon = L.divIcon({
@@ -678,6 +722,38 @@ document.addEventListener("DOMContentLoaded", function() {
     };
   });
   let helicopterFrame = 0;
+=======
+  // Un seul hélicoptère bleu, dessiné en vue de dessus et animé sur une route fluide.
+  const helicopterIcon = L.divIcon({
+    className: 'helicopter-icon-container',
+    html: '<svg id="animatedHelicopterGlyph" class="helicopter-marker-icon" viewBox="0 0 48 48" aria-hidden="true">' +
+      '<g class="heli-rotor" fill="none" stroke="#c9f2ff" stroke-width="1.7">' +
+        '<line x1="5" y1="17" x2="43" y2="17"/>' +
+        '<line x1="24" y1="6" x2="24" y2="28"/>' +
+        '<ellipse cx="24" cy="17" rx="3.5" ry="2.5" fill="#38bdf8" stroke="#e0f7ff"/>' +
+      '</g>' +
+      '<path class="heli-body" d="M24 7 C20.5 11 19 17 19 23 L19 29 L21 33 L21 38 L24 41 L27 38 L27 33 L29 29 L29 23 C29 17 27.5 11 24 7 Z"/>' +
+      '<path class="heli-glass" d="M24 11 C21.5 14 21 17 21 20 L27 20 C27 17 26.5 14 24 11 Z"/>' +
+      '<path class="heli-detail" d="M20 27 L28 27 M21 32 L27 32"/>' +
+      '<g fill="none" stroke="#d9f5ff" stroke-width="1.5" stroke-linecap="round">' +
+        '<line x1="18" y1="37" x2="30" y2="37"/>' +
+        '<line x1="19" y1="34" x2="16" y2="39"/><line x1="29" y1="34" x2="32" y2="39"/>' +
+        '<line x1="21" y1="40" x2="27" y2="40"/>' +
+      '</g>' +
+      '<g fill="none" stroke="#7dd3fc" stroke-width="1.5">' +
+        '<line x1="18" y1="24" x2="30" y2="24"/>' +
+      '</g>' +
+      '</svg>',
+    iconSize: [46, 46],
+    iconAnchor: [23, 23]
+  });
+  const helicopterMarker = L.marker(TNR, {
+    icon: helicopterIcon, interactive: false, keyboard: false, zIndexOffset: 1100
+  }).addTo(map);
+  let helicopterProgress = 0;
+  let helicopterRouteIndex = Math.min(1, Math.max(0, flightRoutes.length - 1));
+  let helicopterDirection = -1;
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
 
   function updateAircraftHeading(from, to) {
     if (!map || !map._loaded || !from || !to) return;
@@ -755,6 +831,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
 
+<<<<<<< HEAD
     // Mouvement indépendant de la fréquence d'affichage : trajectoires locales douces.
     const elapsedSeconds = timestamp / 1000;
     helicopterMarkers.forEach(helicopter => {
@@ -764,6 +841,57 @@ document.addEventListener("DOMContentLoaded", function() {
         helicopter.center[1] + Math.cos(angle) * helicopter.radiusLng
       ]);
     });
+=======
+    // Hélicoptère : même logique d'animation que l'avion pour un mouvement régulier.
+    // Même durée, même interpolation et mêmes demi-tours ; seule l'icône et la liaison
+    // sélectionnée diffèrent. Un décalage très léger évite la superposition visuelle.
+    const helicopterRoute = flightRoutes[helicopterRouteIndex];
+    if (helicopterRoute && helicopterRoute.points.length > 2) {
+      const routePoints = helicopterRoute.points;
+      const heliLaneOffset = 0.018;
+      const lastIndex = routePoints.length - 1;
+
+      const heliPoints = routePoints.map((point, index) => {
+        const previous = routePoints[Math.max(0, index - 1)];
+        const next = routePoints[Math.min(lastIndex, index + 1)];
+        const dLat = next[0] - previous[0];
+        const dLng = (next[1] - previous[1]) * Math.cos(point[0] * Math.PI / 180);
+        const length = Math.hypot(dLat, dLng) || 1;
+        const t = index / lastIndex;
+        const lane = Math.sin(Math.PI * t) * heliLaneOffset;
+        const latOffset = (-dLng / length) * lane;
+        const lngOffset = (dLat / length) * lane / Math.max(0.5, Math.cos(point[0] * Math.PI / 180));
+        return [point[0] + latOffset, point[1] + lngOffset];
+      });
+
+      // Réutilise la durée et le même easing smoothstep que l'avion.
+      helicopterProgress = Math.min(1, helicopterProgress + delta / FLIGHT_LEG_DURATION_MS);
+      const heliEasedProgress = helicopterProgress * helicopterProgress * (3 - 2 * helicopterProgress);
+      const heliProgress = helicopterDirection === 1 ? heliEasedProgress : 1 - heliEasedProgress;
+      const heliPoint = interpolatePoint(heliPoints, heliProgress);
+      const heliHeadingProgress = Math.max(0, Math.min(1, heliProgress + helicopterDirection * 0.045));
+      const heliNextPoint = interpolatePoint(heliPoints, heliHeadingProgress);
+      helicopterMarker.setLatLng(heliPoint);
+
+      const heliA = map.latLngToContainerPoint(heliPoint);
+      const heliB = map.latLngToContainerPoint(heliNextPoint);
+      if (Math.hypot(heliB.x - heliA.x, heliB.y - heliA.y) > 0.8) {
+        const heliAngle = Math.atan2(heliB.y - heliA.y, heliB.x - heliA.x) * 180 / Math.PI + 90;
+        const heliGlyph = helicopterMarker.getElement()?.querySelector('#animatedHelicopterGlyph');
+        if (heliGlyph) heliGlyph.style.transform = `rotate(${heliAngle}deg)`;
+      }
+
+      if (helicopterProgress >= 1) {
+        helicopterProgress = 0;
+        if (helicopterDirection === 1) {
+          helicopterDirection = -1;
+        } else {
+          helicopterDirection = 1;
+          helicopterRouteIndex = (helicopterRouteIndex + 1) % flightRoutes.length;
+        }
+      }
+    }
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     requestAnimationFrame(animatePlane);
   }
   // Démarre uniquement lorsque Leaflet a initialisé son centre, son zoom et son conteneur.

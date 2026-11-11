@@ -306,10 +306,32 @@ body.villa-product #mainImageButton{height:100%}
   const STAY_PRODUCT_SLUG = 'sejour-romantique-a-nosy-komba-10-jours-de-reve';
   const IS_STAY_PRODUCT = PRODUCT_SLUG === STAY_PRODUCT_SLUG;
 
+<<<<<<< HEAD
+=======
+  // Traitement ciblé du séjour romantique à Sainte-Marie.
+  const DREAM_SAINTEMARIE_SLUG = 'sejour-de-reve-et-demande-en-mariage-sur-une-ile-deserte-ile-sainte-marie-madagascar';
+  let IS_DREAM_SAINTEMARIE_PRODUCT = PRODUCT_SLUG.replace(/\/$/, '') === DREAM_SAINTEMARIE_SLUG;
+
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
   const VILLA_PRODUCT_SLUG =
     'villa-de-luxe-au-paradis-les-pieds-dans-leau-demande-en-mariage-sur-le-ponton';
   const IS_VILLA_PRODUCT = PRODUCT_SLUG === VILLA_PRODUCT_SLUG;
 
+<<<<<<< HEAD
+=======
+  // Ce produit réutilise la zone pax pour saisir le nombre d'invités.
+  // Le slug correspond à l'URL publique, avec ou sans slash final.
+  const GUEST_COUNT_PRODUCT_SLUG = 'renouveller-vos-voeux-de-mariage-a-nosy-be';
+  const GASTRONOMY_GUEST_COUNT_PRODUCT_SLUG = 'experience-gastronomique-malagasy-prive-chef-a-domicile-a-nosy-be';
+  const MORA_MORA_PRODUCT_SLUG = 'votre-mariage-de-reve-au-mora-mora-ile-sainte-marie-madagascar';
+  let IS_MORA_MORA_PRODUCT = PRODUCT_SLUG.replace(/\/$/, '') === MORA_MORA_PRODUCT_SLUG;
+  const IS_GUEST_COUNT_PRODUCT = [GUEST_COUNT_PRODUCT_SLUG, GASTRONOMY_GUEST_COUNT_PRODUCT_SLUG]
+    .includes(PRODUCT_SLUG.replace(/\/$/, ''));
+  const GUEST_COUNT_LABEL = PRODUCT_SLUG.replace(/\/$/, '') === GASTRONOMY_GUEST_COUNT_PRODUCT_SLUG
+    ? 'Confirmer nombre de personnes'
+    : "Confirmer nombre d'invités";
+
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
   if (IS_VILLA_PRODUCT) {
     document.body.classList.add('villa-product');
   }
@@ -378,6 +400,14 @@ body.villa-product #mainImageButton{height:100%}
   let variations = [];
   let images = [];
   let variationImages = new Map();
+<<<<<<< HEAD
+=======
+  let imageFallbacks = new Map();
+  let selectedDreamDuration = '';
+  let selectedDreamFormula = '';
+  let selectedMoraGuests = '';
+  let selectedMoraBungalow = 'sans';
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
   let currentImageIndex = 0;
   let selectedPax = null;
 
@@ -473,6 +503,22 @@ body.villa-product #mainImageButton{height:100%}
       }
     }
 
+<<<<<<< HEAD
+=======
+    if (IS_MORA_MORA_PRODUCT) {
+      const selected = findMoraVariation();
+      if (selected) url += '&variation_id=' + encodeURIComponent(selected.id);
+      if (selectedMoraGuests) url += '&guests=' + encodeURIComponent(selectedMoraGuests);
+      url += '&bungalow=' + encodeURIComponent(selectedMoraBungalow === 'avec' ? 'avec' : 'sans');
+    }
+
+    if (IS_DREAM_SAINTEMARIE_PRODUCT) {
+      const selected = findDreamVariation();
+      if (selected) url += '&variation_id=' + encodeURIComponent(selected.id);
+      if (selectedDreamDuration) url += '&duration=' + encodeURIComponent(selectedDreamDuration);
+      if (selectedDreamFormula) url += '&formula=' + encodeURIComponent(selectedDreamFormula);
+    }
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     return url;
   }
 
@@ -535,6 +581,188 @@ body.villa-product #mainImageButton{height:100%}
     };
   }
 
+<<<<<<< HEAD
+=======
+  function rawObject(value) {
+    try {
+      const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function parseDreamVariation(variation) {
+    const raw = rawObject(variation?.raw_export);
+    let duration = '';
+    let formula = '';
+    for (let i = 1; i <= 10; i++) {
+      const name = String(raw[`Attribute ${i} name`] || '').trim().toLowerCase();
+      const value = String(raw[`Attribute ${i} value(s)`] || '').trim();
+      if (!value) continue;
+      if (/dur[ée]e du s[ée]jour|dur[ée]e/.test(name)) duration = value;
+      if (/type de formule|formule/.test(name)) formula = value;
+    }
+    // Compatibilité si les métadonnées de variation sont incomplètes.
+    const combined = String(variation?.attribute_value || variation?.name || '');
+    if (!duration) duration = (combined.match(/\b(?:7|10|15|20) jours?\b/i) || [])[0] || '';
+    if (!formula && duration) formula = combined.replace(duration, '').replace(/^\s*[—–|-]\s*/, '').trim();
+    return { duration, formula };
+  }
+
+  // Sélecteurs spécifiques Mora Mora : un seul bouton par nombre d'invités,
+  // puis une formule d'hébergement indépendante. Aucune modification SQL requise.
+  function parseMoraVariation(variation) {
+    const raw = rawObject(variation?.raw_export);
+    const combined = [
+      variation?.attribute_value,
+      variation?.name,
+      variation?.sku,
+      raw['Attribute 1 value(s)'],
+      raw['Attribute 2 value(s)'],
+      raw['Attribute 3 value(s)']
+    ].filter(Boolean).join(' | ');
+    const guestMatch = combined.match(/\b(10|20|30|40|50|60|70)\s*(?:pax|personnes?|invités?)\b/i)
+      || combined.match(/\b(10|20|30|40|50|60|70)\b/);
+    const guests = guestMatch ? String(Number(guestMatch[1])) : '';
+    const hasBungalow = /bungalow/i.test(combined) || /PLUS-Bungalow/i.test(String(variation?.sku || ''));
+    return { guests, bungalow: hasBungalow ? 'avec' : 'sans' };
+  }
+
+  function findMoraVariation() {
+    if (!IS_MORA_MORA_PRODUCT) return null;
+    return variations.find(variation => {
+      const attrs = parseMoraVariation(variation);
+      return attrs.guests === String(selectedMoraGuests) && attrs.bungalow === selectedMoraBungalow;
+    }) || null;
+  }
+
+  function updateMoraPrice() {
+    const variation = findMoraVariation();
+    if (!variation) {
+      els.price.textContent = 'Formule indisponible';
+    } else {
+      els.price.textContent = euro(variation.regular_price);
+    }
+    const url = contactUrl(null);
+    if (els.contactBtn) els.contactBtn.href = url;
+    if (els.bottomContactBtn) els.bottomContactBtn.href = url;
+  }
+
+  function renderMoraOptions() {
+    if (!IS_MORA_MORA_PRODUCT || !els.paxButtons) return;
+    const parsed = variations.map(variation => ({ variation, ...parseMoraVariation(variation) }))
+      .filter(item => item.guests);
+    const guestsList = [...new Set(parsed.map(item => item.guests))]
+      .sort((a, b) => Number(a) - Number(b));
+    if (!guestsList.length) {
+      els.paxButtons.innerHTML = '<span class="text-sm text-[#8fa3b3]">Formule sur demande</span>';
+      els.price.textContent = 'Sur demande';
+      return;
+    }
+
+    if (!guestsList.includes(String(selectedMoraGuests))) selectedMoraGuests = guestsList[0];
+    const formulasForGuests = parsed.filter(item => item.guests === String(selectedMoraGuests));
+    const hasNoBungalow = formulasForGuests.some(item => item.bungalow === 'sans');
+    const hasBungalow = formulasForGuests.some(item => item.bungalow === 'avec');
+    if (selectedMoraBungalow === 'avec' && !hasBungalow) selectedMoraBungalow = 'sans';
+    if (selectedMoraBungalow === 'sans' && !hasNoBungalow && hasBungalow) selectedMoraBungalow = 'avec';
+
+    if (els.variationLabel) {
+      els.variationLabel.textContent = 'Nombre d’invités';
+      els.variationLabel.style.display = 'block';
+    }
+    els.paxButtons.className = 'space-y-4';
+    els.paxButtons.innerHTML = `
+      <div>
+        <label class="block text-sm font-medium mb-2" for="mora-guests">Nombre d’invités</label>
+        <select id="mora-guests" class="w-full border border-white/10 rounded-xl px-3 py-3 text-sm font-medium bg-[#0f1524]/80 text-[#dbe7f0] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40">
+          ${guestsList.map(value => `<option value="${esc(value)}" ${value === String(selectedMoraGuests) ? 'selected' : ''}>${esc(value)} personnes</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2" for="mora-bungalow">Hébergement</label>
+        <select id="mora-bungalow" class="w-full border border-white/10 rounded-xl px-3 py-3 text-sm font-medium bg-[#0f1524]/80 text-[#dbe7f0] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40">
+          ${hasNoBungalow ? `<option value="sans" ${selectedMoraBungalow === 'sans' ? 'selected' : ''}>Sans bungalow</option>` : ''}
+          ${hasBungalow ? `<option value="avec" ${selectedMoraBungalow === 'avec' ? 'selected' : ''}>Avec bungalow</option>` : ''}
+        </select>
+      </div>`;
+
+    document.getElementById('mora-guests')?.addEventListener('change', event => {
+      selectedMoraGuests = event.target.value;
+      selectedMoraBungalow = 'sans';
+      renderMoraOptions();
+      updateMoraPrice();
+    });
+    document.getElementById('mora-bungalow')?.addEventListener('change', event => {
+      selectedMoraBungalow = event.target.value;
+      updateMoraPrice();
+    });
+    updateMoraPrice();
+  }
+
+  function findDreamVariation() {
+    if (!IS_DREAM_SAINTEMARIE_PRODUCT) return null;
+    return variations.find(v => {
+      const attrs = parseDreamVariation(v);
+      return attrs.duration === selectedDreamDuration && attrs.formula === selectedDreamFormula;
+    }) || null;
+  }
+
+  function updateDreamPrice() {
+    const variation = findDreamVariation();
+    if (!variation) {
+      els.price.textContent = 'Formule indisponible';
+      return;
+    }
+    els.price.textContent = euro(variation.regular_price);
+    const url = contactUrl(null);
+    if (els.contactBtn) els.contactBtn.href = url;
+    if (els.bottomContactBtn) els.bottomContactBtn.href = url;
+  }
+
+  function renderDreamOptions() {
+    if (!IS_DREAM_SAINTEMARIE_PRODUCT || !els.paxButtons) return;
+    const parsed = variations.map(v => ({ variation: v, ...parseDreamVariation(v) }));
+    const durations = [...new Set(parsed.map(v => v.duration).filter(Boolean))];
+    const formulas = [...new Set(parsed.map(v => v.formula).filter(Boolean))];
+    if (!selectedDreamDuration || !durations.includes(selectedDreamDuration)) selectedDreamDuration = durations[0] || '';
+    const formulasForDuration = [...new Set(parsed.filter(v => v.duration === selectedDreamDuration).map(v => v.formula).filter(Boolean))];
+    if (!selectedDreamFormula || !formulasForDuration.includes(selectedDreamFormula)) selectedDreamFormula = formulasForDuration[0] || formulas[0] || '';
+
+    if (els.variationLabel) {
+      els.variationLabel.textContent = '';
+      els.variationLabel.style.display = 'none';
+    }
+    els.paxButtons.className = 'space-y-4';
+    els.paxButtons.innerHTML = `
+      <div>
+        <label class="block text-sm font-medium mb-2" for="dream-duration">Durée du séjour</label>
+        <select id="dream-duration" class="w-full border border-white/10 rounded-xl px-3 py-3 text-sm font-medium bg-[#0f1524]/80 text-[#dbe7f0] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40">
+          ${durations.map(v => `<option value="${esc(v)}" ${v === selectedDreamDuration ? 'selected' : ''}>${esc(v)}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2" for="dream-formula">Types</label>
+        <select id="dream-formula" class="w-full border border-white/10 rounded-xl px-3 py-3 text-sm font-medium bg-[#0f1524]/80 text-[#dbe7f0] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40">
+          ${formulasForDuration.map(v => `<option value="${esc(v)}" ${v === selectedDreamFormula ? 'selected' : ''}>${esc(v)}</option>`).join('')}
+        </select>
+      </div>`;
+
+    document.getElementById('dream-duration')?.addEventListener('change', event => {
+      selectedDreamDuration = event.target.value;
+      selectedDreamFormula = '';
+      renderDreamOptions();
+      updateDreamPrice();
+    });
+    document.getElementById('dream-formula')?.addEventListener('change', event => {
+      selectedDreamFormula = event.target.value;
+      updateDreamPrice();
+    });
+    updateDreamPrice();
+  }
+
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
   function findVillaVariation() {
     if (!IS_VILLA_PRODUCT) return null;
 
@@ -1093,6 +1321,11 @@ body.villa-product #mainImageButton{height:100%}
   }
 
   function getSelectedVariationForBooking() {
+<<<<<<< HEAD
+=======
+    if (IS_MORA_MORA_PRODUCT) return findMoraVariation() || variations[0] || null;
+    if (IS_DREAM_SAINTEMARIE_PRODUCT) return findDreamVariation() || variations[0] || null;
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     if (IS_STAY_PRODUCT) return findStayVariation() || variations[0] || null;
     if (IS_VILLA_PRODUCT) return findVillaVariation() || variations[0] || null;
 
@@ -1255,7 +1488,11 @@ body.villa-product #mainImageButton{height:100%}
     // d’arrivée et une date de départ, même si le titre mentionne une demande
     // en mariage ou si une ancienne métadonnée indique « event ».
     // Les options bateau/expérience ne définissent pas la durée totale du séjour.
+<<<<<<< HEAD
     if (IS_VILLA_PRODUCT) return 'duration';
+=======
+    if (IS_VILLA_PRODUCT || IS_DREAM_SAINTEMARIE_PRODUCT) return 'duration';
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
 
     const override = getBookingModeOverride();
     if (override) return override;
@@ -1321,12 +1558,42 @@ body.villa-product #mainImageButton{height:100%}
   function addToCart(event) {
     if (event) event.preventDefault();
 
+<<<<<<< HEAD
+=======
+    if (IS_GUEST_COUNT_PRODUCT) {
+      const guestInput = document.getElementById('guestCountPaxInput');
+      const guestCount = Number(guestInput?.value);
+      if (!Number.isInteger(guestCount) || guestCount < 1) {
+        alert("Merci d'indiquer un nombre d'invités supérieur ou égal à 1.");
+        guestInput?.focus();
+        return;
+      }
+      selectedPax = guestCount;
+    }
+
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     if (!validateBookingDates()) return;
 
     let selectedVariation = null;
     let currentOptions = {};
 
+<<<<<<< HEAD
     if (IS_STAY_PRODUCT) {
+=======
+    if (IS_MORA_MORA_PRODUCT) {
+      selectedVariation = findMoraVariation() || variations[0];
+      currentOptions = {
+        'Nombre d’invités': selectedMoraGuests,
+        'Hébergement': selectedMoraBungalow === 'avec' ? 'Avec bungalow' : 'Sans bungalow'
+      };
+    } else if (IS_DREAM_SAINTEMARIE_PRODUCT) {
+      selectedVariation = findDreamVariation() || variations[0];
+      currentOptions = {
+        'Durée du séjour': selectedDreamDuration,
+        'Types': selectedDreamFormula
+      };
+    } else if (IS_STAY_PRODUCT) {
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
       selectedVariation = findStayVariation() || variations[0];
       currentOptions = { ...selectedStayOptions };
     } else if (IS_VILLA_PRODUCT) {
@@ -1345,6 +1612,13 @@ body.villa-product #mainImageButton{height:100%}
 
     const currentImage = images[currentImageIndex] || product?.featured_image_url || '';
 
+<<<<<<< HEAD
+=======
+    if (IS_GUEST_COUNT_PRODUCT && selectedPax) {
+      currentOptions[GUEST_COUNT_LABEL] = Number(selectedPax);
+    }
+
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     const cartItem = {
       product_id: product.id,
       variation_id: selectedVariation ? selectedVariation.id : null,
@@ -1415,6 +1689,11 @@ body.villa-product #mainImageButton{height:100%}
     }
 
     product = products[0];
+<<<<<<< HEAD
+=======
+    IS_DREAM_SAINTEMARIE_PRODUCT = IS_DREAM_SAINTEMARIE_PRODUCT || product.sku === 'MM-SEJOUR-REVE-DEMANDE-MARIAGE-SAINTEMARIE';
+    IS_MORA_MORA_PRODUCT = IS_MORA_MORA_PRODUCT || product.sku === 'MM-MARIAGE-MORA-MORA-SAINTEMARIE';
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
 
     // Produit simple : pas de sélecteur d'attribut/pax.
     // Le prix est pris depuis sa variation unique dans Supabase.
@@ -1439,6 +1718,10 @@ body.villa-product #mainImageButton{height:100%}
     if (
       !IS_STAY_PRODUCT &&
       !IS_VILLA_PRODUCT &&
+<<<<<<< HEAD
+=======
+      !IS_DREAM_SAINTEMARIE_PRODUCT &&
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
       variations.length &&
       variations.every(v =>
         v.pax == null &&
@@ -1487,6 +1770,16 @@ body.villa-product #mainImageButton{height:100%}
     if (IS_VILLA_PRODUCT && variations.length) {
       selectedVillaOptions = parseVillaVariation(variations[0]);
     }
+<<<<<<< HEAD
+=======
+    if (IS_DREAM_SAINTEMARIE_PRODUCT && variations.length) {
+      const fromUrlDuration = params.get('duration') || '';
+      const fromUrlFormula = params.get('formula') || '';
+      const first = parseDreamVariation(variations[0]);
+      selectedDreamDuration = fromUrlDuration || first.duration;
+      selectedDreamFormula = fromUrlFormula || first.formula;
+    }
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
 
     // Images :
     // - CE séjour : 100 % des images viennent du dossier local Vercel.
@@ -1494,6 +1787,10 @@ body.villa-product #mainImageButton{height:100%}
     // - AUTRES PRODUITS : fonctionnement existant conservé avec Supabase.
     images = [];
     variationImages = new Map();
+<<<<<<< HEAD
+=======
+    imageFallbacks = new Map();
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
 
     const addUnique = url => {
       if (!url || images.includes(url)) return;
@@ -1624,6 +1921,13 @@ body.villa-product #mainImageButton{height:100%}
       els.bottomTitle.textContent =
         'Une expérience sur mesure';
     }
+<<<<<<< HEAD
+=======
+    if (IS_DREAM_SAINTEMARIE_PRODUCT) {
+      const bottomDescription = els.bottomTitle?.nextElementSibling;
+      if (bottomDescription) bottomDescription.textContent = 'Sélectionnez la durée du séjour et le type de formule pour afficher le tarif correspondant.';
+    }
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
 
     els.mainImage.alt = title;
   }
@@ -1688,6 +1992,20 @@ body.villa-product #mainImageButton{height:100%}
       `)
       .join('');
 
+<<<<<<< HEAD
+=======
+    els.thumbs.querySelectorAll('img').forEach((img, index) => {
+      img.addEventListener('error', () => {
+        const original = images[index];
+        const fallback = imageFallbacks.get(original);
+        if (fallback && img.dataset.fallbackApplied !== 'true') {
+          img.dataset.fallbackApplied = 'true';
+          img.src = fallback;
+        }
+      }, { once: true });
+    });
+
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     els.thumbs
       .querySelectorAll('.thumb')
       .forEach(button => {
@@ -1752,6 +2070,17 @@ body.villa-product #mainImageButton{height:100%}
 
     const src = images[currentImageIndex];
 
+<<<<<<< HEAD
+=======
+    els.mainImage.onerror = () => {
+      const fallback = imageFallbacks.get(src);
+      if (fallback && els.mainImage.dataset.fallbackApplied !== 'true') {
+        els.mainImage.dataset.fallbackApplied = 'true';
+        els.mainImage.src = fallback;
+      }
+    };
+    els.mainImage.dataset.fallbackApplied = 'false';
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     els.mainImage.src = src;
     els.mainImage.style.opacity = '1';
 
@@ -1761,6 +2090,7 @@ body.villa-product #mainImageButton{height:100%}
   function renderSimpleProduct() {
     if (!IS_SIMPLE_PRODUCT || !els.paxButtons) return;
 
+<<<<<<< HEAD
     // Un produit simple n'affiche ni pax ni attribut.
     if (els.variationLabel) {
       els.variationLabel.textContent = '';
@@ -1770,6 +2100,39 @@ body.villa-product #mainImageButton{height:100%}
     els.paxButtons.innerHTML = '';
     els.paxButtons.style.display = 'none';
 
+=======
+    // Exception ciblée : sur le renouvellement de vœux, réutiliser la zone pax
+    // pour demander le nombre d'invités, même si le produit est simple dans Supabase.
+    if (IS_GUEST_COUNT_PRODUCT) {
+      if (els.variationLabel) {
+        els.variationLabel.textContent = GUEST_COUNT_LABEL;
+        els.variationLabel.style.display = 'block';
+      }
+      els.paxButtons.style.display = 'block';
+      els.paxButtons.className = 'space-y-0';
+      els.paxButtons.innerHTML = `
+        <input id="guestCountPaxInput" type="number" min="1" step="1" value="${Number(selectedPax || 2)}"
+          inputmode="numeric" required
+          aria-label="${esc(GUEST_COUNT_LABEL)}"
+          class="w-full border border-white/10 rounded-xl px-3 py-3 text-sm font-medium bg-[#0f1524]/80 text-[#dbe7f0] focus:outline-none focus:ring-2 focus:ring-[#7dd3fc]/40" />
+      `;
+      const guestInput = document.getElementById('guestCountPaxInput');
+      guestInput?.addEventListener('input', () => {
+        const n = Number(guestInput.value);
+        selectedPax = Number.isInteger(n) && n > 0 ? n : null;
+        updateCurrentActionLinks();
+      });
+    } else {
+      // Les autres produits simples conservent leur comportement actuel.
+      if (els.variationLabel) {
+        els.variationLabel.textContent = '';
+        els.variationLabel.style.display = 'none';
+      }
+      els.paxButtons.innerHTML = '';
+      els.paxButtons.style.display = 'none';
+    }
+
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     const variation = variations[0] || null;
 
     if (variation) {
@@ -1798,11 +2161,27 @@ body.villa-product #mainImageButton{height:100%}
   function renderPax() {
     if (!els.paxButtons) return;
 
+<<<<<<< HEAD
+=======
+    if (IS_MORA_MORA_PRODUCT) {
+      renderMoraOptions();
+      return;
+    }
+
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     if (IS_SIMPLE_PRODUCT) {
       renderSimpleProduct();
       return;
     }
 
+<<<<<<< HEAD
+=======
+    if (IS_DREAM_SAINTEMARIE_PRODUCT) {
+      renderDreamOptions();
+      return;
+    }
+
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     if (IS_STAY_PRODUCT) {
       if (els.variationLabel) els.variationLabel.textContent = '';
       renderStayOptions();
@@ -1854,7 +2233,19 @@ body.villa-product #mainImageButton{height:100%}
     }
 
     if (els.variationLabel) {
+<<<<<<< HEAD
       els.variationLabel.textContent = 'Nombre de personnes (pax)';
+=======
+      // Pour le renouvellement de vœux, réutiliser le sélecteur pax existant
+      // comme champ de nombre d'invités, sans ajouter un deuxième champ.
+      const isVowRenewalProduct = [
+        'renouveller-vos-voeux-de-mariage-a-nosy-be',
+        'renouveller-vos-voeux-de-mariage-a-nosy-be-'
+      ].includes(PRODUCT_SLUG);
+      els.variationLabel.textContent = isVowRenewalProduct
+        ? "Confirmer nombre d'invités"
+        : 'Nombre de personnes (pax)';
+>>>>>>> origin/harmonize-admin-sidebar-layout-13168231994790582102
     }
 
     if (!variations.length) {
