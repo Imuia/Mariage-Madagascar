@@ -121,7 +121,7 @@
 <main class="flex-grow pt-24 pb-20">
 <!-- Hero Section -->
 <section class="relative px-6 py-20 md:py-32 flex flex-col items-center justify-center text-center overflow-hidden">
-<div class="absolute inset-0 z-0 opacity-40 bg-center bg-cover" data-alt="A subtle, dark atmospheric gradient background with deep navy blues and soft ice-blue light leaks, creating a serene, elegant mood for a luxury wedding blog." style="background-image: url('/assets/img/blog-wedding-planner-nosy-be.jpeg')"></div>
+<div class="absolute inset-0 z-0 opacity-40 bg-[url('placeholder')]  bg-center" data-alt="A subtle, dark atmospheric gradient background with deep navy blues and soft ice-blue light leaks, creating a serene, elegant mood for a luxury wedding blog." style="background-image: url('/blog/le-snorkeling-a-nosy-be-une-experience-unique/01-458987376_924532853050894_4568301607038638592_n-YbNvzw6DLbTZVQ2q.jpg')"></div>
 <div class="relative z-10 glass-panel-elevated rounded-xl p-8 md:p-12 max-w-4xl box-glow">
 <h1 class="font-headline text-4xl md:text-6xl font-semibold text-primary mb-6 text-glow tracking-wide">Inspirations &amp; Récits de Rêve</h1>
 <p class="text-on-surface-variant text-lg md:text-xl max-w-2xl mx-auto font-light">Plongez dans l'univers de l'excellence. Découvrez des histoires vraies, des conseils d'experts et l'art de vivre d'un mariage de luxe à Madagascar.</p>
@@ -141,7 +141,7 @@
 <div class="max-w-7xl mx-auto">
 <a id="blog-featured-link" href="#" class="block no-underline"><div class="relative rounded-2xl overflow-hidden glass-panel-elevated group cursor-pointer hover-glow transition-all duration-500">
 <div class="h-96 md:h-[500px] w-full relative">
-<img class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700" data-alt="A breathtaking luxury wedding setup on a pristine white sand beach in Madagascar, featuring elegant floral arrangements with soft blue and white accents, under a clear sky at golden hour, exuding romance and exclusivity." id="blog-featured-image" src="/assets/img/blog-wedding-planner-nosy-be.jpeg" alt="Décor élégant de mariage à Nosy Be, Madagascar" loading="eager" fetchpriority="high"/>
+<img class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700" data-alt="A breathtaking luxury wedding setup on a pristine white sand beach in Madagascar, featuring elegant floral arrangements with soft blue and white accents, under a clear sky at golden hour, exuding romance and exclusivity." id="blog-featured-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAN0YnjAall7L2KDx5eBQyujusAVKUs6NcQuDI0Iw6qtDq12wY6UuTc0_-pNhrmt-GTNIUKaRTtf60S465OWMFvxyif9vw_PH8iv3E5mcEQXaN6XS72Jqhwoj6qJsUZ3a-GdkrqnHTLXTBaMLMGm4AmIX_rCipofZvmCTArmapZTKpbvikpzUroKBZCiW0tzQXPf2WcPPG2-fD2QEp5tbyPcrMIPrJrakBbAlFS6ORdSTrjldJtlRevTw"/>
 <div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
 </div>
 <div class="absolute bottom-0 left-0 w-full p-8 md:p-12">
@@ -267,20 +267,4 @@
   }
 })();
 </script>
-<script src="/assets/js/blog-inspirations.js?v=20261116"></script>
-<script>
-/* Diagnostic de secours : évite de laisser indéfiniment le visiteur sur « Chargement ». */
-(function () {
-  function checkBlogLoading() {
-    const grid = document.getElementById('blog-article-grid');
-    const status = document.getElementById('blog-load-status');
-    if (!grid) return;
-    const stillLoading = /Chargement des articles/i.test(grid.textContent || '');
-    if (stillLoading) {
-      grid.innerHTML = '<div class="col-span-full glass-panel rounded-xl p-8 text-center text-on-surface-variant">Les articles ne sont pas disponibles pour le moment. Merci de réessayer dans quelques instants.</div>';
-      if (status) status.textContent = "Le chargement des articles a dépassé le délai prévu. Vérifier le script blog-inspirations.js et la connexion Supabase.";
-    }
-  }
-  window.setTimeout(checkBlogLoading, 12000);
-})();
-</script></body></html>
+<script src="/assets/js/blog-inspirations.js"></script></body></html>
