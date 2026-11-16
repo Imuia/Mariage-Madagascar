@@ -166,7 +166,8 @@
     }
 
     grid.innerHTML = postsToRender.map(function (post) {
-      const localCandidates = localImageCandidates(post.slug);\n      const image = escapeHtml(post.image || localCandidates[0] || '');
+      const localCandidates = localImageCandidates(post.slug);
+      const image = escapeHtml(post.image || localCandidates[0] || '');
       const title = escapeHtml(post.title);
       const summary = escapeHtml(
         post.summary || 'Découvrez cet article dans les Inspirations Mariage Madagascar.'
@@ -304,16 +305,31 @@
   });
 
   async function getJson(url) {
-    const response = await fetch(url, {
-      headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: 'Bearer ' + SUPABASE_ANON_KEY
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(function () {
+      controller.abort();
+    }, 15000);
+
+    try {
+      const response = await fetch(url, {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: 'Bearer ' + SUPABASE_ANON_KEY
+        },
+        signal: controller.signal
+      });
+      if (!response.ok) {
+        throw new Error('Supabase HTTP ' + response.status);
       }
-    });
-    if (!response.ok) {
-      throw new Error('Supabase HTTP ' + response.status);
+      return await response.json();
+    } catch (error) {
+      if (error && error.name === 'AbortError') {
+        throw new Error('Délai dépassé : Supabase ne répond pas après 15 secondes');
+      }
+      throw error;
+    } finally {
+      window.clearTimeout(timeoutId);
     }
-    return response.json();
   }
 
   async function loadFromSupabase() {
