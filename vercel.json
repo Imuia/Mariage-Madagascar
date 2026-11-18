@@ -18,5 +18,6 @@
       "source": "/:slug([^/.]+)",
       "destination": "/route.html?slug=:slug"
     }
-  ]
+  ],
+  "cleanUrls": true
 }
