@@ -41,7 +41,9 @@ body{font-family:Inter,sans-serif;background:#0a0e1a;color:#e0e8f0}
 #booking-date::-webkit-calendar-picker-indicator,
 #booking-date-end::-webkit-calendar-picker-indicator{
   filter:invert(1);
-  opacity:.82;
+  opacity:1;
+  width:18px;
+  height:18px;
   cursor:pointer;
 }
 #booking-date::-webkit-datetime-edit,
@@ -1952,7 +1954,7 @@ body.villa-product #mainImageButton{height:100%}
   }
 
   function updateThumbCarousel() {
-    if (!IS_VILLA_PRODUCT || !els.thumbs) return;
+    if (!els.thumbs) return;
 
     const maxScroll = Math.max(
       0,
@@ -1971,7 +1973,7 @@ body.villa-product #mainImageButton{height:100%}
   }
 
   function scrollThumbs(direction) {
-    if (!IS_VILLA_PRODUCT || !els.thumbs) return;
+    if (!els.thumbs) return;
 
     const amount = Math.max(
       els.thumbs.clientWidth * 0.75,
@@ -2030,21 +2032,12 @@ body.villa-product #mainImageButton{height:100%}
         });
       });
 
-    if (IS_VILLA_PRODUCT) {
-      els.thumbs.addEventListener('scroll', updateThumbCarousel, {
-        passive: true
-      });
-
-      els.thumbPrev?.addEventListener('click', () => {
-        scrollThumbs(-1);
-      });
-
-      els.thumbNext?.addEventListener('click', () => {
-        scrollThumbs(1);
-      });
-
-      requestAnimationFrame(updateThumbCarousel);
-    }
+    // Les commandes du carrousel sont liées une seule fois par rendu,
+    // et restent disponibles pour toutes les fiches produit.
+    els.thumbs.onscroll = updateThumbCarousel;
+    if (els.thumbPrev) els.thumbPrev.onclick = () => scrollThumbs(-1);
+    if (els.thumbNext) els.thumbNext.onclick = () => scrollThumbs(1);
+    requestAnimationFrame(updateThumbCarousel);
   }
 
   function syncThumbs() {
@@ -2061,10 +2054,7 @@ body.villa-product #mainImageButton{height:100%}
           index !== currentImageIndex
         );
 
-        if (
-          IS_VILLA_PRODUCT &&
-          index === currentImageIndex
-        ) {
+        if (index === currentImageIndex) {
           button.scrollIntoView({
             behavior: 'smooth',
             block: 'nearest',
@@ -2073,9 +2063,7 @@ body.villa-product #mainImageButton{height:100%}
         }
       });
 
-    if (IS_VILLA_PRODUCT) {
-      window.setTimeout(updateThumbCarousel, 120);
-    }
+    window.setTimeout(updateThumbCarousel, 120);
   }
 
   function setMain(index) {
