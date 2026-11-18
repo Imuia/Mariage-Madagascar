@@ -2,6 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     {
+      "source": "/mariage-nosy-saba",
+      "destination": "/organiser-mariage-nosy-saba",
+      "permanent": true
+    },
+    {
       "source": "/:path*",
       "has": [
         {
