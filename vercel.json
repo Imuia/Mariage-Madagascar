@@ -3,7 +3,7 @@
   "redirects": [
     {
       "source": "/mariage-nosy-saba",
-      "destination": "/organiser-mariage-nosy-saba",
+      "destination": "/organiser-mariage-nosy-saba.html",
       "permanent": true
     },
     {
@@ -23,6 +23,5 @@
       "source": "/:slug([^/.]+)",
       "destination": "/route.html?slug=:slug"
     }
-  ],
-  "cleanUrls": true
+  ]
 }
